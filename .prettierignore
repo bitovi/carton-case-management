@@ -1,0 +1,12 @@
+node_modules
+dist
+build
+coverage
+.next
+out
+storybook-static
+*.db
+*.sqlite
+.env
+.env.*
+!.env.example
