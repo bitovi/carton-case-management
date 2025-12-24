@@ -1,5 +1,3 @@
-import { Card } from '../ui/card';
-
 export interface CaseHeaderProps {
   caseId: string;
   title: string;
@@ -47,39 +45,37 @@ export function CaseHeader({
   };
 
   return (
-    <Card className="p-6">
-      <div className="space-y-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-            <p className="text-sm text-gray-500 mt-1">{caseType}</p>
-          </div>
-          <span
-            className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(status)}`}
-          >
-            {status.replace('_', ' ')}
-          </span>
+    <div className="border-b border-gray-200 pb-6">
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+          <p className="text-sm text-gray-500 mt-1">{caseType}</p>
         </div>
+        <span
+          className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(status)}`}
+        >
+          {status.replace('_', ' ')}
+        </span>
+      </div>
 
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <span className="text-gray-500">Customer:</span>
-            <span className="ml-2 font-medium text-gray-900">{customerName}</span>
-          </div>
-          <div>
-            <span className="text-gray-500">Case ID:</span>
-            <span className="ml-2 font-medium text-gray-900">{caseId}</span>
-          </div>
-          <div>
-            <span className="text-gray-500">Created:</span>
-            <span className="ml-2 text-gray-900">{formatDate(createdAt)}</span>
-          </div>
-          <div>
-            <span className="text-gray-500">Last Updated:</span>
-            <span className="ml-2 text-gray-900">{formatDate(updatedAt)}</span>
-          </div>
+      <div className="grid grid-cols-2 gap-4 text-sm">
+        <div>
+          <span className="text-gray-500">Customer:</span>
+          <span className="ml-2 font-medium text-gray-900">{customerName}</span>
+        </div>
+        <div>
+          <span className="text-gray-500">Case ID:</span>
+          <span className="ml-2 font-medium text-gray-900">{caseId}</span>
+        </div>
+        <div>
+          <span className="text-gray-500">Created:</span>
+          <span className="ml-2 text-gray-900">{formatDate(createdAt)}</span>
+        </div>
+        <div>
+          <span className="text-gray-500">Last Updated:</span>
+          <span className="ml-2 text-gray-900">{formatDate(updatedAt)}</span>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

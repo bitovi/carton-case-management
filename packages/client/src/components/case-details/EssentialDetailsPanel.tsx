@@ -1,5 +1,3 @@
-import { Card } from '../ui/card';
-
 export interface EssentialDetailsPanelProps {
   status: string;
   assignee?: {
@@ -49,7 +47,7 @@ export function EssentialDetailsPanel({
   };
 
   return (
-    <Card className="p-6">
+    <div>
       <h2 className="text-lg font-semibold text-gray-900 mb-4">Essential Details</h2>
       <div className="space-y-4">
         <div>
@@ -89,6 +87,6 @@ export function EssentialDetailsPanel({
           <div className="text-sm text-gray-900">{formatDate(updatedAt)}</div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

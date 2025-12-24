@@ -26,15 +26,15 @@ export function CommentItem({ content, authorName, authorEmail, createdAt }: Com
   };
 
   return (
-    <div className="flex gap-3 p-4 hover:bg-gray-50 rounded-lg transition-colors">
+    <div className="flex gap-3 py-3 border-b border-gray-100 last:border-0">
       <div className="flex-shrink-0">
-        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium text-sm">
+        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium text-xs">
           {getInitials(authorName)}
         </div>
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2 mb-1">
-          <span className="font-medium text-gray-900">{authorName}</span>
+          <span className="font-medium text-sm text-gray-900">{authorName}</span>
           <span className="text-xs text-gray-500">{formatDate(createdAt)}</span>
         </div>
         <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{content}</p>

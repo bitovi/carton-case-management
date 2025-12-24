@@ -1,4 +1,3 @@
-import { Card } from '../ui/card';
 import { CommentItem } from './CommentItem';
 
 export interface Comment {
@@ -19,21 +18,21 @@ export interface CommentsListProps {
 export function CommentsList({ comments }: CommentsListProps) {
   if (comments.length === 0) {
     return (
-      <Card className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Comments</h2>
-        <p className="text-sm text-gray-500 text-center py-8">
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 mb-3">Comments</h2>
+        <p className="text-sm text-gray-500 py-8">
           No comments yet. Be the first to add a comment.
         </p>
-      </Card>
+      </div>
     );
   }
 
   return (
-    <Card className="p-6">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">
+    <div>
+      <h2 className="text-lg font-semibold text-gray-900 mb-3">
         Comments ({comments.length})
       </h2>
-      <div className="space-y-2">
+      <div className="space-y-1">
         {comments.map((comment) => (
           <CommentItem
             key={comment.id}
@@ -44,6 +43,6 @@ export function CommentsList({ comments }: CommentsListProps) {
           />
         ))}
       </div>
-    </Card>
+    </div>
   );
 }

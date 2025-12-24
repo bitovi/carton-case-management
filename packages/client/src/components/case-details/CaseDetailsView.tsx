@@ -29,11 +29,11 @@ export interface CaseDetailsViewProps {
 
 export function CaseDetailsView({ caseData }: CaseDetailsViewProps) {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main content - 2 columns on large screens */}
-          <div className="lg:col-span-2 space-y-6">
+    <div className="min-h-screen bg-white">
+      <div className="flex h-screen">
+        {/* Main content area */}
+        <div className="flex-1 overflow-auto">
+          <div className="p-8">
             <CaseHeader
               caseId={caseData.title}
               title={caseData.title}
@@ -43,12 +43,18 @@ export function CaseDetailsView({ caseData }: CaseDetailsViewProps) {
               createdAt={caseData.createdAt}
               updatedAt={caseData.updatedAt}
             />
-            <CaseDescription description={caseData.description} />
-            <CommentsList comments={caseData.comments} />
+            <div className="mt-6">
+              <CaseDescription description={caseData.description} />
+            </div>
+            <div className="mt-6">
+              <CommentsList comments={caseData.comments} />
+            </div>
           </div>
+        </div>
 
-          {/* Sidebar - 1 column on large screens */}
-          <div className="lg:col-span-1">
+        {/* Right sidebar for essential details */}
+        <div className="w-80 border-l border-gray-200 bg-gray-50 overflow-auto">
+          <div className="p-6">
             <EssentialDetailsPanel
               status={caseData.status}
               creator={caseData.creator}

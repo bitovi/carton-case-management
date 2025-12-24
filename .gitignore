@@ -64,3 +64,4 @@ Thumbs.db
 .cache/
 .temp/
 .tmp/
+.vite/
