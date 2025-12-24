@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { appRouter } from './router';
-import type { Context } from './context';
+import { appRouter } from './router.js';
+import type { Context } from './context.js';
 
 describe('appRouter', () => {
   it('health check returns ok status', async () => {

@@ -4,12 +4,12 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3001:3001"
+      - '3001:3001'
     environment:
       - NODE_ENV=production
       - DATABASE_URL=file:./prisma/dev.db
     volumes:
-      - app-data:/app/packages/server/prisma
+      - app-data:/app/packages/server/prismagit
 
 volumes:
   app-data:
