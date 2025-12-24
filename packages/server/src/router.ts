@@ -1,5 +1,12 @@
 import { z } from 'zod';
 import { router, publicProcedure } from './trpc.js';
+import { TRPCError } from '@trpc/server';
+import {
+  listCasesSchema,
+  getCaseByIdSchema,
+  createCommentSchema,
+  CaseStatus,
+} from '@carton/shared';
 
 export const appRouter = router({
   health: publicProcedure.query(() => {
@@ -127,6 +134,109 @@ export const appRouter = router({
       return ctx.prisma.case.delete({
         where: { id: input.id },
       });
+    }),
+  }),
+
+  // Cases routes (for case details feature)
+  cases: router({
+    list: publicProcedure.input(listCasesSchema).query(async ({ ctx, input }) => {
+      const where = input?.status ? { status: input.status } : undefined;
+
+      const [cases, total] = await Promise.all([
+        ctx.prisma.case.findMany({
+          where,
+          take: input?.limit ?? 50,
+          skip: input?.offset ?? 0,
+          orderBy: { updatedAt: 'desc' },
+          select: {
+            id: true,
+            title: true,
+            caseType: true,
+            status: true,
+            customerName: true,
+            updatedAt: true,
+          },
+        }),
+        ctx.prisma.case.count({ where }),
+      ]);
+
+      return { cases, total };
+    }),
+
+    getById: publicProcedure.input(getCaseByIdSchema).query(async ({ ctx, input }) => {
+      const caseData = await ctx.prisma.case.findUnique({
+        where: { id: input.id },
+        include: {
+          creator: {
+            select: { id: true, name: true, email: true },
+          },
+          assignee: {
+            select: { id: true, name: true, email: true },
+          },
+          comments: {
+            include: {
+              author: {
+                select: { id: true, name: true, email: true },
+              },
+            },
+            orderBy: { createdAt: 'asc' },
+          },
+        },
+      });
+
+      if (!caseData) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: `Case with id ${input.id} not found`,
+        });
+      }
+
+      return caseData;
+    }),
+
+    addComment: publicProcedure.input(createCommentSchema).mutation(async ({ ctx, input }) => {
+      // In MVP, use first user as author (no auth yet)
+      const author = await ctx.prisma.user.findFirst();
+      if (!author) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'No users found in database',
+        });
+      }
+
+      // Verify case exists
+      const caseExists = await ctx.prisma.case.findUnique({
+        where: { id: input.caseId },
+      });
+
+      if (!caseExists) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: `Case with id ${input.caseId} not found`,
+        });
+      }
+
+      // Create comment and update case timestamp
+      const comment = await ctx.prisma.comment.create({
+        data: {
+          content: input.content,
+          caseId: input.caseId,
+          authorId: author.id,
+        },
+        include: {
+          author: {
+            select: { id: true, name: true, email: true },
+          },
+        },
+      });
+
+      // Update case's updatedAt timestamp
+      await ctx.prisma.case.update({
+        where: { id: input.caseId },
+        data: { updatedAt: new Date() },
+      });
+
+      return comment;
     }),
   }),
 });
