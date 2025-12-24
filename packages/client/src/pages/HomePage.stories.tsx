@@ -50,6 +50,13 @@ const meta: Meta<typeof HomePage> = {
             },
           });
         }),
+        http.post('/trpc/case.list', () => {
+          return HttpResponse.json({
+            result: {
+              data: mockCases,
+            },
+          });
+        }),
       ],
     },
   },
@@ -67,4 +74,96 @@ const meta: Meta<typeof HomePage> = {
 export default meta;
 type Story = StoryObj<typeof HomePage>;
 
+// Default story with sample cases
 export const Default: Story = {};
+
+// Loading state story
+export const Loading: Story = {
+  parameters: {
+    msw: {
+      handlers: [
+        http.get('/trpc/case.list', async () => {
+          // Delay response to show loading state
+          await new Promise((resolve) => globalThis.setTimeout(resolve, 10000));
+          return HttpResponse.json({
+            result: {
+              data: mockCases,
+            },
+          });
+        }),
+        http.post('/trpc/case.list', async () => {
+          // Delay response to show loading state
+          await new Promise((resolve) => globalThis.setTimeout(resolve, 10000));
+          return HttpResponse.json({
+            result: {
+              data: mockCases,
+            },
+          });
+        }),
+      ],
+    },
+  },
+};
+
+// Error state story
+export const Error: Story = {
+  parameters: {
+    msw: {
+      handlers: [
+        http.get('/trpc/case.list', () => {
+          return HttpResponse.json(
+            {
+              error: {
+                message: 'Failed to fetch cases from database',
+                code: -32603,
+                data: {
+                  code: 'INTERNAL_SERVER_ERROR',
+                },
+              },
+            },
+            { status: 500 }
+          );
+        }),
+        http.post('/trpc/case.list', () => {
+          return HttpResponse.json(
+            {
+              error: {
+                message: 'Failed to fetch cases from database',
+                code: -32603,
+                data: {
+                  code: 'INTERNAL_SERVER_ERROR',
+                },
+              },
+            },
+            { status: 500 }
+          );
+        }),
+      ],
+    },
+  },
+};
+
+// Empty state story
+export const Empty: Story = {
+  parameters: {
+    msw: {
+      handlers: [
+        http.get('/trpc/case.list', () => {
+          return HttpResponse.json({
+            result: {
+              data: [],
+            },
+          });
+        }),
+        http.post('/trpc/case.list', () => {
+          return HttpResponse.json({
+            result: {
+              data: [],
+            },
+          });
+        }),
+      ],
+    },
+  },
+};
+

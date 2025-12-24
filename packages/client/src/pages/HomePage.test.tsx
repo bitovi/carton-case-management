@@ -1,64 +1,119 @@
-// TODO: this trpc mocking pattern is not correct - use setup file and override returns?
-
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { describe, it, expect, beforeAll, afterEach, afterAll } from 'vitest';
+import { screen, waitFor } from '@testing-library/react';
+import { setupServer } from 'msw/node';
+import { http, HttpResponse } from 'msw';
 import HomePage from './HomePage';
-import * as trpcModule from '../lib/trpc';
+import { renderWithTrpc } from '../test/utils';
 
-// Mock the trpc module
-vi.mock('../lib/trpc', () => ({
-  trpc: {
-    case: {
-      list: {
-        useQuery: vi.fn(),
-      },
-    },
-  },
-}));
+// Setup MSW server for API mocking
+const server = setupServer();
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
 describe('HomePage', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('renders loading state', () => {
-    vi.spyOn(trpcModule.trpc.case.list, 'useQuery').mockReturnValue({
-      data: undefined,
-      isLoading: true,
-      error: null,
-    } as any);
-
-    render(
-      <BrowserRouter>
-        <HomePage />
-      </BrowserRouter>
+  it('renders loading state initially', async () => {
+    // Mock slow response to ensure we see loading state
+    server.use(
+      http.get('http://localhost:3000/trpc/case.list', async () => {
+        await new Promise((resolve) => globalThis.setTimeout(resolve, 100));
+        return HttpResponse.json({ result: { data: [] } });
+      })
     );
+
+    renderWithTrpc(<HomePage />);
+    
+    // Loading state should be visible
     expect(screen.getByText(/Loading cases/i)).toBeInTheDocument();
+    
+    // Wait for loading to complete
+    await waitFor(() => {
+      expect(screen.queryByText(/Loading cases/i)).not.toBeInTheDocument();
+    });
   });
 
-  it('renders cases list', () => {
-    vi.spyOn(trpcModule.trpc.case.list, 'useQuery').mockReturnValue({
-      data: [
-        {
-          id: '1',
-          title: 'Test Case',
-          description: 'Test Description',
-          status: 'OPEN',
-          creator: { name: 'John Doe' },
-          assignee: { name: 'Jane Doe' },
-        },
-      ],
-      isLoading: false,
-      error: null,
-    } as any);
-
-    render(
-      <BrowserRouter>
-        <HomePage />
-      </BrowserRouter>
+  it('renders cases list when data loads successfully', async () => {
+    // Mock successful API response
+    server.use(
+      http.get('http://localhost:3000/trpc/case.list', () => {
+        return HttpResponse.json({
+          result: {
+            data: [
+              {
+                id: '1',
+                title: 'Test Case',
+                description: 'Test Description',
+                status: 'OPEN',
+                creator: { id: '1', name: 'John Doe', email: 'john@example.com' },
+                assignee: { id: '2', name: 'Jane Doe', email: 'jane@example.com' },
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+              },
+            ],
+          },
+        });
+      })
     );
-    expect(screen.getByText(/Test Case/i)).toBeInTheDocument();
-    expect(screen.getByText(/Test Description/i)).toBeInTheDocument();
+
+    renderWithTrpc(<HomePage />);
+
+    // Wait for data to load
+    await waitFor(() => {
+      expect(screen.getByText('Test Case')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('Test Description')).toBeInTheDocument();
+    expect(screen.getByText(/Status: OPEN/i)).toBeInTheDocument();
+    expect(screen.getByText(/Created by: John Doe/i)).toBeInTheDocument();
+    expect(screen.getByText(/Assigned to: Jane Doe/i)).toBeInTheDocument();
+  });
+
+  it('renders error state when API call fails', async () => {
+    // Mock error response
+    server.use(
+      http.get('http://localhost:3000/trpc/case.list', () => {
+        return HttpResponse.json(
+          {
+            error: {
+              message: 'Database connection failed',
+              code: -32603,
+            },
+          },
+          { status: 500 }
+        );
+      })
+    );
+
+    renderWithTrpc(<HomePage />);
+
+    // Wait for error message to appear
+    await waitFor(() => {
+      expect(screen.getByText(/Error loading cases/i)).toBeInTheDocument();
+    });
+  });
+
+  it('renders empty state when no cases exist', async () => {
+    // Mock empty response
+    server.use(
+      http.get('http://localhost:3000/trpc/case.list', () => {
+        return HttpResponse.json({
+          result: {
+            data: [],
+          },
+        });
+      })
+    );
+
+    renderWithTrpc(<HomePage />);
+
+    // Wait for loading to complete
+    await waitFor(() => {
+      expect(screen.queryByText(/Loading cases/i)).not.toBeInTheDocument();
+    });
+
+    // No cases should be rendered
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 });
+
