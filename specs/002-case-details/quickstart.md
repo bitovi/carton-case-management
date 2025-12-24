@@ -48,7 +48,7 @@ model Case {
   caseType     String
   customerName String
   comments     Comment[] @relation("CaseComments")
-  
+
   @@index([createdAt])
   @@index([status])
 }
@@ -68,6 +68,7 @@ npx prisma migrate dev --name add-comments-and-case-fields
 ```
 
 This will:
+
 - Create migration file
 - Apply migration to database
 - Regenerate Prisma Client types
@@ -188,6 +189,7 @@ main()
 ```
 
 Run seed:
+
 ```bash
 npm run db:seed --workspace=packages/server
 ```
@@ -206,7 +208,7 @@ import { TRPCError } from '@trpc/server';
 
 export const appRouter = router({
   // ... existing routes
-  
+
   cases: router({
     list: publicProcedure.query(async ({ ctx }) => {
       const cases = await ctx.prisma.case.findMany({
@@ -223,59 +225,55 @@ export const appRouter = router({
       return { cases, total: cases.length };
     }),
 
-    getById: publicProcedure
-      .input(getCaseByIdSchema)
-      .query(async ({ input, ctx }) => {
-        const caseData = await ctx.prisma.case.findUnique({
-          where: { id: input.id },
-          include: {
-            creator: { select: { id: true, name: true, email: true } },
-            assignee: { select: { id: true, name: true, email: true } },
-            comments: {
-              include: {
-                author: { select: { id: true, name: true, email: true } },
-              },
-              orderBy: { createdAt: 'asc' },
+    getById: publicProcedure.input(getCaseByIdSchema).query(async ({ input, ctx }) => {
+      const caseData = await ctx.prisma.case.findUnique({
+        where: { id: input.id },
+        include: {
+          creator: { select: { id: true, name: true, email: true } },
+          assignee: { select: { id: true, name: true, email: true } },
+          comments: {
+            include: {
+              author: { select: { id: true, name: true, email: true } },
             },
+            orderBy: { createdAt: 'asc' },
           },
-        });
-        
-        if (!caseData) {
-          throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: `Case not found: ${input.id}`,
-          });
-        }
-        
-        return caseData;
-      }),
+        },
+      });
 
-    addComment: publicProcedure
-      .input(createCommentSchema)
-      .mutation(async ({ input, ctx }) => {
-        // MVP: Use first user (no auth yet)
-        const author = await ctx.prisma.user.findFirst();
-        if (!author) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
-        
-        const comment = await ctx.prisma.comment.create({
-          data: {
-            content: input.content,
-            caseId: input.caseId,
-            authorId: author.id,
-          },
-          include: {
-            author: { select: { id: true, name: true, email: true } },
-          },
+      if (!caseData) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: `Case not found: ${input.id}`,
         });
-        
-        // Update case timestamp
-        await ctx.prisma.case.update({
-          where: { id: input.caseId },
-          data: { updatedAt: new Date() },
-        });
-        
-        return comment;
-      }),
+      }
+
+      return caseData;
+    }),
+
+    addComment: publicProcedure.input(createCommentSchema).mutation(async ({ input, ctx }) => {
+      // MVP: Use first user (no auth yet)
+      const author = await ctx.prisma.user.findFirst();
+      if (!author) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+
+      const comment = await ctx.prisma.comment.create({
+        data: {
+          content: input.content,
+          caseId: input.caseId,
+          authorId: author.id,
+        },
+        include: {
+          author: { select: { id: true, name: true, email: true } },
+        },
+      });
+
+      // Update case timestamp
+      await ctx.prisma.case.update({
+        where: { id: input.caseId },
+        data: { updatedAt: new Date() },
+      });
+
+      return comment;
+    }),
   }),
 });
 
@@ -285,6 +283,7 @@ export type AppRouter = typeof appRouter;
 ### 6. Create React Components
 
 **Component Structure**:
+
 ```
 packages/client/src/components/case-details/
 ├── CaseDetailsPage.tsx (page container)
@@ -299,13 +298,14 @@ packages/client/src/components/case-details/
 ```
 
 **Key Pattern - tRPC Query Hook**:
+
 ```typescript
 // In CaseDetailsPage.tsx
 import { trpc } from '@/lib/trpc';
 
 export function CaseDetailsPage() {
   const [selectedCaseId, setSelectedCaseId] = useState<string>();
-  
+
   const casesQuery = trpc.cases.list.useQuery();
   const caseDetailsQuery = trpc.cases.getById.useQuery(
     { id: selectedCaseId! },
@@ -328,6 +328,7 @@ export function CaseDetailsPage() {
 ```
 
 **Key Pattern - Mutation Hook**:
+
 ```typescript
 // In AddCommentForm.tsx
 import { trpc } from '@/lib/trpc';
@@ -392,6 +393,7 @@ npm run storybook
 ```
 
 ### Access Points
+
 - **Client**: http://localhost:5173
 - **Server**: http://localhost:3000
 - **Storybook**: http://localhost:6006
@@ -448,26 +450,27 @@ import { test, expect } from '@playwright/test';
 
 test('displays case details and allows adding comment', async ({ page }) => {
   await page.goto('/');
-  
+
   // Verify case list loads
   await expect(page.getByText('Insurance Claim Dispute')).toBeVisible();
-  
+
   // Click on a case
   await page.getByText('#CAS-242314-2124').click();
-  
+
   // Verify case details display
   await expect(page.getByText('Sarah Johnson')).toBeVisible();
-  
+
   // Add a comment
   await page.fill('[placeholder="Add a comment..."]', 'Test comment');
   await page.click('button:has-text("Submit")');
-  
+
   // Verify comment appears
   await expect(page.getByText('Test comment')).toBeVisible();
 });
 ```
 
 Run E2E tests:
+
 ```bash
 npm run test:e2e
 ```
@@ -500,18 +503,24 @@ After implementation, verify:
 ## Common Issues & Solutions
 
 ### Issue: Prisma types not updating
+
 **Solution**: Regenerate Prisma client
+
 ```bash
 cd packages/server
 npx prisma generate
 ```
 
 ### Issue: tRPC types not inferring
+
 **Solution**: Restart TypeScript server in VS Code
+
 - Cmd+Shift+P → "TypeScript: Restart TS Server"
 
 ### Issue: Comments not displaying
+
 **Solution**: Check createdAt ordering in query
+
 ```typescript
 comments: {
   orderBy: { createdAt: 'asc' }, // Oldest first
@@ -519,7 +528,9 @@ comments: {
 ```
 
 ### Issue: Seed data not showing
+
 **Solution**: Re-run seed script
+
 ```bash
 npm run db:seed --workspace=packages/server
 ```
@@ -539,14 +550,14 @@ After completing this feature:
 
 ## Key Files Reference
 
-| File | Purpose |
-|------|---------|
-| `packages/server/prisma/schema.prisma` | Database schema |
-| `packages/server/prisma/seed.ts` | Seed data |
-| `packages/server/src/router.ts` | tRPC API endpoints |
-| `packages/shared/src/types.ts` | Shared TypeScript types |
-| `packages/client/src/components/case-details/` | React components |
-| `tests/e2e/case-details.spec.ts` | E2E tests |
+| File                                           | Purpose                 |
+| ---------------------------------------------- | ----------------------- |
+| `packages/server/prisma/schema.prisma`         | Database schema         |
+| `packages/server/prisma/seed.ts`               | Seed data               |
+| `packages/server/src/router.ts`                | tRPC API endpoints      |
+| `packages/shared/src/types.ts`                 | Shared TypeScript types |
+| `packages/client/src/components/case-details/` | React components        |
+| `tests/e2e/case-details.spec.ts`               | E2E tests               |
 
 ---
 

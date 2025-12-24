@@ -4,16 +4,16 @@
   "type": "module",
   "main": "./src/index.ts",
   "scripts": {
-    "dev": "DATABASE_URL='file:./prisma/dev.db' node --import ./loader.mjs src/index.ts",
-    "start": "DATABASE_URL='file:./prisma/dev.db' node --import ./loader.mjs src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
     "typecheck": "tsc",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint 'src/**/*.ts'",
-    "db:generate": "DATABASE_URL='file:./prisma/dev.db' prisma generate",
-    "db:push": "DATABASE_URL='file:./prisma/dev.db' prisma db push",
-    "db:studio": "DATABASE_URL='file:./prisma/dev.db' prisma studio",
-    "db:seed": "DATABASE_URL='file:./prisma/dev.db' node --import ./loader.mjs prisma/seed.ts",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "db:seed": "tsx prisma/seed.ts",
     "db:setup": "npm run db:push && npm run db:seed"
   },
   "dependencies": {
@@ -32,6 +32,7 @@
     "@vitest/ui": "^2.1.8",
     "prisma": "^6.1.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "vitest": "^2.1.8"
   }
 }

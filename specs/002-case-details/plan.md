@@ -23,13 +23,13 @@ Build a case details view component that displays complete case information incl
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 ✅ **Type Safety First**: All code will use strict TypeScript, Prisma-generated types, tRPC for API contracts, Zod for validation  
 ✅ **API Contract Integrity**: tRPC router as source of truth, shared types in packages/shared, Zod schemas define contracts  
 ✅ **Test-Informed Development**: Unit tests for utilities/services, tRPC integration tests, Playwright E2E for case details page  
 ✅ **Component Development Standards**: Storybook stories required for all new components, Shadcn UI patterns, accessibility compliance  
-✅ **Architecture Compliance**: Monorepo structure maintained, client imports only from shared, Prisma as data model authority  
+✅ **Architecture Compliance**: Monorepo structure maintained, client imports only from shared, Prisma as data model authority
 
 **Status**: ✅ ALL GATES PASSED - No violations, all requirements align with constitution
 
@@ -99,9 +99,9 @@ tests/
 
 > **Fill ONLY if Constitution Check has violations that must be justified**
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| N/A | No violations | N/A |
+| Violation | Why Needed    | Simpler Alternative Rejected Because |
+| --------- | ------------- | ------------------------------------ |
+| N/A       | No violations | N/A                                  |
 
 ---
 
@@ -110,6 +110,7 @@ tests/
 See [research.md](research.md) for complete technology research and decisions.
 
 **Key Decisions**:
+
 - ✅ React 19 + tRPC + Prisma stack confirmed
 - ✅ Extend Prisma schema with Comment model
 - ✅ tRPC procedures with Zod validation
@@ -131,6 +132,7 @@ See [research.md](research.md) for complete technology research and decisions.
 See [data-model.md](data-model.md) for complete entity definitions and Prisma schema.
 
 **Changes**:
+
 - ✅ New Comment model with caseId, authorId, content, timestamps
 - ✅ Updated Case model with caseType, customerName, comments relation
 - ✅ Updated User model with comments relation
@@ -142,6 +144,7 @@ See [data-model.md](data-model.md) for complete entity definitions and Prisma sc
 See [contracts/case-api.md](contracts/case-api.md) for complete API documentation.
 
 **Endpoints**:
+
 - ✅ `cases.list` - Query: List all cases
 - ✅ `cases.getById` - Query: Get case with comments and relationships
 - ✅ `cases.addComment` - Mutation: Add comment to case
@@ -156,13 +159,13 @@ See [quickstart.md](quickstart.md) for step-by-step implementation instructions.
 
 ## Re-evaluated Constitution Check
 
-*Post-design validation*
+_Post-design validation_
 
 ✅ **Type Safety First**: Data model uses Prisma types, API uses tRPC, all validated with Zod  
 ✅ **API Contract Integrity**: tRPC contracts defined, shared types synchronized  
 ✅ **Test-Informed Development**: Test strategy defined (unit, integration, E2E)  
 ✅ **Component Development Standards**: Component structure defined with Storybook requirements  
-✅ **Architecture Compliance**: Monorepo structure maintained, no violations  
+✅ **Architecture Compliance**: Monorepo structure maintained, no violations
 
 **Status**: ✅ ALL GATES STILL PASSED - Design maintains constitutional compliance
 
@@ -175,6 +178,7 @@ See [quickstart.md](quickstart.md) for step-by-step implementation instructions.
 **Next Command**: `@speckit.tasks` to generate actionable task list
 
 **Artifacts Generated**:
+
 - ✅ [research.md](research.md) - Technology decisions and rationale
 - ✅ [data-model.md](data-model.md) - Database schema and type definitions
 - ✅ [contracts/case-api.md](contracts/case-api.md) - API endpoint specifications

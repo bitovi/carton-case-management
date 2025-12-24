@@ -23,12 +23,13 @@ Base namespace: `cases.*`
 **Type**: Query (idempotent, cacheable)
 
 **Input Schema**:
+
 ```typescript
 z.object({
   status: z.nativeEnum(CaseStatus).optional(),
   limit: z.number().min(1).max(100).default(50),
   offset: z.number().min(0).default(0),
-}).optional()
+}).optional();
 ```
 
 **Input Parameters**:
@@ -39,6 +40,7 @@ z.object({
 | offset | number | No | 0 | Pagination offset |
 
 **Response Type**:
+
 ```typescript
 {
   cases: Array<{
@@ -66,10 +68,12 @@ z.object({
 | total | number | Total count (for pagination) |
 
 **Errors**:
+
 - `BAD_REQUEST` (400): Invalid status enum value
 - `INTERNAL_SERVER_ERROR` (500): Database error
 
 **Example Usage**:
+
 ```typescript
 // Client
 const { data } = trpc.cases.list.useQuery({ limit: 10 });
@@ -108,10 +112,11 @@ list: publicProcedure
 **Type**: Query (idempotent, cacheable)
 
 **Input Schema**:
+
 ```typescript
 z.object({
   id: z.string().uuid('Invalid case ID'),
-})
+});
 ```
 
 **Input Parameters**:
@@ -120,6 +125,7 @@ z.object({
 | id | string (UUID) | Yes | Case identifier |
 
 **Response Type**:
+
 ```typescript
 {
   id: string;
@@ -158,11 +164,13 @@ z.object({
 **Response Fields**: See CaseWithComments interface in data-model.md
 
 **Errors**:
+
 - `BAD_REQUEST` (400): Invalid UUID format
 - `NOT_FOUND` (404): Case with given ID not found
 - `INTERNAL_SERVER_ERROR` (500): Database error
 
 **Example Usage**:
+
 ```typescript
 // Client
 const { data } = trpc.cases.getById.useQuery({ id: 'case-uuid' });
@@ -190,14 +198,14 @@ getById: publicProcedure
         },
       },
     });
-    
+
     if (!caseData) {
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: `Case with id ${input.id} not found`,
       });
     }
-    
+
     return caseData;
   }),
 ```
@@ -211,13 +219,15 @@ getById: publicProcedure
 **Type**: Mutation (creates resource, not idempotent)
 
 **Input Schema**:
+
 ```typescript
 z.object({
   caseId: z.string().uuid('Invalid case ID'),
-  content: z.string()
+  content: z
+    .string()
     .min(1, 'Comment cannot be empty')
     .max(5000, 'Comment too long (max 5000 characters)'),
-})
+});
 ```
 
 **Input Parameters**:
@@ -232,6 +242,7 @@ z.object({
 | userId | string | Authenticated user ID (from session/JWT) |
 
 **Response Type**:
+
 ```typescript
 {
   id: string;
@@ -244,25 +255,28 @@ z.object({
     id: string;
     name: string;
     email: string;
-  };
+  }
 }
 ```
 
 **Response Fields**: See CommentWithAuthor interface in data-model.md
 
 **Side Effects**:
+
 1. Creates new Comment record in database
 2. Updates Case.updatedAt timestamp
 3. Invalidates `cases.getById` cache for affected case
 4. Invalidates `cases.list` cache (updatedAt changed)
 
 **Errors**:
+
 - `BAD_REQUEST` (400): Invalid input (empty content, invalid UUID)
 - `NOT_FOUND` (404): Case with given ID not found
 - `UNAUTHORIZED` (401): No authenticated user in context
 - `INTERNAL_SERVER_ERROR` (500): Database error
 
 **Example Usage**:
+
 ```typescript
 // Client
 const mutation = trpc.cases.addComment.useMutation({
@@ -289,19 +303,19 @@ addComment: publicProcedure
         message: 'No users found in database',
       });
     }
-    
+
     // Verify case exists
     const caseExists = await prisma.case.findUnique({
       where: { id: input.caseId },
     });
-    
+
     if (!caseExists) {
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: `Case with id ${input.caseId} not found`,
       });
     }
-    
+
     // Create comment and update case timestamp
     const comment = await prisma.comment.create({
       data: {
@@ -315,13 +329,13 @@ addComment: publicProcedure
         },
       },
     });
-    
+
     // Update case timestamp
     await prisma.case.update({
       where: { id: input.caseId },
       data: { updatedAt: new Date() },
     });
-    
+
     return comment;
   }),
 ```
@@ -333,6 +347,7 @@ addComment: publicProcedure
 ### Standard Error Response
 
 All tRPC errors follow this structure:
+
 ```typescript
 {
   error: {
@@ -347,12 +362,12 @@ All tRPC errors follow this structure:
 
 ### Error Codes
 
-| Code | HTTP Status | Usage |
-|------|-------------|-------|
-| BAD_REQUEST | 400 | Invalid input, validation failure |
-| UNAUTHORIZED | 401 | Missing or invalid authentication |
-| NOT_FOUND | 404 | Resource doesn't exist |
-| INTERNAL_SERVER_ERROR | 500 | Database errors, unexpected failures |
+| Code                  | HTTP Status | Usage                                |
+| --------------------- | ----------- | ------------------------------------ |
+| BAD_REQUEST           | 400         | Invalid input, validation failure    |
+| UNAUTHORIZED          | 401         | Missing or invalid authentication    |
+| NOT_FOUND             | 404         | Resource doesn't exist               |
+| INTERNAL_SERVER_ERROR | 500         | Database errors, unexpected failures |
 
 ---
 
@@ -369,16 +384,19 @@ All tRPC errors follow this structure:
 ### Invalidation Rules
 
 **After `cases.addComment` mutation**:
+
 ```typescript
 utils.cases.getById.invalidate({ id: caseId }); // Specific case
 utils.cases.list.invalidate(); // List (updatedAt changed)
 ```
 
 **Automatic Refetch**:
+
 - List refetches when window regains focus (default React Query behavior)
 - Case details refetch when navigating back to same case
 
 **Cache TTL**:
+
 - `cases.list`: 1 minute stale time
 - `cases.getById`: 30 seconds stale time
 - Mutations: No caching
@@ -388,10 +406,12 @@ utils.cases.list.invalidate(); // List (updatedAt changed)
 ## Authentication & Authorization
 
 ### MVP Approach (Phase 1)
+
 - **Authentication**: Not implemented, use first user in database
 - **Authorization**: All users can view all cases, add comments to any case
 
 ### Future Enhancement (Post-MVP)
+
 - JWT-based authentication
 - Role-based access control (case worker, admin, viewer)
 - Case assignment restrictions
@@ -401,9 +421,11 @@ utils.cases.list.invalidate(); // List (updatedAt changed)
 ## Rate Limiting
 
 ### MVP Approach
+
 - No rate limiting implemented
 
 ### Future Enhancement
+
 - 100 requests per minute per user
 - Separate limits for queries vs mutations
 
@@ -416,6 +438,7 @@ utils.cases.list.invalidate(); // List (updatedAt changed)
 **Test File**: `packages/server/src/router.test.ts`
 
 **Required Tests**:
+
 ```typescript
 describe('cases router', () => {
   describe('cases.list', () => {
@@ -424,14 +447,14 @@ describe('cases router', () => {
     it('respects limit and offset for pagination');
     it('orders by updatedAt descending');
   });
-  
+
   describe('cases.getById', () => {
     it('returns case with all relationships');
     it('includes comments ordered by createdAt ascending');
     it('throws NOT_FOUND for invalid case ID');
     it('throws BAD_REQUEST for malformed UUID');
   });
-  
+
   describe('cases.addComment', () => {
     it('creates comment and returns with author');
     it('updates case updatedAt timestamp');

@@ -25,17 +25,20 @@ This document defines the data models, relationships, and validation rules for t
 | updatedAt | DateTime | Auto-updated | When comment was last modified |
 
 **Relationships**:
+
 - Belongs to one Case (many-to-one)
 - Belongs to one User as author (many-to-one)
 - Cascade delete when parent Case is deleted
 
 **Validation Rules**:
+
 - Content must not be empty (enforced by Zod schema)
 - Content max length 5000 characters
 - CaseId must reference existing Case
 - AuthorId must reference existing User
 
 **Indexes**:
+
 - `caseId` (for efficient comment queries per case)
 - `createdAt` (for chronological ordering)
 
@@ -52,12 +55,15 @@ This document defines the data models, relationships, and validation rules for t
 | customerName | String | Required | Name of customer associated with case |
 
 **New Relationships**:
+
 - Has many Comments (one-to-many, cascade delete)
 
 **Existing Attributes** (no changes):
+
 - id, title, description, status, createdBy, assignedTo, createdAt, updatedAt
 
 **Validation Rules**:
+
 - CaseType must be one of predefined types (Zod enum)
 - CustomerName required, min 2 chars, max 200 chars
 
@@ -68,9 +74,11 @@ This document defines the data models, relationships, and validation rules for t
 **Purpose**: Represents a case worker or system user
 
 **New Relationships**:
+
 - Has many Comments as author (one-to-many)
 
 **Existing Attributes** (no changes):
+
 - id, email, name, password, createdAt, updatedAt
 - Existing relationships: createdCases, assignedCases
 
@@ -217,7 +225,8 @@ import { z } from 'zod';
 
 export const createCommentSchema = z.object({
   caseId: z.string().uuid('Invalid case ID'),
-  content: z.string()
+  content: z
+    .string()
     .min(1, 'Comment cannot be empty')
     .max(5000, 'Comment too long (max 5000 characters)'),
 });
@@ -226,11 +235,13 @@ export const getCaseByIdSchema = z.object({
   id: z.string().uuid('Invalid case ID'),
 });
 
-export const listCasesSchema = z.object({
-  status: z.nativeEnum(CaseStatus).optional(),
-  limit: z.number().min(1).max(100).default(50),
-  offset: z.number().min(0).default(0),
-}).optional();
+export const listCasesSchema = z
+  .object({
+    status: z.nativeEnum(CaseStatus).optional(),
+    limit: z.number().min(1).max(100).default(50),
+    offset: z.number().min(0).default(0),
+  })
+  .optional();
 
 export type CreateCommentInput = z.infer<typeof createCommentSchema>;
 export type GetCaseByIdInput = z.infer<typeof getCaseByIdSchema>;
@@ -242,12 +253,14 @@ export type ListCasesInput = z.infer<typeof listCasesSchema>;
 ## State Transitions
 
 ### Comment Lifecycle
+
 1. **Created**: User submits comment form → Validation → Database insert
 2. **Persisted**: Comment saved with timestamp and author
 3. **Retrieved**: Loaded with case details, ordered by createdAt ASC
 4. **Deleted**: Only when parent Case is deleted (cascade)
 
 ### Case Updates
+
 - Adding comment updates Case.updatedAt timestamp
 - No status changes in this feature (future enhancement)
 
@@ -256,19 +269,22 @@ export type ListCasesInput = z.infer<typeof listCasesSchema>;
 ## Data Constraints & Business Rules
 
 ### Comment Rules
+
 1. Comments are immutable after creation (no editing in MVP)
 2. Comments cannot be orphaned (must belong to valid Case)
 3. Comments must have valid author (User)
 4. Comments display in chronological order (oldest first)
 5. Empty or whitespace-only comments rejected
 
-### Case Rules  
+### Case Rules
+
 1. Case must have caseType from predefined enum
 2. Case must have customerName
 3. Case can have 0 to unlimited comments
 4. Case updatedAt reflects last activity (including new comments)
 
 ### User Rules
+
 1. Users can comment on any case (no permission check in MVP)
 2. User name displayed with each comment
 
@@ -279,10 +295,12 @@ export type ListCasesInput = z.infer<typeof listCasesSchema>;
 ### Required Seed Data
 
 **2 Users**:
+
 1. Alex Morgan (assigned case worker)
 2. Jordan Lee (creator/secondary worker)
 
 **5 Cases** (matching Figma design):
+
 1. Insurance Claim Dispute - Sarah Johnson housing case
 2. Policy Coverage Inquiry - Medical coverage questions
 3. Premium Adjustment Request - Rate review
@@ -290,6 +308,7 @@ export type ListCasesInput = z.infer<typeof listCasesSchema>;
 5. Fraud Investigation - Suspicious activity
 
 **15-20 Comments**:
+
 - 3-5 comments per case
 - Mix of authors (Alex, Jordan)
 - Timestamps spread over last 7 days
