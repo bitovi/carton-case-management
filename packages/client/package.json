@@ -9,7 +9,6 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "test:e2e": "playwright test",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
@@ -35,7 +34,6 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3.2.2",
-    "@playwright/test": "^1.49.1",
     "@storybook/addon-essentials": "^8.5.0",
     "@storybook/addon-interactions": "^8.5.0",
     "@storybook/addon-links": "^8.5.0",

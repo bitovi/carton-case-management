@@ -16,7 +16,6 @@
 - Shadcn UI for design system
 - Storybook - components provide props override for data-fetching to simplify testing and storybook integration
 - vitest
-- e2e tests with Playwright
 
 ## Backend
 
@@ -30,3 +29,4 @@
 
 - Devcontainer for consistent development environment
 - ESLint and Prettier for code quality and formatting
+- e2e tests with Playwright

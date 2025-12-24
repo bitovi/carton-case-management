@@ -44,4 +44,4 @@ COPY . .
 RUN npm run build
 
 ENV NODE_ENV=test
-EXPOSE 3000 3001
+EXPOSE 5173 3001

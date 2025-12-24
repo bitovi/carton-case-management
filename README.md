@@ -1,3 +1,11 @@
+commands:
+
+- docker-compose -f docker-compose.local.yaml up --build
+- cmd+shift+p -> Dev Containers: Reopen in Container
+- npm install -> npm run setup -> npm run dev
+
+<!-- TODO: udpdate this readme, project has some changes since initial copilot spinup -->
+
 # Carton Case Management
 
 A modern case management application built with React, Node.js, tRPC, and Prisma.
@@ -47,7 +55,7 @@ The easiest way to get started is using the devcontainer:
 2. When prompted, click "Reopen in Container"
 3. Wait for the container to build and dependencies to install
 4. The application will automatically start at:
-   - Client: http://localhost:3000
+   - Client: http://localhost:5173
    - Server: http://localhost:3001
 
 ### Local Development

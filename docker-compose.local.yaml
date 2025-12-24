@@ -11,14 +11,13 @@ services:
       - server_node_modules:/workspaces/carton-case-management/packages/server/node_modules
       - shared_node_modules:/workspaces/carton-case-management/packages/shared/node_modules
     working_dir: /workspaces/carton-case-management
-    command: sleep infinity
+    command: sh -c "rm -f package-lock.json packages/*/package-lock.json && npm install && npm run setup && npm run dev"
     environment:
       - NODE_ENV=development
       - DATABASE_URL=file:./prisma/dev.db
     ports:
       - '5173:5173'
       - '3001:3001'
-      - '6006:6006'
 
 volumes:
   node_modules:

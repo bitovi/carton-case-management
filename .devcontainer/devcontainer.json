@@ -6,11 +6,11 @@
   "features": {
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
   },
-  "postCreateCommand": "npm run setup",
+  "postCreateCommand": "rm -f package-lock.json packages/*/package-lock.json && npm install && npm run setup",
   "postStartCommand": "nohup npm run dev > /tmp/dev.log 2>&1 &",
-  "forwardPorts": [3000, 3001],
+  "forwardPorts": [5173, 3001],
   "portsAttributes": {
-    "3000": {
+    "5173": {
       "label": "Client",
       "onAutoForward": "openPreview"
     },
