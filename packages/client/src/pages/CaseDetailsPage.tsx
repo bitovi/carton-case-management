@@ -1,26 +1,32 @@
+import { useParams } from 'react-router-dom';
 import { trpc } from '../lib/trpc';
 import { CaseDetailsView } from '../components/case-details/CaseDetailsView';
 
 export function CaseDetailsPage() {
-  // For MVP, we'll load the first case from the list
-  const { data: casesList, isLoading: isLoadingList } = trpc.cases.list.useQuery({ limit: 1 });
+  const { id } = useParams<{ id: string }>();
 
-  const firstCaseId = casesList?.cases[0]?.id;
+  // If no ID in URL, load the first case from the list
+  const { data: casesList, isLoading: isLoadingList } = trpc.cases.list.useQuery(
+    { limit: 1 },
+    { enabled: !id }
+  );
+
+  const caseId = id || casesList?.cases[0]?.id;
 
   const {
     data: caseData,
     isLoading: isLoadingCase,
     error,
   } = trpc.cases.getById.useQuery(
-    { id: firstCaseId! },
+    { id: caseId! },
     {
-      enabled: !!firstCaseId,
+      enabled: !!caseId,
     }
   );
 
   if (isLoadingList || isLoadingCase) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex items-center justify-center h-full">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading case details...</p>
@@ -31,7 +37,7 @@ export function CaseDetailsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex items-center justify-center h-full">
         <div className="text-center">
           <div className="text-red-600 text-6xl mb-4">⚠️</div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Error Loading Case</h2>
@@ -43,7 +49,7 @@ export function CaseDetailsPage() {
 
   if (!caseData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex items-center justify-center h-full">
         <div className="text-center">
           <div className="text-gray-400 text-6xl mb-4">📁</div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">No Cases Found</h2>
