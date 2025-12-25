@@ -1,6 +1,8 @@
 import { z } from 'zod';
+import { TRPCError } from '@trpc/server';
 import { router, publicProcedure } from './trpc.js';
 import { formatDate } from '@carton/shared';
+import { getClaimInput, getClaimsListInput, addCommentInput } from '@carton/shared';
 
 export const appRouter = router({
   health: publicProcedure.query(() => {
@@ -129,6 +131,113 @@ export const appRouter = router({
         where: { id: input.id },
       });
     }),
+  }),
+
+  // Claim detail procedures
+  getClaim: publicProcedure.input(getClaimInput).query(async ({ ctx, input }) => {
+    const claim = await ctx.prisma.case.findUnique({
+      where: { id: input.id },
+      include: {
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        comments: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
+      },
+    });
+
+    if (!claim) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Claim not found',
+      });
+    }
+
+    return claim;
+  }),
+
+  getClaimsList: publicProcedure.input(getClaimsListInput).query(async ({ ctx, input }) => {
+    const limit = input?.limit ?? 20;
+
+    return ctx.prisma.case.findMany({
+      select: {
+        id: true,
+        title: true,
+        caseNumber: true,
+        status: true,
+      },
+      orderBy: {
+        updatedAt: 'desc',
+      },
+      take: limit,
+    });
+  }),
+
+  addComment: publicProcedure.input(addCommentInput).mutation(async ({ ctx, input }) => {
+    // TODO: In production, get authorId from authenticated user context
+    // For now, we'll use the first user from the database
+    const firstUser = await ctx.prisma.user.findFirst();
+    if (!firstUser) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'No users found in database',
+      });
+    }
+
+    // Verify case exists
+    const caseExists = await ctx.prisma.case.findUnique({
+      where: { id: input.caseId },
+    });
+
+    if (!caseExists) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Case not found',
+      });
+    }
+
+    // Create comment
+    const comment = await ctx.prisma.comment.create({
+      data: {
+        content: input.content,
+        authorId: firstUser.id,
+        caseId: input.caseId,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return comment;
   }),
 });
 

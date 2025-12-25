@@ -3,6 +3,8 @@
 Auto-generated from all feature plans. Last updated: 2025-12-24
 
 ## Active Technologies
+- TypeScript 5.7+, Node.js (via monorepo setup) (002-claim-details)
+- SQLite (Prisma) - development database reset supported (002-claim-details)
 
 - TypeScript 5.x / Node.js 22+ + React 18, tRPC 11, @tanstack/react-query 5, Vite 6, Prisma (ORM) (001-trpc-react-query)
 
@@ -22,6 +24,7 @@ npm test && npm run lint
 TypeScript 5.x / Node.js 22+: Follow standard conventions
 
 ## Recent Changes
+- 002-claim-details: Added TypeScript 5.7+, Node.js (via monorepo setup)
 
 - 001-trpc-react-query: Added TypeScript 5.x / Node.js 22+ + React 18, tRPC 11, @tanstack/react-query 5, Vite 6, Prisma (ORM)
 

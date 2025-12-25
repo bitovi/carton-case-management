@@ -15,7 +15,7 @@ import { Link } from 'react-router-dom';
 export function CaseList() {
   // ✅ Destructure query result - provides loading, error, data states
   const { data: cases, isLoading, error, refetch } = trpc.case.list.useQuery();
-  
+
   // Handle loading state - show skeleton or spinner
   if (isLoading) {
     return (
@@ -24,7 +24,7 @@ export function CaseList() {
       </div>
     );
   }
-  
+
   // Handle error state - show user-friendly message with retry option
   if (error) {
     return (
@@ -38,7 +38,7 @@ export function CaseList() {
       </div>
     );
   }
-  
+
   // Handle empty state (optional but good UX)
   if (cases?.length === 0) {
     return (
@@ -50,17 +50,17 @@ export function CaseList() {
       </div>
     );
   }
-  
+
   // Success state - data is fully typed from tRPC router
   return (
     <div className="container">
       <h1 className="text-2xl font-bold mb-4">Cases</h1>
-      
+
       <div className="grid gap-4">
         {cases?.map((caseItem) => (
           <Link
             key={caseItem.id}
-            to={`/cases/${caseItem.id}`}
+            to={`/claims/${caseItem.id}`}
             className="block p-4 border rounded hover:shadow"
           >
             <h2 className="font-semibold">{caseItem.title}</h2>
@@ -95,11 +95,11 @@ export function CaseDetail({ caseId }: { caseId: string }) {
       refetchOnWindowFocus: false, // Don't refetch on window focus
     }
   );
-  
+
   if (isLoading) return <div>Loading case...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!caseItem) return <div>Case not found</div>;
-  
+
   return (
     <div>
       <h1>{caseItem.title}</h1>
@@ -123,9 +123,9 @@ export function Dashboard() {
     refetchInterval: 5000, // Refetch every 5 seconds
     refetchIntervalInBackground: false, // Stop refetching when tab not visible
   });
-  
+
   if (isLoading) return <div>Loading dashboard...</div>;
-  
+
   return (
     <div>
       <h1>Dashboard</h1>
@@ -149,7 +149,7 @@ const { data } = trpc.case.list.useQuery();
 
 // ✅ TypeScript catches errors at compile time
 const { data } = trpc.case.list.useQuery();
-data?.forEach(c => {
+data?.forEach((c) => {
   console.log(c.titl); // ❌ Error: Property 'titl' does not exist
   console.log(c.title); // ✅ OK
 });
@@ -170,7 +170,7 @@ trpc.case.getById.useQuery({ id: '123' }); // ✅ OK
 export function CaseComments({ caseId }: { caseId: string }) {
   // First query: get case details
   const { data: caseItem } = trpc.case.getById.useQuery({ id: caseId });
-  
+
   // Second query: get comments (only runs after case is loaded)
   const { data: comments, isLoading } = trpc.comment.list.useQuery(
     { caseId },
@@ -178,9 +178,9 @@ export function CaseComments({ caseId }: { caseId: string }) {
       enabled: !!caseItem, // Only fetch comments if case exists
     }
   );
-  
+
   if (isLoading) return <div>Loading comments...</div>;
-  
+
   return (
     <div>
       {comments?.map(comment => (
@@ -199,14 +199,14 @@ export function CaseComments({ caseId }: { caseId: string }) {
  */
 export function SearchResults() {
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   const { data: results, isFetching } = trpc.case.search.useQuery(
     { query: searchTerm },
     {
       enabled: searchTerm.length >= 3, // Only search with 3+ characters
     }
   );
-  
+
   return (
     <div>
       <input
