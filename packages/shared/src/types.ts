@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+// Re-export Prisma-generated types
+export { ClaimStatus } from '@prisma/client';
+
 // Common validation schemas
 export const emailSchema = z.string().email();
 export const passwordSchema = z.string().min(8);
@@ -13,6 +16,61 @@ export interface User {
   updatedAt: Date;
 }
 
+// Claim/Case types
+export interface Claim {
+  id: string;
+  title: string;
+  caseNumber: string;
+  description: string;
+  status: string; // Will be ClaimStatus from Prisma
+  customerName: string;
+  assignedTo: string | null;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Comment {
+  id: string;
+  content: string;
+  authorId: string;
+  caseId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Extended types for UI needs
+export interface CommentWithAuthor extends Comment {
+  author: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
+
+export interface ClaimWithDetails extends Claim {
+  creator: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  assignee: {
+    id: string;
+    name: string;
+    email: string;
+  } | null;
+  comments: CommentWithAuthor[];
+}
+
+// List view type (sidebar)
+export interface ClaimListItem {
+  id: string;
+  title: string;
+  caseNumber: string;
+  status: string; // Will be ClaimStatus from Prisma
+}
+
+// Legacy Case types (keeping for backward compatibility)
 export interface Case {
   id: string;
   title: string;
