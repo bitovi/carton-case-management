@@ -25,9 +25,7 @@ export function CommentList({ comments }: CommentListProps) {
   return (
     <div className="bg-white rounded-lg border border-gray-200">
       <div className="p-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900">
-          Comments ({comments.length})
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900">Comments ({comments.length})</h2>
       </div>
       <div className="divide-y divide-gray-200 px-4">
         {comments.map((comment) => (

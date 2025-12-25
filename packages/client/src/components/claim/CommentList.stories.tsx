@@ -16,8 +16,7 @@ type Story = StoryObj<typeof CommentList>;
 const mockComments = [
   {
     id: '1',
-    content:
-      'Initial assessment completed. Customer qualifies for emergency housing assistance.',
+    content: 'Initial assessment completed. Customer qualifies for emergency housing assistance.',
     author: { name: 'Alex Morgan' },
     createdAt: new Date('2025-11-29T11:55:00Z'),
   },
