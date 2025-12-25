@@ -12,7 +12,7 @@
     "test:watch": "vitest",
     "lint": "eslint 'src/**/*.ts'",
     "db:generate": "prisma generate",
-    "db:push": "prisma db push",
+    "db:push": "prisma db push --force-reset",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "db:setup": "npm run db:push && npm run db:seed"
@@ -22,6 +22,7 @@
     "@prisma/client": "^6.1.0",
     "@trpc/server": "^11.0.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.21.2",
     "zod": "^3.23.8"
   },
