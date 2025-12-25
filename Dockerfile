@@ -38,7 +38,7 @@ COPY --from=builder /app/packages/client/dist ./packages/client/dist
 COPY --from=builder /app/packages/client/dist /app/public
 
 ENV NODE_ENV=production
-EXPOSE 5173 3001 6006
+EXPOSE 5173 3001 6006 9323
 
 WORKDIR /app/packages/server
 

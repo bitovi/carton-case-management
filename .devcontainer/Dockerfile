@@ -34,10 +34,6 @@ RUN apt-get update && apt-get install -y \
     fonts-tlwg-loma-otf \
     fonts-unifont \
     fonts-wqy-zenhei \
-    libdrm-amdgpu1 \
-    libdrm-intel1 \
-    libdrm-nouveau2 \
-    libdrm-radeon1 \
     libelf1 \
     libfontenc1 \
     libgl1 \
@@ -75,6 +71,12 @@ RUN apt-get update && apt-get install -y \
     xfonts-utils \
     xserver-common \
     xvfb \
+    # Additional GTK/X11 dependencies for Playwright
+    libxcursor1 \
+    libgtk-3-0 \
+    libpangocairo-1.0-0 \
+    libcairo-gobject2 \
+    libgdk-pixbuf2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /workspaces/carton-case-management

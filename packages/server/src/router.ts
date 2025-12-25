@@ -7,10 +7,11 @@ import {
   createCommentSchema,
   CaseStatus,
 } from '@carton/shared';
+import { formatDate } from '@carton/shared';
 
 export const appRouter = router({
   health: publicProcedure.query(() => {
-    return { status: 'ok', timestamp: new Date().toISOString() };
+    return { status: 'ok', timestamp: new Date().toISOString(), formatted: formatDate(new Date()) };
   }),
 
   // User routes
