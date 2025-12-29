@@ -1,11 +1,12 @@
 import { Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';
+import { CasePage } from './pages/CasePage';
 
 function App() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<CasePage />} />
+        <Route path="/cases/:id" element={<CasePage />} />
       </Routes>
     </div>
   );

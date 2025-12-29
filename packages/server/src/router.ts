@@ -90,6 +90,20 @@ export const appRouter = router({
               email: true,
             },
           },
+          comments: {
+            include: {
+              author: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                },
+              },
+            },
+            orderBy: {
+              createdAt: 'desc',
+            },
+          },
         },
       });
     }),
@@ -113,8 +127,9 @@ export const appRouter = router({
           id: z.string(),
           title: z.string().optional(),
           description: z.string().optional(),
-          status: z.string().optional(),
-          assignedTo: z.string().optional(),
+          status: z.enum(['TO_DO', 'IN_PROGRESS', 'COMPLETED', 'CLOSED']).optional(),
+          customerName: z.string().optional(),
+          assigneeId: z.string().optional(),
         })
       )
       .mutation(async ({ ctx, input }) => {
@@ -129,6 +144,32 @@ export const appRouter = router({
         where: { id: input.id },
       });
     }),
+  }),
+
+  // Comment routes
+  comment: router({
+    create: publicProcedure
+      .input(
+        z.object({
+          caseId: z.string(),
+          content: z.string().min(1),
+          authorId: z.string(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        return ctx.prisma.comment.create({
+          data: input,
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        });
+      }),
   }),
 });
 

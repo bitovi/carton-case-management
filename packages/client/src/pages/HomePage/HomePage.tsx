@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import { trpc } from '../lib/trpc';
+import { trpc } from '@/lib/trpc';
 
-export default function HomePage() {
+export function HomePage() {
   // tRPC + React Query automatically caches this query
   // On first render: fetches from API
   // On subsequent renders: returns cached data instantly (staleTime: 5 minutes)

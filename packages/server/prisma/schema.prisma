@@ -10,6 +10,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum CaseStatus {
+  TO_DO
+  IN_PROGRESS
+  COMPLETED
+  CLOSED
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -18,20 +25,36 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  createdCases  Case[] @relation("CreatedBy")
-  assignedCases Case[] @relation("AssignedTo")
+  createdCases  Case[]    @relation("CreatedBy")
+  assignedCases Case[]    @relation("AssignedTo")
+  comments      Comment[]
 }
 
 model Case {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  status      String   @default("OPEN")
-  createdBy   String
-  assignedTo  String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String     @id @default(uuid())
+  caseNumber   String     @unique
+  title        String
+  description  String
+  customerName String
+  status       CaseStatus @default(TO_DO)
+  createdBy    String
+  assignedTo   String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
-  creator  User  @relation("CreatedBy", fields: [createdBy], references: [id])
-  assignee User? @relation("AssignedTo", fields: [assignedTo], references: [id])
+  creator  User      @relation("CreatedBy", fields: [createdBy], references: [id])
+  assignee User?     @relation("AssignedTo", fields: [assignedTo], references: [id])
+  comments Comment[]
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  caseId    String
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  case   Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id])
 }

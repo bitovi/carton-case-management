@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { BrowserRouter } from 'react-router-dom';
 import { http, HttpResponse } from 'msw';
-import { TrpcProvider } from '../lib/trpc';
-import HomePage from './HomePage';
+import { TrpcProvider } from '@/lib/trpc';
+import { HomePage } from './';
 
 const mockCases = [
   {
@@ -166,4 +166,3 @@ export const Empty: Story = {
     },
   },
 };
-
