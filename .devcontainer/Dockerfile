@@ -1,6 +1,6 @@
-FROM node:24-bookworm-slim
+FROM node:24-bookworm
 
-# Install system dependencies
+# Install system dependencies and Playwright dependencies
 RUN apt-get update && apt-get install -y \
     git \
     curl \
