@@ -15,7 +15,7 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
-    "db:setup": "npm run db:push && npm run db:seed"
+    "db:setup": "prisma db push --force-reset && npm run db:seed"
   },
   "dependencies": {
     "@carton/shared": "*",

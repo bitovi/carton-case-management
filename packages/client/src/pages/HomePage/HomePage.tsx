@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { trpc } from '../lib/trpc';
+import { trpc } from '@/lib/trpc';
 
 export default function HomePage() {
   const { data: cases, isLoading, error, refetch, isFetching } = trpc.case.list.useQuery();

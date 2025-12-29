@@ -2,10 +2,10 @@ import { Routes, Route } from 'react-router-dom';
 import { Folder } from 'lucide-react';
 import { Header } from './components/Header';
 import { MenuList } from './components/MenuList';
-import HomePage from './pages/HomePage';
+import { CasePage } from './pages/CasePage';
 
 const menuItems = [
-  { id: 'home', label: 'Cases', path: '/', icon: <Folder size={20} />, isActive: true }
+  { id: 'home', label: 'Cases', path: '/', icon: <Folder size={20} />, isActive: true },
 ];
 
 function App() {
@@ -16,7 +16,8 @@ function App() {
         <MenuList items={menuItems} />
         <main className="flex-1 p-6">
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<CasePage />} />
+            <Route path="/cases/:id" element={<CasePage />} />
           </Routes>
         </main>
       </div>
