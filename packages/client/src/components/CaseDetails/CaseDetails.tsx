@@ -3,10 +3,7 @@ import { trpc } from '@/lib/trpc';
 import { CaseInformation } from './components/CaseInformation';
 import { CaseComments } from './components/CaseComments';
 import { CaseEssentialDetails } from './components/CaseEssentialDetails';
-
-interface CaseDetailsProps {
-  onMenuClick?: () => void;
-}
+import type { CaseDetailsProps } from './types';
 
 export function CaseDetails({ onMenuClick }: CaseDetailsProps) {
   const { id } = useParams<{ id: string }>();

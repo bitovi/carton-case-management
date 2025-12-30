@@ -1,23 +1,8 @@
-import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-
-export interface MenuItem {
-  id: string;
-  label: string;
-  path: string;
-  icon?: ReactNode;
-  isActive?: boolean;
-}
-
-export interface MenuListProps {
-  items: MenuItem[];
-  className?: string;
-  onItemClick?: (item: MenuItem) => void;
-}
+import type { MenuListProps } from './types';
 
 export function MenuList({ items, className, onItemClick }: MenuListProps) {
   const activeItem = items.find((item) => item.isActive) || items[0];
-  const otherItems = items.filter((item) => item.id !== activeItem?.id);
 
   return (
     <nav className={`bg-[#fbfcfc] ${className || ''}`} aria-label="Main menu">

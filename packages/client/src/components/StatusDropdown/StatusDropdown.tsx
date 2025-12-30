@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { trpc } from '../../lib/trpc';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/ui/button';
 import type { StatusDropdownProps, CaseStatus } from './types';
 
 const STATUS_OPTIONS: { value: CaseStatus; label: string }[] = [

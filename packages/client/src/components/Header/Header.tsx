@@ -3,14 +3,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/ui/dropdown-menu';
 import CartonLogoSvg from '@/assets/carton-logo.svg';
-
-export interface HeaderProps {
-  className?: string;
-  userInitials?: string;
-  onAvatarClick?: () => void;
-}
+import type { HeaderProps } from './types';
 
 function CartonLogo({ size = 34 }: { size?: number }) {
   return <img src={CartonLogoSvg} alt="Carton Case Management" width={size} height={size} />;

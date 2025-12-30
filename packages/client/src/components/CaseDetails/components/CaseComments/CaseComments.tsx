@@ -1,18 +1,8 @@
 import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { trpc } from '@/lib/trpc';
-import { Textarea } from '@/components/ui/textarea';
-
-type CaseCommentsProps = {
-  caseData: {
-    id: string;
-    comments?: Array<{
-      id: string;
-      content: string;
-      createdAt: string;
-      author: { id: string; name: string };
-    }>;
-  };
-};
+import { Textarea } from '@/ui/textarea';
+import type { CaseCommentsProps } from './types';
 
 export function CaseComments({ caseData }: CaseCommentsProps) {
   const [newComment, setNewComment] = useState('');
@@ -73,7 +63,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!newComment.trim() || !currentUser) return;
 

@@ -1,14 +1,6 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-
-type CaseEssentialDetailsProps = {
-  caseData: {
-    customerName: string;
-    createdAt: string;
-    updatedAt: string;
-    assignee: { name: string } | null;
-  };
-};
+import { Button } from '@/ui/button';
+import type { CaseEssentialDetailsProps } from './types';
 
 export function CaseEssentialDetails({ caseData }: CaseEssentialDetailsProps) {
   const [isExpanded, setIsExpanded] = useState(true);

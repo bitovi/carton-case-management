@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/ui/button';
 
 export function HomePage() {
   const { data: cases, isLoading, error, refetch, isFetching } = trpc.case.list.useQuery();
@@ -61,8 +61,8 @@ export function HomePage() {
                   <p className="text-gray-600 mb-4">{caseItem.description}</p>
                   <div className="flex gap-4 text-sm text-gray-500">
                     <span>Status: {caseItem.status}</span>
-                    <span>Created by: {caseItem.createdBy}</span>
-                    {caseItem.assignedTo && <span>Assigned to: {caseItem.assignedTo}</span>}
+                    <span>Created by: {caseItem.creator.name}</span>
+                    {caseItem.assignee && <span>Assigned to: {caseItem.assignee.name}</span>}
                   </div>
                 </div>
               </div>

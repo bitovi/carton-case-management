@@ -1,21 +1,10 @@
 import { useState } from 'react';
 import { List } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
+import { Textarea } from '@/ui/textarea';
+import { Button } from '@/ui/button';
 import { StatusDropdown } from '../../../StatusDropdown';
-import type { CaseStatus } from '../../../StatusDropdown/types';
-
-type CaseInformationProps = {
-  caseId: string;
-  caseData: {
-    title: string;
-    caseNumber: string;
-    status: CaseStatus;
-    description: string;
-  };
-  onMenuClick?: () => void;
-};
+import type { CaseInformationProps } from './types';
 
 export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformationProps) {
   const [isEditing, setIsEditing] = useState(false);

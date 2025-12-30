@@ -3,7 +3,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { Home, Settings } from 'lucide-react';
-import { MenuList, MenuItem } from './MenuList';
+import { MenuList } from './MenuList';
+import type { MenuItem } from './types';
 
 describe('MenuList', () => {
   const mockItems: MenuItem[] = [

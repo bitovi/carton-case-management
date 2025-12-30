@@ -77,7 +77,6 @@ test.describe('Cache Behavior', () => {
     const caseList = page.locator('.flex.flex-col.gap-2 a');
     await expect(caseList.first()).toBeVisible({ timeout: 10000 });
 
-    const firstCaseHref = await caseList.first().getAttribute('href');
     const secondCase = caseList.nth(1);
 
     if (await secondCase.isVisible()) {
@@ -85,7 +84,7 @@ test.describe('Cache Behavior', () => {
       await page.waitForTimeout(200);
     }
 
-    await page.goto(firstCaseHref || '/');
+    await page.goto('/');
 
     await expect(caseList.first()).toBeVisible({ timeout: 500 });
   });

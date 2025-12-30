@@ -40,8 +40,8 @@ describe('HomePage', () => {
                 title: 'Test Case',
                 description: 'Test Description',
                 status: 'TO_DO',
-                createdBy: { id: '1', name: 'John Doe', email: 'john@example.com' },
-                assignedTo: { id: '2', name: 'Jane Doe', email: 'jane@example.com' },
+                creator: { id: '1', name: 'John Doe', email: 'john@example.com' },
+                assignee: { id: '2', name: 'Jane Doe', email: 'jane@example.com' },
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
               },
@@ -58,7 +58,7 @@ describe('HomePage', () => {
     });
 
     expect(screen.getByText('Test Description')).toBeInTheDocument();
-    expect(screen.getByText(/Status: OPEN/i)).toBeInTheDocument();
+    expect(screen.getByText(/Status: TO_DO/i)).toBeInTheDocument();
     expect(screen.getByText(/Created by: John Doe/i)).toBeInTheDocument();
     expect(screen.getByText(/Assigned to: Jane Doe/i)).toBeInTheDocument();
   });

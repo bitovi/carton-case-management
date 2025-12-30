@@ -1,11 +1,8 @@
 import { Link, useParams } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
-
-interface CaseListProps {
-  onCaseClick?: () => void;
-}
+import { Skeleton } from '@/ui/skeleton';
+import { Button } from '@/ui/button';
+import type { CaseListProps } from './types';
 
 export function CaseList({ onCaseClick }: CaseListProps) {
   const { id: activeId } = useParams<{ id: string }>();
