@@ -1,9 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { StatusDropdown } from './StatusDropdown';
-import { createTrpcWrapper } from '../../test/utils';
 
-// Mock the trpc hooks
 vi.mock('../../lib/trpc', () => ({
   trpc: {
     case: {
@@ -26,17 +24,13 @@ vi.mock('../../lib/trpc', () => ({
 
 describe('StatusDropdown', () => {
   it('renders current status', () => {
-    render(<StatusDropdown caseId="1" currentStatus="TO_DO" />, {
-      wrapper: createTrpcWrapper(),
-    });
+    render(<StatusDropdown caseId="1" currentStatus="TO_DO" />);
 
     expect(screen.getByText('To Do')).toBeInTheDocument();
   });
 
   it('opens dropdown when clicked', async () => {
-    render(<StatusDropdown caseId="1" currentStatus="TO_DO" />, {
-      wrapper: createTrpcWrapper(),
-    });
+    render(<StatusDropdown caseId="1" currentStatus="TO_DO" />);
 
     const button = screen.getByText('To Do');
     fireEvent.click(button);
@@ -49,14 +43,12 @@ describe('StatusDropdown', () => {
   });
 
   it('displays all status options', async () => {
-    render(<StatusDropdown caseId="1" currentStatus="TO_DO" />, {
-      wrapper: createTrpcWrapper(),
-    });
+    render(<StatusDropdown caseId="1" currentStatus="TO_DO" />);
 
     fireEvent.click(screen.getByText('To Do'));
 
     await waitFor(() => {
-      expect(screen.getAllByText('To Do')).toHaveLength(2); // Button + option
+      expect(screen.getAllByText('To Do')).toHaveLength(2);
       expect(screen.getByText('In Progress')).toBeInTheDocument();
       expect(screen.getByText('Completed')).toBeInTheDocument();
       expect(screen.getByText('Closed')).toBeInTheDocument();

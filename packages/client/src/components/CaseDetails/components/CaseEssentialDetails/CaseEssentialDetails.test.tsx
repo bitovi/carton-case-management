@@ -4,7 +4,15 @@ import { CaseEssentialDetails } from './CaseEssentialDetails';
 
 describe('CaseEssentialDetails', () => {
   it('renders without crashing', () => {
-    render(<CaseEssentialDetails />);
-    expect(screen.getByText('Case Essential Details Placeholder')).toBeInTheDocument();
+    const mockCaseData = {
+      customerName: 'Test Customer',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      assignee: { name: 'Test Assignee' },
+    };
+    
+    render(<CaseEssentialDetails caseData={mockCaseData} />);
+    expect(screen.getByText('Essential Details')).toBeInTheDocument();
+    expect(screen.getByText('Test Customer')).toBeInTheDocument();
   });
 });

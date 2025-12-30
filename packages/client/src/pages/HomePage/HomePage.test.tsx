@@ -3,7 +3,7 @@ import { screen, waitFor } from '@testing-library/react';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 import HomePage from './HomePage';
-import { renderWithTrpc } from '../test/utils';
+import { renderWithTrpc } from '../../test/utils';
 
 const server = setupServer();
 
