@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 type CaseEssentialDetailsProps = {
   caseData: {
@@ -14,9 +15,10 @@ export function CaseEssentialDetails({ caseData }: CaseEssentialDetailsProps) {
 
   return (
     <div className="w-full lg:w-[200px] flex flex-col gap-3">
-      <button
+      <Button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center justify-between py-4 w-full text-left"
+        variant="ghost"
+        className="flex items-center justify-between py-4 w-full h-auto"
       >
         <h3 className="text-sm font-semibold">Essential Details</h3>
         <svg
@@ -34,7 +36,7 @@ export function CaseEssentialDetails({ caseData }: CaseEssentialDetailsProps) {
             strokeLinejoin="round"
           />
         </svg>
-      </button>
+      </Button>
       {isExpanded && (
         <>
           <div className="flex flex-col gap-1">

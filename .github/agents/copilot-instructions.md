@@ -27,7 +27,7 @@ TypeScript 5.x / Node.js 22+: Follow standard conventions
 ## Coding Standards
 
 - When creating new React files ensure to follow the details specified in .github/prompts/modlet.prompt.md.
-- No tsx or tx files should have inline comments.
+- No tsx or ts files should have inline comments.
 - All styling should be done using Tailwind CSS classes in an external CSS file.
 - Responsive designing should be implemented using Tailwind CSS utilities.
 

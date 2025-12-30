@@ -7,7 +7,7 @@
 All code must be strictly typed using TypeScript with no `any` types unless explicitly justified and documented. Type safety extends end-to-end:
 
 - **Prisma Schema as Source of Truth**: All data models defined in `packages/server/prisma/schema.prisma` - this is the single source of truth for database entities
-- **Shared Types Package**: API contracts and domain types defined in `packages/shared`, derived from Prisma models
+- **Shared Types Package**: API contracts and domain types defined in `packages/shared`, with a separate file for each functionality or feature area
 - **tRPC Integration**: Type-safe API layer ensuring compile-time contract verification between client and server
 - **Zod Validation**: Runtime validation schemas for all API inputs and critical data structures
 - **Prisma Type Generation**: Database schema changes automatically propagate types throughout the application
@@ -21,7 +21,7 @@ All API changes must maintain contract integrity across the full stack:
 - **Schema-First Design**: Zod schemas define contracts before implementation
 - **Breaking Change Protocol**: MAJOR version bump required for breaking changes; migration path documented
 - **Contract Testing**: API contracts validated through integration tests
-- **Shared Types Sync**: Changes to API contracts must update `packages/shared/src/types.ts` simultaneously
+- **Shared Types Sync**: Changes to API contracts must update the corresponding type files in `packages/shared/src/` simultaneously, with separate files per functionality
 
 ### III. Test-Informed Development (NON-NEGOTIABLE)
 
@@ -38,6 +38,7 @@ All features must be properly tested, with testing as a core part of development
 
 All UI components must follow the established development workflow:
 
+- **Component Library Usage (STRICTLY ENFORCED)**: All component changes and additions MUST use the existing component library (Shadcn UI) and its functionalities - never create custom implementations when library components exist
 - **Storybook Required**: Every new component must have a corresponding `.stories.tsx` file
 - **Story Coverage**: Stories must demonstrate all component variants, states, and props
 - **Isolated Development**: Components must be testable in isolation with prop overrides for data dependencies
@@ -63,6 +64,7 @@ Critical user flows must have corresponding Playwright E2E tests:
 - **Workspace Dependencies**: Use npm workspaces for inter-package dependencies
 - **Data Model Authority**: All data models must be defined in Prisma schema (`packages/server/prisma/schema.prisma`)
 - **Database Migrations**: Prisma migrations required for all schema changes - never modify database directly
+- **Shared Types Organization (STRICTLY ENFORCED)**: Any types shared between client and server MUST be placed in `packages/shared/src/` with separate files per functionality - never duplicate types across packages or combine unrelated types in a single file
 
 ### Code Quality
 

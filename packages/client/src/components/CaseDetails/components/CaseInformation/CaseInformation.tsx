@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { List } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import { StatusDropdown } from '../../../StatusDropdown';
 import type { CaseStatus } from '../../../StatusDropdown/types';
 
@@ -55,13 +56,15 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
     <div className="flex flex-col gap-4">
       {/* Mobile: Menu button + Title */}
       <div className="flex items-start gap-4 lg:hidden w-full">
-        <button
+        <Button
           onClick={onMenuClick}
-          className="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-[#e8feff] border border-gray-300 rounded-lg shadow-sm hover:bg-[#bcecef] transition-colors"
+          variant="outline"
+          size="icon"
+          className="flex-shrink-0 w-9 h-9 bg-[#e8feff] border-gray-300 shadow-sm hover:bg-[#bcecef]"
           aria-label="Open case list"
         >
           <List size={16} className="text-gray-700" />
-        </button>
+        </Button>
         <div className="flex flex-col gap-1 flex-1 min-w-0">
           <h1 className="text-xl font-semibold truncate">{caseData.title}</h1>
           <p className="text-base font-semibold text-gray-600">#{caseData.caseNumber}</p>
@@ -102,20 +105,21 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
               autoFocus
             />
             <div className="flex gap-2 mt-4">
-              <button
+              <Button
                 onClick={handleSave}
                 disabled={updateCase.isPending}
-                className="bg-[#00848b] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#006b72] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-[#00848b] text-white hover:bg-[#006b72]"
               >
                 {updateCase.isPending ? 'Saving...' : 'Save'}
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleCancel}
                 disabled={updateCase.isPending}
-                className="bg-white text-[#4c5b5c] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                variant="outline"
+                className="text-[#4c5b5c]"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         )}

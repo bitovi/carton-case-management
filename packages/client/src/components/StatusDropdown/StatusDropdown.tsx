@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { trpc } from '../../lib/trpc';
+import { Button } from '@/components/ui/button';
 import type { StatusDropdownProps, CaseStatus } from './types';
 
 const STATUS_OPTIONS: { value: CaseStatus; label: string }[] = [
@@ -74,10 +75,11 @@ export function StatusDropdown({ caseId, currentStatus }: StatusDropdownProps) {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <button
+      <Button
         onClick={() => setIsOpen(!isOpen)}
         disabled={updateCaseMutation.isPending}
-        className="px-3 py-1.5 bg-gray-200 rounded-full text-sm font-semibold flex items-center gap-1.5 flex-shrink-0 hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        variant="secondary"
+        className="px-3 py-1.5 rounded-full text-sm font-semibold flex items-center gap-1.5 flex-shrink-0"
       >
         {currentLabel}
         <svg
@@ -95,20 +97,21 @@ export function StatusDropdown({ caseId, currentStatus }: StatusDropdownProps) {
             strokeLinejoin="round"
           />
         </svg>
-      </button>
+      </Button>
 
       {isOpen && (
         <div className="absolute top-full mt-1 right-0 bg-white border border-gray-300 rounded-lg shadow-lg z-10 min-w-[150px]">
           {STATUS_OPTIONS.map((option) => (
-            <button
+            <Button
               key={option.value}
               onClick={() => handleStatusChange(option.value)}
-              className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 first:rounded-t-lg last:rounded-b-lg ${
+              variant="ghost"
+              className={`w-full justify-start px-4 py-2 text-sm first:rounded-t-lg last:rounded-b-lg h-auto ${
                 option.value === currentStatus ? 'bg-gray-50 font-semibold' : ''
               }`}
             >
               {option.label}
-            </button>
+            </Button>
           ))}
         </div>
       )}

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
+import { Button } from '@/components/ui/button';
 
 export default function HomePage() {
   const { data: cases, isLoading, error, refetch, isFetching } = trpc.case.list.useQuery();
@@ -23,12 +24,9 @@ export default function HomePage() {
             <p className="text-lg font-semibold mb-2">Error loading cases</p>
             <p className="text-sm">{error.message}</p>
           </div>
-          <button
-            onClick={() => refetch()}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-          >
+          <Button onClick={() => refetch()}>
             Retry
-          </button>
+          </Button>
         </div>
       </div>
     );

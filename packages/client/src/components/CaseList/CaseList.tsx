@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 
 interface CaseListProps {
   onCaseClick?: () => void;
@@ -8,7 +9,7 @@ interface CaseListProps {
 
 export function CaseList({ onCaseClick }: CaseListProps) {
   const { id: activeId } = useParams<{ id: string }>();
-  const { data: cases, isLoading } = trpc.case.list.useQuery();
+  const { data: cases, isLoading, error, refetch } = trpc.case.list.useQuery();
 
   if (isLoading) {
     return (
@@ -21,6 +22,30 @@ export function CaseList({ onCaseClick }: CaseListProps) {
             </div>
           </div>
         ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col gap-4 w-full lg:w-[200px] p-4">
+        <div className="text-center">
+          <p className="text-red-600 font-semibold mb-2">Error loading cases</p>
+          <p className="text-sm text-gray-600 mb-4">{error.message}</p>
+          <Button onClick={() => refetch()} size="sm">
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!cases || cases.length === 0) {
+    return (
+      <div className="flex flex-col gap-2 w-full lg:w-[200px] p-4">
+        <div className="text-center text-gray-500">
+          <p className="text-sm">No cases found</p>
+        </div>
       </div>
     );
   }
