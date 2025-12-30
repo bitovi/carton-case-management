@@ -14,19 +14,13 @@ type CaseCommentsProps = {
   };
 };
 
-// Hardcoded first user - in production this would come from auth
-const CURRENT_USER = {
-  id: '', // Will be fetched from users list
-  name: 'Alex Morgan',
-};
-
 export function CaseComments({ caseData }: CaseCommentsProps) {
   const [newComment, setNewComment] = useState('');
   const utils = trpc.useUtils();
 
-  // Fetch first user to use as current user
+  // Fetch first user to use as current user (in production this would come from auth)
   const { data: users } = trpc.user.list.useQuery();
-  const currentUser = users?.[0] || CURRENT_USER;
+  const currentUser = users?.[0];
 
   const createCommentMutation = trpc.comment.create.useMutation({
     onMutate: async (variables) => {
@@ -37,15 +31,18 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
       const previousCase = utils.case.getById.getData({ id: caseData.id });
 
       // Optimistically add comment to cache
-      if (previousCase) {
+      if (previousCase && currentUser) {
         const optimisticComment = {
           id: `temp-${Date.now()}`,
           content: variables.content,
           createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          caseId: caseData.id,
+          authorId: currentUser.id,
           author: {
             id: currentUser.id,
             name: currentUser.name,
-            email: currentUser.email || '',
+            email: currentUser.email,
           },
         };
 
@@ -78,7 +75,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newComment.trim() || !currentUser.id) return;
+    if (!newComment.trim() || !currentUser) return;
 
     createCommentMutation.mutate({
       caseId: caseData.id,

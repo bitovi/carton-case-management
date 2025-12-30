@@ -38,7 +38,7 @@ export const appRouter = router({
       .input(
         z
           .object({
-            status: z.string().optional(),
+            status: z.enum(['TO_DO', 'IN_PROGRESS', 'COMPLETED', 'CLOSED']).optional(),
             assignedTo: z.string().optional(),
           })
           .optional()
@@ -112,6 +112,8 @@ export const appRouter = router({
           description: z.string().min(1),
           createdBy: z.string(),
           assignedTo: z.string().optional(),
+          caseNumber: z.string(),
+          customerName: z.string(),
         })
       )
       .mutation(async ({ ctx, input }) => {

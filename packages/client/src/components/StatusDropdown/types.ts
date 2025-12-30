@@ -1,4 +1,6 @@
-export type CaseStatus = 'TO_DO' | 'IN_PROGRESS' | 'COMPLETED' | 'CLOSED';
+import type { CaseStatus } from '@carton/server/src/index';
+
+export type { CaseStatus };
 
 export interface StatusDropdownProps {
   caseId: string;

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll, afterEach, afterAll } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
-import HomePage from './HomePage';
+import { HomePage } from './HomePage';
 import { renderWithTrpc } from '../../test/utils';
 
 const server = setupServer();
@@ -21,9 +21,9 @@ describe('HomePage', () => {
     );
 
     renderWithTrpc(<HomePage />);
-    
+
     expect(screen.getByText(/Loading cases/i)).toBeInTheDocument();
-    
+
     await waitFor(() => {
       expect(screen.queryByText(/Loading cases/i)).not.toBeInTheDocument();
     });
@@ -39,9 +39,9 @@ describe('HomePage', () => {
                 id: '1',
                 title: 'Test Case',
                 description: 'Test Description',
-                status: 'OPEN',
-                creator: { id: '1', name: 'John Doe', email: 'john@example.com' },
-                assignee: { id: '2', name: 'Jane Doe', email: 'jane@example.com' },
+                status: 'TO_DO',
+                createdBy: { id: '1', name: 'John Doe', email: 'john@example.com' },
+                assignedTo: { id: '2', name: 'Jane Doe', email: 'jane@example.com' },
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
               },
@@ -105,4 +105,3 @@ describe('HomePage', () => {
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 });
-

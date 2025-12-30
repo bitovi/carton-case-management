@@ -5,6 +5,7 @@ import { appRouter } from './router.js';
 import { createContext } from './context.js';
 
 export type { AppRouter } from './router.js';
+export type { CaseStatus } from '@prisma/client';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
