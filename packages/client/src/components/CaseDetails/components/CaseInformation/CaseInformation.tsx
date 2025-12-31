@@ -1,14 +1,23 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { List } from 'lucide-react';
+import { type Descendant } from 'slate';
 import { trpc } from '@/lib/trpc';
-import { Textarea } from '@/ui/textarea';
 import { Button } from '@/ui/button';
 import { StatusDropdown } from '../../../StatusDropdown';
+import { RichTextEditor } from '../../../RichText/RichTextEditor';
+import { RichTextRenderer } from '../../../RichText/RichTextRenderer';
+import { serializeToJSON, deserializeFromJSON } from '../../../RichText/utils/serialization';
 import type { CaseInformationProps } from './types';
 
 export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformationProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedDescription, setEditedDescription] = useState(caseData.description);
+
+  // Parse the description from JSON string to Slate document
+  const initialValue = useMemo(
+    () => deserializeFromJSON(caseData.description),
+    [caseData.description]
+  );
+  const [editedDescription, setEditedDescription] = useState<Descendant[]>(initialValue);
 
   const utils = trpc.useUtils();
   const updateCase = trpc.case.update.useMutation({
@@ -20,24 +29,22 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
     },
     onError: (error) => {
       console.error('Failed to update case description:', error);
-      alert('Failed to save changes. Please try again.');
+      alert(`Failed to save changes: ${error.message}`);
     },
   });
 
   const handleSave = () => {
-    if (editedDescription.trim() === '') {
-      alert('Description cannot be empty');
-      return;
-    }
+    // Serialize the Slate document to JSON string
+    const jsonDescription = serializeToJSON(editedDescription);
 
     updateCase.mutate({
       id: caseId,
-      description: editedDescription,
+      description: jsonDescription,
     });
   };
 
   const handleCancel = () => {
-    setEditedDescription(caseData.description);
+    setEditedDescription(initialValue);
     setIsEditing(false);
   };
 
@@ -79,19 +86,20 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
         <h2 className="text-base font-semibold">Case Description</h2>
 
         {!isEditing ? (
-          <p
+          <div
             className="text-sm text-gray-700 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors"
             onClick={() => setIsEditing(true)}
           >
-            {caseData.description}
-          </p>
+            <RichTextRenderer value={initialValue} />
+          </div>
         ) : (
           <div className="flex flex-col">
-            <Textarea
+            <RichTextEditor
               value={editedDescription}
-              onChange={(e) => setEditedDescription(e.target.value)}
-              className="min-h-[76px] resize-y"
+              onChange={setEditedDescription}
               autoFocus
+              onSave={handleSave}
+              className="min-h-[76px]"
             />
             <div className="flex gap-2 mt-4">
               <Button

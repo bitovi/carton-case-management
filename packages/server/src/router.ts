@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { router, publicProcedure } from './trpc.js';
-import { formatDate } from '@carton/shared';
+import { formatDate, richTextDocumentSchema, serializeToPlainText } from '@carton/shared';
+import { TRPCError } from '@trpc/server';
 
 export const appRouter = router({
   health: publicProcedure.query(() => {
@@ -134,6 +135,47 @@ export const appRouter = router({
       )
       .mutation(async ({ ctx, input }) => {
         const { id, ...data } = input;
+
+        // Validate rich text if description is provided
+        if (data.description) {
+          try {
+            // Parse JSON to rich text document
+            const parsed = JSON.parse(data.description);
+
+            // Validate structure with Zod schema
+            const validated = richTextDocumentSchema.parse(parsed);
+
+            // Count characters (plain text only, no formatting)
+            const charCount = serializeToPlainText(validated).length;
+
+            // Enforce 10,000 character hard limit
+            if (charCount > 10000) {
+              throw new TRPCError({
+                code: 'BAD_REQUEST',
+                message: `Description exceeds 10,000 character limit (${charCount} characters)`,
+              });
+            }
+
+            // Check if empty
+            if (charCount === 0) {
+              throw new TRPCError({
+                code: 'BAD_REQUEST',
+                message: 'Description cannot be empty',
+              });
+            }
+          } catch (error) {
+            // Re-throw TRPCErrors as-is
+            if (error instanceof TRPCError) {
+              throw error;
+            }
+            // Handle JSON parse errors and Zod validation errors
+            throw new TRPCError({
+              code: 'BAD_REQUEST',
+              message: 'Invalid rich text format',
+            });
+          }
+        }
+
         return ctx.prisma.case.update({
           where: { id },
           data,
