@@ -41,6 +41,7 @@ All UI components must follow the established development workflow:
 - **Component Library Usage (STRICTLY ENFORCED)**: All component changes and additions MUST follow this hierarchy: (1) Use existing components from `packages/client/src/ui/` first, (2) If needed component doesn't exist locally, add it from Shadcn UI component registry, (3) Only create custom components when Shadcn UI does not provide that functionality. All new components added to the ui library must adhere to the Figma design system specifications for that component type.
 - **Storybook Required**: Every new component must have a corresponding `.stories.tsx` file
 - **Story Coverage**: Stories must demonstrate all component variants, states, and props
+- **Story Verification**: All existing and new stories must be checked for errors by verifying the output for each story in a simple browser
 - **Isolated Development**: Components must be testable in isolation with prop overrides for data dependencies
 - **Shadcn UI Integration**: Use Shadcn UI patterns for consistency
 - **Accessibility**: Components must meet WCAG 2.1 AA standards
@@ -100,11 +101,11 @@ Critical user flows must have corresponding Playwright E2E tests:
 
 ### Quality Gates
 
-- **All Tests Pass**: Unit, integration, and E2E tests must pass
+- **All Tests Pass**: Every unit, integration, and E2E test must pass - including both newly added tests and the complete existing test suite
 - **Type Safety**: No TypeScript errors
 - **Linting Clean**: ESLint checks pass
 - **Formatting**: Prettier formatting applied
-- **Storybook Builds**: Component stories render correctly
+- **Storybook Quality**: All component stories must build and render without errors - both new and existing stories
 - **No Console Errors**: Clean browser console in dev mode
 
 ## Governance
