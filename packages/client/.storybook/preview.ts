@@ -12,6 +12,24 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
+    viewport: {
+      viewports: {
+        mobile1: {
+          name: 'Mobile',
+          styles: {
+            width: '375px',
+            height: '667px',
+          },
+        },
+        desktop: {
+          name: 'Desktop',
+          styles: {
+            width: '1440px',
+            height: '900px',
+          },
+        },
+      },
+    },
   },
   loaders: [mswLoader],
 };

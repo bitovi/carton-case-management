@@ -50,19 +50,30 @@ test.describe('CasePage', () => {
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
     const firstUrl = page.url();
+    const firstUrlId = firstUrl.split('/cases/')[1];
 
     const caseList = page.locator('.flex.flex-col.gap-2 a');
     await expect(caseList.first()).toBeVisible({ timeout: 10000 });
 
-    const secondCase = caseList.nth(1);
-    if (await secondCase.isVisible()) {
-      await secondCase.click();
-
-      await page.waitForTimeout(500);
-
-      const secondUrl = page.url();
-      expect(secondUrl).not.toBe(firstUrl);
+    const caseCount = await caseList.count();
+    if (caseCount < 2) {
+      test.skip();
     }
+
+    const secondCase = caseList.nth(1);
+    const secondCaseHref = await secondCase.getAttribute('href');
+    const secondCaseId = secondCaseHref?.split('/cases/')[1];
+
+    if (secondCaseId === firstUrlId) {
+      test.skip();
+    }
+    
+    await secondCase.click();
+    await page.waitForURL(new RegExp(`/cases/${secondCaseId}`), { timeout: 5000 });
+
+    const secondUrl = page.url();
+    expect(secondUrl).not.toBe(firstUrl);
+    expect(secondUrl).toContain(secondCaseId || '');
   });
 
   test('should display case information section', async ({ page }) => {
@@ -143,19 +154,15 @@ test.describe('CasePage', () => {
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
-    const menuButton = page
-      .getByRole('button')
-      .filter({ has: page.locator('svg') })
-      .first();
-    if (await menuButton.isVisible()) {
-      await menuButton.click();
+    const menuButton = page.getByRole('button', { name: 'Open case list' });
+    await expect(menuButton).toBeVisible({ timeout: 5000 });
+    await menuButton.click();
 
-      const sheet = page.locator('.fixed.bottom-0.left-0.right-0').first();
-      await expect(sheet).toBeVisible({ timeout: 5000 });
+    const sheet = page.locator('[role="dialog"],.fixed.bottom-0.left-0.right-0').last();
+    await expect(sheet).toBeVisible({ timeout: 5000 });
 
-      const caseListInSheet = sheet.locator('.flex.flex-col.gap-2 a').first();
-      await expect(caseListInSheet).toBeVisible();
-    }
+    const caseListInSheet = sheet.locator('.flex.flex-col.gap-2 a').first();
+    await expect(caseListInSheet).toBeVisible();
   });
 
   test('should close mobile sheet after selecting case', async ({ page }) => {
@@ -165,23 +172,18 @@ test.describe('CasePage', () => {
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
-    const menuButton = page
-      .getByRole('button')
-      .filter({ has: page.locator('svg') })
-      .first();
-    if (await menuButton.isVisible()) {
-      await menuButton.click();
+    const menuButton = page.getByRole('button', { name: 'Open case list' });
+    await expect(menuButton).toBeVisible({ timeout: 5000 });
+    await menuButton.click();
 
-      const sheet = page.locator('.fixed.bottom-0.left-0.right-0').first();
-      await expect(sheet).toBeVisible({ timeout: 5000 });
+    const sheet = page.locator('[role="dialog"],.fixed.bottom-0.left-0.right-0').last();
+    await expect(sheet).toBeVisible({ timeout: 5000 });
 
-      const secondCase = sheet.locator('.flex.flex-col.gap-2 a').nth(1);
-      if (await secondCase.isVisible()) {
-        await secondCase.click();
+    const secondCase = sheet.locator('.flex.flex-col.gap-2 a').nth(1);
+    await expect(secondCase).toBeVisible({ timeout: 5000 });
+    await secondCase.click();
 
-        await expect(sheet).not.toBeVisible({ timeout: 5000 });
-      }
-    }
+    await expect(sheet).not.toBeVisible({ timeout: 5000 });
   });
 
   test('should display case list on desktop', async ({ page }) => {

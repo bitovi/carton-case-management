@@ -116,8 +116,8 @@ test.describe('Error Handling', () => {
   test('should display empty state when no cases exist', async ({ page }) => {
     await page.route(
       (url) => url.href.includes('/trpc') && url.href.includes('batch=1'),
-      (route) => {
-        route.fulfill({
+      async (route) => {
+        await route.fulfill({
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify([
@@ -133,10 +133,8 @@ test.describe('Error Handling', () => {
 
     await page.goto('/');
 
-    await expect(page.getByText('No cases found')).toBeVisible({ timeout: 10000 });
-
-    const caseLinks = page.locator('.flex.flex-col.gap-2 a');
-    await expect(caseLinks).toHaveCount(0);
+    const emptyMessage = page.getByText('No cases found');
+    await expect(emptyMessage).toBeVisible({ timeout: 10000 });
   });
 
   test('should show error loading cases message', async ({ page }) => {

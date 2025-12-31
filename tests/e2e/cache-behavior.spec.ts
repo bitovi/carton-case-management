@@ -2,28 +2,34 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Cache Behavior', () => {
   test('should cache query results and display instantly on navigation', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
+
+    await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
     const firstCase = page.locator('.flex.flex-col.gap-2 a').first();
     await expect(firstCase).toBeVisible({ timeout: 10000 });
 
-    const firstCaseTitle = await firstCase.locator('p.font-semibold').textContent();
+    const firstCaseText = await firstCase.textContent();
     const caseId = await firstCase.getAttribute('href');
 
     const secondCase = page.locator('.flex.flex-col.gap-2 a').nth(1);
     if (await secondCase.isVisible()) {
       await secondCase.click();
-      await page.waitForTimeout(500);
+      await page.waitForURL(/\/cases\/.+/, { timeout: 5000 });
     }
 
     const startTime = Date.now();
     await page.goto(caseId || '/');
 
+    await page.waitForURL(/\/cases\/.+/, { timeout: 5000 });
+
     const caseAfterReturn = page.locator('.flex.flex-col.gap-2 a').first();
     await expect(caseAfterReturn).toBeVisible({ timeout: 1000 });
     const loadTime = Date.now() - startTime;
 
-    await expect(caseAfterReturn.locator('p.font-semibold')).toHaveText(firstCaseTitle || '');
+    const returnedCaseText = await caseAfterReturn.textContent();
+    expect(returnedCaseText).toBe(firstCaseText);
 
     console.log(`Cache load time: ${loadTime}ms`);
     expect(loadTime).toBeLessThan(2000);

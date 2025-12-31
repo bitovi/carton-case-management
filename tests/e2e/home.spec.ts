@@ -5,6 +5,4 @@ test.describe('HomePage', () => {
     await page.goto('/');
     await expect(page.locator('.flex.flex-col.gap-2 a').first()).toBeVisible({ timeout: 10000 });
   });
-
-  test.skip('should navigate to case page', async () => {});
 });

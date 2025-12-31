@@ -86,7 +86,7 @@ test.describe('MenuList Navigation', () => {
     const menu = page.locator('nav[aria-label="Main menu"]');
     await expect(menu).toBeAttached();
 
-    const casesElement = menu.getByText('Cases');
+    const casesElement = menu.locator('.lg\\:hidden').getByText('Cases');
     await expect(casesElement).toBeVisible();
   });
 
