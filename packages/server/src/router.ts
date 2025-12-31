@@ -158,14 +158,17 @@ export const appRouter = router({
           status: z.enum(['TO_DO', 'IN_PROGRESS', 'COMPLETED', 'CLOSED']).optional(),
           priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).optional(),
           customerId: z.string().optional(),
-          assigneeId: z.string().optional(),
+          assignedTo: z.string().nullable().optional(),
         })
       )
       .mutation(async ({ ctx, input }) => {
         const { id, ...data } = input;
         return ctx.prisma.case.update({
           where: { id },
-          data,
+          data: {
+            ...data,
+            updatedAt: new Date(),
+          },
         });
       }),
     delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {

@@ -6,10 +6,12 @@ import { CaseEssentialDetails } from './CaseEssentialDetails';
 describe('CaseEssentialDetails', () => {
   it('renders without crashing', () => {
     const mockCaseData = {
-      customer: { name: 'Test Customer' },
+      customer: { id: '1', name: 'Test Customer' },
+      customerId: '1',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      assignee: { name: 'Test Assignee' },
+      assignee: { id: '2', name: 'Test Assignee' },
+      assignedTo: '2',
     };
 
     renderWithTrpc(<CaseEssentialDetails caseId="1" caseData={mockCaseData} />);

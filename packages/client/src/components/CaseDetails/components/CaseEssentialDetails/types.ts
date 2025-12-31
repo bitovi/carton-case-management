@@ -1,10 +1,12 @@
 export type CaseEssentialDetailsProps = {
   caseId: string;
   caseData: {
-    customer: { name: string };
+    customer: { id: string; name: string };
+    customerId: string;
     priority?: string;
     createdAt: string;
     updatedAt: string;
-    assignee: { name: string } | null;
+    assignee: { id: string; name: string } | null;
+    assignedTo: string | null;
   };
 };

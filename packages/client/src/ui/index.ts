@@ -15,3 +15,4 @@ export {
   SelectScrollUpButton,
   SelectScrollDownButton,
 } from './select';
+export { DatePicker } from './date-picker';

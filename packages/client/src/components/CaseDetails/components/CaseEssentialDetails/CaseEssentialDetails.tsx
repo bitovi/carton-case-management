@@ -1,12 +1,16 @@
 import { useState } from 'react';
 import { Button } from '@/ui/button';
 import { EditablePriority } from '@/components/EditablePriority';
+import { EditableSelect } from '@/components/EditableSelect';
 import { trpc } from '@/lib/trpc';
 import type { CaseEssentialDetailsProps } from './types';
 
 export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const trpcUtils = trpc.useUtils();
+
+  const { data: customers } = trpc.customer.list.useQuery();
+  const { data: users } = trpc.user.list.useQuery();
 
   const updateCaseMutation = trpc.case.update.useMutation({
     onSuccess: () => {
@@ -19,6 +23,20 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
     updateCaseMutation.mutate({
       id: caseId,
       priority: newPriority as 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT',
+    });
+  };
+
+  const handleCustomerChange = (newCustomerId: string) => {
+    updateCaseMutation.mutate({
+      id: caseId,
+      customerId: newCustomerId,
+    });
+  };
+
+  const handleAssigneeChange = (newAssigneeId: string) => {
+    updateCaseMutation.mutate({
+      id: caseId,
+      assignedTo: newAssigneeId === '' ? null : newAssigneeId,
     });
   };
 
@@ -50,7 +68,14 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
         <>
           <div className="flex flex-col gap-1">
             <p className="text-xs text-gray-600">Customer Name</p>
-            <p className="text-sm font-medium">{caseData.customer.name}</p>
+            <EditableSelect
+              value={caseData.customerId}
+              options={customers || []}
+              onSave={handleCustomerChange}
+              isLoading={updateCaseMutation.isPending}
+              className="text-sm font-medium"
+              placeholder="Select customer"
+            />
           </div>
           <div className="flex flex-col gap-1">
             <p className="text-xs text-gray-600">Priority</p>
@@ -73,7 +98,15 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
           </div>
           <div className="flex flex-col gap-1">
             <p className="text-xs text-gray-600">Assigned To</p>
-            <p className="text-sm font-medium">{caseData.assignee?.name || 'Unassigned'}</p>
+            <EditableSelect
+              value={caseData.assignedTo || ''}
+              options={users || []}
+              onSave={handleAssigneeChange}
+              isLoading={updateCaseMutation.isPending}
+              className="text-sm font-medium"
+              placeholder="Unassigned"
+              allowEmpty
+            />
           </div>
           <div className="flex flex-col gap-1">
             <p className="text-xs text-gray-600">Last Updated</p>

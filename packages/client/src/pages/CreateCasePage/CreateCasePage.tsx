@@ -6,6 +6,12 @@ import { Input } from '@/ui/input';
 import { Textarea } from '@/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select';
 
+type ValidationErrors = {
+  title?: string;
+  description?: string;
+  customerId?: string;
+};
+
 export function CreateCasePage() {
   const navigate = useNavigate();
   const utils = trpc.useUtils();
@@ -14,22 +20,51 @@ export function CreateCasePage() {
   const [customerId, setCustomerId] = useState('');
   const [assignedTo, setAssignedTo] = useState('');
   const [priority, setPriority] = useState<'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'>('MEDIUM');
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const [touched, setTouched] = useState<Set<string>>(new Set());
 
   const { data: customers } = trpc.customer.list.useQuery();
   const { data: users } = trpc.user.list.useQuery();
   const createCase = trpc.case.create.useMutation({
     onSuccess: (data) => {
-      // Invalidate case list to refetch with new case
       utils.case.list.invalidate();
-      // Navigate to the newly created case
       navigate(`/cases/${data.id}`);
     },
   });
 
+  const validateForm = (): boolean => {
+    const errors: ValidationErrors = {};
+
+    if (!title.trim()) {
+      errors.title = 'Case title is required';
+    }
+
+    if (!description.trim()) {
+      errors.description = 'Case description is required';
+    }
+
+    if (!customerId) {
+      errors.customerId = 'Customer selection is required';
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleBlur = (field: string) => {
+    setTouched((prev) => new Set(prev).add(field));
+    validateForm();
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Use first user as creator (in a real app, this would be the logged-in user)
+    setTouched(new Set(['title', 'description', 'customerId']));
+
+    if (!validateForm()) {
+      return;
+    }
+
     const createdBy = users?.[0]?.id || '';
 
     createCase.mutate({
@@ -54,10 +89,17 @@ export function CreateCasePage() {
           <Input
             id="title"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              if (touched.has('title')) validateForm();
+            }}
+            onBlur={() => handleBlur('title')}
             placeholder="Enter case title"
-            required
+            className={touched.has('title') && validationErrors.title ? 'border-red-500' : ''}
           />
+          {touched.has('title') && validationErrors.title && (
+            <p className="text-sm text-red-600">{validationErrors.title}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -67,19 +109,44 @@ export function CreateCasePage() {
           <Textarea
             id="description"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => {
+              setDescription(e.target.value);
+              if (touched.has('description')) validateForm();
+            }}
+            onBlur={() => handleBlur('description')}
             placeholder="Enter case description"
             rows={5}
-            required
+            className={
+              touched.has('description') && validationErrors.description ? 'border-red-500' : ''
+            }
           />
+          {touched.has('description') && validationErrors.description && (
+            <p className="text-sm text-red-600">{validationErrors.description}</p>
+          )}
         </div>
 
         <div className="space-y-2">
           <label htmlFor="customer" className="text-sm font-medium">
             Customer *
           </label>
-          <Select value={customerId} onValueChange={setCustomerId} required>
-            <SelectTrigger className="w-full">
+          <Select
+            value={customerId}
+            onValueChange={(value) => {
+              setCustomerId(value);
+              setTouched((prev) => new Set(prev).add('customerId'));
+              // Clear the error immediately when a value is selected
+              if (value) {
+                setValidationErrors((prev) => {
+                  const newErrors = { ...prev };
+                  delete newErrors.customerId;
+                  return newErrors;
+                });
+              }
+            }}
+          >
+            <SelectTrigger
+              className={`w-full ${touched.has('customerId') && validationErrors.customerId ? 'border-red-500' : ''}`}
+            >
               <SelectValue placeholder="Select a customer" />
             </SelectTrigger>
             <SelectContent>
@@ -90,6 +157,9 @@ export function CreateCasePage() {
               ))}
             </SelectContent>
           </Select>
+          {touched.has('customerId') && validationErrors.customerId && (
+            <p className="text-sm text-red-600">{validationErrors.customerId}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -117,11 +187,15 @@ export function CreateCasePage() {
           <label htmlFor="assignedTo" className="text-sm font-medium">
             Assign To (Optional)
           </label>
-          <Select value={assignedTo || undefined} onValueChange={setAssignedTo}>
+          <Select
+            value={assignedTo || '__EMPTY__'}
+            onValueChange={(value) => setAssignedTo(value === '__EMPTY__' ? '' : value)}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Unassigned" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="__EMPTY__">Unassigned</SelectItem>
               {users?.map((user) => (
                 <SelectItem key={user.id} value={user.id}>
                   {user.name}
@@ -145,8 +219,8 @@ export function CreateCasePage() {
         </div>
 
         {createCase.isError && (
-          <div className="text-red-600 text-sm">
-            Error creating case: {createCase.error.message}
+          <div className="text-red-600 text-sm p-3 bg-red-50 rounded border border-red-200">
+            Failed to create case. Please ensure all required fields are filled correctly.
           </div>
         )}
       </form>

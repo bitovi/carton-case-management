@@ -57,6 +57,12 @@ async function main() {
     },
   });
 
+  const davidWilson = await prisma.customer.create({
+    data: {
+      name: 'David Wilson',
+    },
+  });
+
   // Create demo cases with comments
   const case1 = await prisma.case.create({
     data: {
@@ -68,6 +74,8 @@ async function main() {
       priority: 'HIGH',
       createdBy: alexMorgan.id,
       assignedTo: alexMorgan.id,
+      createdAt: new Date('2025-12-28T09:30:00'),
+      updatedAt: new Date('2025-12-28T09:30:00'),
     },
   });
 
@@ -101,6 +109,8 @@ async function main() {
       priority: 'MEDIUM',
       createdBy: jordanDoe.id,
       assignedTo: taylorSmith.id,
+      createdAt: new Date('2025-12-25T14:20:00'),
+      updatedAt: new Date('2025-12-25T14:20:00'),
     },
   });
 
@@ -132,6 +142,8 @@ async function main() {
       priority: 'LOW',
       createdBy: taylorSmith.id,
       assignedTo: jordanDoe.id,
+      createdAt: new Date('2025-12-22T11:15:00'),
+      updatedAt: new Date('2025-12-22T11:15:00'),
     },
   });
 
@@ -150,6 +162,78 @@ async function main() {
       caseId: case3.id,
       authorId: jordanDoe.id,
       createdAt: new Date('2025-12-16T11:00:00'),
+    },
+  });
+
+  const case4 = await prisma.case.create({
+    data: {
+      title: 'Vehicle Accident Report',
+      description:
+        'Customer involved in minor vehicle accident. Need to process auto insurance claim and arrange vehicle assessment.',
+      customerId: davidWilson.id,
+      status: 'IN_PROGRESS',
+      priority: 'HIGH',
+      createdBy: alexMorgan.id,
+      assignedTo: alexMorgan.id,
+      createdAt: new Date('2025-12-30T08:45:00'),
+      updatedAt: new Date('2025-12-30T08:45:00'),
+    },
+  });
+
+  await prisma.comment.create({
+    data: {
+      content: 'Police report received. Scheduling vehicle inspection for tomorrow.',
+      caseId: case4.id,
+      authorId: alexMorgan.id,
+      createdAt: new Date('2025-12-30T10:20:00'),
+    },
+  });
+
+  const case5 = await prisma.case.create({
+    data: {
+      title: 'Billing Discrepancy',
+      description:
+        'Customer reports being charged incorrect premium amount. Invoice shows $150 but policy agreement states $120.',
+      customerId: michaelChen.id,
+      status: 'COMPLETED',
+      priority: 'MEDIUM',
+      createdBy: jordanDoe.id,
+      assignedTo: taylorSmith.id,
+      createdAt: new Date('2025-12-20T13:00:00'),
+      updatedAt: new Date('2025-12-20T13:00:00'),
+    },
+  });
+
+  await prisma.comment.create({
+    data: {
+      content: 'Reviewed billing records. Incorrect rate was applied due to system error.',
+      caseId: case5.id,
+      authorId: taylorSmith.id,
+      createdAt: new Date('2025-12-20T14:30:00'),
+    },
+  });
+
+  await prisma.comment.create({
+    data: {
+      content: 'Corrected billing and issued $30 credit to customer account. Case resolved.',
+      caseId: case5.id,
+      authorId: taylorSmith.id,
+      createdAt: new Date('2025-12-20T16:15:00'),
+    },
+  });
+
+  const case6 = await prisma.case.create({
+    data: {
+      title: 'Policy Renewal Question',
+      description:
+        'Customer asking about renewal process and whether current coverage limits are still adequate for updated property value.',
+      customerId: sarahJohnson.id,
+      status: 'TO_DO',
+      priority: 'LOW',
+      createdBy: jordanDoe.id,
+      assignedTo: null,
+      createdAt: new Date('2025-12-18T10:30:00'),
+      updatedAt: new Date('2025-12-18T10:30:00'),
     },
   });
 
