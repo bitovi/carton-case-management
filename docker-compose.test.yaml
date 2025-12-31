@@ -1,0 +1,37 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    ports:
+      - '3001:3001' # Server
+      - '5173:5173' # Client for E2E tests
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=file:./prisma/test.db
+    # Setup database and start both client and server in dev mode
+    command: sh -c "cd packages/server && npm run db:push && cd ../.. && npm run dev"
+
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    environment:
+      - NODE_ENV=test
+      - DATABASE_URL=file:./prisma/test.db
+      - BASE_URL=http://app:5173
+    depends_on:
+      app:
+        condition: service_started
+    # Wait for app, then run all tests sequentially
+    command: >
+      sh -c "
+      sleep 5 &&
+      echo '=== Running Unit Tests ===' &&
+      npm run test &&
+      echo '=== Running E2E Tests ===' &&
+      npm run test:e2e
+      "
+
+volumes:
+  test-data:

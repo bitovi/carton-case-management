@@ -1,0 +1,39 @@
+{
+  "name": "Carton Case Management",
+  "dockerComposeFile": "../docker-compose.dev.yaml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/carton-case-management",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+  },
+  "postCreateCommand": "cp -n packages/server/.env.example packages/server/.env || true && npm install && npm run setup",
+  "postStartCommand": "npm run dev",
+  "forwardPorts": [5173, 3001, 6006, 9323],
+  "portsAttributes": {
+    "5173": {
+      "label": "Client",
+      "onAutoForward": "openPreview"
+    },
+    "3001": {
+      "label": "Server",
+      "onAutoForward": "ignore"
+    },
+    "6006": {
+      "label": "Storybook",
+      "onAutoForward": "ignore"
+    },
+    "9323": {
+      "label": "Playwright Report",
+      "onAutoForward": "openPreview"
+    }
+  },
+  "containerEnv": {
+    "NODE_ENV": "development",
+    "DATABASE_URL": "file:./prisma/dev.db"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode", "Prisma.prisma"]
+    }
+  }
+}

@@ -1,0 +1,26 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - .:/workspaces/carton-case-management:cached
+      # Named volumes prevent host node_modules from mounting (avoids architecture/platform conflicts)
+      - node_modules:/workspaces/carton-case-management/node_modules
+      - client_node_modules:/workspaces/carton-case-management/packages/client/node_modules
+      - server_node_modules:/workspaces/carton-case-management/packages/server/node_modules
+      - shared_node_modules:/workspaces/carton-case-management/packages/shared/node_modules
+    working_dir: /workspaces/carton-case-management
+    command: sh -c "npm install && npm run setup && npm run dev"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=file:./prisma/dev.db
+    ports:
+      - '5173:5173'
+      - '3001:3001'
+
+volumes:
+  node_modules:
+  client_node_modules:
+  server_node_modules:
+  shared_node_modules:
