@@ -133,6 +133,7 @@ describe('RichTextEditor', () => {
     render(<RichTextEditor value={value} onChange={vi.fn()} onSave={onSave} autoFocus />);
 
     const editor = screen.getByRole('textbox');
+    editor.focus();
     await user.type(editor, '{Meta>}s{/Meta}');
 
     expect(onSave).toHaveBeenCalled();
@@ -162,12 +163,13 @@ describe('RichTextEditor', () => {
 
     const editor = screen.getByRole('textbox');
 
-    // Simulate paste event with clipboard data
-    const pasteEvent = new ClipboardEvent('paste', {
-      clipboardData: new DataTransfer(),
+    // Simulate paste event with clipboard data (mocked for jsdom)
+    const pasteEvent = new Event('paste', { bubbles: true, cancelable: true });
+    Object.defineProperty(pasteEvent, 'clipboardData', {
+      value: {
+        getData: () => 'Pasted text',
+      },
     });
-    pasteEvent.clipboardData?.setData('text/plain', 'Pasted text');
-
     editor.dispatchEvent(pasteEvent);
 
     await waitFor(() => {

@@ -1,3 +1,4 @@
+import { ReactEditor } from 'slate-react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -60,7 +61,7 @@ describe('RichTextToolbar', () => {
   it('bold button toggles bold formatting', async () => {
     const user = userEvent.setup();
     const editor = createTestEditor();
-    const value = createEmptyDocument();
+    const value = [{ type: 'paragraph', children: [{ text: 'abc' }] }];
     const onChange = vi.fn();
 
     render(
@@ -68,6 +69,12 @@ describe('RichTextToolbar', () => {
         <RichTextToolbar />
       </Slate>
     );
+
+    // Set a non-collapsed selection (select the first character)
+    editor.selection = {
+      anchor: { path: [0, 0], offset: 0 },
+      focus: { path: [0, 0], offset: 1 },
+    };
 
     const boldButton = screen.getByRole('button', { name: /bold/i });
     await user.click(boldButton);
@@ -79,7 +86,7 @@ describe('RichTextToolbar', () => {
   it('italic button toggles italic formatting', async () => {
     const user = userEvent.setup();
     const editor = createTestEditor();
-    const value = createEmptyDocument();
+    const value = [{ type: 'paragraph', children: [{ text: 'abc' }] }];
     const onChange = vi.fn();
 
     render(
@@ -87,6 +94,12 @@ describe('RichTextToolbar', () => {
         <RichTextToolbar />
       </Slate>
     );
+
+    // Set a non-collapsed selection (select the first character)
+    editor.selection = {
+      anchor: { path: [0, 0], offset: 0 },
+      focus: { path: [0, 0], offset: 1 },
+    };
 
     const italicButton = screen.getByRole('button', { name: /italic/i });
     await user.click(italicButton);
@@ -97,7 +110,7 @@ describe('RichTextToolbar', () => {
   it('underline button toggles underline formatting', async () => {
     const user = userEvent.setup();
     const editor = createTestEditor();
-    const value = createEmptyDocument();
+    const value = [{ type: 'paragraph', children: [{ text: 'abc' }] }];
     const onChange = vi.fn();
 
     render(
@@ -106,7 +119,15 @@ describe('RichTextToolbar', () => {
       </Slate>
     );
 
+    // Set a non-collapsed selection (select the first character)
+    editor.selection = {
+      anchor: { path: [0, 0], offset: 0 },
+      focus: { path: [0, 0], offset: 1 },
+    };
+
     const underlineButton = screen.getByRole('button', { name: /underline/i });
+    // Focus the Slate editor instance to ensure marks are applied
+    ReactEditor.focus(editor);
     await user.click(underlineButton);
 
     expect(editor.marks?.underline).toBe(true);

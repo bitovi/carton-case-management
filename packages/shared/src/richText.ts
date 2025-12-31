@@ -183,26 +183,9 @@ export const textSchema = z.object({
 // Define descendant schema type first to allow forward reference
 type DescendantSchema = z.ZodType<Descendant>;
 
-// Create lazy descendant schema for recursive validation
-const descendantSchema: DescendantSchema = z.lazy(() =>
-  z.union([
-    textSchema,
-    paragraphSchema,
-    headingOneSchema,
-    headingTwoSchema,
-    headingThreeSchema,
-    headingFourSchema,
-    headingFiveSchema,
-    headingSixSchema,
-    bulletedListSchema,
-    numberedListSchema,
-    listItemSchema,
-    codeBlockSchema,
-  ])
-);
-
+// Declare base element schema with lazy children to avoid circular dependency
 const baseElementSchema = z.object({
-  children: z.array(descendantSchema),
+  children: z.array(z.lazy(() => descendantSchema)),
 });
 
 export const paragraphSchema = baseElementSchema.extend({
@@ -249,6 +232,35 @@ export const codeBlockSchema = baseElementSchema.extend({
   type: z.literal('code-block'),
 });
 
+// Create lazy descendant schema for recursive validation
+const descendantSchema: DescendantSchema = z.lazy(() =>
+  z.union([
+    textSchema,
+    paragraphSchema,
+    headingOneSchema,
+    headingTwoSchema,
+    headingThreeSchema,
+    headingFourSchema,
+    headingFiveSchema,
+    headingSixSchema,
+    bulletedListSchema,
+    numberedListSchema,
+    listItemSchema,
+    codeBlockSchema,
+    // linkSchema, (removed)
+  ])
+);
+
+// Union schema for all heading types
+export const headingSchema = z.union([
+  headingOneSchema,
+  headingTwoSchema,
+  headingThreeSchema,
+  headingFourSchema,
+  headingFiveSchema,
+  headingSixSchema,
+]);
+
 export const elementSchema = z.union([
   paragraphSchema,
   headingOneSchema,
@@ -273,7 +285,30 @@ export const richTextDocumentSchema = z.array(descendantSchema);
  * @returns Plain text representation
  */
 export function serializeToPlainText(document: RichTextDocument): string {
-  return document.map((node) => Node.string(node)).join('\n');
+  function serializeNode(node: Descendant): string {
+    if (isText(node)) {
+      return node.text;
+    }
+    if (node.type === 'bulleted-list' || node.type === 'numbered-list') {
+      // Join list items with newlines
+      return node.children.map(serializeNode).join('\n');
+    }
+    if (node.type === 'list-item') {
+      // List item: join its children as plain text
+      return node.children.map(serializeNode).join('');
+    }
+    if (node.type === 'paragraph' || node.type.startsWith('heading')) {
+      // Paragraphs and headings: join children as plain text
+      return node.children.map(serializeNode).join('');
+    }
+    // if (node.type === 'link') { ... } (removed)
+    // Fallback for other elements
+    if ('children' in node) {
+      return node.children.map(serializeNode).join('');
+    }
+    return '';
+  }
+  return document.map(serializeNode).join('\n');
 }
 
 /**

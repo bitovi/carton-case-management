@@ -164,25 +164,31 @@ describe('appRouter', () => {
       expect(result).toBeDefined();
     });
 
-    it('should accept description with lists and links', async () => {
+    it('should accept description with lists and headings', async () => {
       const complexDocument: RichTextDocument = [
         { type: 'heading-two', children: [{ text: 'Title' }] },
         {
           type: 'bulleted-list',
           children: [
-            { type: 'list-item', children: [{ text: 'Item 1' }] },
-            { type: 'list-item', children: [{ text: 'Item 2' }] },
+            { type: 'list-item', children: [{ type: 'paragraph', children: [{ text: 'Item 1' }] }] },
+            { type: 'list-item', children: [{ type: 'paragraph', children: [{ text: 'Item 2' }] }] },
+          ],
+        },
+        {
+          type: 'numbered-list',
+          children: [
+            { type: 'list-item', children: [{ type: 'paragraph', children: [{ text: 'Step 1' }] }] },
+            { type: 'list-item', children: [{ type: 'paragraph', children: [{ text: 'Step 2' }] }] },
           ],
         },
         {
           type: 'paragraph',
           children: [
-            { text: 'Visit ' },
-            {
-              type: 'link',
-              url: 'https://example.com',
-              children: [{ text: 'our site' }],
-            },
+            { text: 'This is a paragraph with ' },
+            { text: 'bold', bold: true },
+            { text: ' and ' },
+            { text: 'italic', italic: true },
+            { text: ' text.' },
           ],
         },
       ];

@@ -64,11 +64,7 @@ function RenderNode({ node }: { node: Descendant }) {
       case 'paragraph':
         return (
           <p className="my-1 min-h-[1.5em]">
-            {children.length === 0 || (children.length === 1 && children[0] === '') ? (
-              <br />
-            ) : (
-              children
-            )}
+            {children.length === 0 ? <br /> : children}
           </p>
         );
       case 'heading-one':

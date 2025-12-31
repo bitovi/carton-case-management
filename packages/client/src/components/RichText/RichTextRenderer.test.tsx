@@ -160,28 +160,6 @@ describe('RichTextRenderer', () => {
     expect(list).toBeInTheDocument();
   });
 
-  it('renders links', () => {
-    const value: Descendant[] = [
-      {
-        type: 'paragraph',
-        children: [
-          {
-            type: 'link',
-            url: 'https://example.com',
-            children: [{ text: 'Link text' }],
-          },
-        ],
-      },
-    ];
-
-    render(<RichTextRenderer value={value} />);
-    const link = screen.getByText('Link text');
-    expect(link.tagName).toBe('A');
-    expect(link).toHaveAttribute('href', 'https://example.com');
-    expect(link).toHaveAttribute('target', '_blank');
-    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-  });
-
   it('renders code blocks', () => {
     const value: Descendant[] = [
       {

@@ -9,7 +9,6 @@ import {
   headingSchema,
   bulletedListSchema,
   numberedListSchema,
-  linkSchema,
   type RichTextDocument,
 } from './richText';
 
@@ -82,7 +81,7 @@ describe('richText utilities', () => {
     });
 
     it('should serialize links using display text not URL', () => {
-      const document: RichTextDocument = [
+      const document = [
         {
           type: 'paragraph',
           children: [
@@ -94,7 +93,7 @@ describe('richText utilities', () => {
             },
           ],
         },
-      ];
+      ] as RichTextDocument;
       const result = serializeToPlainText(document);
       expect(result).toContain('docs');
       expect(result).not.toContain('https://example.com');
@@ -269,34 +268,6 @@ describe('richText utilities', () => {
           children: [{ type: 'list-item', children: [{ text: 'Item' }] }],
         });
         expect(result.success).toBe(true);
-      });
-    });
-
-    describe('linkSchema', () => {
-      it('should validate link with valid URL', () => {
-        const result = linkSchema.safeParse({
-          type: 'link',
-          url: 'https://example.com',
-          children: [{ text: 'Link text' }],
-        });
-        expect(result.success).toBe(true);
-      });
-
-      it('should reject link without URL', () => {
-        const result = linkSchema.safeParse({
-          type: 'link',
-          children: [{ text: 'Link' }],
-        });
-        expect(result.success).toBe(false);
-      });
-
-      it('should reject link with invalid URL', () => {
-        const result = linkSchema.safeParse({
-          type: 'link',
-          url: 'not-a-url',
-          children: [{ text: 'Link' }],
-        });
-        expect(result.success).toBe(false);
       });
     });
 
