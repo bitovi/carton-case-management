@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { router, publicProcedure } from './trpc.js';
-import { formatDate } from '@carton/shared';
+import { formatDate, casePrioritySchema, caseStatusSchema } from '@carton/shared';
 
 export const appRouter = router({
   health: publicProcedure.query(() => {
@@ -54,7 +54,7 @@ export const appRouter = router({
       .input(
         z
           .object({
-            status: z.enum(['TO_DO', 'IN_PROGRESS', 'COMPLETED', 'CLOSED']).optional(),
+            status: caseStatusSchema.optional(),
             assignedTo: z.string().optional(),
           })
           .optional()
@@ -141,7 +141,7 @@ export const appRouter = router({
           createdBy: z.string(),
           assignedTo: z.string().optional(),
           customerId: z.string(),
-          priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).optional(),
+          priority: casePrioritySchema.optional(),
         })
       )
       .mutation(async ({ ctx, input }) => {
@@ -155,8 +155,8 @@ export const appRouter = router({
           id: z.string(),
           title: z.string().optional(),
           description: z.string().optional(),
-          status: z.enum(['TO_DO', 'IN_PROGRESS', 'COMPLETED', 'CLOSED']).optional(),
-          priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).optional(),
+          status: caseStatusSchema.optional(),
+          priority: casePrioritySchema.optional(),
           customerId: z.string().optional(),
           assignedTo: z.string().nullable().optional(),
         })

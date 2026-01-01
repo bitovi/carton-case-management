@@ -24,7 +24,8 @@ export function CaseDetails({ onMenuClick }: CaseDetailsProps) {
     return (
       <div className="flex flex-1 items-center justify-center">
         <div className="text-center text-gray-500">
-          <p className="text-lg">Case not found</p>
+          <p className="text-lg font-medium mb-2">No case selected</p>
+          <p className="text-sm">Select a case from the list or create a new one to get started</p>
         </div>
       </div>
     );

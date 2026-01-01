@@ -4,7 +4,7 @@ import { trpc } from '@/lib/trpc';
 import { CaseList } from '@/components/CaseList';
 import { CaseDetails } from '@/components/CaseDetails';
 import { CreateCasePage } from '@/pages/CreateCasePage';
-import { Sheet } from '@/ui/sheet';
+import { Sheet } from '@/components/ui/sheet';
 
 export function CasePage() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);

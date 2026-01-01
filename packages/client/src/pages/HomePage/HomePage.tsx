@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
-import { Button } from '@/ui/button';
+import { Button } from '@/components/ui/button';
 
 export function HomePage() {
   const { data: cases, isLoading, error, refetch, isFetching } = trpc.case.list.useQuery();

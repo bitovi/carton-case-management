@@ -3,7 +3,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '@/ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu';
 import CartonLogoSvg from '@/assets/carton-logo.svg';
 import type { HeaderProps } from './types';
 

@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, type KeyboardEvent } from 'react';
 import { Check, X } from 'lucide-react';
-import { Input } from '@/ui/input';
-import { Button } from '@/ui/button';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/ui/tooltip';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 
 interface EditableTitleProps {
   value: string;

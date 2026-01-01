@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Button } from '@/ui/button';
-import { EditablePriority } from '@/components/EditablePriority';
+import { Button } from '@/components/ui/button';
 import { EditableSelect } from '@/components/EditableSelect';
 import { trpc } from '@/lib/trpc';
+import { type CasePriority, CASE_PRIORITY_OPTIONS } from '@carton/shared';
 import type { CaseEssentialDetailsProps } from './types';
 
 export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsProps) {
@@ -22,7 +22,7 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
   const handlePriorityChange = (newPriority: string) => {
     updateCaseMutation.mutate({
       id: caseId,
-      priority: newPriority as 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT',
+      priority: newPriority as CasePriority,
     });
   };
 
@@ -70,20 +70,21 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
             <p className="text-xs text-gray-600">Customer Name</p>
             <EditableSelect
               value={caseData.customerId}
-              options={customers || []}
-              onSave={handleCustomerChange}
-              isLoading={updateCaseMutation.isPending}
-              className="text-sm font-medium"
+              options={(customers || []).map((c) => ({ value: c.id, label: c.name }))}
+              onChange={handleCustomerChange}
+              disabled={updateCaseMutation.isPending}
+              displayClassName="text-sm font-medium"
               placeholder="Select customer"
             />
           </div>
           <div className="flex flex-col gap-1">
             <p className="text-xs text-gray-600">Priority</p>
-            <EditablePriority
+            <EditableSelect
               value={caseData.priority || 'MEDIUM'}
-              onSave={handlePriorityChange}
-              isLoading={updateCaseMutation.isPending}
-              className="text-sm font-medium"
+              options={[...CASE_PRIORITY_OPTIONS]}
+              onChange={handlePriorityChange}
+              disabled={updateCaseMutation.isPending}
+              displayClassName="text-sm font-medium"
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -100,11 +101,12 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
             <p className="text-xs text-gray-600">Assigned To</p>
             <EditableSelect
               value={caseData.assignedTo || ''}
-              options={users || []}
-              onSave={handleAssigneeChange}
-              isLoading={updateCaseMutation.isPending}
-              className="text-sm font-medium"
+              options={(users || []).map((u) => ({ value: u.id, label: u.name }))}
+              onChange={handleAssigneeChange}
+              disabled={updateCaseMutation.isPending}
+              displayClassName="text-sm font-medium"
               placeholder="Unassigned"
+              emptyLabel="Unassigned"
               allowEmpty
             />
           </div>
