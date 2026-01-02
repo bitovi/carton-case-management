@@ -29,7 +29,7 @@ const meta = {
 } satisfies Meta<typeof ConfirmationDialog>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof ConfirmationDialog>;
 
 export const Default: Story = {
   args: {
@@ -87,7 +87,7 @@ export const LongDescription: Story = {
 
 // Interactive example with state management
 export const Interactive: Story = {
-  render: () => {
+  render: function Interactive() {
     const [open, setOpen] = useState(false);
     return (
       <>

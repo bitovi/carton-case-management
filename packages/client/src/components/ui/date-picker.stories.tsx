@@ -11,28 +11,28 @@ export default meta;
 type Story = StoryObj<typeof DatePicker>;
 
 export const Default: Story = {
-  render: () => {
+  render: function Default() {
     const [date, setDate] = useState<Date | undefined>();
     return <DatePicker value={date} onChange={setDate} />;
   },
 };
 
 export const WithDefaultValue: Story = {
-  render: () => {
+  render: function WithDefaultValue() {
     const [date, setDate] = useState<Date | undefined>(new Date());
     return <DatePicker value={date} onChange={setDate} />;
   },
 };
 
 export const WithCustomPlaceholder: Story = {
-  render: () => {
+  render: function WithCustomPlaceholder() {
     const [date, setDate] = useState<Date | undefined>();
     return <DatePicker value={date} onChange={setDate} placeholder="Pick a date" />;
   },
 };
 
 export const WithLabel: Story = {
-  render: () => {
+  render: function WithLabel() {
     const [date, setDate] = useState<Date | undefined>();
     return (
       <div className="space-y-2">
@@ -46,7 +46,7 @@ export const WithLabel: Story = {
 };
 
 export const InForm: Story = {
-  render: () => {
+  render: function InForm() {
     const [startDate, setStartDate] = useState<Date | undefined>();
     const [endDate, setEndDate] = useState<Date | undefined>();
     return (

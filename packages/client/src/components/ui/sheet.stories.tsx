@@ -6,13 +6,18 @@ import { Button } from './button';
 const meta: Meta<typeof Sheet> = {
   title: 'Components/Sheet',
   component: Sheet,
+  parameters: {
+    viewport: {
+      defaultViewport: 'mobile1',
+    },
+  },
 };
 
 export default meta;
 type Story = StoryObj<typeof Sheet>;
 
 export const Default: Story = {
-  render: () => {
+  render: function Default() {
     const [open, setOpen] = useState(false);
     return (
       <>
@@ -37,7 +42,7 @@ export const Default: Story = {
 };
 
 export const WithForm: Story = {
-  render: () => {
+  render: function WithForm() {
     const [open, setOpen] = useState(false);
     return (
       <>
@@ -83,7 +88,7 @@ export const WithForm: Story = {
 };
 
 export const WithLongContent: Story = {
-  render: () => {
+  render: function WithLongContent() {
     const [open, setOpen] = useState(false);
     return (
       <>
