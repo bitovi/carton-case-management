@@ -71,10 +71,10 @@ describe('CaseList', () => {
     });
 
     // Format: #CAS-YYMMDD-{last8chars}
-    // 2024-01-01 in local timezone might be 2023-12-31 UTC
-    expect(screen.getByText('#CAS-231231-1')).toBeInTheDocument();
+    // Using noon UTC times ensures consistent dates across all timezones
+    expect(screen.getByText('#CAS-240115-1')).toBeInTheDocument();
     expect(screen.getByText('Second Case')).toBeInTheDocument();
-    expect(screen.getByText('#CAS-240102-2')).toBeInTheDocument();
+    expect(screen.getByText('#CAS-240117-2')).toBeInTheDocument();
   });
 
   it('renders error state when API call fails', async () => {
