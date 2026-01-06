@@ -41,7 +41,7 @@ function App() {
   // Derive initials from user name (e.g., "Alex Morgan" -> "AM")
   const userInitials = user.name
     .split(' ')
-    .map((word) => word[0])
+    .map((word: string) => word[0])
     .join('')
     .toUpperCase();
 
