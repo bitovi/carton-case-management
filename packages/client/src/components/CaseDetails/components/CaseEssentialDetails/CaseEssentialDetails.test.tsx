@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { renderWithTrpc } from '@/test/utils';
 import { CaseEssentialDetails } from './CaseEssentialDetails';
 import { server } from '@/../vitest.setup';

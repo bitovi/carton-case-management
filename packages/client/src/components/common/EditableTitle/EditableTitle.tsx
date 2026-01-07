@@ -10,6 +10,7 @@ interface EditableTitleProps {
   className?: string;
   inputClassName?: string;
   isLoading?: boolean;
+  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
 }
 
 export function EditableTitle({
@@ -18,6 +19,7 @@ export function EditableTitle({
   className = '',
   inputClassName = '',
   isLoading = false,
+  headingLevel = 1,
 }: EditableTitleProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(value);
@@ -65,6 +67,8 @@ export function EditableTitle({
         <Tooltip>
           <TooltipTrigger asChild>
             <div
+              role="heading"
+              aria-level={headingLevel}
               className={`cursor-pointer rounded px-2 -mx-2 py-1 -my-1 transition-colors hover:bg-gray-100 ${className}`}
               onClick={() => setIsEditing(true)}
             >

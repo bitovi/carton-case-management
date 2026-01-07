@@ -7,7 +7,6 @@ import { createContext } from './context.js';
 import { autoLoginMiddleware } from './middleware/autoLogin.js';
 
 export type { AppRouter } from './router.js';
-export type { CaseStatus } from '@prisma/client';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;

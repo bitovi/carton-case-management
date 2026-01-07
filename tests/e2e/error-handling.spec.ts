@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Error Handling', () => {
   test('should display error message when API fails', async ({ page }) => {
     await page.route(
-      (url) => url.href.includes('/trpc') && url.href.includes('batch=1'),
+      (url) => url.href.includes('/trpc') && url.href.includes('case.list'),
       (route) => {
         route.fulfill({
           status: 200,
@@ -34,7 +34,7 @@ test.describe('Error Handling', () => {
     let shouldError = true;
 
     await page.route(
-      (url) => url.href.includes('/trpc') && url.href.includes('batch=1'),
+      (url) => url.href.includes('/trpc') && url.href.includes('case.list'),
       (route) => {
         if (shouldError) {
           route.fulfill({
@@ -72,7 +72,7 @@ test.describe('Error Handling', () => {
 
   test('should display loading spinner while fetching', async ({ page }) => {
     await page.route(
-      (url) => url.href.includes('/trpc') && url.href.includes('batch=1'),
+      (url) => url.href.includes('/trpc') && url.href.includes('case.list'),
       async (route) => {
         await new Promise((resolve) => globalThis.setTimeout(resolve, 1000));
         await route.continue();
@@ -115,7 +115,7 @@ test.describe('Error Handling', () => {
 
   test('should display empty state when no cases exist', async ({ page }) => {
     await page.route(
-      (url) => url.href.includes('/trpc') && url.href.includes('batch=1'),
+      (url) => url.href.includes('/trpc') && url.href.includes('case.list'),
       (route) => {
         route.fulfill({
           status: 200,
@@ -141,7 +141,7 @@ test.describe('Error Handling', () => {
 
   test('should show error loading cases message', async ({ page }) => {
     await page.route(
-      (url) => url.href.includes('/trpc') && url.href.includes('batch=1'),
+      (url) => url.href.includes('/trpc') && url.href.includes('case.list'),
       (route) => {
         route.fulfill({
           status: 200,

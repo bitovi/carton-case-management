@@ -85,6 +85,21 @@ describe('autoLoginMiddleware', () => {
     expect(mockNext).toHaveBeenCalled();
   });
 
+  it('should also set req.cookies.userId so context can access it immediately', async () => {
+    const mockUser = {
+      id: 'user-123',
+      name: 'Alex Morgan',
+      email: FIRST_USER_EMAIL,
+    };
+
+    mockFindFirst.mockResolvedValue(mockUser);
+
+    await autoLoginMiddleware(mockRequest as Request, mockResponse as Response, mockNext);
+
+    // Verify the userId is set on req.cookies for immediate access by context
+    expect(mockRequest.cookies?.userId).toBe('user-123');
+  });
+
   it('should use MOCK_USER_EMAIL from env variable if set', async () => {
     const customEmail = 'custom.user@carton.com';
     process.env.MOCK_USER_EMAIL = customEmail;

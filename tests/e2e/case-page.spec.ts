@@ -40,7 +40,7 @@ test.describe('CasePage', () => {
 
     await page.goto('/cases/invalid-case-id-12345');
 
-    await expect(page.getByText('Case not found')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('No case selected')).toBeVisible({ timeout: 10000 });
   });
 
   test('should switch cases when clicking different case in list', async ({ page }) => {

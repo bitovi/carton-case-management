@@ -154,7 +154,7 @@ export function CreateCasePage() {
               <SelectValue placeholder="Select a customer" />
             </SelectTrigger>
             <SelectContent>
-              {customers?.map((customer) => (
+              {customers?.map((customer: { id: string; name: string }) => (
                 <SelectItem key={customer.id} value={customer.id}>
                   {customer.name}
                 </SelectItem>
@@ -201,7 +201,7 @@ export function CreateCasePage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="__EMPTY__">Unassigned</SelectItem>
-              {users?.map((user) => (
+              {users?.map((user: { id: string; name: string }) => (
                 <SelectItem key={user.id} value={user.id}>
                   {user.name}
                 </SelectItem>

@@ -245,6 +245,7 @@ npm run test:watch          # Run tests in watch mode
 ```bash
 cd packages/client
 npm run test:e2e            # Run E2E tests
+npm run test:e2e:watch      # Run E2E tests in watch mode
 ```
 
 ## Storybook

@@ -4,7 +4,7 @@ import type { Context } from './context.js';
 import { TRPCError } from '@trpc/server';
 
 describe('appRouter', () => {
-  let mockPrisma: any;
+  let mockPrisma: Record<string, Record<string, ReturnType<typeof vi.fn>>>;
   let mockContext: Context;
 
   beforeEach(() => {

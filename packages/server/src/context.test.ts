@@ -12,6 +12,16 @@ vi.mock('@prisma/client', () => ({
 
 import { createContext } from './context.js';
 
+const mockInfo = {
+  calls: [],
+  isBatchCall: false,
+  accept: null,
+  type: 'query' as const,
+  connectionParams: null,
+  signal: new AbortController().signal,
+  url: null,
+};
+
 describe('createContext', () => {
   it('creates context with userId from cookies', async () => {
     const mockRequest = {
@@ -22,10 +32,11 @@ describe('createContext', () => {
 
     const mockResponse = {} as Partial<Response>;
 
-    const opts: CreateExpressContextOptions = {
+    const opts = {
       req: mockRequest as Request,
       res: mockResponse as Response,
-    };
+      info: mockInfo,
+    } as CreateExpressContextOptions;
 
     const context = await createContext(opts);
 
@@ -45,10 +56,11 @@ describe('createContext', () => {
 
     const mockResponse = {} as Partial<Response>;
 
-    const opts: CreateExpressContextOptions = {
+    const opts = {
       req: mockRequest as Request,
       res: mockResponse as Response,
-    };
+      info: mockInfo,
+    } as CreateExpressContextOptions;
 
     const context = await createContext(opts);
 
@@ -63,10 +75,11 @@ describe('createContext', () => {
 
     const mockResponse = {} as Partial<Response>;
 
-    const opts: CreateExpressContextOptions = {
+    const opts = {
       req: mockRequest as Request,
       res: mockResponse as Response,
-    };
+      info: mockInfo,
+    } as CreateExpressContextOptions;
 
     const context = await createContext(opts);
 
@@ -81,10 +94,11 @@ describe('createContext', () => {
 
     const mockResponse = {} as Partial<Response>;
 
-    const opts: CreateExpressContextOptions = {
+    const opts = {
       req: mockRequest as Request,
       res: mockResponse as Response,
-    };
+      info: mockInfo,
+    } as CreateExpressContextOptions;
 
     const context = await createContext(opts);
 
@@ -103,10 +117,11 @@ describe('createContext', () => {
       statusCode: 200,
     } as Partial<Response>;
 
-    const opts: CreateExpressContextOptions = {
+    const opts = {
       req: mockRequest as Request,
       res: mockResponse as Response,
-    };
+      info: mockInfo,
+    } as CreateExpressContextOptions;
 
     const context = await createContext(opts);
 

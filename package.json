@@ -15,6 +15,7 @@
     "test": "npm run test --workspaces --if-present",
     "test:watch": "npm run test:watch --workspaces --if-present",
     "test:e2e": "playwright test",
+    "test:e2e:watch": "playwright test --ui",
     "test:client": "npm run test --workspace=packages/client",
     "test:server": "npm run test --workspace=packages/server",
     "test:shared": "npm run test --workspace=packages/shared",

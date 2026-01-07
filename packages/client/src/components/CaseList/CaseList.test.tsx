@@ -21,8 +21,8 @@ const mockCases = [
     status: 'OPEN',
     creator: { id: '1', name: 'John Doe', email: 'john@example.com' },
     assignee: { id: '2', name: 'Jane Doe', email: 'jane@example.com' },
-    createdAt: new Date('2024-01-01').toISOString(),
-    updatedAt: new Date('2024-01-02').toISOString(),
+    createdAt: '2024-01-15T12:00:00.000Z', // Use noon UTC to avoid timezone shifts
+    updatedAt: '2024-01-16T12:00:00.000Z',
   },
   {
     id: '2',
@@ -31,8 +31,8 @@ const mockCases = [
     status: 'IN_PROGRESS',
     creator: { id: '1', name: 'John Doe', email: 'john@example.com' },
     assignee: { id: '2', name: 'Jane Doe', email: 'jane@example.com' },
-    createdAt: new Date('2024-01-03').toISOString(),
-    updatedAt: new Date('2024-01-04').toISOString(),
+    createdAt: '2024-01-17T12:00:00.000Z', // Use noon UTC to avoid timezone shifts
+    updatedAt: '2024-01-18T12:00:00.000Z',
   },
 ];
 
@@ -71,10 +71,10 @@ describe('CaseList', () => {
     });
 
     // Format: #CAS-YYMMDD-{last8chars}
-    // 2024-01-01 in local timezone might be 2023-12-31 UTC
-    expect(screen.getByText('#CAS-231231-1')).toBeInTheDocument();
+    // Using noon UTC times ensures consistent dates across all timezones
+    expect(screen.getByText('#CAS-240115-1')).toBeInTheDocument();
     expect(screen.getByText('Second Case')).toBeInTheDocument();
-    expect(screen.getByText('#CAS-240102-2')).toBeInTheDocument();
+    expect(screen.getByText('#CAS-240117-2')).toBeInTheDocument();
   });
 
   it('renders error state when API call fails', async () => {

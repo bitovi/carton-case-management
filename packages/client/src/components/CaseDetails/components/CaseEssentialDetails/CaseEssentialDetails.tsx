@@ -70,7 +70,7 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
             <p className="text-xs text-gray-600">Customer Name</p>
             <EditableSelect
               value={caseData.customerId}
-              options={(customers || []).map((c) => ({ value: c.id, label: c.name }))}
+              options={(customers || []).map((c: { id: string; name: string }) => ({ value: c.id, label: c.name }))}
               onChange={handleCustomerChange}
               disabled={updateCaseMutation.isPending}
               displayClassName="text-sm font-medium"
@@ -91,7 +91,7 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
             <p className="text-xs text-gray-600">Assigned To</p>
             <EditableSelect
               value={caseData.assignedTo || ''}
-              options={(users || []).map((u) => ({ value: u.id, label: u.name }))}
+              options={(users || []).map((u: { id: string; name: string }) => ({ value: u.id, label: u.name }))}
               onChange={handleAssigneeChange}
               disabled={updateCaseMutation.isPending}
               displayClassName="text-sm font-medium"

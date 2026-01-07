@@ -18,7 +18,18 @@ tests/
 
 ## Commands
 
-npm test && npm run lint
+### Running Tests
+- **Unit Tests**: `npm test` - Runs all unit tests across workspaces (client, server, shared)
+- **E2E Tests**: `npm run test:e2e` - Runs Playwright end-to-end tests
+- **E2E Tests (UI mode)**: `npm run test:e2e:watch` - Opens Playwright UI for interactive test debugging
+- **Linting**: `npm run lint` - Runs ESLint across all packages
+- **Type Checking**: `npm run typecheck` - Runs TypeScript type checking
+
+### Before Submitting Code
+Always ensure all tests pass before committing:
+```bash
+npm test && npm run test:e2e && npm run lint
+```
 
 ## Code Style
 

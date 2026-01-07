@@ -42,6 +42,9 @@ export async function autoLoginMiddleware(req: Request, res: Response, next: Nex
           sameSite: 'lax',
           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
+        // Also set on req.cookies so context can pick it up for this request
+        req.cookies = req.cookies || {};
+        req.cookies.userId = user.id;
         console.log(`Auto-logged in as: ${user.name} (${user.email})`);
       }
     } catch (error) {
