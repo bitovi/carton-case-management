@@ -17,15 +17,18 @@ describe('MenuList', () => {
     },
   ];
 
-  it('renders all menu items on desktop (via aria-labels)', () => {
+  it('renders all menu items in both mobile and desktop views', () => {
     render(
       <BrowserRouter>
         <MenuList items={mockItems} />
       </BrowserRouter>
     );
-    // Desktop view uses aria-labels, not visible text
-    expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Settings' })).toBeInTheDocument();
+    // Items render in both mobile (with visible text) and desktop (with aria-label)
+    // So we expect 2 links per item (mobile + desktop)
+    const homeLinks = screen.getAllByRole('link', { name: 'Home' });
+    const settingsLinks = screen.getAllByRole('link', { name: 'Settings' });
+    expect(homeLinks).toHaveLength(2);
+    expect(settingsLinks).toHaveLength(2);
   });
 
   it('renders icons for each item', () => {
@@ -34,12 +37,12 @@ describe('MenuList', () => {
         <MenuList items={mockItems} />
       </BrowserRouter>
     );
-    // Icons appear in both mobile button and desktop links
-    expect(screen.getAllByTestId('home-icon').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByTestId('settings-icon').length).toBeGreaterThanOrEqual(1);
+    // Icons appear in both mobile and desktop views
+    expect(screen.getAllByTestId('home-icon')).toHaveLength(2);
+    expect(screen.getAllByTestId('settings-icon')).toHaveLength(2);
   });
 
-  it('calls onItemClick callback when desktop item is clicked', async () => {
+  it('calls onItemClick callback when item is clicked', async () => {
     const handleClick = vi.fn();
     const user = userEvent.setup();
 
@@ -49,13 +52,13 @@ describe('MenuList', () => {
       </BrowserRouter>
     );
 
-    // Click the desktop link (by aria-label)
-    const homeLink = screen.getByRole('link', { name: 'Home' });
-    await user.click(homeLink);
+    // Click the first home link (mobile view)
+    const homeLinks = screen.getAllByRole('link', { name: 'Home' });
+    await user.click(homeLinks[0]);
     expect(handleClick).toHaveBeenCalledWith(mockItems[0]);
   });
 
-  it('marks active item with aria-current on desktop', () => {
+  it('marks active item with aria-current in both views', () => {
     const itemsWithActive = mockItems.map((item, idx) => ({
       ...item,
       isActive: idx === 0,
@@ -67,8 +70,11 @@ describe('MenuList', () => {
       </BrowserRouter>
     );
 
-    const homeLink = screen.getByRole('link', { name: 'Home' });
-    expect(homeLink).toHaveAttribute('aria-current', 'page');
+    // Both mobile and desktop Home links should have aria-current
+    const homeLinks = screen.getAllByRole('link', { name: 'Home' });
+    homeLinks.forEach((link) => {
+      expect(link).toHaveAttribute('aria-current', 'page');
+    });
   });
 
   it('renders with semantic nav element', () => {

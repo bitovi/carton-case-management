@@ -19,7 +19,7 @@ export function CustomerList({ onCustomerClick }: CustomerListProps) {
         >
           Create New Customer
         </Button>
-        <div className="flex items-center justify-between mb-2">
+        <div className="hidden lg:flex items-center justify-between mb-2">
           <span className="text-sm font-medium">Filters</span>
           <ListFilter size={16} />
         </div>
@@ -76,7 +76,7 @@ export function CustomerList({ onCustomerClick }: CustomerListProps) {
       >
         Create New Customer
       </Button>
-      <div className="flex items-center justify-between mb-2 px-2">
+      <div className="hidden lg:flex items-center justify-between mb-2 px-2">
         <span className="text-sm font-medium">Filters</span>
         <ListFilter size={16} className="text-gray-500" />
       </div>
