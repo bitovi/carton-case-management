@@ -1,14 +1,22 @@
 import { z } from 'zod';
 
+// Re-export enum schemas from generated
+export { CasePrioritySchema, CaseStatusSchema } from './generated/index.js';
+export type { CasePriorityType, CaseStatusType } from './generated/index.js';
+
+// Import for local alias
+import { CasePrioritySchema, CaseStatusSchema } from './generated/index.js';
+
+// Lowercase aliases for backwards compatibility
+export const casePrioritySchema = CasePrioritySchema;
+export const caseStatusSchema = CaseStatusSchema;
+
+// Legacy type aliases for backwards compatibility
+export type CasePriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+export type CaseStatus = 'TO_DO' | 'IN_PROGRESS' | 'COMPLETED' | 'CLOSED';
+
 export const emailSchema = z.string().email();
 export const passwordSchema = z.string().min(8);
-
-// Case enums
-export const casePrioritySchema = z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']);
-export type CasePriority = z.infer<typeof casePrioritySchema>;
-
-export const caseStatusSchema = z.enum(['TO_DO', 'IN_PROGRESS', 'COMPLETED', 'CLOSED']);
-export type CaseStatus = z.infer<typeof caseStatusSchema>;
 
 // Helper constants for UI
 export const CASE_PRIORITY_OPTIONS = [

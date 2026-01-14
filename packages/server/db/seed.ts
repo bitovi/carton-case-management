@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@carton/shared';
 import { FIRST_USER_EMAIL } from './constants.js';
-
-const prisma = new PrismaClient();
 
 async function main() {
   console.log('Clearing existing data...');

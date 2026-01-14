@@ -31,7 +31,7 @@ describe('appRouter', () => {
     mockContext = {
       prisma: mockPrisma,
       userId: undefined,
-    } as Context;
+    } as unknown as Context;
   });
 
   describe('health', () => {

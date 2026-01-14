@@ -5,19 +5,19 @@ import type { Request, Response, NextFunction } from 'express';
 const mockFindUnique = vi.hoisted(() => vi.fn());
 const mockFindFirst = vi.hoisted(() => vi.fn());
 
-// Mock PrismaClient
-vi.mock('@prisma/client', () => ({
-  PrismaClient: vi.fn().mockImplementation(() => ({
+// Mock @carton/shared prisma export
+vi.mock('@carton/shared', () => ({
+  prisma: {
     user: {
       findUnique: mockFindUnique,
       findFirst: mockFindFirst,
     },
     $disconnect: vi.fn(),
-  })),
+  },
 }));
 
-// Mock the seed file to avoid it running
-vi.mock('../../prisma/seed.js', () => ({
+// Mock the constants file
+vi.mock('../../db/constants.js', () => ({
   FIRST_USER_EMAIL: 'alex.morgan@carton.com',
 }));
 

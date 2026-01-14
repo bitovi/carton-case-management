@@ -7,10 +7,10 @@ services:
       - '3001:3001'
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=file:./prisma/dev.db
+      - DATABASE_URL=file:./db/dev.db
       - MOCK_USER_EMAIL=${MOCK_USER_EMAIL:-alex.morgan@carton.com}
     volumes:
-      - app-data:/app/packages/server/prismagit
+      - app-data:/app/packages/server/db
 
 volumes:
   app-data:

@@ -105,7 +105,7 @@ This application uses a simplified authentication system for development purpose
 MOCK_USER_EMAIL=jordan.doe@carton.com
 ```
 
-The available users are seeded in the database. You can view them by running `npm run db:studio` in the server package or checking the [seed.ts](packages/server/prisma/seed.ts) file.
+The available users are seeded in the database. You can view them by running `npm run db:studio` in the server package or checking the [seed.ts](packages/server/db/seed.ts) file.
 
 ### How It Works
 
@@ -188,13 +188,16 @@ carton-case-management/
 │   │   │   ├── router.ts   # tRPC router
 │   │   │   ├── context.ts  # tRPC context
 │   │   │   └── trpc.ts     # tRPC setup
-│   │   ├── prisma/
-│   │   │   ├── schema.prisma
-│   │   │   └── seed.ts
+│   │   ├── db/
+│   │   │   ├── dev.db      # SQLite database
+│   │   │   └── seed.ts     # Database seeding
 │   │   └── package.json
 │   └── shared/             # Shared code
+│       ├── prisma/
+│       │   └── schema.prisma # Prisma schema (single source of truth)
 │       ├── src/
 │       │   ├── types.ts    # Shared types
+│       │   ├── generated/  # Auto-generated Zod schemas from Prisma
 │       │   └── utils.ts    # Shared utilities
 │       └── package.json
 ├── docker-compose.dev.yaml
@@ -208,7 +211,7 @@ carton-case-management/
 
 ## Database
 
-The application uses SQLite for simplicity. The database file is located at `packages/server/prisma/dev.db`.
+The application uses SQLite for simplicity. The database file is located at `packages/server/db/dev.db`. The Prisma schema is in `packages/shared/prisma/schema.prisma`.
 
 ### Prisma Commands
 

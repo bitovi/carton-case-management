@@ -30,8 +30,9 @@ RUN npm ci --workspace=packages/server --workspace=packages/shared --omit=dev
 
 # Copy built artifacts
 COPY --from=builder /app/packages/server/dist ./packages/server/dist
-COPY --from=builder /app/packages/server/prisma ./packages/server/prisma
+COPY --from=builder /app/packages/server/db ./packages/server/db
 COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
+COPY --from=builder /app/packages/shared/prisma ./packages/shared/prisma
 COPY --from=builder /app/packages/client/dist ./packages/client/dist
 
 # Copy static client build to be served

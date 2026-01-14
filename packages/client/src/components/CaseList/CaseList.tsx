@@ -75,7 +75,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
       >
         Create Case
       </Button>
-      {cases?.map((caseItem: { id: string; title: string; createdAt: Date }) => {
+      {cases?.map((caseItem) => {
         const isActive = caseItem.id === activeId;
         return (
           <Link

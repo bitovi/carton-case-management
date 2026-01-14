@@ -2,12 +2,12 @@ import { describe, it, expect, vi } from 'vitest';
 import type { Request, Response } from 'express';
 import type { CreateExpressContextOptions } from '@trpc/server/adapters/express';
 
-// Mock PrismaClient
-vi.mock('@prisma/client', () => ({
-  PrismaClient: vi.fn().mockImplementation(() => ({
+// Mock @carton/shared prisma export
+vi.mock('@carton/shared', () => ({
+  prisma: {
     $connect: vi.fn(),
     $disconnect: vi.fn(),
-  })),
+  },
 }));
 
 import { createContext } from './context.js';

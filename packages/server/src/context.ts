@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@carton/shared';
 import type { CreateExpressContextOptions } from '@trpc/server/adapters/express';
-
-const prisma = new PrismaClient();
 
 export async function createContext({ req, res }: CreateExpressContextOptions) {
   // Extract userId from cookie (set by auto-login middleware)

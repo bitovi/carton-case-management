@@ -63,7 +63,12 @@ TypeScript 5.x / Node.js 22+: Follow standard conventions
 
 ### Data Layer
 
-- **Prisma/tRPC**: Always configure cascading deletes (`onDelete: Cascade`) in Prisma schema when an entity has related data that should be removed when the parent is deleted
+- **Prisma Schema in Shared**: Prisma schema lives in `packages/shared/prisma/schema.prisma` - the data model is a shared concern
+- **Database Operations in Server**: Database file (`dev.db`), seed script, and constants live in `packages/server/db/`
+- **Prisma Client Import**: Server imports Prisma Client from `@carton/shared`, e.g., `import { prisma } from '@carton/shared'`
+- **Zod Schemas from Prisma**: Use auto-generated Zod schemas from `@carton/shared` for validation - do not manually duplicate Prisma enums
+- **Database Commands**: `npm run db:generate --workspace=packages/shared` for types, `npm run db:seed --workspace=packages/server` for data
+- **Cascading Deletes**: Always configure cascading deletes (`onDelete: Cascade`) in Prisma schema when an entity has related data that should be removed when the parent is deleted
 
 ## Recent Changes
 

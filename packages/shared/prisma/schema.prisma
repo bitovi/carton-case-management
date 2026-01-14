@@ -5,6 +5,23 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator zod {
+  provider                         = "zod-prisma-types"
+  output                           = "../src/generated"
+  createRelationValuesTypes        = false
+  createInputTypes                 = false
+  createModelTypes                 = true
+  addInputTypeValidation           = false
+  addIncludeType                   = false
+  addSelectType                    = false
+  validateWhereUniqueInput         = false
+  createOptionalDefaultValuesTypes = false
+  createPartialTypes               = false
+  useMultipleFiles                 = false
+  writeBarrelFiles                 = false
+  prismaClientPath                 = "@prisma/client"
+}
+
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")

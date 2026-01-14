@@ -35,6 +35,9 @@ storybook-static/
 *.sqlite
 *.sqlite3
 
+# Generated code (Prisma Zod types)
+packages/shared/src/generated/
+
 # Logs
 logs
 *.log

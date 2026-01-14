@@ -1,8 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@carton/shared';
 import type { Request, Response, NextFunction } from 'express';
-import { FIRST_USER_EMAIL } from '../../prisma/constants.js';
-
-const prisma = new PrismaClient();
+import { FIRST_USER_EMAIL } from '../../db/constants.js';
 
 /**
  * Auto-login middleware for development

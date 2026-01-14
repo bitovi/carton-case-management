@@ -6,11 +6,11 @@
 
 All code must be strictly typed using TypeScript with no `any` types unless explicitly justified and documented. Type safety extends end-to-end:
 
-- **Prisma Schema as Source of Truth**: All data models defined in `packages/server/prisma/schema.prisma` - this is the single source of truth for database entities
-- **Shared Types Package**: API contracts and domain types defined in `packages/shared`, with a separate file for each functionality or feature area
+- **Prisma Schema as Source of Truth**: All data models defined in `packages/shared/prisma/schema.prisma` - this is the single source of truth for database entities, located in shared because the data model is a shared concern that affects all packages
+- **Shared Types Package**: API contracts, domain types, Prisma Client, and generated Zod schemas all exported from `packages/shared`, with separate files per functionality
+- **Zod Generation from Prisma**: Zod schemas are auto-generated from the Prisma schema using `zod-prisma-types`, ensuring validation stays in sync with the data model
 - **tRPC Integration**: Type-safe API layer ensuring compile-time contract verification between client and server
-- **Zod Validation**: Runtime validation schemas for all API inputs and critical data structures
-- **Prisma Type Generation**: Database schema changes automatically propagate types throughout the application
+- **Prisma Type Generation**: Database schema changes automatically propagate types and Zod schemas throughout the application
 - **No Type Assertions**: Avoid type assertions (`as`) except when interfacing with untyped third-party libraries
 
 ### II. API Contract Integrity (NON-NEGOTIABLE)
@@ -63,8 +63,11 @@ Critical user flows must have corresponding Playwright E2E tests:
 - **Monorepo Structure**: Maintain clean separation between `client`, `server`, and `shared` packages
 - **No Cross-Contamination**: Client code cannot import from server, only from shared
 - **Workspace Dependencies**: Use npm workspaces for inter-package dependencies
-- **Data Model Authority**: All data models must be defined in Prisma schema (`packages/server/prisma/schema.prisma`)
-- **Database Migrations**: Prisma migrations required for all schema changes - never modify database directly
+- **Data Model in Shared (STRICTLY ENFORCED)**: All data models must be defined in Prisma schema (`packages/shared/prisma/schema.prisma`) - the data model is a shared concern that affects all packages
+- **Prisma Client from Shared**: Server imports Prisma Client from `@carton/shared`, not directly from prisma
+- **Database Operations in Server**: Database file, seed script, and migrations live in `packages/server/db/` - these are server concerns
+- **Database Commands**: `db:generate` runs from shared (schema), `db:seed` runs from server (data) - never modify database directly
+- **Zod Schemas from Prisma**: Generated Zod schemas in `packages/shared/src/generated/` are the source of truth for validation - do not manually duplicate Prisma enums/types
 - **Shared Types Organization (STRICTLY ENFORCED)**: Any types shared between client and server MUST be placed in `packages/shared/src/` with separate files per functionality - never duplicate types across packages or combine unrelated types in a single file
 
 ### Code Quality
@@ -120,4 +123,4 @@ This constitution supersedes all other development practices and conventions. Al
 
 **Enforcement**: Type safety and contract integrity violations are blockers. Test-first, Storybook, and E2E requirements are mandatory for all new features.
 
-**Version**: 1.0.0 | **Ratified**: 2025-12-24 | **Last Amended**: 2025-12-24
+**Version**: 1.1.0 | **Ratified**: 2025-12-24 | **Last Amended**: 2026-01-14
