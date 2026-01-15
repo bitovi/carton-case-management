@@ -6,6 +6,9 @@
     "packages/*"
   ],
   "scripts": {
+    "docker:up": "docker compose -f docker-compose.dev.yaml up -d && docker compose -f docker-compose.dev.yaml exec app bash -c 'npm install && npm run setup && npm run dev'",
+    "docker:dev": "docker compose -f docker-compose.dev.yaml exec app npm run dev",
+    "docker:down": "docker compose -f docker-compose.dev.yaml down",
     "dev": "npm run dev --workspace=packages/server & npm run dev --workspace=packages/client",
     "dev:client": "npm run dev --workspace=packages/client",
     "dev:server": "npm run dev --workspace=packages/server",

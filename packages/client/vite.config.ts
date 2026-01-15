@@ -13,6 +13,9 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     open: false,
+    watch: {
+      usePolling: true,
+    },
     proxy: {
       '/trpc': {
         target: 'http://localhost:3001',
