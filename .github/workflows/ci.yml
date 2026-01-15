@@ -70,7 +70,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Setup database
-        run: npm run setup --workspace=packages/server
+        run: npm run db:setup
 
       - name: Run E2E tests
         run: npm run test:e2e
