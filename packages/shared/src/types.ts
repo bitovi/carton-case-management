@@ -1,19 +1,21 @@
 import { z } from 'zod';
 
 // Re-export enum schemas from generated
-export { CasePrioritySchema, CaseStatusSchema } from './generated/index.js';
-export type { CasePriorityType, CaseStatusType } from './generated/index.js';
+export { CasePrioritySchema, CaseStatusSchema, TaskPrioritySchema } from './generated/index.js';
+export type { CasePriorityType, CaseStatusType, TaskPriorityType } from './generated/index.js';
 
 // Import for local alias
-import { CasePrioritySchema, CaseStatusSchema } from './generated/index.js';
+import { CasePrioritySchema, CaseStatusSchema, TaskPrioritySchema } from './generated/index.js';
 
 // Lowercase aliases for backwards compatibility
 export const casePrioritySchema = CasePrioritySchema;
 export const caseStatusSchema = CaseStatusSchema;
+export const taskPrioritySchema = TaskPrioritySchema;
 
 // Legacy type aliases for backwards compatibility
 export type CasePriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 export type CaseStatus = 'TO_DO' | 'IN_PROGRESS' | 'COMPLETED' | 'CLOSED';
+export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 
 export const emailSchema = z.string().email();
 export const passwordSchema = z.string().min(8);
@@ -31,4 +33,11 @@ export const CASE_STATUS_OPTIONS = [
   { value: 'IN_PROGRESS' as const, label: 'In Progress' },
   { value: 'COMPLETED' as const, label: 'Completed' },
   { value: 'CLOSED' as const, label: 'Closed' },
+] as const;
+
+export const TASK_PRIORITY_OPTIONS = [
+  { value: 'LOW' as const, label: 'Low' },
+  { value: 'MEDIUM' as const, label: 'Medium' },
+  { value: 'HIGH' as const, label: 'High' },
+  { value: 'URGENT' as const, label: 'Urgent' },
 ] as const;

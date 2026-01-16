@@ -2,12 +2,13 @@
 // Use this entry point for client-side code
 
 // Types from generated Zod schemas (type-only import from @prisma/client is tree-shaken)
-export { CasePrioritySchema, CaseStatusSchema } from './generated/index.js';
-export type { CasePriorityType, CaseStatusType } from './generated/index.js';
+export { CasePrioritySchema, CaseStatusSchema, TaskPrioritySchema } from './generated/index.js';
+export type { CasePriorityType, CaseStatusType, TaskPriorityType } from './generated/index.js';
 
 // Legacy type aliases for backwards compatibility
 export type CasePriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 export type CaseStatus = 'TO_DO' | 'IN_PROGRESS' | 'COMPLETED' | 'CLOSED';
+export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 
 // Helper constants for UI
 export const CASE_PRIORITY_OPTIONS = [
@@ -22,6 +23,13 @@ export const CASE_STATUS_OPTIONS = [
   { value: 'IN_PROGRESS' as const, label: 'In Progress' },
   { value: 'COMPLETED' as const, label: 'Completed' },
   { value: 'CLOSED' as const, label: 'Closed' },
+] as const;
+
+export const TASK_PRIORITY_OPTIONS = [
+  { value: 'LOW' as const, label: 'Low' },
+  { value: 'MEDIUM' as const, label: 'Medium' },
+  { value: 'HIGH' as const, label: 'High' },
+  { value: 'URGENT' as const, label: 'Urgent' },
 ] as const;
 
 // Utilities (browser-safe)

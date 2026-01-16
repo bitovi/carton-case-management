@@ -1,10 +1,26 @@
+---
+name: user-experience-guidelines
+description: UI/UX patterns and conventions for building pages, sidebars, inline editing, forms, delete confirmations, and responsive layouts. Use when creating or modifying React components, pages, or any user-facing features in the client package.
+---
+
 # User Experience Guidelines
 
-**Canonical Reference:** [CasePage](../../packages/client/src/pages/CasePage) implementation
+**Canonical Reference:** [CasePage](../../../packages/client/src/pages/CasePage) implementation
+
+## When to Use This Skill
+
+Use these guidelines when:
+- Creating new pages or views
+- Building sidebar lists with selection states
+- Implementing inline editing functionality
+- Adding delete confirmations
+- Creating forms with validation
+- Making components responsive
+- Handling loading, error, and empty states
 
 ## 1. Sidebar Lists
 
-**Reference:** [CaseList.tsx](../../packages/client/src/components/CaseList/CaseList.tsx)
+**Reference:** [CaseList.tsx](../../../packages/client/src/components/CaseList/CaseList.tsx)
 
 ### Required Elements
 - Create button at top: `navigate('/entity/new')`
@@ -24,8 +40,8 @@
 ## 2. Inline Editing
 
 ### Components
-- **Single-line text:** [EditableTitle](../../packages/client/src/components/common/EditableTitle/EditableTitle.tsx)
-- **Dropdowns:** [EditableSelect](../../packages/client/src/components/common/EditableSelect/EditableSelect.tsx)
+- **Single-line text:** [EditableTitle](../../../packages/client/src/components/common/EditableTitle/EditableTitle.tsx)
+- **Dropdowns:** [EditableSelect](../../../packages/client/src/components/common/EditableSelect/EditableSelect.tsx)
 - **Multi-line text:** Custom with Textarea + Save/Cancel buttons
 
 ### Usage
@@ -66,7 +82,7 @@ const mutation = trpc.entity.update.useMutation({
 
 ## 3. Delete with Confirmation
 
-**Reference:** [CaseInformation.tsx](../../packages/client/src/components/CaseDetails/components/CaseInformation/CaseInformation.tsx), [ConfirmationDialog.tsx](../../packages/client/src/components/common/ConfirmationDialog/ConfirmationDialog.tsx)
+**Reference:** [CaseInformation.tsx](../../../packages/client/src/components/CaseDetails/components/CaseInformation/CaseInformation.tsx), [ConfirmationDialog.tsx](../../../packages/client/src/components/common/ConfirmationDialog/ConfirmationDialog.tsx)
 
 ### Pattern
 ```tsx
@@ -101,7 +117,7 @@ const deleteEntity = trpc.entity.delete.useMutation({
 
 ## 4. Create Form
 
-**Reference:** [CreateCasePage.tsx](../../packages/client/src/pages/CreateCasePage/CreateCasePage.tsx)
+**Reference:** [CreateCasePage.tsx](../../../packages/client/src/pages/CreateCasePage/CreateCasePage.tsx)
 
 ### Routing
 - Route: `/entities/:id` where `id` can be `'new'`

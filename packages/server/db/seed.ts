@@ -6,6 +6,7 @@ async function main() {
 
   // Delete all existing data in correct order (respecting foreign keys)
   await prisma.comment.deleteMany();
+  await prisma.task.deleteMany();
   await prisma.case.deleteMany();
   await prisma.customer.deleteMany();
   await prisma.user.deleteMany();
@@ -273,11 +274,103 @@ async function main() {
     },
   });
 
+  // Create demo tasks
+  await prisma.task.create({
+    data: {
+      title: 'Review insurance documentation',
+      description: 'Review all insurance documentation for Sarah Johnson case before the meeting tomorrow.',
+      priority: 'HIGH',
+      dueDate: new Date('2026-01-20T17:00:00'),
+      assignedTo: alexMorgan.id,
+      caseId: case1.id,
+      createdBy: alexMorgan.id,
+      updatedBy: alexMorgan.id,
+      createdAt: new Date('2026-01-10T09:00:00'),
+      updatedAt: new Date('2026-01-10T09:00:00'),
+    },
+  });
+
+  await prisma.task.create({
+    data: {
+      title: 'Schedule client follow-up call',
+      description: 'Contact John Sorenson to schedule a follow-up call regarding his policy coverage inquiry.',
+      priority: 'MEDIUM',
+      dueDate: new Date('2026-01-18T12:00:00'),
+      assignedTo: taylorSmith.id,
+      caseId: case2.id,
+      createdBy: jordanDoe.id,
+      updatedBy: jordanDoe.id,
+      createdAt: new Date('2026-01-12T14:00:00'),
+      updatedAt: new Date('2026-01-12T14:00:00'),
+    },
+  });
+
+  await prisma.task.create({
+    data: {
+      title: 'Verify security system documentation',
+      description: 'Verify the security system documentation submitted by Alice Smith for premium adjustment eligibility.',
+      priority: 'LOW',
+      dueDate: new Date('2026-01-25T17:00:00'),
+      assignedTo: jordanDoe.id,
+      caseId: case3.id,
+      createdBy: taylorSmith.id,
+      updatedBy: taylorSmith.id,
+      createdAt: new Date('2026-01-08T10:30:00'),
+      updatedAt: new Date('2026-01-08T10:30:00'),
+    },
+  });
+
+  await prisma.task.create({
+    data: {
+      title: 'Process vehicle inspection report',
+      description: 'Review and process the vehicle inspection report for Bob Williams auto insurance claim.',
+      priority: 'URGENT',
+      dueDate: new Date('2026-01-17T09:00:00'),
+      assignedTo: alexMorgan.id,
+      caseId: case4.id,
+      createdBy: alexMorgan.id,
+      updatedBy: alexMorgan.id,
+      createdAt: new Date('2026-01-15T08:00:00'),
+      updatedAt: new Date('2026-01-15T08:00:00'),
+    },
+  });
+
+  await prisma.task.create({
+    data: {
+      title: 'Update team documentation',
+      description: 'Update the internal team documentation with new billing correction procedures.',
+      priority: 'LOW',
+      dueDate: null,
+      assignedTo: null,
+      caseId: null,
+      createdBy: jordanDoe.id,
+      updatedBy: jordanDoe.id,
+      createdAt: new Date('2026-01-05T11:00:00'),
+      updatedAt: new Date('2026-01-05T11:00:00'),
+    },
+  });
+
+  await prisma.task.create({
+    data: {
+      title: 'Prepare quarterly report',
+      description: 'Compile and prepare the quarterly case resolution report for management review.',
+      priority: 'HIGH',
+      dueDate: new Date('2026-01-31T17:00:00'),
+      assignedTo: taylorSmith.id,
+      caseId: null,
+      createdBy: alexMorgan.id,
+      updatedBy: alexMorgan.id,
+      createdAt: new Date('2026-01-14T09:00:00'),
+      updatedAt: new Date('2026-01-14T09:00:00'),
+    },
+  });
+
   console.log('Seeding completed!');
   console.log(`Created ${await prisma.user.count()} users`);
   console.log(`Created ${await prisma.customer.count()} customers`);
   console.log(`Created ${await prisma.case.count()} cases`);
   console.log(`Created ${await prisma.comment.count()} comments`);
+  console.log(`Created ${await prisma.task.count()} tasks`);
 }
 
 main()

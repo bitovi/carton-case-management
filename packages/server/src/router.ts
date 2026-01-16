@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { router, publicProcedure } from './trpc.js';
-import { formatDate, casePrioritySchema, caseStatusSchema } from '@carton/shared';
+import { formatDate, casePrioritySchema, caseStatusSchema, taskPrioritySchema } from '@carton/shared';
 import { TRPCError } from '@trpc/server';
 
 export const appRouter = router({
@@ -355,6 +355,169 @@ export const appRouter = router({
           },
         });
       }),
+  }),
+
+  // Task routes
+  task: router({
+    list: publicProcedure
+      .input(
+        z
+          .object({
+            assignedTo: z.string().optional(),
+            caseId: z.string().optional(),
+          })
+          .optional()
+      )
+      .query(async ({ ctx, input }) => {
+        return ctx.prisma.task.findMany({
+          where: {
+            ...(input?.assignedTo ? { assignedTo: input.assignedTo } : {}),
+            ...(input?.caseId ? { caseId: input.caseId } : {}),
+          },
+          include: {
+            creator: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            updater: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            assignee: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            case: {
+              select: {
+                id: true,
+                title: true,
+                customer: {
+                  select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        });
+      }),
+    getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+      return ctx.prisma.task.findUnique({
+        where: { id: input.id },
+        include: {
+          creator: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          updater: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          assignee: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          case: {
+            select: {
+              id: true,
+              title: true,
+              customer: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    }),
+    create: publicProcedure
+      .input(
+        z.object({
+          title: z.string().min(1),
+          description: z.string().min(1),
+          priority: taskPrioritySchema.optional(),
+          dueDate: z.coerce.date().optional(),
+          assignedTo: z.string().optional(),
+          caseId: z.string().optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated',
+          });
+        }
+
+        return ctx.prisma.task.create({
+          data: {
+            ...input,
+            createdBy: ctx.userId,
+            updatedBy: ctx.userId,
+          },
+        });
+      }),
+    update: publicProcedure
+      .input(
+        z.object({
+          id: z.string(),
+          title: z.string().optional(),
+          description: z.string().optional(),
+          priority: taskPrioritySchema.optional(),
+          dueDate: z.coerce.date().nullable().optional(),
+          assignedTo: z.string().nullable().optional(),
+          caseId: z.string().nullable().optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated',
+          });
+        }
+
+        const { id, ...data } = input;
+        return ctx.prisma.task.update({
+          where: { id },
+          data: {
+            ...data,
+            updatedBy: ctx.userId,
+            updatedAt: new Date(),
+          },
+        });
+      }),
+    delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+      return ctx.prisma.task.delete({
+        where: { id: input.id },
+      });
+    }),
   }),
 });
 
