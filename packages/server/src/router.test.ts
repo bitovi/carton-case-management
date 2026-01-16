@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { appRouter } from './router.js';
 import type { Context } from './context.js';
 import { TRPCError } from '@trpc/server';
+import type { Request, Response } from 'express';
 
 describe('appRouter', () => {
   let mockPrisma: Record<string, Record<string, ReturnType<typeof vi.fn>>>;
@@ -29,6 +30,8 @@ describe('appRouter', () => {
     };
 
     mockContext = {
+      req: {} as Request,
+      res: {} as Response,
       prisma: mockPrisma,
       userId: undefined,
     } as unknown as Context;
@@ -167,17 +170,19 @@ describe('appRouter', () => {
 
   describe('customer', () => {
     describe('list', () => {
-      it('returns all customers ordered by name', async () => {
+      it('returns all customers ordered by lastName', async () => {
         const mockCustomers = [
           {
             id: 'customer-1',
-            name: 'Customer A',
+            firstName: 'Customer',
+            lastName: 'A',
             createdAt: new Date(),
             updatedAt: new Date(),
           },
           {
             id: 'customer-2',
-            name: 'Customer B',
+            firstName: 'Customer',
+            lastName: 'B',
             createdAt: new Date(),
             updatedAt: new Date(),
           },
@@ -191,12 +196,17 @@ describe('appRouter', () => {
         expect(mockPrisma.customer.findMany).toHaveBeenCalledWith({
           select: {
             id: true,
-            name: true,
+            firstName: true,
+            lastName: true,
+            username: true,
+            email: true,
+            dateJoined: true,
+            satisfactionRate: true,
             createdAt: true,
             updatedAt: true,
           },
           orderBy: {
-            name: 'asc',
+            lastName: 'asc',
           },
         });
         expect(result).toEqual(mockCustomers);
@@ -211,7 +221,7 @@ describe('appRouter', () => {
           {
             id: 'case-1',
             title: 'Test Case',
-            customer: { id: 'customer-1', name: 'Customer A' },
+            customer: { id: 'customer-1', firstName: 'Customer', lastName: 'A' },
             creator: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
             updater: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
             assignee: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
@@ -227,7 +237,7 @@ describe('appRouter', () => {
           where: {},
           include: {
             customer: {
-              select: { id: true, name: true },
+              select: { id: true, firstName: true, lastName: true },
             },
             creator: {
               select: { id: true, name: true, email: true },
@@ -289,7 +299,7 @@ describe('appRouter', () => {
         const mockCase = {
           id: 'case-1',
           title: 'Test Case',
-          customer: { id: 'customer-1', name: 'Customer A' },
+          customer: { id: 'customer-1', firstName: 'Customer', lastName: 'A' },
           creator: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
           updater: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
           assignee: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
@@ -311,7 +321,7 @@ describe('appRouter', () => {
           where: { id: 'case-1' },
           include: {
             customer: {
-              select: { id: true, name: true },
+              select: { id: true, firstName: true, lastName: true },
             },
             creator: {
               select: { id: true, name: true, email: true },

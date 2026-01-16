@@ -1,15 +1,18 @@
-import { Routes, Route } from 'react-router-dom';
-import { FolderClosed } from 'lucide-react';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { FolderClosed, Users } from 'lucide-react';
 import { Header } from './components/Header';
 import { MenuList } from './components/MenuList';
 import { CasePage } from './pages/CasePage';
+import { CustomerPage } from './pages/CustomerPage';
 import { trpc } from './lib/trpc';
 
-const menuItems = [
-  { id: 'home', label: 'Cases', path: '/cases/', icon: <FolderClosed size={20} />, isActive: true },
-];
-
 function App() {
+  const location = useLocation();
+  
+  const menuItems = [
+    { id: 'home', label: 'Cases', path: '/cases/', icon: <FolderClosed size={20} />, isActive: location.pathname === '/' || location.pathname.startsWith('/cases') },
+    { id: 'customers', label: 'Customers', path: '/customers/', icon: <Users size={20} />, isActive: location.pathname.startsWith('/customers') },
+  ];
   const { data: user, isLoading, error } = trpc.auth.me.useQuery();
 
   // Show loading state while fetching user
@@ -55,6 +58,8 @@ function App() {
             <Route path="/" element={<CasePage />} />
             <Route path="/cases/" element={<CasePage />} />
             <Route path="/cases/:id" element={<CasePage />} />
+            <Route path="/customers/" element={<CustomerPage />} />
+            <Route path="/customers/:id" element={<CustomerPage />} />
           </Routes>
         </main>
       </div>

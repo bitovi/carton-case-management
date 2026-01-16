@@ -1,7 +1,7 @@
 export type CaseEssentialDetailsProps = {
   caseId: string;
   caseData: {
-    customer: { id: string; name: string };
+    customer: { id: string; firstName: string; lastName: string };
     customerId: string;
     priority?: string;
     createdAt: string;
