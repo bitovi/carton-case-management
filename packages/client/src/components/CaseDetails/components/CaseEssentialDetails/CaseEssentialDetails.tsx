@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { EditableSelect } from '@/components/common/EditableSelect';
+import { EditableSelect } from '@/components/inline-edit';
 import { trpc } from '@/lib/trpc';
 import { type CasePriority, CASE_PRIORITY_OPTIONS } from '@carton/shared/client';
 import type { CaseEssentialDetailsProps } from './types';
@@ -19,24 +19,27 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
     },
   });
 
-  const handlePriorityChange = (newPriority: string) => {
-    updateCaseMutation.mutate({
+  const handlePriorityChange = async (newPriority: string) => {
+    await updateCaseMutation.mutateAsync({
       id: caseId,
       priority: newPriority as CasePriority,
     });
   };
 
-  const handleCustomerChange = (newCustomerId: string) => {
-    updateCaseMutation.mutate({
+  const handleCustomerChange = async (newCustomerId: string) => {
+    await updateCaseMutation.mutateAsync({
       id: caseId,
       customerId: newCustomerId,
     });
   };
 
-  const handleAssigneeChange = (newAssigneeId: string) => {
-    updateCaseMutation.mutate({
+  // Special value to represent "unassigned" since Radix Select doesn't allow empty strings
+  const UNASSIGNED_VALUE = '__unassigned__';
+
+  const handleAssigneeChange = async (newAssigneeId: string) => {
+    await updateCaseMutation.mutateAsync({
       id: caseId,
-      assignedTo: newAssigneeId === '' ? null : newAssigneeId,
+      assignedTo: newAssigneeId === UNASSIGNED_VALUE ? null : newAssigneeId,
     });
   };
 
@@ -66,43 +69,35 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
       </Button>
       {isExpanded && (
         <>
-          <div className="flex flex-col gap-1">
-            <p className="text-xs text-gray-600">Customer Name</p>
-            <EditableSelect
-              value={caseData.customerId}
-              options={(customers || []).map((c: { id: string; name: string }) => ({ value: c.id, label: c.name }))}
-              onChange={handleCustomerChange}
-              disabled={updateCaseMutation.isPending}
-              displayClassName="text-sm font-medium"
-              placeholder="Select customer"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <p className="text-xs text-gray-600">Priority</p>
-            <EditableSelect
-              value={caseData.priority || 'MEDIUM'}
-              options={[...CASE_PRIORITY_OPTIONS]}
-              onChange={handlePriorityChange}
-              disabled={updateCaseMutation.isPending}
-              displayClassName="text-sm font-medium"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <p className="text-xs text-gray-600">Assigned To</p>
-            <EditableSelect
-              value={caseData.assignedTo || ''}
-              options={(users || []).map((u: { id: string; name: string }) => ({ value: u.id, label: u.name }))}
-              onChange={handleAssigneeChange}
-              disabled={updateCaseMutation.isPending}
-              displayClassName="text-sm font-medium"
-              placeholder="Unassigned"
-              emptyLabel="Unassigned"
-              allowEmpty
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <p className="text-xs text-gray-600">Date Opened</p>
-            <p className="text-sm font-medium">
+          <EditableSelect
+            label="Customer Name"
+            value={caseData.customerId}
+            options={(customers || []).map((c: { id: string; name: string }) => ({ value: c.id, label: c.name }))}
+            onSave={handleCustomerChange}
+            readonly={updateCaseMutation.isPending}
+            placeholder="Select customer"
+          />
+          <EditableSelect
+            label="Priority"
+            value={caseData.priority || 'MEDIUM'}
+            options={[...CASE_PRIORITY_OPTIONS]}
+            onSave={handlePriorityChange}
+            readonly={updateCaseMutation.isPending}
+          />
+          <EditableSelect
+            label="Assigned To"
+            value={caseData.assignedTo || UNASSIGNED_VALUE}
+            options={[
+              { value: UNASSIGNED_VALUE, label: 'Unassigned' },
+              ...(users || []).map((u: { id: string; name: string }) => ({ value: u.id, label: u.name })),
+            ]}
+            onSave={handleAssigneeChange}
+            readonly={updateCaseMutation.isPending}
+            placeholder="Unassigned"
+          />
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-950 tracking-[0.18px] leading-4 px-1">Date Opened</span>
+            <p className="text-sm font-medium px-1 py-2">
               {new Date(caseData.createdAt).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
@@ -110,13 +105,13 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
               })}
             </p>
           </div>
-          <div className="flex flex-col gap-1">
-            <p className="text-xs text-gray-600">Created By</p>
-            <p className="text-sm font-medium">{caseData.creator.name}</p>
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-950 tracking-[0.18px] leading-4 px-1">Created By</span>
+            <p className="text-sm font-medium px-1 py-2">{caseData.creator.name}</p>
           </div>
-          <div className="flex flex-col gap-1">
-            <p className="text-xs text-gray-600">Last Updated</p>
-            <p className="text-sm font-medium">
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-950 tracking-[0.18px] leading-4 px-1">Last Updated</span>
+            <p className="text-sm font-medium px-1 py-2">
               {new Date(caseData.updatedAt).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
@@ -124,9 +119,9 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
               })}
             </p>
           </div>
-          <div className="flex flex-col gap-1">
-            <p className="text-xs text-gray-600">Updated By</p>
-            <p className="text-sm font-medium">{caseData.updater.name}</p>
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-950 tracking-[0.18px] leading-4 px-1">Updated By</span>
+            <p className="text-sm font-medium px-1 py-2">{caseData.updater.name}</p>
           </div>
         </>
       )}

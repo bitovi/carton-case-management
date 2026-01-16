@@ -1,12 +1,16 @@
 import { useState } from 'react';
 import { List, MoreVertical, Trash } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { formatCaseNumber, type CaseStatus, CASE_STATUS_OPTIONS } from '@carton/shared/client';
-import { EditableTitle } from '@/components/common/EditableTitle';
-import { EditableSelect } from '@/components/common/EditableSelect';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
+import { EditableTitle, EditableTextarea } from '@/components/inline-edit';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -18,8 +22,6 @@ import { useNavigate } from 'react-router-dom';
 import type { CaseInformationProps } from './types';
 
 export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformationProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedDescription, setEditedDescription] = useState(caseData.description);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -48,7 +50,6 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
     onSuccess: () => {
       utils.case.getById.invalidate({ id: caseId });
       utils.case.list.invalidate();
-      setIsEditing(false);
     },
     onError: (error, _variables, context) => {
       console.error('Failed to update case:', error);
@@ -56,7 +57,6 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
       if (context?.previousCase) {
         utils.case.getById.setData({ id: caseId }, context.previousCase);
       }
-      alert('Failed to save changes. Please try again.');
     },
   });
 
@@ -67,33 +67,22 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
     },
     onError: (error) => {
       console.error('Failed to delete case:', error);
-      alert('Failed to delete case. Please try again.');
       setIsDeleteDialogOpen(false);
     },
   });
 
-  const handleTitleSave = (newTitle: string) => {
-    updateCase.mutate({
+  const handleTitleSave = async (newTitle: string) => {
+    await updateCase.mutateAsync({
       id: caseId,
       title: newTitle,
     });
   };
 
-  const handleSave = () => {
-    if (editedDescription.trim() === '') {
-      alert('Description cannot be empty');
-      return;
-    }
-
-    updateCase.mutate({
+  const handleDescriptionSave = async (newDescription: string) => {
+    await updateCase.mutateAsync({
       id: caseId,
-      description: editedDescription,
+      description: newDescription,
     });
-  };
-
-  const handleCancel = () => {
-    setEditedDescription(caseData.description);
-    setIsEditing(false);
   };
 
   const handleDeleteConfirm = () => {
@@ -125,9 +114,8 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
             <EditableTitle
               value={caseData.title}
               onSave={handleTitleSave}
-              isLoading={updateCase.isPending}
               className="text-xl font-semibold truncate"
-              inputClassName="text-xl font-semibold"
+              readonly={updateCase.isPending}
             />
             <p className="text-base font-semibold text-gray-600">
               {formatCaseNumber(caseData.id, caseData.createdAt)}
@@ -137,14 +125,22 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
 
         {/* Mobile: Status Badge */}
         <div className="lg:hidden self-start">
-          <EditableSelect
+          <Select
             value={caseData.status}
-            options={[...CASE_STATUS_OPTIONS]}
-            onChange={handleStatusChange}
+            onValueChange={handleStatusChange}
             disabled={updateCase.isPending}
-            alwaysEditing
-            triggerClassName="px-3 py-1.5 rounded-full text-sm font-semibold bg-secondary hover:bg-secondary/80 border-0 h-auto w-auto flex-shrink-0 gap-2 focus:ring-0 focus:ring-offset-0"
-          />
+          >
+            <SelectTrigger className="px-3 py-1.5 rounded-full text-sm font-semibold bg-secondary hover:bg-secondary/80 border-0 h-auto w-auto flex-shrink-0 gap-2 focus:ring-0 focus:ring-offset-0">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {CASE_STATUS_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Desktop: Title + Status on same line */}
@@ -153,23 +149,30 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
             <EditableTitle
               value={caseData.title}
               onSave={handleTitleSave}
-              isLoading={updateCase.isPending}
               className="text-3xl font-semibold"
-              inputClassName="text-3xl font-semibold"
+              readonly={updateCase.isPending}
             />
             <p className="text-xl text-gray-600">
               {formatCaseNumber(caseData.id, caseData.createdAt)}
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <EditableSelect
+            <Select
               value={caseData.status}
-              options={[...CASE_STATUS_OPTIONS]}
-              onChange={handleStatusChange}
+              onValueChange={handleStatusChange}
               disabled={updateCase.isPending}
-              alwaysEditing
-              triggerClassName="px-3 py-1.5 rounded-full text-sm font-semibold bg-secondary hover:bg-secondary/80 border-0 h-auto w-auto flex-shrink-0 gap-2 focus:ring-0 focus:ring-offset-0"
-            />
+            >
+              <SelectTrigger className="px-3 py-1.5 rounded-full text-sm font-semibold bg-secondary hover:bg-secondary/80 border-0 h-auto w-auto flex-shrink-0 gap-2 focus:ring-0 focus:ring-offset-0">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {CASE_STATUS_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -190,53 +193,17 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
         </div>
 
         {/* Description */}
-        <div className="flex flex-col gap-4">
-          <h2 className="text-base font-semibold">Case Description</h2>
-
-          {!isEditing ? (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <p
-                    className="text-sm text-gray-700 cursor-pointer hover:bg-gray-100 p-2 rounded transition-colors"
-                    onClick={() => setIsEditing(true)}
-                  >
-                    {caseData.description}
-                  </p>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Click to edit</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : (
-            <div className="flex flex-col">
-              <Textarea
-                value={editedDescription}
-                onChange={(e) => setEditedDescription(e.target.value)}
-                className="min-h-[76px] resize-y"
-                autoFocus
-              />
-              <div className="flex gap-2 mt-4">
-                <Button
-                  onClick={handleSave}
-                  disabled={updateCase.isPending}
-                  className="bg-[#00848b] text-white hover:bg-[#006b72]"
-                >
-                  {updateCase.isPending ? 'Saving...' : 'Save'}
-                </Button>
-                <Button
-                  onClick={handleCancel}
-                  disabled={updateCase.isPending}
-                  variant="outline"
-                  className="text-[#4c5b5c]"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
+        <EditableTextarea
+          label="Case Description"
+          value={caseData.description}
+          onSave={handleDescriptionSave}
+          readonly={updateCase.isPending}
+          placeholder="Enter case description..."
+          validate={(value) => {
+            if (value.trim() === '') return 'Description cannot be empty';
+            return null;
+          }}
+        />
       </div>
 
       <ConfirmationDialog

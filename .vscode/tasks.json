@@ -1,0 +1,26 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Storybook Dev",
+			"type": "shell",
+			"command": "cd packages/client && npm run storybook",
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "Storybook",
+			"type": "shell",
+			"command": "npm run storybook --workspace=packages/client",
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "Dev Server",
+			"type": "shell",
+			"command": "npm run dev",
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

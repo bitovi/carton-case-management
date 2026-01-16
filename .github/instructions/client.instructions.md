@@ -39,6 +39,21 @@ packages/client/
 └── tailwind.config.js
 ```
 
+## Naming Conventions
+
+- **PascalCase** for component folders: `EditableTitle/`, `CaseList/`, `Header/`
+- **kebab-case** for grouping/utility folders (non-components): `inline-edit/`, `date-utils/`
+- **lowercase** for standard folders: `components/`, `common/`, `lib/`, `pages/`
+
+Example structure with grouping folder:
+```
+components/
+  common/
+    inline-edit/          # grouping folder (kebab-case)
+      EditableTitle/      # component folder (PascalCase)
+      EditableSelect/     # component folder (PascalCase)
+```
+
 ## Component Pattern (Modlet)
 
 Each feature component follows the modlet pattern:

@@ -1,0 +1,34 @@
+# Superconnect configuration
+# Docs: https://github.com/bitovi/superconnect#readme
+
+[inputs]
+figma_url = "https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management"
+component_repo_path = "packages/client/src/components"
+# Also requires FIGMA_ACCESS_TOKEN env var
+
+[agent]
+# Backend for code generation:
+#   "anthropic-agents" (default) — Claude explores your codebase using tools
+#   "anthropic"       — Context curated upfront (Messages API)
+#   "openai"          — OpenAI or compatible provider
+api = "anthropic-agents"
+model = "claude-sonnet-4-5"
+
+# Alternative backends:
+#   api = "anthropic"   # Messages API (deterministic context, any provider)
+#   api = "openai"
+#   model = "gpt-5.2-codex"
+#   base_url = "http://localhost:4000/v1"  # LiteLLM, Azure, vLLM, LocalAI
+
+[codegen]
+# How many times to retry if generated code fails validation (0-10)
+max_retries = 4
+
+# Number of components to process in parallel (1-16)
+# Higher = faster, but may cause errors with some LLM proxies (LiteLLM, Bedrock, etc.)
+# If you see 503/rate-limit errors, try lowering this to 1
+concurrency = 5
+
+[figma]
+# How deep to scan Figma's component tree. Increase if nested variants aren't detected.
+# layer_depth = 3
