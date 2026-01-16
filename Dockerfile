@@ -46,5 +46,5 @@ COPY --from=builder /app/packages/client/dist /app/public
 ENV NODE_ENV=production
 EXPOSE 5173 3001 6006 9323
 
-# Setup database at startup, then start the server
-CMD sh -c "cd /app && npx prisma db push --schema=packages/shared/prisma/schema.prisma --skip-generate && cd /app/packages/server && npm run start:prod"
+# Setup database at startup, seed it, then start the server
+CMD sh -c "cd /app && npx prisma db push --schema=packages/shared/prisma/schema.prisma --skip-generate && cd /app/packages/server && npx tsx db/seed.ts && npm run start:prod"
