@@ -72,9 +72,70 @@ If no URL or evidence file provided, search for it:
 - Build example JSX template
 - Add appropriate imports
 
-### 5. Write File
+### 5. Write Code Connect File
 - Output to: `{ComponentFolder}/{ComponentName}.figma.tsx`
 - Raw file content only—no markdown fences
+
+### 6. Update README with Mapping Diagram
+If `{ComponentFolder}/README.md` exists, ensure it has a **Design-to-Code Mapping** section with a mermaid flowchart at the top showing the Figma-to-React property relationships.
+
+**Diagram format:**
+```mermaid
+flowchart LR
+    subgraph Figma["Figma Variants"]
+        FProp1["PropertyName1"]
+        FProp2["PropertyName2"]
+    end
+
+    subgraph React["React Props"]
+        RProp1["propName1"]
+        RProp2["propName2"]
+    end
+
+    FProp1 -->|"Value1 → 'code1'<br>Value2 → 'code2'"| RProp1
+    FProp2 -->|"mapping description"| RProp2
+
+    style Figma fill:#f3e8ff,stroke:#9333ea
+    style React fill:#dbeafe,stroke:#3b82f6
+```
+
+**Placement:** The mermaid diagram should be placed immediately after the `## Design-to-Code Mapping` heading, before any tables.
+
+**Example README structure:**
+```markdown
+## Design-to-Code Mapping
+
+```mermaid
+flowchart LR
+    subgraph Figma["Figma Variants"]
+        FSize["Size"]
+        FType["Type"]
+    end
+
+    subgraph React["React Props"]
+        RSize["size"]
+        RVariant["variant"]
+    end
+
+    FSize -->|"Small → 'sm'<br>Medium → 'md'<br>Large → 'lg'"| RSize
+    FType -->|"Primary → 'primary'<br>Secondary → 'secondary'"| RVariant
+
+    style Figma fill:#f3e8ff,stroke:#9333ea
+    style React fill:#dbeafe,stroke:#3b82f6
+` ` `
+
+### Variant Mappings
+| Figma Variant | Figma Value | React Prop | React Value |
+...
+```
+
+**Rules for the diagram:**
+- Include all mapped variant properties (from `figma.enum()` calls)
+- Include boolean properties that map to React props
+- Show value transformations on the arrows (e.g., `"Small → 'sm'"`)
+- Use `<br>` for multiple value mappings on one arrow
+- Exclude pseudo-states (hover, focus, pressed) from the diagram
+- Use purple styling for Figma subgraph, blue for React subgraph
 
 ## Rules
 
