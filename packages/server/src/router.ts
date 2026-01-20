@@ -251,6 +251,16 @@ export const appRouter = router({
                   email: true,
                 },
               },
+              reactions: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                },
+              },
             },
             orderBy: {
               createdAt: 'desc',
@@ -354,6 +364,61 @@ export const appRouter = router({
             },
           },
         });
+      }),
+  }),
+
+  reaction: router({
+    toggle: publicProcedure
+      .input(
+        z.object({
+          commentId: z.string(),
+          type: z.enum(['UPVOTE', 'DOWNVOTE']),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated',
+          });
+        }
+
+        // Check if reaction already exists
+        const existingReaction = await ctx.prisma.reaction.findUnique({
+          where: {
+            commentId_userId: {
+              commentId: input.commentId,
+              userId: ctx.userId,
+            },
+          },
+        });
+
+        if (existingReaction) {
+          // If same type, remove reaction (toggle off)
+          if (existingReaction.type === input.type) {
+            await ctx.prisma.reaction.delete({
+              where: { id: existingReaction.id },
+            });
+            return { action: 'removed', type: input.type };
+          } else {
+            // If different type, update to new type
+            await ctx.prisma.reaction.update({
+              where: { id: existingReaction.id },
+              data: { type: input.type },
+            });
+            return { action: 'updated', type: input.type };
+          }
+        } else {
+          // Create new reaction
+          await ctx.prisma.reaction.create({
+            data: {
+              commentId: input.commentId,
+              userId: ctx.userId,
+              type: input.type,
+            },
+          });
+          return { action: 'created', type: input.type };
+        }
       }),
   }),
 });

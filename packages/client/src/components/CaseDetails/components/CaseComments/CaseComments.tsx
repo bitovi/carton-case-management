@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Textarea } from '@/components/ui/textarea';
+import { ReactionStatistics } from '@/components/ReactionStatistics/ReactionStatistics';
 import type { CaseCommentsProps } from './types';
 
 export function CaseComments({ caseData }: CaseCommentsProps) {
@@ -63,6 +64,72 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
     },
   });
 
+  const toggleReactionMutation = trpc.reaction.toggle.useMutation({
+    onMutate: async (variables) => {
+      // Optimistic update
+      await utils.case.getById.cancel({ id: caseData.id });
+      const previousCase = utils.case.getById.getData({ id: caseData.id });
+
+      if (previousCase && currentUser) {
+        const updatedComments = previousCase.comments?.map((comment) => {
+          if (comment.id === variables.commentId) {
+            const existingReaction = comment.reactions?.find((r) => r.userId === currentUser.id);
+
+            if (existingReaction) {
+              // Remove or update reaction
+              if (existingReaction.type === variables.type) {
+                return {
+                  ...comment,
+                  reactions: comment.reactions?.filter((r) => r.userId !== currentUser.id) || [],
+                };
+              } else {
+                return {
+                  ...comment,
+                  reactions:
+                    comment.reactions?.map((r) =>
+                      r.userId === currentUser.id ? { ...r, type: variables.type } : r
+                    ) || [],
+                };
+              }
+            } else {
+              // Add new reaction
+              return {
+                ...comment,
+                reactions: [
+                  ...(comment.reactions || []),
+                  {
+                    id: `temp-${Date.now()}`,
+                    type: variables.type,
+                    userId: currentUser.id,
+                    commentId: variables.commentId,
+                    createdAt: new Date().toISOString(),
+                    user: {
+                      id: currentUser.id,
+                      name: currentUser.name,
+                    },
+                  },
+                ],
+              };
+            }
+          }
+          return comment;
+        });
+
+        utils.case.getById.setData({ id: caseData.id }, { ...previousCase, comments: updatedComments });
+      }
+
+      return { previousCase };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousCase) {
+        utils.case.getById.setData({ id: caseData.id }, context.previousCase);
+      }
+    },
+    onSettled: () => {
+      utils.case.getById.invalidate({ id: caseData.id });
+    },
+  });
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!newComment.trim() || !currentUser) return;
@@ -117,6 +184,40 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
                 </div>
               </div>
               <p className="text-sm text-gray-700">{comment.content}</p>
+              <ReactionStatistics
+                upvoteCount={comment.reactions?.filter((r) => r.type === 'UPVOTE').length || 0}
+                downvoteCount={comment.reactions?.filter((r) => r.type === 'DOWNVOTE').length || 0}
+                hasUserUpvoted={
+                  !!comment.reactions?.find((r) => r.type === 'UPVOTE' && r.userId === currentUser?.id)
+                }
+                hasUserDownvoted={
+                  !!comment.reactions?.find((r) => r.type === 'DOWNVOTE' && r.userId === currentUser?.id)
+                }
+                upvoters={
+                  comment.reactions
+                    ?.filter((r) => r.type === 'UPVOTE')
+                    .map((r) => r.user.name) || []
+                }
+                downvoters={
+                  comment.reactions
+                    ?.filter((r) => r.type === 'DOWNVOTE')
+                    .map((r) => r.user.name) || []
+                }
+                onUpvote={() => {
+                  if (!currentUser) return;
+                  toggleReactionMutation.mutate({
+                    commentId: comment.id,
+                    type: 'UPVOTE',
+                  });
+                }}
+                onDownvote={() => {
+                  if (!currentUser) return;
+                  toggleReactionMutation.mutate({
+                    commentId: comment.id,
+                    type: 'DOWNVOTE',
+                  });
+                }}
+              />
             </div>
           ))
         ) : (

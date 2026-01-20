@@ -5,6 +5,7 @@ async function main() {
   console.log('Clearing existing data...');
 
   // Delete all existing data in correct order (respecting foreign keys)
+  await prisma.reaction.deleteMany();
   await prisma.comment.deleteMany();
   await prisma.case.deleteMany();
   await prisma.customer.deleteMany();
@@ -110,7 +111,8 @@ async function main() {
     },
   });
 
-  await prisma.comment.create({
+  // Comments for case 1
+  const comment1 = await prisma.comment.create({
     data: {
       content:
         'Sarah Johnson is a single mother of two children seeking housing assistance after losing her apartment due to job loss. She currently has temporary housing but needs permanent housing within 60 days. Her income is below the threshold for the Housing First program.',
@@ -120,7 +122,7 @@ async function main() {
     },
   });
 
-  await prisma.comment.create({
+  const comment2 = await prisma.comment.create({
     data: {
       content:
         'Following up on the housing assistance application. Will contact the Housing First program coordinator.',
@@ -273,11 +275,55 @@ async function main() {
     },
   });
 
+  // Create demo reactions to show different states
+  // Case 1, Comment 1 - Multiple upvotes from different users
+  await prisma.reaction.create({
+    data: {
+      commentId: comment1.id,
+      userId: alexMorgan.id,
+      type: 'UPVOTE',
+    },
+  });
+
+  await prisma.reaction.create({
+    data: {
+      commentId: comment1.id,
+      userId: jordanDoe.id,
+      type: 'UPVOTE',
+    },
+  });
+
+  await prisma.reaction.create({
+    data: {
+      commentId: comment1.id,
+      userId: taylorSmith.id,
+      type: 'UPVOTE',
+    },
+  });
+
+  // Case 1, Comment 2 - Mixed reactions (upvotes and downvotes)
+  await prisma.reaction.create({
+    data: {
+      commentId: comment2.id,
+      userId: jordanDoe.id,
+      type: 'UPVOTE',
+    },
+  });
+
+  await prisma.reaction.create({
+    data: {
+      commentId: comment2.id,
+      userId: taylorSmith.id,
+      type: 'DOWNVOTE',
+    },
+  });
+
   console.log('Seeding completed!');
   console.log(`Created ${await prisma.user.count()} users`);
   console.log(`Created ${await prisma.customer.count()} customers`);
   console.log(`Created ${await prisma.case.count()} cases`);
   console.log(`Created ${await prisma.comment.count()} comments`);
+  console.log(`Created ${await prisma.reaction.count()} reactions`);
 }
 
 main()
