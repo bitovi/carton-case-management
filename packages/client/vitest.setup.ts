@@ -7,6 +7,14 @@ import { setupServer } from 'msw/node';
 (global as any).Element.prototype.hasPointerCapture = () => false;
 (global as any).Element.prototype.releasePointerCapture = () => {};
 
+// ResizeObserver polyfill for Radix UI components (Tooltip, Popover, etc.)
+class ResizeObserverMock {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+(global as any).ResizeObserver = ResizeObserverMock;
+
 export const server = setupServer();
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
