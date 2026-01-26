@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { List, MoreVertical, Trash, Star } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/obra/Button';
 import { EditableTitle } from '@/components/inline-edit';
 import { format } from 'date-fns';
 import {
@@ -145,8 +145,8 @@ export function CustomerInformation({
           <Button
             onClick={onMenuClick}
             variant="outline"
-            size="icon"
-            className="flex-shrink-0 w-9 h-9 bg-[#e8feff] border-gray-300 shadow-sm hover:bg-[#bcecef]"
+            size="small"
+            className="flex-shrink-0 w-9 h-9 bg-[#e8feff] border-gray-300 shadow-sm hover:bg-[#bcecef] px-0"
             aria-label="Open customer list"
           >
             <List size={16} className="text-gray-700" />
@@ -203,8 +203,8 @@ export function CustomerInformation({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                size="icon"
-                className="flex-shrink-0"
+                size="small"
+                className="flex-shrink-0 px-2"
                 aria-label="More options"
               >
                 <MoreVertical size={20} />

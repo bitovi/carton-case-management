@@ -1,7 +1,7 @@
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/obra/Button';
 import { ListFilter } from 'lucide-react';
 import type { CustomerListProps } from './types';
 
@@ -44,7 +44,7 @@ export function CustomerList({ onCustomerClick }: CustomerListProps) {
         <div className="text-center">
           <p className="text-red-600 font-semibold mb-2">Error loading customers</p>
           <p className="text-sm text-gray-600 mb-4">{error.message}</p>
-          <Button onClick={() => refetch()} size="sm">
+          <Button onClick={() => refetch()} size="small">
             Retry
           </Button>
         </div>
