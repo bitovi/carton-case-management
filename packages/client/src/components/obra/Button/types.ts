@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes, ReactNode } from 'react';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /**
@@ -26,19 +26,19 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
    * Button content (text or other elements)
    * @figma Text: Label
    */
-  children: React.ReactNode;
+  children?: ReactNode;
 
   /**
    * Optional icon to display before the text
    * @figma Instance: Left icon wrapper
    */
-  leftIcon?: React.ReactNode;
+  leftIcon?: ReactNode;
 
   /**
    * Optional icon to display after the text
    * @figma Instance: Right icon wrapper
    */
-  rightIcon?: React.ReactNode;
+  rightIcon?: ReactNode;
 
   /**
    * Whether the button is disabled

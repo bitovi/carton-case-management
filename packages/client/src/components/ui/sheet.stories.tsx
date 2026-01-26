@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { Sheet } from './sheet';
-import { Button } from './button';
+import { Button } from '../obra/Button';
 
 const meta: Meta<typeof Sheet> = {
   title: 'Components/Sheet',

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
-import { Button } from './button';
+import { Button } from '../obra/Button';
 
 const meta: Meta<typeof Popover> = {
   title: 'Components/Popover',

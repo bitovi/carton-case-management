@@ -1,5 +1,5 @@
 import { Check, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/obra/Button';
 import { cn } from '@/lib/utils';
 
 /**
@@ -43,7 +43,7 @@ export function EditControls({ onSave, onCancel, className }: EditControlsProps)
       <Button
         type="button"
         variant="ghost"
-        size="icon"
+        size="mini"
         onClick={onSave}
         className={cn(
           'min-h-9 min-w-9', // 36px
@@ -61,7 +61,7 @@ export function EditControls({ onSave, onCancel, className }: EditControlsProps)
       <Button
         type="button"
         variant="ghost"
-        size="icon"
+        size="mini"
         onClick={onCancel}
         className={cn(
           'min-h-9 min-w-9', // 36px

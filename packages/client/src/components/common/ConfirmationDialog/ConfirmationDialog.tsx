@@ -1,13 +1,5 @@
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui';
+import { AlertDialog } from '@/components/ui';
+import { Button } from '@/components/obra/Button';
 
 export interface ConfirmationDialogProps {
   open: boolean;
@@ -35,26 +27,30 @@ export function ConfirmationDialog({
   loadingText,
 }: ConfirmationDialogProps) {
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>{cancelText}</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={(e) => {
-              e.preventDefault();
-              onConfirm();
-            }}
-            disabled={isLoading}
-            className={confirmClassName}
-          >
-            {isLoading ? loadingText || confirmText : confirmText}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <AlertDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={title}
+      description={description}
+      type="desktop"
+      actionButton={
+        <Button
+          onClick={(e) => {
+            e.preventDefault();
+            onConfirm();
+          }}
+          disabled={isLoading}
+          className={confirmClassName}
+          variant="primary"
+        >
+          {isLoading ? loadingText || confirmText : confirmText}
+        </Button>
+      }
+      cancelButton={
+        <Button variant="outline" disabled={isLoading} onClick={() => onOpenChange(false)}>
+          {cancelText}
+        </Button>
+      }
+    />
   );
 }

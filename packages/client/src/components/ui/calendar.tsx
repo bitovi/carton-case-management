@@ -7,7 +7,7 @@ import {
 import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/obra/Button"
 
 function Calendar({
   className,
@@ -187,7 +187,7 @@ function CalendarDayButton({
     <Button
       ref={ref}
       variant="ghost"
-      size="icon"
+      size="mini"
       data-day={day.date.toLocaleDateString()}
       data-selected-single={
         modifiers.selected &&

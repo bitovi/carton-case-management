@@ -14,7 +14,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuShortcut,
 } from './dropdown-menu';
-import { Button } from './button';
+import { Button } from '../obra/Button';
 
 const meta: Meta<typeof DropdownMenu> = {
   title: 'Components/DropdownMenu',

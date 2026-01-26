@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { X } from 'lucide-react';
-import { Button } from './button';
+import { Button } from '../obra/Button';
 
 interface SheetProps {
   open: boolean;
@@ -36,7 +36,7 @@ export function Sheet({ open, onOpenChange, children }: SheetProps) {
           <Button
             onClick={() => onOpenChange(false)}
             variant="ghost"
-            size="icon"
+            size="mini"
             className="h-auto w-auto p-1"
             aria-label="Close"
           >

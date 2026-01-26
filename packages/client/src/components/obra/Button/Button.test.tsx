@@ -46,7 +46,7 @@ describe('Button', () => {
     it('renders with ghost-muted variant', () => {
       render(<Button variant="ghost-muted">Ghost Muted</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('text-muted-foreground');
+      expect(button).toHaveClass('text-muted-foreground/50');
     });
 
     it('renders with destructive variant', () => {

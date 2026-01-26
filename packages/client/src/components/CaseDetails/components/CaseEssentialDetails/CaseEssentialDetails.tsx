@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/obra/Button';
 import { EditableSelect } from '@/components/inline-edit';
 import { trpc } from '@/lib/trpc';
 import { type CasePriority, CASE_PRIORITY_OPTIONS } from '@carton/shared/client';

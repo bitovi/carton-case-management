@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { List, MoreVertical, Trash } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/obra/Button';
 import { formatCaseNumber, type CaseStatus, CASE_STATUS_OPTIONS } from '@carton/shared/client';
 import { EditableTitle, EditableTextarea } from '@/components/inline-edit';
 import {
@@ -104,7 +104,7 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
           <Button
             onClick={onMenuClick}
             variant="outline"
-            size="icon"
+            size="mini"
             className="flex-shrink-0 w-9 h-9 bg-[#e8feff] border-gray-300 shadow-sm hover:bg-[#bcecef]"
             aria-label="Open case list"
           >
@@ -175,7 +175,7 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
             </Select>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Button variant="ghost" size="mini" className="h-8 w-8">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>

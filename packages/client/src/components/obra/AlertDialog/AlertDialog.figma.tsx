@@ -1,5 +1,6 @@
 import figma from '@figma/code-connect';
 import { AlertDialog } from './AlertDialog';
+import { Button } from '@/components/obra/Button';
 
 figma.connect(
   AlertDialog,
@@ -17,6 +18,8 @@ figma.connect(
         type={type}
         title="Title" 
         description="Text"
+        actionButton={<Button variant="primary">Label</Button>}
+        cancelButton={<Button variant="outline">Label</Button>}
       />
     ),
   }

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { BaseEditable } from './BaseEditable';
 import { z } from 'zod';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/obra/Button';
 import { Check, X } from 'lucide-react';
 import type { RenderEditModeProps } from '../types';
 
@@ -80,7 +80,7 @@ function EditModeInput({
         className="h-8 w-48"
       />
       <Button
-        size="icon"
+        size="mini"
         variant="ghost"
         className="h-8 w-8"
         onClick={() => onSave(localValue)}
@@ -88,7 +88,7 @@ function EditModeInput({
         <Check className="h-4 w-4" />
       </Button>
       <Button
-        size="icon"
+        size="mini"
         variant="ghost"
         className="h-8 w-8"
         onClick={onCancel}
@@ -292,12 +292,12 @@ export const ControlledEditing: Story = {
           renderEditMode={renderEditMode}
         />
         <div className="mt-4 flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+          <Button variant="outline" size="small" onClick={() => setIsEditing(true)}>
             Start Editing
           </Button>
           <Button
             variant="outline"
-            size="sm"
+            size="small"
             onClick={() => setIsEditing(false)}
           >
             Cancel Editing

@@ -2,7 +2,7 @@ import type { FocusEvent, KeyboardEvent } from 'react';
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Check, X, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/obra/Button';
 import { Input } from '@/components/ui/input';
 import { EditableState } from '../types';
 
@@ -301,7 +301,7 @@ export function EditableTitle({
             <Button
               type="button"
               variant="ghost"
-              size="icon"
+              size="mini"
               onClick={handleSave}
               disabled={isSaving}
               aria-label="Save title"
@@ -316,7 +316,7 @@ export function EditableTitle({
             <Button
               type="button"
               variant="ghost"
-              size="icon"
+              size="mini"
               onClick={handleCancel}
               disabled={isSaving}
               aria-label="Cancel editing"

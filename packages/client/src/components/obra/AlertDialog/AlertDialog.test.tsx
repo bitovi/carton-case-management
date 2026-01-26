@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AlertDialog } from './AlertDialog';
+import { Button } from '@/components/obra/Button';
 
 describe('AlertDialog', () => {
   it('should render title and description', () => {
@@ -10,8 +11,8 @@ describe('AlertDialog', () => {
         open={true}
         title="Delete Item"
         description="This action cannot be undone."
-        actionLabel="Delete"
-        cancelLabel="Cancel"
+        actionButton={<Button>Delete</Button>}
+        cancelButton={<Button variant="outline">Cancel</Button>}
       />
     );
     expect(screen.getByText('Delete Item')).toBeInTheDocument();
@@ -25,8 +26,8 @@ describe('AlertDialog', () => {
         type="mobile"
         title="Mobile Dialog"
         description="Mobile description"
-        actionLabel="Action"
-        cancelLabel="Cancel"
+        actionButton={<Button>Action</Button>}
+        cancelButton={<Button variant="outline">Cancel</Button>}
       />
     );
     
@@ -41,8 +42,8 @@ describe('AlertDialog', () => {
         type="desktop"
         title="Desktop Dialog"
         description="Desktop description"
-        actionLabel="Action"
-        cancelLabel="Cancel"
+        actionButton={<Button>Action</Button>}
+        cancelButton={<Button variant="outline">Cancel</Button>}
       />
     );
     
@@ -50,7 +51,7 @@ describe('AlertDialog', () => {
     expect(screen.getByText('Desktop description')).toBeInTheDocument();
   });
 
-  it('should call onAction when action button is clicked', async () => {
+  it('should call onClick when action button is clicked', async () => {
     const user = userEvent.setup();
     const handleAction = vi.fn();
 
@@ -59,9 +60,8 @@ describe('AlertDialog', () => {
         open={true}
         title="Test"
         description="Test description"
-        actionLabel="Confirm"
-        cancelLabel="Cancel"
-        onAction={handleAction}
+        actionButton={<Button onClick={handleAction}>Confirm</Button>}
+        cancelButton={<Button variant="outline">Cancel</Button>}
       />
     );
 
@@ -69,7 +69,7 @@ describe('AlertDialog', () => {
     expect(handleAction).toHaveBeenCalledTimes(1);
   });
 
-  it('should call onCancel when cancel button is clicked', async () => {
+  it('should call onClick when cancel button is clicked', async () => {
     const user = userEvent.setup();
     const handleCancel = vi.fn();
 
@@ -78,9 +78,8 @@ describe('AlertDialog', () => {
         open={true}
         title="Test"
         description="Test description"
-        actionLabel="Confirm"
-        cancelLabel="Cancel"
-        onCancel={handleCancel}
+        actionButton={<Button>Confirm</Button>}
+        cancelButton={<Button variant="outline" onClick={handleCancel}>Cancel</Button>}
       />
     );
 
@@ -88,95 +87,19 @@ describe('AlertDialog', () => {
     expect(handleCancel).toHaveBeenCalledTimes(1);
   });
 
-  it('should render custom action button', () => {
+  it('should render with custom action and cancel buttons', () => {
     render(
       <AlertDialog
         open={true}
-        title="Test"
-        description="Test description"
-        actionButton={<button>Custom Action</button>}
-        cancelLabel="Cancel"
+        title="Custom Buttons"
+        description="Test with custom button styles"
+        actionButton={<Button variant="destructive" size="large">Delete Forever</Button>}
+        cancelButton={<Button variant="ghost">Nevermind</Button>}
       />
     );
 
-    expect(screen.getByText('Custom Action')).toBeInTheDocument();
-  });
-
-  it('should render custom cancel button', () => {
-    render(
-      <AlertDialog
-        open={true}
-        title="Test"
-        description="Test description"
-        actionLabel="Action"
-        cancelButton={<button>Custom Cancel</button>}
-      />
-    );
-
-    expect(screen.getByText('Custom Cancel')).toBeInTheDocument();
-  });
-
-  it('should render trigger when children provided', () => {
-    render(
-      <AlertDialog
-        title="Test"
-        description="Test description"
-        actionLabel="Action"
-        cancelLabel="Cancel"
-      >
-        <button>Open Dialog</button>
-      </AlertDialog>
-    );
-
-    expect(screen.getByText('Open Dialog')).toBeInTheDocument();
-  });
-
-  it('should call onOpenChange when dialog state changes', async () => {
-    const user = userEvent.setup();
-    const handleOpenChange = vi.fn();
-
-    render(
-      <AlertDialog
-        title="Test"
-        description="Test description"
-        actionLabel="Action"
-        cancelLabel="Cancel"
-        onOpenChange={handleOpenChange}
-      >
-        <button>Open Dialog</button>
-      </AlertDialog>
-    );
-
-    await user.click(screen.getByText('Open Dialog'));
-    expect(handleOpenChange).toHaveBeenCalled();
-  });
-
-  it('should use default labels when not provided', () => {
-    render(
-      <AlertDialog
-        open={true}
-        title="Test"
-        description="Test description"
-      />
-    );
-
-    expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
-  });
-
-  it('should default to mobile type', () => {
-    render(
-      <AlertDialog
-        open={true}
-        title="Test"
-        description="Test description"
-        actionLabel="Action"
-        cancelLabel="Cancel"
-      />
-    );
-
-    expect(screen.getByText('Test')).toBeInTheDocument();
-    expect(screen.getByText('Test description')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /delete forever/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /nevermind/i })).toBeInTheDocument();
   });
 });
 

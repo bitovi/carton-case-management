@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
-import { Button } from './button';
+import { Button } from '../obra/Button';
 
 const meta: Meta<typeof Tooltip> = {
   title: 'Components/Tooltip',
@@ -66,7 +66,7 @@ export const Multiple: Story = {
     <div className="flex gap-2">
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="mini">
             📝
           </Button>
         </TooltipTrigger>
@@ -76,7 +76,7 @@ export const Multiple: Story = {
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="mini">
             🗑️
           </Button>
         </TooltipTrigger>
@@ -86,7 +86,7 @@ export const Multiple: Story = {
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="mini">
             ⚙️
           </Button>
         </TooltipTrigger>

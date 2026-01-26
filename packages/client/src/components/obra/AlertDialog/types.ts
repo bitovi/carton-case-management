@@ -34,28 +34,6 @@ export interface AlertDialogProps {
   cancelButton?: ReactNode;
 
   /**
-   * Simple string label for primary action button
-   * Alternative to actionButton for basic use cases
-   */
-  actionLabel?: string;
-
-  /**
-   * Simple string label for cancel button
-   * Alternative to cancelButton for basic use cases
-   */
-  cancelLabel?: string;
-
-  /**
-   * Callback when primary action button is clicked
-   */
-  onAction?: () => void;
-
-  /**
-   * Callback when cancel button is clicked
-   */
-  onCancel?: () => void;
-
-  /**
    * Controlled open state
    */
   open?: boolean;
