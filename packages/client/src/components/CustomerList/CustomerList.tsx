@@ -25,7 +25,7 @@ export function CustomerList({ onCustomerClick }: CustomerListProps) {
         </div>
         {[...Array(5)].map((_, index) => (
           <div key={index} className="flex items-center justify-between px-4 py-2 rounded-lg">
-            <Skeleton className="h-5 w-3/4" />
+            <Skeleton className="h-5 bg-slate-200 w-3/4" />
           </div>
         ))}
       </div>
