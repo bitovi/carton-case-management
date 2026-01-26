@@ -1,0 +1,1 @@
+export { CreateCustomerPage } from './CreateCustomerPage';

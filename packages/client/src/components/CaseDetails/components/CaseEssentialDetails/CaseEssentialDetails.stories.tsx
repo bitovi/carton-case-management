@@ -5,7 +5,7 @@ import type { CaseEssentialDetailsProps } from './types';
 import { createTrpcWrapper } from '@/test/utils';
 
 const mockCaseData: CaseEssentialDetailsProps['caseData'] = {
-  customer: { id: '1', name: 'Acme Corp' },
+  customer: { id: '1', firstName: 'Acme', lastName: 'Corp' },
   customerId: '1',
   priority: 'MEDIUM',
   createdAt: new Date('2024-01-15T10:00:00Z').toISOString(),
@@ -21,19 +21,34 @@ const mockCaseData: CaseEssentialDetailsProps['caseData'] = {
 const mockCustomers = [
   {
     id: '1',
-    name: 'Acme Corp',
+    firstName: 'Acme',
+    lastName: 'Corp',
+    username: 'acme-corp',
+    email: 'acme@example.com',
+    dateJoined: new Date('2024-01-01T00:00:00Z'),
+    satisfactionRate: 4.5,
     createdAt: new Date('2024-01-01T00:00:00Z'),
     updatedAt: new Date('2024-01-01T00:00:00Z'),
   },
   {
     id: '2',
-    name: 'TechCorp Inc',
+    firstName: 'TechCorp',
+    lastName: 'Inc',
+    username: 'techcorp',
+    email: 'tech@example.com',
+    dateJoined: new Date('2024-01-02T00:00:00Z'),
+    satisfactionRate: 4.0,
     createdAt: new Date('2024-01-02T00:00:00Z'),
     updatedAt: new Date('2024-01-02T00:00:00Z'),
   },
   {
     id: '3',
-    name: 'Global Systems',
+    firstName: 'Global',
+    lastName: 'Systems',
+    username: 'global-systems',
+    email: 'global@example.com',
+    dateJoined: new Date('2024-01-03T00:00:00Z'),
+    satisfactionRate: 5.0,
     createdAt: new Date('2024-01-03T00:00:00Z'),
     updatedAt: new Date('2024-01-03T00:00:00Z'),
   },

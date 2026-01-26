@@ -14,8 +14,8 @@ describe('CaseEssentialDetails', () => {
           {
             result: {
               data: [
-                { id: '1', name: 'Test Customer' },
-                { id: '2', name: 'Another Customer' },
+                { id: '1', firstName: 'Test', lastName: 'Customer' },
+                { id: '2', firstName: 'Another', lastName: 'Customer' },
               ],
             },
           },
@@ -35,7 +35,7 @@ describe('CaseEssentialDetails', () => {
 
   it('renders without crashing', async () => {
     const mockCaseData = {
-      customer: { id: '1', name: 'Test Customer' },
+      customer: { id: '1', firstName: 'Test', lastName: 'Customer' },
       customerId: '1',
       createdAt: new Date(2026, 0, 2).toISOString(),
       updatedAt: new Date(2026, 0, 2).toISOString(),

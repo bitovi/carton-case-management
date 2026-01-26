@@ -154,9 +154,9 @@ export function CreateCasePage() {
               <SelectValue placeholder="Select a customer" />
             </SelectTrigger>
             <SelectContent>
-              {customers?.map((customer: { id: string; name: string }) => (
+              {customers?.map((customer: { id: string; firstName: string; lastName: string }) => (
                 <SelectItem key={customer.id} value={customer.id}>
-                  {customer.name}
+                  {customer.firstName} {customer.lastName}
                 </SelectItem>
               ))}
             </SelectContent>

@@ -56,10 +56,15 @@ model User {
 }
 
 model Customer {
-  id        String   @id @default(uuid())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String   @id @default(uuid())
+  firstName        String
+  lastName         String
+  username         String   @unique
+  email            String   @unique
+  dateJoined       DateTime @default(now())
+  satisfactionRate Float?   // 0.0 to 5.0 for star rating
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   cases Case[]
 }

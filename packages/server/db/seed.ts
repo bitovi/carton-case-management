@@ -40,25 +40,56 @@ async function main() {
   // Create demo customers (people who cases are about)
   const sarahJohnson = await prisma.customer.create({
     data: {
-      name: 'Sarah Johnson',
+      firstName: 'Sarah',
+      lastName: 'Johnson',
+      username: 'sarah-johnson',
+      email: 'sarahjohnson42@gmail.com',
+      satisfactionRate: 4.5,
+      dateJoined: new Date('2025-05-04'),
     },
   });
 
-  const michaelChen = await prisma.customer.create({
+  const johnSorenson = await prisma.customer.create({
     data: {
-      name: 'Michael Chen',
+      firstName: 'John',
+      lastName: 'Sorenson',
+      username: 'jsorenson',
+      email: 'john.sorenson@email.com',
+      satisfactionRate: 4.0,
+      dateJoined: new Date('2024-08-15'),
     },
   });
 
-  const emilyRodriguez = await prisma.customer.create({
+  const aliceSmith = await prisma.customer.create({
     data: {
-      name: 'Emily Rodriguez',
+      firstName: 'Alice',
+      lastName: 'Smith',
+      username: 'asmith',
+      email: 'alice.smith@example.com',
+      satisfactionRate: 5.0,
+      dateJoined: new Date('2024-03-20'),
     },
   });
 
-  const davidWilson = await prisma.customer.create({
+  const bobWilliams = await prisma.customer.create({
     data: {
-      name: 'David Wilson',
+      firstName: 'Bob',
+      lastName: 'Williams',
+      username: 'bwilliams',
+      email: 'bob.w@test.com',
+      satisfactionRate: 3.5,
+      dateJoined: new Date('2025-01-10'),
+    },
+  });
+
+  const emilyBrown = await prisma.customer.create({
+    data: {
+      firstName: 'Emily',
+      lastName: 'Brown',
+      username: 'ebrown',
+      email: 'emily.brown@mail.com',
+      satisfactionRate: 4.0,
+      dateJoined: new Date('2024-11-05'),
     },
   });
 
@@ -104,7 +135,7 @@ async function main() {
       title: 'Policy Coverage Inquiry',
       description:
         'Customer inquiring about coverage details for their home insurance policy. Specifically asking about flood damage coverage and deductible amounts.',
-      customerId: michaelChen.id,
+      customerId: johnSorenson.id,
       status: 'IN_PROGRESS',
       priority: 'MEDIUM',
       createdBy: jordanDoe.id,
@@ -138,7 +169,7 @@ async function main() {
       title: 'Premium Adjustment Request',
       description:
         'Customer requesting premium adjustment after installing new security system. Eligibility for discount needs to be verified.',
-      customerId: emilyRodriguez.id,
+      customerId: aliceSmith.id,
       status: 'TO_DO',
       priority: 'LOW',
       createdBy: taylorSmith.id,
@@ -172,7 +203,7 @@ async function main() {
       title: 'Vehicle Accident Report',
       description:
         'Customer involved in minor vehicle accident. Need to process auto insurance claim and arrange vehicle assessment.',
-      customerId: davidWilson.id,
+      customerId: bobWilliams.id,
       status: 'IN_PROGRESS',
       priority: 'HIGH',
       createdBy: alexMorgan.id,
@@ -197,7 +228,7 @@ async function main() {
       title: 'Billing Discrepancy',
       description:
         'Customer reports being charged incorrect premium amount. Invoice shows $150 but policy agreement states $120.',
-      customerId: michaelChen.id,
+      customerId: emilyBrown.id,
       status: 'COMPLETED',
       priority: 'MEDIUM',
       createdBy: jordanDoe.id,

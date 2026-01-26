@@ -1,0 +1,1 @@
+export { RelatedCases } from './RelatedCases';

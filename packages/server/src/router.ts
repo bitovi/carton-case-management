@@ -68,13 +68,93 @@ export const appRouter = router({
       return ctx.prisma.customer.findMany({
         select: {
           id: true,
-          name: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          email: true,
+          dateJoined: true,
+          satisfactionRate: true,
           createdAt: true,
           updatedAt: true,
         },
         orderBy: {
-          name: 'asc',
+          lastName: 'asc',
         },
+      });
+    }),
+    getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+      const customer = await ctx.prisma.customer.findUnique({
+        where: { id: input.id },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          email: true,
+          dateJoined: true,
+          satisfactionRate: true,
+          createdAt: true,
+          updatedAt: true,
+          cases: {
+            select: {
+              id: true,
+              title: true,
+              status: true,
+              priority: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+            orderBy: {
+              createdAt: 'desc',
+            },
+          },
+        },
+      });
+
+      if (!customer) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Customer not found',
+        });
+      }
+
+      return customer;
+    }),
+    create: publicProcedure
+      .input(
+        z.object({
+          firstName: z.string().min(1),
+          lastName: z.string().min(1),
+          username: z.string().min(1),
+          email: z.string().email(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        return ctx.prisma.customer.create({
+          data: input,
+        });
+      }),
+    update: publicProcedure
+      .input(
+        z.object({
+          id: z.string(),
+          firstName: z.string().optional(),
+          lastName: z.string().optional(),
+          username: z.string().optional(),
+          email: z.string().email().optional(),
+          satisfactionRate: z.number().min(0).max(5).nullable().optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        return ctx.prisma.customer.update({
+          where: { id },
+          data,
+        });
+      }),
+    delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+      return ctx.prisma.customer.delete({
+        where: { id: input.id },
       });
     }),
   }),
@@ -99,7 +179,8 @@ export const appRouter = router({
             customer: {
               select: {
                 id: true,
-                name: true,
+                firstName: true,
+                lastName: true,
               },
             },
             creator: {
@@ -136,7 +217,8 @@ export const appRouter = router({
           customer: {
             select: {
               id: true,
-              name: true,
+              firstName: true,
+              lastName: true,
             },
           },
           creator: {

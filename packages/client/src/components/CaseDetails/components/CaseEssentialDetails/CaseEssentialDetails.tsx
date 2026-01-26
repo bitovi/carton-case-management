@@ -72,7 +72,7 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
           <EditableSelect
             label="Customer Name"
             value={caseData.customerId}
-            options={(customers || []).map((c: { id: string; name: string }) => ({ value: c.id, label: c.name }))}
+            options={(customers || []).map((c: { id: string; firstName: string; lastName: string }) => ({ value: c.id, label: `${c.firstName} ${c.lastName}` }))}
             onSave={handleCustomerChange}
             readonly={updateCaseMutation.isPending}
             placeholder="Select customer"
