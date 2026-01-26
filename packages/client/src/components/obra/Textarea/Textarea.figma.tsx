@@ -10,7 +10,6 @@ figma.connect(
         Default: 'default',
         Round: 'round',
       }),
-      showResizable: figma.boolean('showResizable'),
       error: figma.enum('State', {
         Error: true,
         'Error Focus': true,
@@ -29,10 +28,9 @@ figma.connect(
         Disabled: 'Value',
       }),
     },
-    example: ({ roundness, showResizable, error, disabled, placeholder, defaultValue }) => (
+    example: ({ roundness, error, disabled, placeholder, defaultValue }) => (
       <Textarea
         roundness={roundness}
-        showResizable={showResizable}
         error={error}
         disabled={disabled}
         placeholder={placeholder}
