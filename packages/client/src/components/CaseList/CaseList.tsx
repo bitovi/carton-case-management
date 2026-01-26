@@ -1,6 +1,6 @@
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '@/components/obra/Skeleton';
 import { Button } from '@/components/obra/Button';
 import { formatCaseNumber } from '@carton/shared/client';
 import type { CaseListProps, CaseListItem } from './types';

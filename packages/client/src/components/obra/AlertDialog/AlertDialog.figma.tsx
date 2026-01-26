@@ -1,6 +1,6 @@
 import figma from '@figma/code-connect';
 import { AlertDialog } from './AlertDialog';
-import { Button } from '@/components/obra/Button';
+import { Button } from '../Button';
 
 figma.connect(
   AlertDialog,
@@ -11,13 +11,15 @@ figma.connect(
         Desktop: 'desktop',
         Mobile: 'mobile',
       }),
+      title: figma.textContent('Title'),
+      description: figma.textContent('Text'),
     },
 
-    example: ({ type }) => (
+    example: ({ type, title, description }) => (
       <AlertDialog 
         type={type}
-        title="Title" 
-        description="Text"
+        title={title} 
+        description={description}
         actionButton={<Button variant="primary">Label</Button>}
         cancelButton={<Button variant="outline">Label</Button>}
       />

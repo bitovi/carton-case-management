@@ -1,8 +1,5 @@
-export { Button } from '../obra/Button';
-export { Skeleton } from './skeleton';
 export { Textarea } from './textarea';
 export { Input } from './input';
-export { Sheet } from './sheet';
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './tooltip';
 export {
   Select,

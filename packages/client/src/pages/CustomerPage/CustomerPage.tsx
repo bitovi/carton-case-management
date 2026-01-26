@@ -4,7 +4,7 @@ import { trpc } from '@/lib/trpc';
 import { CustomerList } from '@/components/CustomerList';
 import { CustomerDetails } from '@/components/CustomerDetails';
 import { CreateCustomerPage } from '@/pages/CreateCustomerPage';
-import { Sheet } from '@/components/ui/sheet';
+import { Sheet } from '@/components/obra';
 
 export function CustomerPage() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
