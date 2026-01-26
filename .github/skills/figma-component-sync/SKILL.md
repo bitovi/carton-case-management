@@ -36,6 +36,8 @@ This skill checks a component's implementation against its Figma design source a
 │ 4. REVIEW - User decides: implement, ignore, or accept each     │
 ├─────────────────────────────────────────────────────────────────┤
 │ 5. APPLY - Implement approved changes                           │
+├─────────────────────────────────────────────────────────────────┤
+│ 6. TEST - Verify implementation matches Figma                   │
 └─────────────────────────────────────────────────────────────────┘
 ```
 

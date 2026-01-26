@@ -33,6 +33,8 @@ This skill implements React components from analyzed Figma designs. It creates c
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
+│ 0. CREATE TODO LIST - Track all steps systematically           │
+├─────────────────────────────────────────────────────────────────┤
 │ 1. VERIFY - Check for design analysis files                    │
 ├─────────────────────────────────────────────────────────────────┤
 │ 2. CREATE MODLET - Build folder structure using modlet pattern │
@@ -49,7 +51,194 @@ This skill implements React components from analyzed Figma designs. It creates c
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+## ⚠️ CRITICAL: Use Todo List for Systematic Execution
+
+**REQUIRED:** Create a todo list using `manage_todo_list` at the start of implementation to ensure all steps are completed and nothing is skipped.
+
+This prevents common failures like:
+- Skipping file creation steps
+- Forgetting to create Code Connect mapping
+- Missing verification steps
+- Not documenting Figma source
+
+**Workflow Pattern:**
+1. Create todo list with all steps
+2. Mark step as in-progress before starting
+3. Complete the step's work
+4. Mark step as completed immediately
+5. Only provide final output after all steps checked off
+
 ## Step-by-Step Instructions
+
+### Step 0: Create Todo List (REQUIRED)
+
+**MANDATORY FIRST STEP:** Use `manage_todo_list` to create a checklist before starting implementation.
+
+**For single component:**
+
+```javascript
+manage_todo_list({
+  operation: 'write',
+  todoList: [
+    {
+      id: 1,
+      title: 'Verify design analysis files exist',
+      description: 'Check for .temp/design-components/{name}/design-context.md and proposed-api.md',
+      status: 'not-started'
+    },
+    {
+      id: 2,
+      title: 'Create modlet structure via subagent',
+      description: 'Use runSubagent to invoke create-react-modlet skill for folder structure',
+      status: 'not-started'
+    },
+    {
+      id: 3,
+      title: 'Write README.md with Figma source',
+      description: 'Document Figma URL and design-to-code mapping tables',
+      status: 'not-started'
+    },
+    {
+      id: 4,
+      title: 'Create types.ts with props interface',
+      description: 'Define TypeScript interface from proposed-api.md',
+      status: 'not-started'
+    },
+    {
+      id: 5,
+      title: 'Implement component matching Figma',
+      description: 'Build component with exact dimensions, colors, typography from Figma',
+      status: 'not-started'
+    },
+    {
+      id: 6,
+      title: 'Create stories for all variants',
+      description: 'Story for each Figma variant, size, state, and boolean property',
+      status: 'not-started'
+    },
+    {
+      id: 7,
+      title: 'Create Code Connect mapping',
+      description: 'Write {ComponentName}.figma.tsx with figma.connect()',
+      status: 'not-started'
+    },
+    {
+      id: 8,
+      title: 'Create/update tests',
+      description: 'Add tests for all props, variants, and interactions',
+      status: 'not-started'
+    },
+    {
+      id: 9,
+      title: 'Update index.ts exports',
+      description: 'Export component and types',
+      status: 'not-started'
+    },
+    {
+      id: 10,
+      title: 'Run verification',
+      description: 'Run npm test and verify Storybook renders',
+      status: 'not-started'
+    }
+  ]
+})
+```
+
+**For multiple components (e.g., Button + LinkButton):**
+
+```javascript
+manage_todo_list({
+  operation: 'write',
+  todoList: [
+    {
+      id: 1,
+      title: 'Verify design analysis files exist',
+      description: 'Check for design-context.md and proposed-api.md',
+      status: 'not-started'
+    },
+    {
+      id: 2,
+      title: 'Create parent folder and index.ts',
+      description: 'Create packages/client/src/components/common/{parent}/ with barrel export',
+      status: 'not-started'
+    },
+    {
+      id: 3,
+      title: '[Button] Create modlet via subagent',
+      description: 'Create Button/ folder structure',
+      status: 'not-started'
+    },
+    {
+      id: 4,
+      title: '[Button] Write README with Figma source',
+      description: 'Document Button-specific Figma mapping',
+      status: 'not-started'
+    },
+    {
+      id: 5,
+      title: '[Button] Create types and implementation',
+      description: 'Implement Button component',
+      status: 'not-started'
+    },
+    {
+      id: 6,
+      title: '[Button] Create stories',
+      description: 'Stories for Button variants',
+      status: 'not-started'
+    },
+    {
+      id: 7,
+      title: '[Button] Create Code Connect mapping',
+      description: 'Write Button.figma.tsx',
+      status: 'not-started'
+    },
+    {
+      id: 8,
+      title: '[LinkButton] Create modlet via subagent',
+      description: 'Create LinkButton/ folder structure',
+      status: 'not-started'
+    },
+    {
+      id: 9,
+      title: '[LinkButton] Write README with Figma source',
+      description: 'Document LinkButton-specific Figma mapping',
+      status: 'not-started'
+    },
+    {
+      id: 10,
+      title: '[LinkButton] Create types and implementation',
+      description: 'Implement LinkButton component',
+      status: 'not-started'
+    },
+    {
+      id: 11,
+      title: '[LinkButton] Create stories',
+      description: 'Stories for LinkButton variants',
+      status: 'not-started'
+    },
+    {
+      id: 12,
+      title: '[LinkButton] Create Code Connect mapping',
+      description: 'Write LinkButton.figma.tsx',
+      status: 'not-started'
+    },
+    {
+      id: 13,
+      title: 'Run tests for all components',
+      description: 'Verify npm test passes',
+      status: 'not-started'
+    },
+    {
+      id: 14,
+      title: 'Verify all Storybooks',
+      description: 'Check Button and LinkButton stories render correctly',
+      status: 'not-started'
+    }
+  ]
+})
+```
+
+**Important:** Mark each task as `in-progress` before starting it, complete the work, then mark it `completed` immediately. Do not batch completion updates.
 
 ### Step 1: Verify Design Analysis Exists
 
@@ -70,6 +259,7 @@ Check for required files:
 1. Read `design-context.md` to get Figma data and URL
 2. Read `proposed-api.md` to understand props and variants
 3. **Check if multiple components are recommended** (see Step 1b)
+4. **Mark Step 1 as completed** in todo list
 
 ### Step 1b: Handle Multiple Component Recommendations
 
@@ -80,7 +270,9 @@ The `proposed-api.md` may recommend splitting a Figma component into multiple Re
 
 **If multiple components are recommended:**
 
-1. **Create a parent folder** for the component group:
+1. **Mark Step 1b as in-progress** in todo list
+
+2. **Create a parent folder** for the component group:
    ```
    packages/client/src/components/common/{parent-name}/
    ├── {ComponentA}/     # First component modlet
@@ -88,24 +280,9 @@ The `proposed-api.md` may recommend splitting a Figma component into multiple Re
    └── index.ts          # Re-exports all components
    ```
 
-2. **Update the todo list** to iterate through each component:
-   ```
-   1. Create parent folder with index.ts
-   2. [ComponentA] Create modlet via subagent
-   3. [ComponentA] Write README with Figma source
-   4. [ComponentA] Implement component
-   5. [ComponentA] Create stories
-   6. [ComponentA] Create Code Connect mapping
-   7. [ComponentB] Create modlet via subagent
-   8. [ComponentB] Write README with Figma source
-   9. [ComponentB] Implement component
-   10. [ComponentB] Create stories
-   11. [ComponentB] Create Code Connect mapping
-   12. Run tests and verify all components
-   13. Verify Storybook renders for all components
-   ```
+3. **Update the todo list** to iterate through each component (see Step 0 for multi-component template)
 
-3. **Create parent index.ts** that re-exports all components:
+4. **Create parent index.ts** that re-exports all components:
    ```typescript
    // packages/client/src/components/common/button/index.ts
    export { Button } from './Button';
@@ -114,7 +291,9 @@ The `proposed-api.md` may recommend splitting a Figma component into multiple Re
    export type { LinkButtonProps } from './LinkButton';
    ```
 
-4. **Implement each component** following Steps 3-9 for each one
+5. **Implement each component** following Steps 3-9 for each one
+
+6. **Mark Step 1b as completed** in todo list
 
 **Example folder structure for Button + LinkButton:**
 ```
@@ -140,25 +319,9 @@ packages/client/src/components/common/button/
 
 **If single component:** Continue to Step 2 as normal.
 
-### Step 2: Plan with Todos
+### Step 2: Create Modlet Structure
 
-Use `manage_todo_list` to track all steps:
-
-```
-1. Create modlet folder structure (via subagent using create-react-modlet skill)
-2. Write README with Figma source
-3. Create types.ts with props interface
-4. Implement main component
-5. Update test file with component tests
-6. Create stories for each variant
-7. Create Code Connect mapping
-8. Run tests and verify
-9. Verify Storybook renders
-```
-
-**Note:** Step 1 uses `runSubagent` to invoke the `create-react-modlet` skill, which creates the initial folder structure with stub files (index.ts, component, test, stories, types). You'll then update these files with the actual implementation.
-
-### Step 3: Create Modlet Structure
+**Before starting:** Mark Step 2 as `in-progress` in todo list.
 
 **IMPORTANT: Invoke the `create-react-modlet` skill to create the modlet folder structure.**
 
@@ -186,6 +349,8 @@ runSubagent({
 })
 ```
 
+**After completion:** Mark Step 2 as `completed` in todo list.
+
 The modlet should be created at:
 ```
 packages/client/src/components/common/{ComponentName}/
@@ -204,7 +369,9 @@ Expected folder structure after subagent completes:
 └── README.md                     # Figma source & mapping docs
 ```
 
-### Step 4: Write README with Design Context
+### Step 3: Write README with Design Context
+
+**Before starting:** Mark Step 3 as `in-progress` in todo list.
 
 Create `README.md` documenting the Figma-to-code mapping:
 
@@ -247,7 +414,11 @@ Create `README.md` documenting the Figma-to-code mapping:
 | State: Focused | Tailwind `focus-visible:` | Pseudo-state |
 ```
 
-### Step 5: Create Types
+**After completion:** Mark Step 3 as `completed` in todo list.
+
+### Step 4: Create Types
+
+**Before starting:** Mark Step 4 as `in-progress` in todo list.
 
 Create `types.ts` based on `proposed-api.md`:
 
@@ -293,7 +464,11 @@ export interface {ComponentName}Props {
 }
 ```
 
-### Step 6: Implement Component
+**After completion:** Mark Step 4 as `completed` in todo list.
+
+### Step 5: Implement Component
+
+**Before starting:** Mark Step 5 as `in-progress` in todo list.
 
 Create `{ComponentName}.tsx` matching Figma design precisely:
 
@@ -346,7 +521,11 @@ export function ComponentName({
 }
 ```
 
-### Step 7: Create Stories for Each Variant
+**After completion:** Mark Step 5 as `completed` in todo list.
+
+### Step 6: Create Stories for Each Variant
+
+**Before starting:** Mark Step 6 as `in-progress` in todo list.
 
 Create `{ComponentName}.stories.tsx` with a story for **every Figma variant**:
 
@@ -439,7 +618,11 @@ export const Mobile: Story = {
 };
 ```
 
-### Step 8: Create Code Connect Mapping
+**After completion:** Mark Step 6 as `completed` in todo list.
+
+### Step 7: Create Code Connect Mapping
+
+**Before starting:** Mark Step 7 as `in-progress` in todo list.
 
 Create `{ComponentName}.figma.tsx` following `figma-connect-component` skill:
 
@@ -478,7 +661,11 @@ figma.connect(ComponentName, 'https://figma.com/design/...?node-id=...', {
 });
 ```
 
-### Step 9: Create Tests
+**After completion:** Mark Step 7 as `completed` in todo list.
+
+### Step 8: Create Tests
+
+**Before starting:** Mark Step 8 as `in-progress` in todo list.
 
 Create `{ComponentName}.test.tsx`:
 
@@ -530,7 +717,11 @@ describe('ComponentName', () => {
 });
 ```
 
-### Step 10: Create index.ts
+**After completion:** Mark Step 8 as `completed` in todo list.
+
+### Step 9: Create index.ts
+
+**Before starting:** Mark Step 9 as `in-progress` in todo list.
 
 Create `index.ts` with re-exports:
 
@@ -539,7 +730,11 @@ export { ComponentName } from './ComponentName';
 export type { ComponentNameProps } from './types';
 ```
 
-### Step 11: Verify Everything
+**After completion:** Mark Step 9 as `completed` in todo list.
+
+### Step 10: Verify Everything
+
+**Before starting:** Mark Step 10 as `in-progress` in todo list.
 
 Run verification commands from project root:
 
@@ -578,6 +773,10 @@ Each story should match its corresponding Figma variant.
 ## Figma URL for comparison
 {original Figma URL}
 ```
+
+**After completion:** Mark Step 10 as `completed` in todo list.
+
+**Final step:** Provide summary to user only after all todos are marked completed.
 
 ## Output Files Summary
 
