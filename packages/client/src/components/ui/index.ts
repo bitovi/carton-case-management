@@ -1,5 +1,4 @@
 
-export { DatePicker } from './date-picker';
 export {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -7,7 +6,7 @@ export {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from './dropdown-menu';
-export { Calendar } from './calendar';
+
 export {
   Popover,
   PopoverContent,
