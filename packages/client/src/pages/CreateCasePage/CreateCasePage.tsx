@@ -10,7 +10,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/obra/Select';
 import { type CasePriority, CASE_PRIORITY_OPTIONS } from '@carton/shared/client';
 import { Label } from '@/components/obra/Label';
 
@@ -100,7 +100,7 @@ export function CreateCasePage() {
             }}
             onBlur={() => handleBlur('title')}
             placeholder="Enter case title"
-            className={touched.has('title') && validationErrors.title ? 'border-red-500' : ''}
+            error={touched.has('title') && !!validationErrors.title}
           />
           {touched.has('title') && validationErrors.title && (
             <p className="text-sm text-red-600">{validationErrors.title}</p>

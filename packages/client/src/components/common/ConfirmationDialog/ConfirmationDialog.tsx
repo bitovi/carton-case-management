@@ -1,4 +1,4 @@
-import { AlertDialog } from '@/components/ui';
+import { AlertDialog } from '@/components/obra';
 import { Button } from '@/components/obra/Button';
 
 export interface ConfirmationDialogProps {

@@ -15,7 +15,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/obra/Select';
 import { BaseEditable } from '../BaseEditable';
 import type { ZodSchema } from 'zod';
 import type { RenderEditModeProps, EditableSelectOption } from '../types';

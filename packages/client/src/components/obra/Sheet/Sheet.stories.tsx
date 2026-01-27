@@ -53,46 +53,6 @@ export const Default: Story = {
   ),
 };
 
-export const ScrollableTrue: Story = {
-  render: () => (
-    <SheetWrapper
-      scrollable={true}
-      header={
-        <DialogHeader 
-          title="Scrollable Content"
-          onClose={() => {}}
-        />
-      }
-    >
-      <div className="space-y-4">
-        <p>This sheet has scrollable content.</p>
-        {Array.from({ length: 20 }, (_, i) => (
-          <p key={i}>Content item {i + 1}</p>
-        ))}
-      </div>
-    </SheetWrapper>
-  ),
-};
-
-export const ScrollableFalse: Story = {
-  render: () => (
-    <SheetWrapper
-      scrollable={false}
-      header={
-        <DialogHeader 
-          title="Fixed Height Content"
-          onClose={() => {}}
-        />
-      }
-    >
-      <div className="space-y-4">
-        <p>This sheet has non-scrollable content.</p>
-        <p>Content height is fixed.</p>
-      </div>
-    </SheetWrapper>
-  ),
-};
-
 export const WithHeaderAndFooter: Story = {
   render: () => (
     <SheetWrapper
@@ -126,23 +86,6 @@ export const WithHeaderAndFooter: Story = {
             placeholder="username"
           />
         </div>
-      </div>
-    </SheetWrapper>
-  ),
-};
-
-export const CloseOnlyHeader: Story = {
-  render: () => (
-    <SheetWrapper
-      header={
-        <DialogHeader 
-          onClose={() => {}}
-        />
-      }
-    >
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Custom Content</h3>
-        <p>Sheet with close button only (no title in header).</p>
       </div>
     </SheetWrapper>
   ),

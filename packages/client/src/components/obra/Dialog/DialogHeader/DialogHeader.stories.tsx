@@ -42,10 +42,3 @@ export const LongTitle: Story = {
     title: 'This is a longer title that demonstrates how the header handles extended text content',
   },
 };
-
-export const WithCustomClass: Story = {
-  args: {
-    title: 'Custom Styled Header',
-    className: 'border-b pb-4',
-  },
-};

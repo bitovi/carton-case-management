@@ -14,7 +14,7 @@ export const buttonVariants = cva(
         ghost: 'bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:shadow-[0_0_0_3px_var(--focus-ring,#CBD5E1)]',
         'ghost-muted':
           'bg-transparent text-muted-foreground/50 hover:bg-accent hover:text-accent-foreground focus-visible:shadow-[0_0_0_3px_var(--focus-ring,#CBD5E1)]',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm focus-visible:shadow-[0_0_0_3px_var(--focus-ring-error,#FCA5A5)]',
+        destructive: 'bg-destructive text-white hover:bg-destructive/90 shadow-sm focus-visible:shadow-[0_0_0_3px_var(--focus-ring-error,#FCA5A5)]',
       },
       size: {
         large: 'h-10 px-6 text-sm gap-2',

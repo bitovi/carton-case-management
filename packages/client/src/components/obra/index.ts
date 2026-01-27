@@ -19,6 +19,27 @@ export type { InputProps } from './Input';
 export { Label } from './Label';
 export type { LabelProps } from './Label';
 
+export {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectOverflowIndicator,
+  SelectValue,
+} from './Select';
+export type {
+  SelectProps,
+  SelectTriggerProps,
+  SelectContentProps,
+  SelectItemProps,
+  SelectLabelProps,
+  SelectSeparatorProps,
+  SelectOverflowIndicatorProps,
+  LeftDecorationType,
+} from './Select';
+
 export { Sheet } from './Sheet';
 export type { SheetProps } from './Sheet';
 

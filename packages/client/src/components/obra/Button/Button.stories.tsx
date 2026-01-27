@@ -23,170 +23,6 @@ export const Default: Story = {
   },
 };
 
-
-export const Primary: Story = {
-  args: {
-    variant: 'primary',
-    children: 'Primary',
-  },
-};
-
-export const Secondary: Story = {
-  args: {
-    variant: 'secondary',
-    children: 'Secondary',
-  },
-};
-
-export const Outline: Story = {
-  args: {
-    variant: 'outline',
-    children: 'Outline',
-  },
-};
-
-export const Ghost: Story = {
-  args: {
-    variant: 'ghost',
-    children: 'Ghost',
-  },
-};
-
-export const GhostMuted: Story = {
-  args: {
-    variant: 'ghost-muted',
-    children: 'Ghost Muted',
-  },
-};
-
-export const Destructive: Story = {
-  args: {
-    variant: 'destructive',
-    children: 'Destructive',
-  },
-};
-
-
-export const Large: Story = {
-  args: {
-    size: 'large',
-    children: 'Large',
-  },
-};
-
-export const Regular: Story = {
-  args: {
-    size: 'regular',
-    children: 'Regular',
-  },
-};
-
-export const Small: Story = {
-  args: {
-    size: 'small',
-    children: 'Small',
-  },
-};
-
-export const Mini: Story = {
-  args: {
-    size: 'mini',
-    children: 'Mini',
-  },
-};
-
-
-export const DefaultRoundness: Story = {
-  args: {
-    roundness: 'default',
-    children: 'Default Roundness',
-  },
-};
-
-export const Round: Story = {
-  args: {
-    roundness: 'round',
-    children: 'Round',
-  },
-};
-
-
-export const WithLeftIcon: Story = {
-  args: {
-    leftIcon: <Plus size={16} />,
-    children: 'Add Item',
-  },
-};
-
-export const WithRightIcon: Story = {
-  args: {
-    rightIcon: <Download size={16} />,
-    children: 'Download',
-  },
-};
-
-export const WithBothIcons: Story = {
-  args: {
-    leftIcon: <Plus size={16} />,
-    rightIcon: <Download size={16} />,
-    children: 'Add & Download',
-  },
-};
-
-export const IconOnly: Story = {
-  args: {
-    leftIcon: <Trash2 size={16} />,
-    'aria-label': 'Delete item',
-    children: '',
-  },
-};
-
-
-export const Disabled: Story = {
-  args: {
-    disabled: true,
-    children: 'Disabled',
-  },
-};
-
-
-export const LargePrimaryRound: Story = {
-  args: {
-    size: 'large',
-    variant: 'primary',
-    roundness: 'round',
-    children: 'Get Started',
-  },
-};
-
-export const SmallOutlineRound: Story = {
-  args: {
-    size: 'small',
-    variant: 'outline',
-    roundness: 'round',
-    children: 'Tag',
-  },
-};
-
-export const DestructiveWithIcon: Story = {
-  args: {
-    variant: 'destructive',
-    leftIcon: <Trash2 size={16} />,
-    children: 'Delete',
-  },
-};
-
-export const SecondaryLargeWithIcons: Story = {
-  args: {
-    variant: 'secondary',
-    size: 'large',
-    leftIcon: <Plus size={16} />,
-    rightIcon: <Download size={16} />,
-    children: 'Multiple Actions',
-  },
-};
-
-
 export const AllVariants: Story = {
   render: () => (
     <div className="space-y-4">
@@ -202,24 +38,26 @@ export const AllVariants: Story = {
   ),
 };
 
-export const AllSizes: Story = {
+export const WithIcons: Story = {
   render: () => (
-    <div className="flex items-end space-x-2">
-      <Button size="large">Large</Button>
-      <Button size="regular">Regular</Button>
-      <Button size="small">Small</Button>
-      <Button size="mini">Mini</Button>
+    <div className="space-y-2">
+      <div className="space-x-2">
+        <Button leftIcon={<Plus size={16} />}>Left Icon</Button>
+        <Button rightIcon={<Download size={16} />}>Right Icon</Button>
+        <Button leftIcon={<Plus size={16} />} rightIcon={<Download size={16} />}>
+          Both Icons
+        </Button>
+        <Button leftIcon={<Trash2 size={16} />} aria-label="Delete item" />
+      </div>
     </div>
   ),
 };
 
-export const AllRoundness: Story = {
-  render: () => (
-    <div className="space-x-2">
-      <Button roundness="default">Default</Button>
-      <Button roundness="round">Round</Button>
-    </div>
-  ),
+export const Disabled: Story = {
+  args: {
+    disabled: true,
+    children: 'Disabled',
+  },
 };
 
 export const VariantMatrix: Story = {

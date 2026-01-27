@@ -44,7 +44,6 @@ export const Mobile: Story = {
   },
 };
 
-
 export const Desktop: Story = {
   args: {
     type: 'desktop',
@@ -56,47 +55,6 @@ export const Desktop: Story = {
   },
 };
 
-
-export const CustomButtons: Story = {
-  args: {
-    type: 'mobile',
-    title: 'Delete item permanently?',
-    description: 'This action cannot be undone. All data will be lost.',
-    open: true,
-    actionButton: (
-      <Button variant="destructive" size="regular" className="w-full">
-        Delete Forever
-      </Button>
-    ),
-    cancelButton: (
-      <Button variant="outline" size="regular" className="w-full">
-        Keep Item
-      </Button>
-    ),
-  },
-};
-
-
-export const DesktopCustomButtons: Story = {
-  args: {
-    type: 'desktop',
-    title: 'Save changes?',
-    description: 'Do you want to save your changes before closing?',
-    open: true,
-    actionButton: (
-      <Button variant="primary" size="regular">
-        Save
-      </Button>
-    ),
-    cancelButton: (
-      <Button variant="outline" size="regular">
-        Discard
-      </Button>
-    ),
-  },
-};
-
-
 export const WithTrigger: Story = {
   args: {
     type: 'desktop',
@@ -105,29 +63,6 @@ export const WithTrigger: Story = {
     actionButton: <Button>Confirm</Button>,
     cancelButton: <Button variant="outline">Cancel</Button>,
     children: <Button>Open Dialog</Button>,
-  },
-};
-
-export const ConfirmationMobile: Story = {
-  args: {
-    type: 'mobile',
-    title: 'Are you sure?',
-    description: 'This action cannot be undone.',
-    actionButton: <Button className="w-full">Confirm</Button>,
-    cancelButton: <Button variant="outline" className="w-full">Cancel</Button>,
-    open: true,
-  },
-};
-
-
-export const ConfirmationDesktop: Story = {
-  args: {
-    type: 'desktop',
-    title: 'Are you sure?',
-    description: 'This action cannot be undone.',
-    actionButton: <Button>Confirm</Button>,
-    cancelButton: <Button variant="outline">Cancel</Button>,
-    open: true,
   },
 };
 

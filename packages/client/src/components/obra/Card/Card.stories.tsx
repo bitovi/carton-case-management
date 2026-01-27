@@ -50,28 +50,10 @@ export const OneSlot: Story = {
   },
 };
 
-export const OneSlotWithCustomContent: Story = {
-  args: {
-    main: (
-      <div className="text-center">
-        <p className="text-2xl font-bold">42</p>
-        <p className="text-sm text-muted-foreground">Active Cases</p>
-      </div>
-    ),
-  },
-};
-
 export const TwoSlots: Story = {
   args: {
     header: <HeaderContent />,
     main: <MainContent />,
-  },
-};
-
-export const TwoSlotsMinimal: Story = {
-  args: {
-    header: <h3 className="text-base font-semibold">Simple Header</h3>,
-    main: <p className="text-sm">Simple content</p>,
   },
 };
 
@@ -80,50 +62,6 @@ export const ThreeSlots: Story = {
     header: <HeaderContent />,
     main: <MainContent />,
     footer: <FooterContent />,
-  },
-};
-
-export const ThreeSlotsFullExample: Story = {
-  args: {
-    header: (
-      <div>
-        <h3 className="text-lg font-semibold">Case #12345</h3>
-        <p className="text-xs text-muted-foreground">Created on Jan 26, 2026</p>
-      </div>
-    ),
-    main: (
-      <div className="space-y-3">
-        <div>
-          <Label className="text-sm font-medium">Status:</Label>
-          <p className="text-sm">In Progress</p>
-        </div>
-        <div>
-          <Label className="text-sm font-medium">Assigned to:</Label>
-          <p className="text-sm">John Doe</p>
-        </div>
-        <div>
-          <Label className="text-sm font-medium">Description:</Label>
-          <p className="text-sm text-muted-foreground">
-            Customer reported issue with product functionality
-          </p>
-        </div>
-      </div>
-    ),
-    footer: (
-      <div className="flex items-center justify-between">
-        <button className="text-sm text-muted-foreground hover:text-foreground">
-          View Details →
-        </button>
-        <div className="flex gap-2">
-          <button className="rounded border border-border px-3 py-1.5 text-sm">
-            Edit
-          </button>
-          <button className="rounded bg-primary px-3 py-1.5 text-sm text-primary-foreground">
-            Close Case
-          </button>
-        </div>
-      </div>
-    ),
   },
 };
 
@@ -139,16 +77,4 @@ export const AllVariants: Story = {
       />
     </div>
   ),
-};
-
-export const EmptySlots: Story = {
-  args: {},
-};
-
-export const WithCustomStyling: Story = {
-  args: {
-    header: <h3 className="text-lg font-bold">Custom Styled Card</h3>,
-    main: <p className="text-sm">This card has custom styling applied.</p>,
-    className: 'border-2 border-primary shadow-lg',
-  },
 };

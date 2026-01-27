@@ -10,7 +10,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/obra/Select';
 import {
   DropdownMenu,
   DropdownMenuTrigger,

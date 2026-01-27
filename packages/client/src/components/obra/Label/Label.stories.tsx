@@ -22,44 +22,6 @@ export const Default: Story = {
   },
 };
 
-export const Inline: Story = {
-  args: {
-    layout: 'inline',
-    children: 'Email:',
-    htmlFor: 'email-input',
-  },
-  render: (args) => (
-    <div className="flex items-center gap-2">
-      <Label {...args} />
-      <input
-        id="email-input"
-        type="email"
-        placeholder="email@example.com"
-        className="h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm"
-      />
-    </div>
-  ),
-};
-
-export const Block: Story = {
-  args: {
-    layout: 'block',
-    children: 'Username',
-    htmlFor: 'username-input',
-  },
-  render: (args) => (
-    <div className="space-y-2">
-      <Label {...args} />
-      <input
-        id="username-input"
-        type="text"
-        placeholder="Enter username"
-        className="h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
-      />
-    </div>
-  ),
-};
-
 export const WithInput: Story = {
   args: {
     layout: 'block',
@@ -117,12 +79,5 @@ export const Disabled: Story = {
       />
     </div>
   ),
-};
-
-export const WithCustomClass: Story = {
-  args: {
-    children: 'Custom styled label',
-    className: 'text-primary font-bold',
-  },
 };
 
