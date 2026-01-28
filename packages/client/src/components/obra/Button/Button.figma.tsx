@@ -27,19 +27,14 @@ figma.connect(
         Round: 'round',
       }),
 
-      children: figma.textContent('*'),
-
-      leftIcon: figma.instance('Left icon wrapper'),
-      rightIcon: figma.instance('Right icon wrapper'),
+      children: figma.textContent('Label'),
     },
 
-    example: ({ variant, size, roundness, children, leftIcon, rightIcon }) => (
+    example: ({ variant, size, roundness, children }) => (
       <Button
         variant={variant}
         size={size}
         roundness={roundness}
-        leftIcon={leftIcon}
-        rightIcon={rightIcon}
       >
         {children}
       </Button>
