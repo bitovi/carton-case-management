@@ -22,7 +22,6 @@ describe('EditableDate', () => {
 
     it('renders formatted date value in rest state', () => {
       render(<EditableDate {...defaultProps} />);
-      // Date may be displayed as Jan 19 or Jan 20 depending on timezone
       expect(screen.getByText(/Jan (19|20), 2025/)).toBeInTheDocument();
     });
 
@@ -58,15 +57,12 @@ describe('EditableDate', () => {
       render(
         <EditableDate {...defaultProps} displayFormat="MM/dd/yyyy" />
       );
-      // Date may be displayed as 01/19 or 01/20 depending on timezone
       expect(screen.getByText(/01\/(19|20)\/2025/)).toBeInTheDocument();
     });
 
     it('accepts Date object as value', () => {
-      // Use a date with explicit UTC time to avoid timezone issues
       const date = new Date(Date.UTC(2025, 2, 15, 12, 0, 0)); // March 15, 2025 at noon UTC
       render(<EditableDate {...defaultProps} value={date} />);
-      // Date formatting will be locale-dependent, so be flexible
       expect(screen.getByText(/Mar (14|15), 2025/)).toBeInTheDocument();
     });
   });
@@ -78,9 +74,8 @@ describe('EditableDate', () => {
 
       fireEvent.click(content);
 
-      // Should show the date picker input (button with calendar icon)
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Select date' })).toBeInTheDocument();
+        expect(screen.getByLabelText('Select date')).toBeInTheDocument();
       });
     });
 
@@ -91,7 +86,6 @@ describe('EditableDate', () => {
       fireEvent.click(content);
 
       await waitFor(() => {
-        // Calendar grid should be visible
         expect(screen.getByRole('grid')).toBeInTheDocument();
       });
     });
@@ -103,7 +97,7 @@ describe('EditableDate', () => {
       fireEvent.click(content);
 
       await waitFor(() => {
-        const trigger = screen.getByRole('button', { name: 'Select date' });
+        const trigger = screen.getByLabelText('Select date');
         expect(trigger.querySelector('svg')).toBeInTheDocument();
       });
     });
@@ -115,16 +109,13 @@ describe('EditableDate', () => {
       const onSave = vi.fn().mockResolvedValue(undefined);
       render(<EditableDate {...defaultProps} onSave={onSave} />);
 
-      // Enter edit mode
       const content = screen.getByRole('button', { name: /edit due date/i });
       await user.click(content);
 
-      // Wait for calendar to open
       await waitFor(() => {
         expect(screen.getByRole('grid')).toBeInTheDocument();
       });
 
-      // Find a day button to click (different from current value)
       const dayButtons = screen.getAllByRole('gridcell');
       const dayToSelect = dayButtons.find(
         (btn) => btn.textContent === '15' && !btn.getAttribute('disabled')
@@ -137,10 +128,8 @@ describe('EditableDate', () => {
         }
       }
 
-      // onSave should be called with ISO date string
       await waitFor(() => {
         expect(onSave).toHaveBeenCalled();
-        // Should be called with a valid date string (YYYY-MM-DD format)
         const savedValue = onSave.mock.calls[0][0];
         expect(savedValue).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       });
@@ -151,16 +140,13 @@ describe('EditableDate', () => {
       const onSave = vi.fn().mockResolvedValue(undefined);
       render(<EditableDate {...defaultProps} onSave={onSave} />);
 
-      // Enter edit mode
       const content = screen.getByRole('button', { name: /edit due date/i });
       await user.click(content);
 
-      // Wait for calendar to open
       await waitFor(() => {
         expect(screen.getByRole('grid')).toBeInTheDocument();
       });
 
-      // Select a date
       const dayButtons = screen.getAllByRole('gridcell');
       const dayToSelect = dayButtons.find(
         (btn) => btn.textContent === '15' && !btn.getAttribute('disabled')
@@ -173,7 +159,6 @@ describe('EditableDate', () => {
         }
       }
 
-      // Calendar should close after save
       await waitFor(() => {
         expect(screen.queryByRole('grid')).not.toBeInTheDocument();
       });
@@ -185,38 +170,36 @@ describe('EditableDate', () => {
 
       fireEvent.click(content);
 
-      // No save/cancel buttons should be present
       expect(screen.queryByRole('button', { name: /save/i })).not.toBeInTheDocument();
       expect(screen.queryByRole('button', { name: /cancel/i })).not.toBeInTheDocument();
     });
   });
 
   describe('Cancel Behavior', () => {
-    it('exits edit mode when clicking outside', async () => {
-      const user = userEvent.setup();
+    it('exits edit mode when pressing Escape', async () => {
+      const onSave = vi.fn().mockResolvedValue(undefined);
       render(
         <div>
-          <EditableDate {...defaultProps} />
+          <EditableDate {...defaultProps} onSave={onSave} />
           <button type="button">Outside</button>
         </div>
       );
 
-      // Enter edit mode
       const content = screen.getByRole('button', { name: /edit due date/i });
-      await user.click(content);
+      fireEvent.click(content);
 
-      // Wait for calendar
       await waitFor(() => {
         expect(screen.getByRole('grid')).toBeInTheDocument();
       });
 
-      // Click outside
-      await user.click(screen.getByText('Outside'));
+      fireEvent.keyDown(screen.getByLabelText('Select date'), { key: 'Escape' });
 
-      // Calendar should close
       await waitFor(() => {
         expect(screen.queryByRole('grid')).not.toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /edit due date/i })).toBeInTheDocument();
       });
+
+      expect(onSave).not.toHaveBeenCalled();
     });
   });
 
@@ -240,18 +223,13 @@ describe('EditableDate', () => {
         />
       );
 
-      // Enter edit mode
       const content = screen.getByRole('button', { name: /edit due date/i });
       await user.click(content);
 
-      // Wait for calendar
       await waitFor(() => {
         expect(screen.getByRole('grid')).toBeInTheDocument();
       });
 
-      // Navigate to a future month (this is complex with the calendar)
-      // For simplicity, we test that validation is wired up correctly
-      // by checking the component renders without error
       expect(screen.getByRole('grid')).toBeInTheDocument();
     });
   });
@@ -259,7 +237,6 @@ describe('EditableDate', () => {
   describe('Readonly Mode', () => {
     it('does not enter edit mode when readonly', () => {
       render(<EditableDate {...defaultProps} readonly />);
-      // Find the content by looking for any date text
       const content = screen.getByText(/Jan (19|20), 2025/);
 
       fireEvent.click(content);
@@ -312,16 +289,13 @@ describe('EditableDate', () => {
       const onSave = vi.fn().mockRejectedValue(new Error('Network error'));
       render(<EditableDate {...defaultProps} onSave={onSave} />);
 
-      // Enter edit mode
       const content = screen.getByRole('button', { name: /edit due date/i });
       await user.click(content);
 
-      // Wait for calendar
       await waitFor(() => {
         expect(screen.getByRole('grid')).toBeInTheDocument();
       });
 
-      // Select a date
       const dayButtons = screen.getAllByRole('gridcell');
       const dayToSelect = dayButtons.find(
         (btn) => btn.textContent === '15' && !btn.getAttribute('disabled')
@@ -334,9 +308,8 @@ describe('EditableDate', () => {
         }
       }
 
-      // Error should be displayed
       await waitFor(() => {
-        expect(screen.getByRole('alert')).toHaveTextContent('Network error');
+        expect(screen.getByText('Network error')).toBeInTheDocument();
       });
     });
   });
@@ -386,7 +359,6 @@ describe('EditableDate', () => {
 
       fireEvent.mouseEnter(content);
 
-      // The parent div should have the hover class
       expect(content).toHaveClass('bg-gray-200');
     });
 

@@ -7,6 +7,13 @@ import { setupServer } from 'msw/node';
 (global as any).Element.prototype.hasPointerCapture = () => false;
 (global as any).Element.prototype.releasePointerCapture = () => {};
 
+(global as any).ResizeObserver = class ResizeObserver {
+  constructor() {}
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
 export const server = setupServer();
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));

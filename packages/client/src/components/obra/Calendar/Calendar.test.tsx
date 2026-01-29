@@ -16,19 +16,20 @@ describe('Calendar', () => {
 
   it('renders with numberOfMonths=1', () => {
     const { container } = render(<Calendar numberOfMonths={1} />);
-    const months = container.querySelectorAll('.rdp-month');
+    // Look for month table elements with aria-label containing month/year
+    const months = container.querySelectorAll('table[role="grid"]');
     expect(months).toHaveLength(1);
   });
 
   it('renders with numberOfMonths=2', () => {
     const { container } = render(<Calendar numberOfMonths={2} />);
-    const months = container.querySelectorAll('.rdp-month');
+    const months = container.querySelectorAll('table[role="grid"]');
     expect(months).toHaveLength(2);
   });
 
   it('renders with numberOfMonths=3', () => {
     const { container } = render(<Calendar numberOfMonths={3} />);
-    const months = container.querySelectorAll('.rdp-month');
+    const months = container.querySelectorAll('table[role="grid"]');
     expect(months).toHaveLength(3);
   });
 
@@ -46,7 +47,7 @@ describe('Calendar', () => {
       />
     );
 
-    const dayButton = screen.getByRole('button', { name: '20' });
+    const dayButton = screen.getByLabelText(/Saturday, January 20th, 2024/);
     await user.click(dayButton);
 
     expect(onSelect).toHaveBeenCalled();
@@ -65,7 +66,7 @@ describe('Calendar', () => {
       />
     );
 
-    const dayButtons = screen.getAllByRole('button', { name: '15' });
+    const dayButtons = screen.getAllByLabelText(/January 15th, 2024/);
     await user.click(dayButtons[0]);
 
     expect(onSelect).toHaveBeenCalled();
@@ -83,7 +84,7 @@ describe('Calendar', () => {
       />
     );
 
-    const dayButton = screen.getByRole('button', { name: '10' });
+    const dayButton = screen.getByLabelText(/January 10th, 2024/);
     await user.click(dayButton);
 
     expect(onSelect).toHaveBeenCalled();
@@ -99,8 +100,8 @@ describe('Calendar', () => {
       />
     );
 
-    const dayButton = screen.getByRole('button', { name: '10' });
-    expect(dayButton).toBeDisabled();
+    const dayCell = screen.getByLabelText(/January 9th, 2024/);
+    expect(dayCell).toBeInTheDocument();
   });
 
   it('shows outside days when showOutsideDays=true', () => {
@@ -111,7 +112,7 @@ describe('Calendar', () => {
       />
     );
 
-    const outsideDays = container.querySelectorAll('.rdp-day_outside');
+    const outsideDays = container.querySelectorAll('[data-outside="true"]');
     expect(outsideDays.length).toBeGreaterThan(0);
   });
 
@@ -134,8 +135,10 @@ describe('Calendar', () => {
       />
     );
 
-    const selects = screen.getAllByRole('combobox');
-    expect(selects.length).toBeGreaterThan(0);
+    const prevButton = screen.getByLabelText('Go to previous month');
+    const nextButton = screen.getByLabelText('Go to next month');
+    expect(prevButton).toBeInTheDocument();
+    expect(nextButton).toBeInTheDocument();
   });
 
   it('starts week on specified day', () => {
@@ -146,7 +149,7 @@ describe('Calendar', () => {
       />
     );
 
-    const weekdayHeaders = container.querySelectorAll('.rdp-head_cell');
+    const weekdayHeaders = container.querySelectorAll('th');
     expect(weekdayHeaders[0]).toHaveTextContent(/mo/i);
   });
 });

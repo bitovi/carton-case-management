@@ -68,13 +68,15 @@ describe('Input', () => {
     it('should not show error styling by default', () => {
       render(<Input data-testid="input" />);
       const input = screen.getByTestId('input');
-      expect(input).toHaveClass('border-border', 'focus-visible:ring-ring');
+      expect(input).toHaveClass('border-border');
+      expect(input).toHaveClass('focus-visible:shadow-[0_0_0_3px_var(--focus-ring,#CBD5E1)]');
     });
 
     it('should show error styling when error prop is true', () => {
       render(<Input error data-testid="input" />);
       const input = screen.getByTestId('input');
-      expect(input).toHaveClass('border-destructive', 'focus-visible:ring-destructive');
+      expect(input).toHaveClass('border-destructive');
+      expect(input).toHaveClass('focus-visible:shadow-[0_0_0_3px_var(--focus-ring-error,#FCA5A5)]');
     });
   });
 
@@ -185,15 +187,17 @@ describe('Input', () => {
 
   describe('Custom ClassName', () => {
     it('should apply custom className', () => {
-      render(<Input className="custom-class" data-testid="input" />);
-      const input = screen.getByTestId('input');
-      expect(input).toHaveClass('custom-class');
+      const { container } = render(<Input className="custom-class" data-testid="input" />);
+      const inputContainer = container.firstChild;
+      expect(inputContainer).toHaveClass('custom-class');
     });
 
     it('should merge custom className with variant classes', () => {
-      render(<Input size="large" className="custom-class" data-testid="input" />);
+      const { container } = render(<Input size="large" className="custom-class" data-testid="input" />);
+      const inputContainer = container.firstChild;
+      expect(inputContainer).toHaveClass('custom-class');
       const input = screen.getByTestId('input');
-      expect(input).toHaveClass('custom-class', 'h-10', 'px-6');
+      expect(input).toHaveClass('h-10', 'px-6');
     });
   });
 
