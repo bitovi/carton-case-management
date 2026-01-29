@@ -143,17 +143,14 @@ test.describe('CasePage', () => {
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
-    const menuButton = page
-      .getByRole('button')
-      .filter({ has: page.locator('svg') })
-      .first();
+    const menuButton = page.getByRole('button', { name: 'Open case list' });
     if (await menuButton.isVisible()) {
       await menuButton.click();
 
-      const sheet = page.locator('.fixed.bottom-0.left-0.right-0').first();
+      const sheet = page.locator('[role="dialog"]').first();
       await expect(sheet).toBeVisible({ timeout: 5000 });
 
-      const caseListInSheet = sheet.locator('.flex.flex-col.gap-2 a').first();
+      const caseListInSheet = sheet.locator('a').first();
       await expect(caseListInSheet).toBeVisible();
     }
   });
@@ -165,17 +162,14 @@ test.describe('CasePage', () => {
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
-    const menuButton = page
-      .getByRole('button')
-      .filter({ has: page.locator('svg') })
-      .first();
+    const menuButton = page.getByRole('button', { name: 'Open case list' });
     if (await menuButton.isVisible()) {
       await menuButton.click();
 
-      const sheet = page.locator('.fixed.bottom-0.left-0.right-0').first();
+      const sheet = page.locator('[role="dialog"]').first();
       await expect(sheet).toBeVisible({ timeout: 5000 });
 
-      const secondCase = sheet.locator('.flex.flex-col.gap-2 a').nth(1);
+      const secondCase = sheet.locator('a').nth(1);
       if (await secondCase.isVisible()) {
         await secondCase.click();
 
