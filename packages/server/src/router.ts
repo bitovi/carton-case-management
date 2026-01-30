@@ -392,10 +392,6 @@ export const appRouter = router({
         });
 
         if (existingVote) {
-          // If same vote type, do nothing (or could remove it)
-          if (existingVote.voteType === input.voteType) {
-            return existingVote;
-          }
           // Update to new vote type
           return ctx.prisma.commentVote.update({
             where: {

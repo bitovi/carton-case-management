@@ -51,6 +51,7 @@ export function CommentVoteButtons({
               size="small"
               onClick={handleLikeClick}
               className="flex items-center gap-1 h-8 px-2 hover:bg-gray-100"
+              aria-label={hasLiked ? 'Remove like' : 'Like this comment'}
             >
               <ThumbsUp
                 className={`w-4 h-4 ${hasLiked ? 'fill-teal-600 text-teal-600' : 'text-gray-600'}`}
@@ -73,6 +74,7 @@ export function CommentVoteButtons({
               size="small"
               onClick={handleDislikeClick}
               className="flex items-center gap-1 h-8 px-2 hover:bg-gray-100"
+              aria-label={hasDisliked ? 'Remove dislike' : 'Dislike this comment'}
             >
               <ThumbsDown
                 className={`w-4 h-4 ${hasDisliked ? 'fill-teal-600 text-teal-600' : 'text-gray-600'}`}
