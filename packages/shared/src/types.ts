@@ -3,6 +3,8 @@ import { z } from 'zod';
 // Re-export enum schemas from generated
 export { CasePrioritySchema, CaseStatusSchema, VoteTypeSchema } from './generated/index.js';
 export type { CasePriorityType, CaseStatusType, VoteTypeType } from './generated/index.js';
+// Alias for better naming convention
+export type { VoteTypeType as VoteType } from './generated/index.js';
 
 // Import for local alias
 import { CasePrioritySchema, CaseStatusSchema, VoteTypeSchema } from './generated/index.js';
@@ -33,8 +35,7 @@ export const CASE_STATUS_OPTIONS = [
   { value: 'CLOSED' as const, label: 'Closed' },
 ] as const;
 
-// Vote types
-export type VoteType = 'LIKE' | 'DISLIKE';
+// Vote schema alias
 export const voteTypeSchema = VoteTypeSchema;
 
 // Vote summary for a case (aggregated from votes)
@@ -50,7 +51,6 @@ export type VoteAction = 'created' | 'changed' | 'removed';
 // Vote response from API
 export interface VoteResponse {
   action: VoteAction;
-  voteType: VoteType | null; // null if removed
   voteSummary: VoteSummary;
 }
 

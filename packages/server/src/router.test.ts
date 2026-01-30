@@ -788,8 +788,8 @@ describe('appRouter', () => {
         },
       });
       expect(result.action).toBe('created');
-      expect(result.voteType).toBe('LIKE');
       expect(result.voteSummary).toBeDefined();
+      expect(result.voteSummary.userVote).toBe('LIKE');
     });
 
     it('creates a DISLIKE vote when user has not voted', async () => {
@@ -813,7 +813,7 @@ describe('appRouter', () => {
       });
 
       expect(result.action).toBe('created');
-      expect(result.voteType).toBe('DISLIKE');
+      expect(result.voteSummary.userVote).toBe('DISLIKE');
     });
 
     it('throws UNAUTHORIZED when not authenticated', async () => {
@@ -868,7 +868,7 @@ describe('appRouter', () => {
         data: { voteType: 'DISLIKE' },
       });
       expect(result.action).toBe('changed');
-      expect(result.voteType).toBe('DISLIKE');
+      expect(result.voteSummary.userVote).toBe('DISLIKE');
     });
 
     it('changes vote from DISLIKE to LIKE', async () => {
@@ -897,7 +897,7 @@ describe('appRouter', () => {
       });
 
       expect(result.action).toBe('changed');
-      expect(result.voteType).toBe('LIKE');
+      expect(result.voteSummary.userVote).toBe('LIKE');
     });
 
     it('removes LIKE vote by clicking LIKE again', async () => {
@@ -929,7 +929,7 @@ describe('appRouter', () => {
         where: { id: 'vote-1' },
       });
       expect(result.action).toBe('removed');
-      expect(result.voteType).toBe(null);
+      expect(result.voteSummary.userVote).toBe(null);
     });
 
     it('removes DISLIKE vote by clicking DISLIKE again', async () => {
@@ -958,7 +958,7 @@ describe('appRouter', () => {
       });
 
       expect(result.action).toBe('removed');
-      expect(result.voteType).toBe(null);
+      expect(result.voteSummary.userVote).toBe(null);
     });
   });
 });

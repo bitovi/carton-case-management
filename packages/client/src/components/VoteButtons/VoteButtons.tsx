@@ -54,7 +54,9 @@ export function VoteButtons({ caseId, voteSummary, disabled = false }: VoteButto
         }
       };
 
-      const optimisticSummary = calculateOptimisticSummary(voteSummary, voteType);
+      // Use cached data if available for optimistic calculation
+      const currentSummary = previousCase?.voteSummary ?? voteSummary;
+      const optimisticSummary = calculateOptimisticSummary(currentSummary, voteType);
 
       // Optimistically update case details
       if (previousCase) {

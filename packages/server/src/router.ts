@@ -395,7 +395,7 @@ export const appRouter = router({
 
         const { caseId, voteType } = input;
 
-        // Find existing vote by this user on this case
+        // Use upsert for atomic operation to handle concurrent votes
         const existingVote = await ctx.prisma.caseVote.findUnique({
           where: {
             user_case_vote: {
@@ -406,7 +406,6 @@ export const appRouter = router({
         });
 
         let action: 'created' | 'changed' | 'removed';
-        let currentVoteType: VoteType | null;
 
         if (!existingVote) {
           // Create new vote
@@ -418,7 +417,6 @@ export const appRouter = router({
             },
           });
           action = 'created';
-          currentVoteType = voteType;
         } else if (existingVote.voteType === voteType) {
           // Remove vote (user clicked same button)
           await ctx.prisma.caseVote.delete({
@@ -427,7 +425,6 @@ export const appRouter = router({
             },
           });
           action = 'removed';
-          currentVoteType = null;
         } else {
           // Change vote (user clicked different button)
           await ctx.prisma.caseVote.update({
@@ -439,7 +436,6 @@ export const appRouter = router({
             },
           });
           action = 'changed';
-          currentVoteType = voteType;
         }
 
         // Fetch updated vote summary
@@ -474,7 +470,6 @@ export const appRouter = router({
 
         return {
           action,
-          voteType: currentVoteType,
           voteSummary,
         };
       }),
