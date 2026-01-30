@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Textarea } from '@/components/obra';
+import { CommentVoteButtons } from './components/CommentVoteButtons';
 import type { CaseCommentsProps } from './types';
 
 export function CaseComments({ caseData }: CaseCommentsProps) {
@@ -34,6 +35,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
             name: currentUser.name,
             email: currentUser.email,
           },
+          votes: [],
         };
 
         utils.case.getById.setData(
@@ -62,6 +64,94 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
       utils.case.getById.invalidate({ id: caseData.id });
     },
   });
+
+  const voteMutation = trpc.comment.vote.useMutation({
+    onMutate: async ({ commentId, voteType }) => {
+      await utils.case.getById.cancel({ id: caseData.id });
+      const previousCase = utils.case.getById.getData({ id: caseData.id });
+
+      if (previousCase && currentUser) {
+        const updatedComments = previousCase.comments?.map((comment) => {
+          if (comment.id === commentId) {
+            // Remove existing vote from current user if any
+            const filteredVotes = comment.votes?.filter((v) => v.userId !== currentUser.id) || [];
+            // Add new vote
+            return {
+              ...comment,
+              votes: [
+                ...filteredVotes,
+                {
+                  id: `temp-${Date.now()}`,
+                  userId: currentUser.id,
+                  commentId,
+                  voteType,
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString(),
+                  user: {
+                    id: currentUser.id,
+                    name: currentUser.name,
+                    email: currentUser.email,
+                  },
+                },
+              ],
+            };
+          }
+          return comment;
+        });
+
+        utils.case.getById.setData({ id: caseData.id }, { ...previousCase, comments: updatedComments });
+      }
+
+      return { previousCase };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousCase) {
+        utils.case.getById.setData({ id: caseData.id }, context.previousCase);
+      }
+    },
+    onSettled: () => {
+      utils.case.getById.invalidate({ id: caseData.id });
+    },
+  });
+
+  const removeVoteMutation = trpc.comment.removeVote.useMutation({
+    onMutate: async ({ commentId }) => {
+      await utils.case.getById.cancel({ id: caseData.id });
+      const previousCase = utils.case.getById.getData({ id: caseData.id });
+
+      if (previousCase && currentUser) {
+        const updatedComments = previousCase.comments?.map((comment) => {
+          if (comment.id === commentId) {
+            return {
+              ...comment,
+              votes: comment.votes?.filter((v) => v.userId !== currentUser.id) || [],
+            };
+          }
+          return comment;
+        });
+
+        utils.case.getById.setData({ id: caseData.id }, { ...previousCase, comments: updatedComments });
+      }
+
+      return { previousCase };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousCase) {
+        utils.case.getById.setData({ id: caseData.id }, context.previousCase);
+      }
+    },
+    onSettled: () => {
+      utils.case.getById.invalidate({ id: caseData.id });
+    },
+  });
+
+  const handleVote = (commentId: string, voteType: 'LIKE' | 'DISLIKE') => {
+    voteMutation.mutate({ commentId, voteType });
+  };
+
+  const handleRemoveVote = (commentId: string) => {
+    removeVoteMutation.mutate({ commentId });
+  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -117,6 +207,13 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
                 </div>
               </div>
               <p className="text-sm text-gray-700">{comment.content}</p>
+              <CommentVoteButtons
+                commentId={comment.id}
+                votes={comment.votes || []}
+                currentUserId={currentUser?.id}
+                onVote={handleVote}
+                onRemoveVote={handleRemoveVote}
+              />
             </div>
           ))
         ) : (
