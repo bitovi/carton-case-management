@@ -275,26 +275,34 @@ export const appRouter = router({
 
       // Transform comments to include vote counts and current user's vote
       const transformedComments = caseData.comments.map((comment) => {
-        const likesCount = comment.votes.filter((v) => v.voteType === 'LIKE').length;
-        const dislikesCount = comment.votes.filter((v) => v.voteType === 'DISLIKE').length;
-        const currentUserVote = ctx.userId
-          ? comment.votes.find((v) => v.userId === ctx.userId)?.voteType
-          : undefined;
-        const likeVoters = comment.votes
-          .filter((v) => v.voteType === 'LIKE')
-          .map((v) => ({ id: v.user.id, name: v.user.name }));
-        const dislikeVoters = comment.votes
-          .filter((v) => v.voteType === 'DISLIKE')
-          .map((v) => ({ id: v.user.id, name: v.user.name }));
+        // Use reduce for better performance instead of multiple filters
+        const voteStats = comment.votes.reduce(
+          (acc, vote) => {
+            if (vote.voteType === 'LIKE') {
+              acc.likesCount++;
+              acc.likeVoters.push({ id: vote.user.id, name: vote.user.name });
+            } else {
+              acc.dislikesCount++;
+              acc.dislikeVoters.push({ id: vote.user.id, name: vote.user.name });
+            }
+            if (ctx.userId && vote.userId === ctx.userId) {
+              acc.currentUserVote = vote.voteType;
+            }
+            return acc;
+          },
+          {
+            likesCount: 0,
+            dislikesCount: 0,
+            currentUserVote: undefined as 'LIKE' | 'DISLIKE' | undefined,
+            likeVoters: [] as Array<{ id: string; name: string }>,
+            dislikeVoters: [] as Array<{ id: string; name: string }>,
+          }
+        );
 
         return {
           ...comment,
           votes: undefined, // Remove raw votes from response
-          likesCount,
-          dislikesCount,
-          currentUserVote,
-          likeVoters,
-          dislikeVoters,
+          ...voteStats,
         };
       });
 
@@ -411,6 +419,18 @@ export const appRouter = router({
           throw new TRPCError({
             code: 'UNAUTHORIZED',
             message: 'Not authenticated',
+          });
+        }
+
+        // Validate that the comment exists
+        const comment = await ctx.prisma.comment.findUnique({
+          where: { id: input.commentId },
+        });
+
+        if (!comment) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Comment not found',
           });
         }
 
