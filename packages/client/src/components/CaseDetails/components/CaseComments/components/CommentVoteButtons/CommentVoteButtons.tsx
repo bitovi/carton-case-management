@@ -48,7 +48,7 @@ export function CommentVoteButtons({
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
-              size="sm"
+              size="small"
               onClick={handleLikeClick}
               className="flex items-center gap-1 h-8 px-2 hover:bg-gray-100"
             >
@@ -70,7 +70,7 @@ export function CommentVoteButtons({
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
-              size="sm"
+              size="small"
               onClick={handleDislikeClick}
               className="flex items-center gap-1 h-8 px-2 hover:bg-gray-100"
             >

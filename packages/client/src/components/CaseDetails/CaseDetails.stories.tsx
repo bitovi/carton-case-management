@@ -54,6 +54,7 @@ const mockCase: NonNullable<CaseByIdOutput> = {
       },
       createdAt: new Date('2024-01-15T11:00:00Z'),
       updatedAt: new Date('2024-01-15T11:00:00Z'),
+      votes: [],
     },
     {
       id: '2',
@@ -68,6 +69,7 @@ const mockCase: NonNullable<CaseByIdOutput> = {
       },
       createdAt: new Date('2024-01-16T09:15:00Z'),
       updatedAt: new Date('2024-01-16T09:15:00Z'),
+      votes: [],
     },
   ],
 };
@@ -258,6 +260,7 @@ export const WithManyComments: Story = {
                     },
                     createdAt: new Date('2024-01-16T10:30:00Z'),
                     updatedAt: new Date('2024-01-16T10:30:00Z'),
+                    votes: [],
                   },
                   {
                     id: '4',
@@ -271,6 +274,7 @@ export const WithManyComments: Story = {
                     },
                     createdAt: new Date('2024-01-16T14:30:00Z'),
                     updatedAt: new Date('2024-01-16T14:30:00Z'),
+                    votes: [],
                   },
                   {
                     id: '5',
@@ -284,6 +288,7 @@ export const WithManyComments: Story = {
                     },
                     createdAt: new Date('2024-01-16T14:45:00Z'),
                     updatedAt: new Date('2024-01-16T14:45:00Z'),
+                    votes: [],
                   },
                 ],
               },
@@ -309,6 +314,7 @@ export const WithManyComments: Story = {
                     },
                     createdAt: new Date('2024-01-16T10:30:00Z'),
                     updatedAt: new Date('2024-01-16T10:30:00Z'),
+                    votes: [],
                   },
                   {
                     id: '4',
@@ -322,6 +328,7 @@ export const WithManyComments: Story = {
                     },
                     createdAt: new Date('2024-01-16T14:30:00Z'),
                     updatedAt: new Date('2024-01-16T14:30:00Z'),
+                    votes: [],
                   },
                   {
                     id: '5',
@@ -335,6 +342,7 @@ export const WithManyComments: Story = {
                     },
                     createdAt: new Date('2024-01-16T14:45:00Z'),
                     updatedAt: new Date('2024-01-16T14:45:00Z'),
+                    votes: [],
                   },
                 ],
               },
