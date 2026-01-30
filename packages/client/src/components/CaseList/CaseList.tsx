@@ -91,6 +91,16 @@ export function CaseList({ onCaseClick }: CaseListProps) {
               <p className="font-normal text-[#192627] w-full truncate">
                 {formatCaseNumber(caseItem.id, caseItem.createdAt)}
               </p>
+              {caseItem.voteSummary && (
+                <div className="flex items-center gap-2 mt-1 text-xs text-gray-600">
+                  <span className="flex items-center gap-1">
+                    👍 {caseItem.voteSummary.likes}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    👎 {caseItem.voteSummary.dislikes}
+                  </span>
+                </div>
+              )}
             </div>
           </Link>
         );

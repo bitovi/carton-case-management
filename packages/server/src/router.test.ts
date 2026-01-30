@@ -27,6 +27,13 @@ describe('appRouter', () => {
       comment: {
         create: vi.fn(),
       },
+      caseVote: {
+        findUnique: vi.fn(),
+        create: vi.fn(),
+        update: vi.fn(),
+        delete: vi.fn(),
+        upsert: vi.fn(),
+      },
     };
 
     mockContext = {
@@ -221,6 +228,7 @@ describe('appRouter', () => {
           {
             id: 'case-1',
             title: 'Test Case',
+            votes: [],
             customer: { id: 'customer-1', firstName: 'Customer', lastName: 'A' },
             creator: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
             updater: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
@@ -248,10 +256,23 @@ describe('appRouter', () => {
             assignee: {
               select: { id: true, name: true, email: true },
             },
+            votes: {
+              select: { userId: true, voteType: true },
+            },
           },
           orderBy: { createdAt: 'desc' },
         });
-        expect(result).toEqual(mockCases);
+        // Result should have voteSummary added
+        expect(result).toHaveLength(1);
+        expect(result[0]).toMatchObject({
+          id: 'case-1',
+          title: 'Test Case',
+        });
+        expect(result[0].voteSummary).toEqual({
+          likes: 0,
+          dislikes: 0,
+          userVote: null,
+        });
       });
 
       it('filters cases by status', async () => {
@@ -299,6 +320,7 @@ describe('appRouter', () => {
         const mockCase = {
           id: 'case-1',
           title: 'Test Case',
+          votes: [],
           customer: { id: 'customer-1', firstName: 'Customer', lastName: 'A' },
           creator: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
           updater: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
@@ -340,9 +362,22 @@ describe('appRouter', () => {
               },
               orderBy: { createdAt: 'desc' },
             },
+            votes: {
+              select: { userId: true, voteType: true },
+            },
           },
         });
-        expect(result).toEqual(mockCase);
+        // Result should have voteSummary added and votes removed
+        expect(result).toMatchObject({
+          id: 'case-1',
+          title: 'Test Case',
+        });
+        expect(result).toBeDefined();
+        expect(result!.voteSummary).toEqual({
+          likes: 0,
+          dislikes: 0,
+          userVote: null,
+        });
       });
     });
 
@@ -513,6 +548,140 @@ describe('appRouter', () => {
         expect(result).toEqual(mockDeletedCase);
       });
     });
+
+    // User Story 1: View Case Vote Counts
+    describe('getById with voteSummary', () => {
+      it('returns case with vote summary when user has not voted', async () => {
+        const mockCase = {
+          id: 'case-1',
+          title: 'Test Case',
+          votes: [
+            { id: 'vote-1', userId: 'user-2', voteType: 'LIKE' },
+            { id: 'vote-2', userId: 'user-3', voteType: 'LIKE' },
+            { id: 'vote-3', userId: 'user-4', voteType: 'DISLIKE' },
+          ],
+          customer: { id: 'customer-1', firstName: 'Customer', lastName: 'A' },
+          creator: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
+          updater: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
+          assignee: null,
+          comments: [],
+        };
+
+        mockContext.userId = 'user-1';
+        mockPrisma.case.findUnique.mockResolvedValue(mockCase);
+
+        const caller = appRouter.createCaller(mockContext);
+        const result = await caller.case.getById({ id: 'case-1' });
+
+        expect(result).toHaveProperty('voteSummary');
+        expect(result!.voteSummary).toEqual({
+          likes: 2,
+          dislikes: 1,
+          userVote: null,
+        });
+      });
+
+      it('returns case with vote summary when user has voted LIKE', async () => {
+        const mockCase = {
+          id: 'case-1',
+          title: 'Test Case',
+          votes: [
+            { id: 'vote-1', userId: 'user-1', voteType: 'LIKE' },
+            { id: 'vote-2', userId: 'user-2', voteType: 'LIKE' },
+            { id: 'vote-3', userId: 'user-3', voteType: 'DISLIKE' },
+          ],
+          customer: { id: 'customer-1', firstName: 'Customer', lastName: 'A' },
+          creator: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
+          updater: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
+          assignee: null,
+          comments: [],
+        };
+
+        mockContext.userId = 'user-1';
+        mockPrisma.case.findUnique.mockResolvedValue(mockCase);
+
+        const caller = appRouter.createCaller(mockContext);
+        const result = await caller.case.getById({ id: 'case-1' });
+
+        expect(result!.voteSummary).toEqual({
+          likes: 2,
+          dislikes: 1,
+          userVote: 'LIKE',
+        });
+      });
+
+      it('returns case with vote summary with no votes', async () => {
+        const mockCase = {
+          id: 'case-1',
+          title: 'Test Case',
+          votes: [],
+          customer: { id: 'customer-1', firstName: 'Customer', lastName: 'A' },
+          creator: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
+          updater: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
+          assignee: null,
+          comments: [],
+        };
+
+        mockPrisma.case.findUnique.mockResolvedValue(mockCase);
+
+        const caller = appRouter.createCaller(mockContext);
+        const result = await caller.case.getById({ id: 'case-1' });
+
+        expect(result!.voteSummary).toEqual({
+          likes: 0,
+          dislikes: 0,
+          userVote: null,
+        });
+      });
+    });
+
+    describe('list with voteSummary', () => {
+      it('returns cases with vote summaries', async () => {
+        const mockCases = [
+          {
+            id: 'case-1',
+            title: 'Case 1',
+            votes: [
+              { id: 'vote-1', userId: 'user-1', voteType: 'LIKE' },
+              { id: 'vote-2', userId: 'user-2', voteType: 'LIKE' },
+            ],
+            customer: { id: 'customer-1', firstName: 'Customer', lastName: 'A' },
+            creator: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
+            updater: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
+            assignee: null,
+          },
+          {
+            id: 'case-2',
+            title: 'Case 2',
+            votes: [
+              { id: 'vote-3', userId: 'user-2', voteType: 'DISLIKE' },
+            ],
+            customer: { id: 'customer-1', firstName: 'Customer', lastName: 'A' },
+            creator: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
+            updater: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
+            assignee: null,
+          },
+        ];
+
+        mockContext.userId = 'user-1';
+        mockPrisma.case.findMany.mockResolvedValue(mockCases);
+
+        const caller = appRouter.createCaller(mockContext);
+        const result = await caller.case.list();
+
+        expect(result).toHaveLength(2);
+        expect(result[0].voteSummary).toEqual({
+          likes: 2,
+          dislikes: 0,
+          userVote: 'LIKE',
+        });
+        expect(result[1].voteSummary).toEqual({
+          likes: 0,
+          dislikes: 1,
+          userVote: null,
+        });
+      });
+    });
   });
 
   describe('comment', () => {
@@ -578,6 +747,218 @@ describe('appRouter', () => {
           code: 'UNAUTHORIZED',
         });
       });
+    });
+  });
+
+  // User Story 2: Vote on a Case
+  describe('case.vote', () => {
+    it('creates a LIKE vote when user has not voted', async () => {
+      mockContext.userId = 'user-1';
+      mockPrisma.caseVote.findUnique.mockResolvedValue(null);
+      mockPrisma.caseVote.create.mockResolvedValue({
+        id: 'vote-1',
+        userId: 'user-1',
+        caseId: 'case-1',
+        voteType: 'LIKE',
+      });
+      mockPrisma.case.findUnique.mockResolvedValue({
+        id: 'case-1',
+        votes: [{ userId: 'user-1', voteType: 'LIKE' }],
+      });
+
+      const caller = appRouter.createCaller(mockContext);
+      const result = await caller.case.vote({
+        caseId: 'case-1',
+        voteType: 'LIKE',
+      });
+
+      expect(mockPrisma.caseVote.findUnique).toHaveBeenCalledWith({
+        where: {
+          user_case_vote: {
+            userId: 'user-1',
+            caseId: 'case-1',
+          },
+        },
+      });
+      expect(mockPrisma.caseVote.create).toHaveBeenCalledWith({
+        data: {
+          userId: 'user-1',
+          caseId: 'case-1',
+          voteType: 'LIKE',
+        },
+      });
+      expect(result.action).toBe('created');
+      expect(result.voteType).toBe('LIKE');
+      expect(result.voteSummary).toBeDefined();
+    });
+
+    it('creates a DISLIKE vote when user has not voted', async () => {
+      mockContext.userId = 'user-1';
+      mockPrisma.caseVote.findUnique.mockResolvedValue(null);
+      mockPrisma.caseVote.create.mockResolvedValue({
+        id: 'vote-1',
+        userId: 'user-1',
+        caseId: 'case-1',
+        voteType: 'DISLIKE',
+      });
+      mockPrisma.case.findUnique.mockResolvedValue({
+        id: 'case-1',
+        votes: [{ userId: 'user-1', voteType: 'DISLIKE' }],
+      });
+
+      const caller = appRouter.createCaller(mockContext);
+      const result = await caller.case.vote({
+        caseId: 'case-1',
+        voteType: 'DISLIKE',
+      });
+
+      expect(result.action).toBe('created');
+      expect(result.voteType).toBe('DISLIKE');
+    });
+
+    it('throws UNAUTHORIZED when not authenticated', async () => {
+      mockContext.userId = undefined;
+
+      const caller = appRouter.createCaller(mockContext);
+
+      await expect(
+        caller.case.vote({
+          caseId: 'case-1',
+          voteType: 'LIKE',
+        })
+      ).rejects.toThrow(TRPCError);
+      await expect(
+        caller.case.vote({
+          caseId: 'case-1',
+          voteType: 'LIKE',
+        })
+      ).rejects.toMatchObject({
+        code: 'UNAUTHORIZED',
+      });
+    });
+
+    // User Story 3: Change Vote
+    it('changes vote from LIKE to DISLIKE', async () => {
+      mockContext.userId = 'user-1';
+      mockPrisma.caseVote.findUnique.mockResolvedValue({
+        id: 'vote-1',
+        userId: 'user-1',
+        caseId: 'case-1',
+        voteType: 'LIKE',
+      });
+      mockPrisma.caseVote.update.mockResolvedValue({
+        id: 'vote-1',
+        userId: 'user-1',
+        caseId: 'case-1',
+        voteType: 'DISLIKE',
+      });
+      mockPrisma.case.findUnique.mockResolvedValue({
+        id: 'case-1',
+        votes: [{ userId: 'user-1', voteType: 'DISLIKE' }],
+      });
+
+      const caller = appRouter.createCaller(mockContext);
+      const result = await caller.case.vote({
+        caseId: 'case-1',
+        voteType: 'DISLIKE',
+      });
+
+      expect(mockPrisma.caseVote.update).toHaveBeenCalledWith({
+        where: { id: 'vote-1' },
+        data: { voteType: 'DISLIKE' },
+      });
+      expect(result.action).toBe('changed');
+      expect(result.voteType).toBe('DISLIKE');
+    });
+
+    it('changes vote from DISLIKE to LIKE', async () => {
+      mockContext.userId = 'user-1';
+      mockPrisma.caseVote.findUnique.mockResolvedValue({
+        id: 'vote-1',
+        userId: 'user-1',
+        caseId: 'case-1',
+        voteType: 'DISLIKE',
+      });
+      mockPrisma.caseVote.update.mockResolvedValue({
+        id: 'vote-1',
+        userId: 'user-1',
+        caseId: 'case-1',
+        voteType: 'LIKE',
+      });
+      mockPrisma.case.findUnique.mockResolvedValue({
+        id: 'case-1',
+        votes: [{ userId: 'user-1', voteType: 'LIKE' }],
+      });
+
+      const caller = appRouter.createCaller(mockContext);
+      const result = await caller.case.vote({
+        caseId: 'case-1',
+        voteType: 'LIKE',
+      });
+
+      expect(result.action).toBe('changed');
+      expect(result.voteType).toBe('LIKE');
+    });
+
+    it('removes LIKE vote by clicking LIKE again', async () => {
+      mockContext.userId = 'user-1';
+      mockPrisma.caseVote.findUnique.mockResolvedValue({
+        id: 'vote-1',
+        userId: 'user-1',
+        caseId: 'case-1',
+        voteType: 'LIKE',
+      });
+      mockPrisma.caseVote.delete.mockResolvedValue({
+        id: 'vote-1',
+        userId: 'user-1',
+        caseId: 'case-1',
+        voteType: 'LIKE',
+      });
+      mockPrisma.case.findUnique.mockResolvedValue({
+        id: 'case-1',
+        votes: [],
+      });
+
+      const caller = appRouter.createCaller(mockContext);
+      const result = await caller.case.vote({
+        caseId: 'case-1',
+        voteType: 'LIKE',
+      });
+
+      expect(mockPrisma.caseVote.delete).toHaveBeenCalledWith({
+        where: { id: 'vote-1' },
+      });
+      expect(result.action).toBe('removed');
+      expect(result.voteType).toBe(null);
+    });
+
+    it('removes DISLIKE vote by clicking DISLIKE again', async () => {
+      mockContext.userId = 'user-1';
+      mockPrisma.caseVote.findUnique.mockResolvedValue({
+        id: 'vote-1',
+        userId: 'user-1',
+        caseId: 'case-1',
+        voteType: 'DISLIKE',
+      });
+      mockPrisma.caseVote.delete.mockResolvedValue({
+        id: 'vote-1',
+        userId: 'user-1',
+        caseId: 'case-1',
+        voteType: 'DISLIKE',
+      });
+      mockPrisma.case.findUnique.mockResolvedValue({
+        id: 'case-1',
+        votes: [],
+      });
+
+      const caller = appRouter.createCaller(mockContext);
+      const result = await caller.case.vote({
+        caseId: 'case-1',
+        voteType: 'DISLIKE',
+      });
+
+      expect(result.action).toBe('removed');
+      expect(result.voteType).toBe(null);
     });
   });
 });

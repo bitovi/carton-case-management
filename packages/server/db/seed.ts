@@ -6,6 +6,7 @@ async function main() {
 
   // Delete all existing data in correct order (respecting foreign keys)
   await prisma.comment.deleteMany();
+  await prisma.caseVote.deleteMany();
   await prisma.case.deleteMany();
   await prisma.customer.deleteMany();
   await prisma.user.deleteMany();
@@ -273,11 +274,55 @@ async function main() {
     },
   });
 
+  // Seed votes
+  console.log('Seeding votes...');
+  
+  // Case 1 (Insurance Claim Dispute) - Mixed votes
+  await prisma.caseVote.createMany({
+    data: [
+      { userId: alexMorgan.id, caseId: case1.id, voteType: 'LIKE' },
+      { userId: jordanDoe.id, caseId: case1.id, voteType: 'LIKE' },
+      { userId: taylorSmith.id, caseId: case1.id, voteType: 'DISLIKE' },
+    ],
+  });
+
+  // Case 2 (Policy Coverage Inquiry) - Mostly likes
+  await prisma.caseVote.createMany({
+    data: [
+      { userId: alexMorgan.id, caseId: case2.id, voteType: 'LIKE' },
+      { userId: jordanDoe.id, caseId: case2.id, voteType: 'LIKE' },
+    ],
+  });
+
+  // Case 3 (Premium Adjustment Request) - One dislike
+  await prisma.caseVote.create({
+    data: { userId: taylorSmith.id, caseId: case3.id, voteType: 'DISLIKE' },
+  });
+
+  // Case 4 (Vehicle Accident Report) - High engagement
+  await prisma.caseVote.createMany({
+    data: [
+      { userId: jordanDoe.id, caseId: case4.id, voteType: 'LIKE' },
+      { userId: taylorSmith.id, caseId: case4.id, voteType: 'LIKE' },
+    ],
+  });
+
+  // Case 5 (Billing Discrepancy) - Mixed votes
+  await prisma.caseVote.createMany({
+    data: [
+      { userId: alexMorgan.id, caseId: case5.id, voteType: 'LIKE' },
+      { userId: jordanDoe.id, caseId: case5.id, voteType: 'DISLIKE' },
+    ],
+  });
+
+  // Case 6 - No votes yet
+
   console.log('Seeding completed!');
   console.log(`Created ${await prisma.user.count()} users`);
   console.log(`Created ${await prisma.customer.count()} customers`);
   console.log(`Created ${await prisma.case.count()} cases`);
   console.log(`Created ${await prisma.comment.count()} comments`);
+  console.log(`Created ${await prisma.caseVote.count()} votes`);
 }
 
 main()

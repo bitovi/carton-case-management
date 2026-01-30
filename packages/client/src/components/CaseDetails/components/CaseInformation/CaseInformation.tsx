@@ -14,6 +14,7 @@ import {
 import { MoreOptionsMenu, MenuItem } from '@/components/common/MoreOptionsMenu';
 import { ConfirmationDialog } from '@/components/common/ConfirmationDialog';
 import { useNavigate } from 'react-router-dom';
+import { VoteButtons } from '@/components/VoteButtons';
 import type { CaseInformationProps } from './types';
 
 export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformationProps) {
@@ -21,6 +22,7 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
   const navigate = useNavigate();
 
   const utils = trpc.useUtils();
+  const { data: user } = trpc.auth.me.useQuery();
   const updateCase = trpc.case.update.useMutation({
     onMutate: async (variables) => {
       // Cancel any outgoing refetches
@@ -199,6 +201,17 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
             return null;
           }}
         />
+
+        {/* Vote Buttons */}
+        {caseData.voteSummary && (
+          <div className="border-t pt-4">
+            <VoteButtons
+              caseId={caseId}
+              voteSummary={caseData.voteSummary}
+              disabled={!user}
+            />
+          </div>
+        )}
       </div>
 
       <ConfirmationDialog

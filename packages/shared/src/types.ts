@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
 // Re-export enum schemas from generated
-export { CasePrioritySchema, CaseStatusSchema } from './generated/index.js';
-export type { CasePriorityType, CaseStatusType } from './generated/index.js';
+export { CasePrioritySchema, CaseStatusSchema, VoteTypeSchema } from './generated/index.js';
+export type { CasePriorityType, CaseStatusType, VoteTypeType } from './generated/index.js';
 
 // Import for local alias
-import { CasePrioritySchema, CaseStatusSchema } from './generated/index.js';
+import { CasePrioritySchema, CaseStatusSchema, VoteTypeSchema } from './generated/index.js';
 
 // Lowercase aliases for backwards compatibility
 export const casePrioritySchema = CasePrioritySchema;
@@ -31,4 +31,31 @@ export const CASE_STATUS_OPTIONS = [
   { value: 'IN_PROGRESS' as const, label: 'In Progress' },
   { value: 'COMPLETED' as const, label: 'Completed' },
   { value: 'CLOSED' as const, label: 'Closed' },
+] as const;
+
+// Vote types
+export type VoteType = 'LIKE' | 'DISLIKE';
+export const voteTypeSchema = VoteTypeSchema;
+
+// Vote summary for a case (aggregated from votes)
+export interface VoteSummary {
+  likes: number;
+  dislikes: number;
+  userVote: VoteType | null; // null if user hasn't voted
+}
+
+// Vote action result from API
+export type VoteAction = 'created' | 'changed' | 'removed';
+
+// Vote response from API
+export interface VoteResponse {
+  action: VoteAction;
+  voteType: VoteType | null; // null if removed
+  voteSummary: VoteSummary;
+}
+
+// Helper constants for UI
+export const VOTE_TYPE_OPTIONS = [
+  { value: 'LIKE' as const, label: 'Like', icon: '👍' },
+  { value: 'DISLIKE' as const, label: 'Dislike', icon: '👎' },
 ] as const;

@@ -24,6 +24,8 @@ Each package has detailed instructions in `.github/instructions/`:
 ## Active Technologies
 - TypeScript 5.x, React 18.3.x + Shadcn UI components (Input, Select, Button), Radix UI primitives, Lucide icons, Tailwind CSS, Zod (validation) (004-inline-edit-components)
 - N/A (components are presentational; save handled by consumer callbacks) (004-inline-edit-components)
+- TypeScript 5.7.2, Node.js (server), React (client) (001-case-voting)
+- SQLite database via Prisma ORM (001-case-voting)
 
 - TypeScript 5.x (via Node.js runtime in devcontainer) + React 18, Vite, tRPC, React Query, Shadcn UI, Tailwind CSS (002-header-menu-components)
 - N/A (UI components only, no data persistence required) (002-header-menu-components)
@@ -98,11 +100,11 @@ TypeScript 5.x / Node.js 22+: Follow standard conventions
 - **Cascading Deletes**: Always configure cascading deletes (`onDelete: Cascade`) in Prisma schema when an entity has related data that should be removed when the parent is deleted
 
 ## Recent Changes
+- 001-case-voting: Added TypeScript 5.7.2, Node.js (server), React (client)
 - 004-inline-edit-components: Added TypeScript 5.x, React 18.3.x + Shadcn UI components (Input, Select, Button), Radix UI primitives, Lucide icons, Tailwind CSS, Zod (validation)
 
 - 002-header-menu-components: Added TypeScript 5.x (via Node.js runtime in devcontainer) + React 18, Vite, tRPC, React Query, Shadcn UI, Tailwind CSS
 
-- 001-trpc-react-query: Added TypeScript 5.x / Node.js 22+ + React 18, tRPC 11, @tanstack/react-query 5, Vite 6, Prisma (ORM)
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

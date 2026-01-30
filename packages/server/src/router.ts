@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { router, publicProcedure } from './trpc.js';
-import { formatDate, casePrioritySchema, caseStatusSchema } from '@carton/shared';
+import { formatDate, casePrioritySchema, caseStatusSchema, voteTypeSchema } from '@carton/shared';
 import { TRPCError } from '@trpc/server';
+import type { VoteType, VoteSummary, VoteResponse } from '@carton/shared';
 
 export const appRouter = router({
   health: publicProcedure.query(() => {
@@ -170,7 +171,7 @@ export const appRouter = router({
           .optional()
       )
       .query(async ({ ctx, input }) => {
-        return ctx.prisma.case.findMany({
+        const cases = await ctx.prisma.case.findMany({
           where: {
             ...(input?.status ? { status: input.status } : {}),
             ...(input?.assignedTo ? { assignedTo: input.assignedTo } : {}),
@@ -204,14 +205,41 @@ export const appRouter = router({
                 email: true,
               },
             },
+            votes: {
+              select: {
+                userId: true,
+                voteType: true,
+              },
+            },
           },
           orderBy: {
             createdAt: 'desc',
           },
         });
+
+        // Calculate vote summary for each case
+        return cases.map((caseData) => {
+          const likes = caseData.votes.filter((v) => v.voteType === 'LIKE').length;
+          const dislikes = caseData.votes.filter((v) => v.voteType === 'DISLIKE').length;
+          const userVote = ctx.userId
+            ? caseData.votes.find((v) => v.userId === ctx.userId)?.voteType ?? null
+            : null;
+
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { votes, ...caseWithoutVotes } = caseData;
+
+          return {
+            ...caseWithoutVotes,
+            voteSummary: {
+              likes,
+              dislikes,
+              userVote,
+            },
+          };
+        });
       }),
     getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
-      return ctx.prisma.case.findUnique({
+      const caseData = await ctx.prisma.case.findUnique({
         where: { id: input.id },
         include: {
           customer: {
@@ -256,8 +284,37 @@ export const appRouter = router({
               createdAt: 'desc',
             },
           },
+          votes: {
+            select: {
+              userId: true,
+              voteType: true,
+            },
+          },
         },
       });
+
+      if (!caseData) {
+        return null;
+      }
+
+      // Calculate vote summary
+      const likes = caseData.votes.filter((v) => v.voteType === 'LIKE').length;
+      const dislikes = caseData.votes.filter((v) => v.voteType === 'DISLIKE').length;
+      const userVote = ctx.userId
+        ? caseData.votes.find((v) => v.userId === ctx.userId)?.voteType ?? null
+        : null;
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { votes, ...caseWithoutVotes } = caseData;
+
+      return {
+        ...caseWithoutVotes,
+        voteSummary: {
+          likes,
+          dislikes,
+          userVote,
+        },
+      };
     }),
     create: publicProcedure
       .input(
@@ -320,6 +377,107 @@ export const appRouter = router({
         where: { id: input.id },
       });
     }),
+    vote: publicProcedure
+      .input(
+        z.object({
+          caseId: z.string(),
+          voteType: voteTypeSchema,
+        })
+      )
+      .mutation(async ({ ctx, input }): Promise<VoteResponse> => {
+        // Check authentication
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated',
+          });
+        }
+
+        const { caseId, voteType } = input;
+
+        // Find existing vote by this user on this case
+        const existingVote = await ctx.prisma.caseVote.findUnique({
+          where: {
+            user_case_vote: {
+              userId: ctx.userId,
+              caseId,
+            },
+          },
+        });
+
+        let action: 'created' | 'changed' | 'removed';
+        let currentVoteType: VoteType | null;
+
+        if (!existingVote) {
+          // Create new vote
+          await ctx.prisma.caseVote.create({
+            data: {
+              userId: ctx.userId,
+              caseId,
+              voteType,
+            },
+          });
+          action = 'created';
+          currentVoteType = voteType;
+        } else if (existingVote.voteType === voteType) {
+          // Remove vote (user clicked same button)
+          await ctx.prisma.caseVote.delete({
+            where: {
+              id: existingVote.id,
+            },
+          });
+          action = 'removed';
+          currentVoteType = null;
+        } else {
+          // Change vote (user clicked different button)
+          await ctx.prisma.caseVote.update({
+            where: {
+              id: existingVote.id,
+            },
+            data: {
+              voteType,
+            },
+          });
+          action = 'changed';
+          currentVoteType = voteType;
+        }
+
+        // Fetch updated vote summary
+        const caseData = await ctx.prisma.case.findUnique({
+          where: { id: caseId },
+          include: {
+            votes: {
+              select: {
+                userId: true,
+                voteType: true,
+              },
+            },
+          },
+        });
+
+        if (!caseData) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Case not found',
+          });
+        }
+
+        const likes = caseData.votes.filter((v) => v.voteType === 'LIKE').length;
+        const dislikes = caseData.votes.filter((v) => v.voteType === 'DISLIKE').length;
+        const userVote = caseData.votes.find((v) => v.userId === ctx.userId)?.voteType ?? null;
+
+        const voteSummary: VoteSummary = {
+          likes,
+          dislikes,
+          userVote,
+        };
+
+        return {
+          action,
+          voteType: currentVoteType,
+          voteSummary,
+        };
+      }),
   }),
 
   // Comment routes
