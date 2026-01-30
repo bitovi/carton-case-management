@@ -49,10 +49,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  createdCases  Case[]    @relation("CreatedBy")
-  updatedCases  Case[]    @relation("UpdatedBy")
-  assignedCases Case[]    @relation("AssignedTo")
+  createdCases  Case[]         @relation("CreatedBy")
+  updatedCases  Case[]         @relation("UpdatedBy")
+  assignedCases Case[]         @relation("AssignedTo")
   comments      Comment[]
+  commentVotes  CommentVote[]
 }
 
 model Customer {
@@ -102,9 +103,31 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  case   Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
-  author User @relation(fields: [authorId], references: [id])
+  case   Case          @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  author User          @relation(fields: [authorId], references: [id])
+  votes  CommentVote[]
 
   @@index([caseId])
   @@index([authorId])
+}
+
+enum VoteType {
+  LIKE
+  DISLIKE
+}
+
+model CommentVote {
+  id        String   @id @default(uuid())
+  userId    String
+  commentId String
+  voteType  VoteType
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, commentId])
+  @@index([commentId])
+  @@index([userId])
 }
