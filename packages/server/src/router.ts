@@ -381,6 +381,18 @@ export const appRouter = router({
           });
         }
 
+        // Verify comment exists
+        const comment = await ctx.prisma.comment.findUnique({
+          where: { id: input.commentId },
+        });
+
+        if (!comment) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Comment not found',
+          });
+        }
+
         // Check if user already voted on this comment
         const existingVote = await ctx.prisma.commentVote.findUnique({
           where: {

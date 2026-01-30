@@ -24,9 +24,10 @@ export function VoteButtons({ commentId, votes = [], currentUserId, onVote }: Vo
       <Tooltip>
         <TooltipTrigger asChild>
           <button
+            type="button"
             onClick={() => handleVote('LIKE')}
             className="flex items-center gap-1 text-gray-500 hover:text-teal-600 transition-colors"
-            aria-label="Like comment"
+            aria-label={hasLiked ? 'Remove like' : 'Like comment'}
           >
             <ThumbsUp
               size={16}
@@ -57,9 +58,10 @@ export function VoteButtons({ commentId, votes = [], currentUserId, onVote }: Vo
       <Tooltip>
         <TooltipTrigger asChild>
           <button
+            type="button"
             onClick={() => handleVote('DISLIKE')}
             className="flex items-center gap-1 text-gray-500 hover:text-teal-600 transition-colors"
-            aria-label="Dislike comment"
+            aria-label={hasDisliked ? 'Remove dislike' : 'Dislike comment'}
           >
             <ThumbsDown
               size={16}
