@@ -135,7 +135,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
 
   const handleVote = (commentId: string, currentUserVote: 'none' | 'up' | 'down', newVote: 'up' | 'down') => {
     // If clicking the same vote, remove it. Otherwise, set the new vote.
-    const voteType = currentUserVote === newVote ? null : newVote.toUpperCase() as 'UP' | 'DOWN';
+    const voteType: 'UP' | 'DOWN' | null = currentUserVote === newVote ? null : (newVote === 'up' ? 'UP' : 'DOWN');
     voteMutation.mutate({ commentId, voteType });
   };
 
