@@ -57,7 +57,6 @@ const mockCase: NonNullable<CaseByIdOutput> = {
       likeCount: 0,
       dislikeCount: 0,
       currentUserVote: undefined,
-      votes: undefined,
     },
     {
       id: '2',
@@ -75,7 +74,6 @@ const mockCase: NonNullable<CaseByIdOutput> = {
       likeCount: 0,
       dislikeCount: 0,
       currentUserVote: undefined,
-      votes: undefined,
     },
   ],
 };

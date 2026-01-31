@@ -276,18 +276,18 @@ export const appRouter = router({
 
       // Transform comments to include vote counts and current user's vote
       const commentsWithVoteCounts = caseData.comments.map((comment) => {
-        const likeCount = comment.votes.filter((v) => v.voteType === 'LIKE').length;
-        const dislikeCount = comment.votes.filter((v) => v.voteType === 'DISLIKE').length;
+        const { votes, ...commentData } = comment;
+        const likeCount = votes.filter((v) => v.voteType === 'LIKE').length;
+        const dislikeCount = votes.filter((v) => v.voteType === 'DISLIKE').length;
         const currentUserVote = ctx.userId
-          ? comment.votes.find((v) => v.userId === ctx.userId)?.voteType
+          ? votes.find((v) => v.userId === ctx.userId)?.voteType
           : undefined;
 
         return {
-          ...comment,
+          ...commentData,
           likeCount,
           dislikeCount,
           currentUserVote,
-          votes: undefined, // Remove votes array from response
         };
       });
 
