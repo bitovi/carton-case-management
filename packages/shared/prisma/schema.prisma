@@ -41,6 +41,11 @@ enum CasePriority {
   URGENT
 }
 
+enum VoteType {
+  LIKE
+  DISLIKE
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -49,10 +54,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  createdCases  Case[]    @relation("CreatedBy")
-  updatedCases  Case[]    @relation("UpdatedBy")
-  assignedCases Case[]    @relation("AssignedTo")
+  createdCases  Case[]        @relation("CreatedBy")
+  updatedCases  Case[]        @relation("UpdatedBy")
+  assignedCases Case[]        @relation("AssignedTo")
   comments      Comment[]
+  commentVotes  CommentVote[]
 }
 
 model Customer {
@@ -102,9 +108,26 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  case   Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
-  author User @relation(fields: [authorId], references: [id])
+  case   Case          @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  author User          @relation(fields: [authorId], references: [id])
+  votes  CommentVote[]
 
   @@index([caseId])
   @@index([authorId])
+}
+
+model CommentVote {
+  id        String   @id @default(uuid())
+  commentId String
+  userId    String
+  voteType  VoteType
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([commentId, userId])
+  @@index([commentId])
+  @@index([userId])
 }
