@@ -1,0 +1,701 @@
+# Vote API Contract
+
+**Feature**: Comment Voting System  
+**Date**: 2025-01-23  
+**Version**: 1.0.0
+
+## Overview
+
+This document defines the API contract for comment voting operations using tRPC. All endpoints are type-safe and use Zod schemas for validation.
+
+---
+
+## Base Types
+
+### VoteType Enum
+
+```typescript
+type VoteType = 'LIKE' | 'DISLIKE';
+```
+
+### CommentVote Entity
+
+```typescript
+interface CommentVote {
+  id: string;              // UUID
+  commentId: string;       // UUID, foreign key to Comment
+  userId: string;          // UUID, foreign key to User
+  voteType: VoteType;      // 'LIKE' | 'DISLIKE'
+  createdAt: Date;         // ISO 8601 timestamp
+  updatedAt: Date;         // ISO 8601 timestamp
+}
+```
+
+### VoteCounts
+
+```typescript
+interface VoteCounts {
+  likes: number;           // Count of LIKE votes
+  dislikes: number;        // Count of DISLIKE votes
+  userVote: VoteType | null;  // Current user's vote, if any
+  voters?: {
+    likes: string[];       // Array of voter names who liked
+    dislikes: string[];    // Array of voter names who disliked
+  };
+}
+```
+
+---
+
+## tRPC Router: `commentVote`
+
+All procedures are under the `commentVote` router namespace.
+
+### Endpoint: `getByCommentId`
+
+**Purpose**: Get vote counts and current user's vote for a specific comment
+
+**Type**: Query
+
+**Input Schema**:
+```typescript
+{
+  commentId: z.string().uuid()
+}
+```
+
+**Output Schema**:
+```typescript
+{
+  likes: z.number().int().min(0),
+  dislikes: z.number().int().min(0),
+  userVote: z.enum(['LIKE', 'DISLIKE']).nullable(),
+  voters: z.object({
+    likes: z.array(z.string()),
+    dislikes: z.array(z.string())
+  }).optional()
+}
+```
+
+**Example Usage**:
+```typescript
+const voteCounts = await trpc.commentVote.getByCommentId.useQuery({
+  commentId: 'abc-123-def-456'
+});
+
+// Result:
+// {
+//   likes: 5,
+//   dislikes: 2,
+//   userVote: 'LIKE',
+//   voters: {
+//     likes: ['Alice', 'Bob', 'Charlie'],
+//     dislikes: ['Dave', 'Eve']
+//   }
+// }
+```
+
+**Authorization**: User must be authenticated and have access to the case containing the comment
+
+**Error Codes**:
+- `UNAUTHORIZED`: User not authenticated
+- `FORBIDDEN`: User doesn't have access to the case
+- `NOT_FOUND`: Comment doesn't exist
+
+---
+
+### Endpoint: `vote`
+
+**Purpose**: Cast a vote (like or dislike) on a comment, or change an existing vote
+
+**Type**: Mutation
+
+**Behavior**:
+- If user has no existing vote: Creates a new vote
+- If user has existing vote of same type: No change (idempotent)
+- If user has existing vote of different type: Updates to new vote type
+
+**Input Schema**:
+```typescript
+{
+  commentId: z.string().uuid(),
+  voteType: z.enum(['LIKE', 'DISLIKE'])
+}
+```
+
+**Output Schema**:
+```typescript
+{
+  id: z.string().uuid(),
+  commentId: z.string().uuid(),
+  userId: z.string().uuid(),
+  voteType: z.enum(['LIKE', 'DISLIKE']),
+  createdAt: z.date(),
+  updatedAt: z.date()
+}
+```
+
+**Example Usage**:
+```typescript
+const voteMutation = trpc.commentVote.vote.useMutation();
+
+// Like a comment
+const result = await voteMutation.mutateAsync({
+  commentId: 'abc-123-def-456',
+  voteType: 'LIKE'
+});
+
+// Result:
+// {
+//   id: 'vote-uuid-123',
+//   commentId: 'abc-123-def-456',
+//   userId: 'user-uuid-789',
+//   voteType: 'LIKE',
+//   createdAt: Date('2025-01-23T10:30:00Z'),
+//   updatedAt: Date('2025-01-23T10:30:00Z')
+// }
+```
+
+**Authorization**: User must be authenticated and have access to the case containing the comment
+
+**Error Codes**:
+- `UNAUTHORIZED`: User not authenticated
+- `FORBIDDEN`: User doesn't have access to the case
+- `NOT_FOUND`: Comment doesn't exist
+- `BAD_REQUEST`: Invalid vote type
+
+**Idempotency**: Safe to call multiple times with same input; will not create duplicates
+
+---
+
+### Endpoint: `removeVote`
+
+**Purpose**: Remove the current user's vote from a comment
+
+**Type**: Mutation
+
+**Behavior**:
+- If user has a vote: Deletes the vote
+- If user has no vote: No change (idempotent)
+
+**Input Schema**:
+```typescript
+{
+  commentId: z.string().uuid()
+}
+```
+
+**Output Schema**:
+```typescript
+{
+  success: z.boolean()
+}
+```
+
+**Example Usage**:
+```typescript
+const removeVoteMutation = trpc.commentVote.removeVote.useMutation();
+
+const result = await removeVoteMutation.mutateAsync({
+  commentId: 'abc-123-def-456'
+});
+
+// Result:
+// { success: true }
+```
+
+**Authorization**: User must be authenticated
+
+**Error Codes**:
+- `UNAUTHORIZED`: User not authenticated
+- `NOT_FOUND`: Comment doesn't exist (optional, could return success anyway)
+
+**Idempotency**: Safe to call multiple times; no error if vote doesn't exist
+
+---
+
+## Integration with Existing APIs
+
+### Updated: `case.getById`
+
+**Purpose**: Include vote data when fetching a case
+
+**Modified Output** (additions only):
+```typescript
+{
+  // ... existing case fields ...
+  comments: [
+    {
+      // ... existing comment fields ...
+      votes: [
+        {
+          id: string,
+          userId: string,
+          voteType: 'LIKE' | 'DISLIKE',
+          user: {
+            name: string
+          }
+        }
+      ],
+      _count: {
+        votes: number  // Total vote count (optional)
+      }
+    }
+  ]
+}
+```
+
+**Example Query**:
+```typescript
+const caseData = await trpc.case.getById.useQuery({ id: 'case-123' });
+
+// Access votes
+const firstComment = caseData.comments[0];
+const likes = firstComment.votes.filter(v => v.voteType === 'LIKE').length;
+const dislikes = firstComment.votes.filter(v => v.voteType === 'DISLIKE').length;
+const userVote = firstComment.votes.find(v => v.userId === currentUserId);
+```
+
+**Performance**: Includes all votes in the response. For comments with many votes (>100), consider lazy loading or pagination.
+
+---
+
+## Error Handling
+
+### Standard Error Response
+
+All errors follow tRPC error format:
+
+```typescript
+{
+  code: 'UNAUTHORIZED' | 'FORBIDDEN' | 'NOT_FOUND' | 'BAD_REQUEST' | 'INTERNAL_SERVER_ERROR',
+  message: string,
+  data?: {
+    // Additional error context
+  }
+}
+```
+
+### Error Scenarios
+
+| Scenario | Code | Message | Client Action |
+|----------|------|---------|---------------|
+| User not logged in | `UNAUTHORIZED` | "Not authenticated" | Redirect to login |
+| User can't access case | `FORBIDDEN` | "Access denied" | Show error message |
+| Comment doesn't exist | `NOT_FOUND` | "Comment not found" | Refresh page or show error |
+| Invalid vote type | `BAD_REQUEST` | "Invalid vote type" | Should not happen (type-safe) |
+| Database error | `INTERNAL_SERVER_ERROR` | "Failed to save vote" | Retry with exponential backoff |
+
+---
+
+## Client Usage Patterns
+
+### Basic Vote Toggle
+
+```typescript
+function CommentVoteButtons({ commentId, currentVote }: Props) {
+  const voteMutation = trpc.commentVote.vote.useMutation();
+  const removeMutation = trpc.commentVote.removeVote.useMutation();
+
+  const handleVote = async (type: 'LIKE' | 'DISLIKE') => {
+    if (currentVote === type) {
+      // Remove vote if clicking same button
+      await removeMutation.mutateAsync({ commentId });
+    } else {
+      // Add or change vote
+      await voteMutation.mutateAsync({ commentId, voteType: type });
+    }
+  };
+
+  return (
+    <>
+      <button onClick={() => handleVote('LIKE')}>👍</button>
+      <button onClick={() => handleVote('DISLIKE')}>👎</button>
+    </>
+  );
+}
+```
+
+### Optimistic Update Pattern
+
+```typescript
+const voteMutation = trpc.commentVote.vote.useMutation({
+  onMutate: async (variables) => {
+    // Cancel outgoing queries
+    await utils.case.getById.cancel();
+
+    // Snapshot current state
+    const previousCase = utils.case.getById.getData({ id: caseId });
+
+    // Optimistically update cache
+    utils.case.getById.setData({ id: caseId }, (old) => {
+      // ... update vote counts optimistically
+    });
+
+    return { previousCase };
+  },
+
+  onError: (err, variables, context) => {
+    // Rollback on error
+    if (context?.previousCase) {
+      utils.case.getById.setData({ id: caseId }, context.previousCase);
+    }
+  },
+
+  onSettled: () => {
+    // Refetch to sync with server
+    utils.case.getById.invalidate({ id: caseId });
+  },
+});
+```
+
+### Polling for Real-time Updates
+
+```typescript
+const { data: caseData } = trpc.case.getById.useQuery(
+  { id: caseId },
+  {
+    refetchInterval: 3000,  // Poll every 3 seconds
+    refetchIntervalInBackground: false,  // Pause when tab inactive
+  }
+);
+```
+
+---
+
+## Type Definitions (TypeScript)
+
+**Location**: `packages/shared/src/vote-types.ts`
+
+```typescript
+import { z } from 'zod';
+
+// Enums
+export const VoteTypeSchema = z.enum(['LIKE', 'DISLIKE']);
+export type VoteType = z.infer<typeof VoteTypeSchema>;
+
+// Input schemas
+export const voteInputSchema = z.object({
+  commentId: z.string().uuid(),
+  voteType: VoteTypeSchema,
+});
+
+export const removeVoteInputSchema = z.object({
+  commentId: z.string().uuid(),
+});
+
+// Output schemas
+export const commentVoteSchema = z.object({
+  id: z.string().uuid(),
+  commentId: z.string().uuid(),
+  userId: z.string().uuid(),
+  voteType: VoteTypeSchema,
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export const voteCountsSchema = z.object({
+  likes: z.number().int().min(0),
+  dislikes: z.number().int().min(0),
+  userVote: VoteTypeSchema.nullable(),
+  voters: z.object({
+    likes: z.array(z.string()),
+    dislikes: z.array(z.string()),
+  }).optional(),
+});
+
+export const removeVoteResponseSchema = z.object({
+  success: z.boolean(),
+});
+
+// Infer types
+export type VoteInput = z.infer<typeof voteInputSchema>;
+export type RemoveVoteInput = z.infer<typeof removeVoteInputSchema>;
+export type CommentVote = z.infer<typeof commentVoteSchema>;
+export type VoteCounts = z.infer<typeof voteCountsSchema>;
+export type RemoveVoteResponse = z.infer<typeof removeVoteResponseSchema>;
+```
+
+---
+
+## Server Implementation Outline
+
+**Location**: `packages/server/src/router.ts`
+
+```typescript
+import { router, publicProcedure } from './trpc.js';
+import { voteInputSchema, removeVoteInputSchema, /* ... */ } from '@carton/shared';
+import { TRPCError } from '@trpc/server';
+
+export const appRouter = router({
+  // ... existing routers ...
+
+  commentVote: router({
+    getByCommentId: publicProcedure
+      .input(z.object({ commentId: z.string().uuid() }))
+      .query(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' });
+        }
+
+        // TODO: Verify user has access to case
+
+        // Get all votes for the comment
+        const votes = await ctx.prisma.commentVote.findMany({
+          where: { commentId: input.commentId },
+          include: {
+            user: {
+              select: { name: true }
+            }
+          }
+        });
+
+        // Aggregate counts
+        const likes = votes.filter(v => v.voteType === 'LIKE');
+        const dislikes = votes.filter(v => v.voteType === 'DISLIKE');
+        const userVote = votes.find(v => v.userId === ctx.userId)?.voteType || null;
+
+        return {
+          likes: likes.length,
+          dislikes: dislikes.length,
+          userVote,
+          voters: {
+            likes: likes.map(v => v.user.name),
+            dislikes: dislikes.map(v => v.user.name),
+          }
+        };
+      }),
+
+    vote: publicProcedure
+      .input(voteInputSchema)
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' });
+        }
+
+        // TODO: Verify user has access to case
+
+        // Upsert vote (create or update)
+        const vote = await ctx.prisma.commentVote.upsert({
+          where: {
+            commentId_userId: {
+              commentId: input.commentId,
+              userId: ctx.userId,
+            }
+          },
+          update: {
+            voteType: input.voteType,
+            updatedAt: new Date(),
+          },
+          create: {
+            commentId: input.commentId,
+            userId: ctx.userId,
+            voteType: input.voteType,
+          },
+        });
+
+        return vote;
+      }),
+
+    removeVote: publicProcedure
+      .input(removeVoteInputSchema)
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' });
+        }
+
+        // Delete vote if it exists (idempotent)
+        await ctx.prisma.commentVote.deleteMany({
+          where: {
+            commentId: input.commentId,
+            userId: ctx.userId,
+          }
+        });
+
+        return { success: true };
+      }),
+  }),
+});
+```
+
+---
+
+## Testing Contract
+
+### Unit Tests
+
+**Test file**: `packages/server/src/router.test.ts`
+
+```typescript
+describe('commentVote router', () => {
+  describe('vote mutation', () => {
+    it('creates a new vote when user has not voted', async () => {
+      // Arrange
+      const { caller } = await createTestCaller({ userId: 'user-1' });
+      
+      // Act
+      const result = await caller.commentVote.vote({
+        commentId: 'comment-1',
+        voteType: 'LIKE'
+      });
+      
+      // Assert
+      expect(result.voteType).toBe('LIKE');
+      expect(result.userId).toBe('user-1');
+    });
+
+    it('updates vote when user changes from LIKE to DISLIKE', async () => {
+      // Test upsert behavior
+    });
+
+    it('is idempotent when called with same vote type', async () => {
+      // Test calling twice with LIKE returns same result
+    });
+
+    it('throws UNAUTHORIZED when user not authenticated', async () => {
+      // Test auth requirement
+    });
+  });
+
+  describe('removeVote mutation', () => {
+    it('removes existing vote', async () => {
+      // Test deletion
+    });
+
+    it('is idempotent when vote does not exist', async () => {
+      // Test calling twice returns success
+    });
+  });
+
+  describe('getByCommentId query', () => {
+    it('returns correct vote counts', async () => {
+      // Test aggregation logic
+    });
+
+    it('includes current user vote', async () => {
+      // Test userVote field
+    });
+  });
+});
+```
+
+---
+
+## Versioning & Breaking Changes
+
+**Current Version**: 1.0.0
+
+**Versioning Policy**:
+- **Patch** (1.0.x): Bug fixes, no API changes
+- **Minor** (1.x.0): New endpoints, backward-compatible changes
+- **Major** (x.0.0): Breaking changes to input/output schemas
+
+**Potential Future Changes**:
+- Add pagination to voter list (minor version)
+- Add vote history/audit trail (minor version)
+- Change vote type to numeric rating (major version - breaking)
+
+---
+
+## Performance SLAs
+
+| Endpoint | Expected Latency (p95) | Max Payload Size |
+|----------|------------------------|------------------|
+| `getByCommentId` | <100ms | <10KB |
+| `vote` | <150ms | <1KB |
+| `removeVote` | <100ms | <1KB |
+
+**Notes**:
+- Latency measured from server, excludes network time
+- Payload sizes based on 50 votes per comment
+- If performance degrades, consider denormalized counts (see research.md)
+
+---
+
+## Security Considerations
+
+### Authentication
+
+All endpoints require authenticated user (`ctx.userId` must be present).
+
+### Authorization
+
+- Users can only vote on comments in cases they have access to
+- Authorization check implemented via case access verification
+
+### Rate Limiting
+
+**Recommendation**: Add rate limiting to prevent vote spamming
+- Max 10 vote changes per user per minute
+- Max 100 vote changes per user per hour
+
+**Implementation**: Not included in v1.0; add in future version
+
+### Input Validation
+
+All inputs validated with Zod schemas:
+- UUID format for IDs
+- Enum validation for vote types
+- No arbitrary strings or SQL injection risk
+
+---
+
+## Migration Guide
+
+### From No Voting to v1.0
+
+**Backend Changes**:
+1. Run database migration to add CommentVote table
+2. Add `commentVote` router to `appRouter`
+3. Update `case.getById` to include votes
+
+**Frontend Changes**:
+1. Import VoteButton component
+2. Add vote buttons to comment display
+3. Implement vote mutation logic
+
+**No Breaking Changes**: Existing APIs remain unchanged
+
+---
+
+## OpenAPI-Style Summary
+
+```yaml
+commentVote.getByCommentId:
+  type: query
+  auth: required
+  input:
+    commentId: string (uuid)
+  output:
+    likes: number
+    dislikes: number
+    userVote: 'LIKE' | 'DISLIKE' | null
+    voters?: { likes: string[], dislikes: string[] }
+
+commentVote.vote:
+  type: mutation
+  auth: required
+  input:
+    commentId: string (uuid)
+    voteType: 'LIKE' | 'DISLIKE'
+  output:
+    id: string (uuid)
+    commentId: string (uuid)
+    userId: string (uuid)
+    voteType: 'LIKE' | 'DISLIKE'
+    createdAt: Date
+    updatedAt: Date
+
+commentVote.removeVote:
+  type: mutation
+  auth: required
+  input:
+    commentId: string (uuid)
+  output:
+    success: boolean
+```
+
+---
+
+**Status**: ✅ Contract Defined  
+**Next Step**: Implement server router and client integration
