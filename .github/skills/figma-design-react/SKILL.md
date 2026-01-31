@@ -31,18 +31,10 @@ This skill analyzes Figma designs and proposes React component architecture and 
 
 When designing component APIs from Figma:
 
-- **DO NOT** use shadcn/ui or any other component library as a reference
+- **DO NOT** use any other component library as a reference
 - **DO NOT** impose external component patterns or best practices
 - **DO** use the Figma design as the single source of truth for component structure
 - **DO** match the exact component hierarchy, variant structure, and prop organization shown in Figma
-
-<!-- TODO: this will be removed once the obra components are fully migrated -->
-**COMPLETELY IGNORE `packages/client/src/components/ui/` FOLDER**
-- Do not search, read, or reference any files in this folder
-- Do not consider any implementations under `ui/`
-- Do not check for existing patterns in `ui/`
-- This folder will be removed soon - treat it as if it doesn't exist
-- Focus exclusively on the Figma design 
 
 The component API should mirror how the design is structured in Figma, not how a component library would implement it. If Figma shows variants that change DOM structure, layout, or element ordering, the component API should reflect those structural changes through props.
 
