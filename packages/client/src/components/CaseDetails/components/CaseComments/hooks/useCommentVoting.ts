@@ -162,13 +162,22 @@ export function useCommentVoting(
   }, [currentUserId, voteData.userVote, comment.id, voteMutation, removeVoteMutation]);
 
   /**
-   * Handle dislike button click (placeholder for User Story 2)
-   * Will be implemented in T028
+   * Handle dislike button click
+   * - If no vote: create DISLIKE vote
+   * - If already DISLIKE: remove vote
+   * - If LIKE: change to DISLIKE
    */
   const handleDislike = useCallback(() => {
-    // TODO: Implement in T028 (User Story 2)
-    console.log('Dislike functionality coming in User Story 2');
-  }, []);
+    if (!currentUserId) return;
+
+    if (voteData.userVote === 'DISLIKE') {
+      // Remove vote
+      removeVoteMutation.mutate({ commentId: comment.id });
+    } else {
+      // Create or update to DISLIKE
+      voteMutation.mutate({ commentId: comment.id, voteType: 'DISLIKE' });
+    }
+  }, [currentUserId, voteData.userVote, comment.id, voteMutation, removeVoteMutation]);
 
   return {
     voteData,

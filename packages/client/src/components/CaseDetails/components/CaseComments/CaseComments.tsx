@@ -134,12 +134,14 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
                   <VoteButton
                     type="up"
                     count={voteData.likes}
+                    showCount={voteData.likes > 0}
                     active={voteData.userVote === 'LIKE'}
                     onClick={handleLike}
                   />
                   <VoteButton
                     type="down"
                     count={voteData.dislikes}
+                    showCount={voteData.dislikes > 0}
                     active={voteData.userVote === 'DISLIKE'}
                     onClick={handleDislike}
                   />
