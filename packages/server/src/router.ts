@@ -211,7 +211,7 @@ export const appRouter = router({
         });
       }),
     getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
-      return ctx.prisma.case.findUnique({
+      const caseData = await ctx.prisma.case.findUnique({
         where: { id: input.id },
         include: {
           customer: {
@@ -251,6 +251,17 @@ export const appRouter = router({
                   email: true,
                 },
               },
+              votes: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      email: true,
+                    },
+                  },
+                },
+              },
             },
             orderBy: {
               createdAt: 'desc',
@@ -258,6 +269,32 @@ export const appRouter = router({
           },
         },
       });
+
+      if (!caseData) {
+        return null;
+      }
+
+      // Transform comments to include vote counts and current user's vote
+      const commentsWithVoteCounts = caseData.comments.map((comment) => {
+        const likeCount = comment.votes.filter((v) => v.voteType === 'LIKE').length;
+        const dislikeCount = comment.votes.filter((v) => v.voteType === 'DISLIKE').length;
+        const currentUserVote = ctx.userId
+          ? comment.votes.find((v) => v.userId === ctx.userId)?.voteType
+          : undefined;
+
+        return {
+          ...comment,
+          likeCount,
+          dislikeCount,
+          currentUserVote,
+          votes: undefined, // Remove votes array from response
+        };
+      });
+
+      return {
+        ...caseData,
+        comments: commentsWithVoteCounts,
+      };
     }),
     create: publicProcedure
       .input(
@@ -354,6 +391,87 @@ export const appRouter = router({
             },
           },
         });
+      }),
+    vote: publicProcedure
+      .input(
+        z.object({
+          commentId: z.string(),
+          voteType: z.enum(['LIKE', 'DISLIKE']),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated',
+          });
+        }
+
+        // Check if user already voted on this comment
+        const existingVote = await ctx.prisma.commentVote.findUnique({
+          where: {
+            commentId_userId: {
+              commentId: input.commentId,
+              userId: ctx.userId,
+            },
+          },
+        });
+
+        // If same vote type, remove the vote (toggle off)
+        if (existingVote && existingVote.voteType === input.voteType) {
+          await ctx.prisma.commentVote.delete({
+            where: {
+              id: existingVote.id,
+            },
+          });
+          return { action: 'removed' as const };
+        }
+
+        // If different vote type or no vote, upsert the vote
+        await ctx.prisma.commentVote.upsert({
+          where: {
+            commentId_userId: {
+              commentId: input.commentId,
+              userId: ctx.userId,
+            },
+          },
+          create: {
+            commentId: input.commentId,
+            userId: ctx.userId,
+            voteType: input.voteType,
+          },
+          update: {
+            voteType: input.voteType,
+          },
+        });
+
+        return { action: existingVote ? ('changed' as const) : ('added' as const) };
+      }),
+    getVoters: publicProcedure
+      .input(
+        z.object({
+          commentId: z.string(),
+          voteType: z.enum(['LIKE', 'DISLIKE']),
+        })
+      )
+      .query(async ({ ctx, input }) => {
+        const votes = await ctx.prisma.commentVote.findMany({
+          where: {
+            commentId: input.commentId,
+            voteType: input.voteType,
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        });
+
+        return votes.map((vote) => vote.user);
       }),
   }),
 });
