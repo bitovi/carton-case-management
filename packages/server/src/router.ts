@@ -211,7 +211,7 @@ export const appRouter = router({
         });
       }),
     getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
-      return ctx.prisma.case.findUnique({
+      const caseData = await ctx.prisma.case.findUnique({
         where: { id: input.id },
         include: {
           customer: {
@@ -251,6 +251,17 @@ export const appRouter = router({
                   email: true,
                 },
               },
+              votes: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      email: true,
+                    },
+                  },
+                },
+              },
             },
             orderBy: {
               createdAt: 'desc',
@@ -258,6 +269,33 @@ export const appRouter = router({
           },
         },
       });
+
+      if (!caseData) {
+        return null;
+      }
+
+      // Process vote data for each comment
+      const commentsWithVotes = caseData.comments.map((comment) => {
+        const likeVotes = comment.votes.filter((v) => v.voteType === 'LIKE');
+        const dislikeVotes = comment.votes.filter((v) => v.voteType === 'DISLIKE');
+        const userVote = ctx.userId
+          ? comment.votes.find((v) => v.userId === ctx.userId)?.voteType || null
+          : null;
+
+        return {
+          ...comment,
+          likeCount: likeVotes.length,
+          dislikeCount: dislikeVotes.length,
+          userVote,
+          likeVoters: likeVotes.map((v) => v.user),
+          dislikeVoters: dislikeVotes.map((v) => v.user),
+        };
+      });
+
+      return {
+        ...caseData,
+        comments: commentsWithVotes,
+      };
     }),
     create: publicProcedure
       .input(
@@ -354,6 +392,104 @@ export const appRouter = router({
             },
           },
         });
+      }),
+  }),
+
+  // Vote routes
+  vote: router({
+    toggle: publicProcedure
+      .input(
+        z.object({
+          commentId: z.string(),
+          voteType: z.enum(['LIKE', 'DISLIKE']),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated',
+          });
+        }
+
+        const { commentId, voteType } = input;
+
+        // Check if user already voted on this comment
+        const existingVote = await ctx.prisma.commentVote.findUnique({
+          where: {
+            commentId_userId: {
+              commentId,
+              userId: ctx.userId,
+            },
+          },
+        });
+
+        if (existingVote) {
+          if (existingVote.voteType === voteType) {
+            // Same vote - remove it (toggle off)
+            await ctx.prisma.commentVote.delete({
+              where: {
+                id: existingVote.id,
+              },
+            });
+            return { action: 'removed', voteType: null };
+          } else {
+            // Different vote - update it
+            await ctx.prisma.commentVote.update({
+              where: {
+                id: existingVote.id,
+              },
+              data: {
+                voteType,
+              },
+            });
+            return { action: 'updated', voteType };
+          }
+        } else {
+          // No existing vote - create new one
+          await ctx.prisma.commentVote.create({
+            data: {
+              commentId,
+              userId: ctx.userId,
+              voteType,
+            },
+          });
+          return { action: 'created', voteType };
+        }
+      }),
+
+    getByComment: publicProcedure
+      .input(z.object({ commentId: z.string() }))
+      .query(async ({ ctx, input }) => {
+        const votes = await ctx.prisma.commentVote.findMany({
+          where: { commentId: input.commentId },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        });
+
+        const likeCount = votes.filter((v) => v.voteType === 'LIKE').length;
+        const dislikeCount = votes.filter((v) => v.voteType === 'DISLIKE').length;
+        const userVote = ctx.userId
+          ? votes.find((v) => v.userId === ctx.userId)?.voteType || null
+          : null;
+
+        const likeVoters = votes.filter((v) => v.voteType === 'LIKE').map((v) => v.user);
+        const dislikeVoters = votes.filter((v) => v.voteType === 'DISLIKE').map((v) => v.user);
+
+        return {
+          likeCount,
+          dislikeCount,
+          userVote,
+          likeVoters,
+          dislikeVoters,
+        };
       }),
   }),
 });
