@@ -2,6 +2,8 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Textarea } from '@/components/obra';
+import { VoteButton } from '@/components/common/VoteButton';
+import { useCommentVoting } from './hooks/useCommentVoting';
 import type { CaseCommentsProps } from './types';
 
 export function CaseComments({ caseData }: CaseCommentsProps) {
@@ -34,6 +36,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
             name: currentUser.name,
             email: currentUser.email,
           },
+          votes: [], // Initialize with empty votes array
         };
 
         utils.case.getById.setData(
@@ -93,32 +96,57 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
       </form>
       <div className="flex flex-col gap-4 md:overflow-y-auto md:flex-1 md:min-h-0">
         {caseData.comments && caseData.comments.length > 0 ? (
-          caseData.comments.map((comment) => (
-            <div key={comment.id} className="flex flex-col gap-2 py-2">
-              <div className="flex gap-2 items-center">
-                <div className="w-10 flex items-center justify-center text-sm font-semibold text-gray-900">
-                  {comment.author.name
-                    .split(' ')
-                    .map((n) => n[0])
-                    .join('')}
+          caseData.comments.map((comment) => {
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            const { voteData, handleLike, handleDislike } = useCommentVoting(
+              comment,
+              currentUser?.id,
+              caseData.id
+            );
+
+            return (
+              <div key={comment.id} className="flex flex-col gap-2 py-2">
+                <div className="flex gap-2 items-center">
+                  <div className="w-10 flex items-center justify-center text-sm font-semibold text-gray-900">
+                    {comment.author.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')}
+                  </div>
+                  <div className="flex flex-col">
+                    <p className="text-sm font-medium">{comment.author.name}</p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(comment.createdAt).toLocaleString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true,
+                      })}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <p className="text-sm font-medium">{comment.author.name}</p>
-                  <p className="text-xs text-gray-500">
-                    {new Date(comment.createdAt).toLocaleString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric',
-                      hour: 'numeric',
-                      minute: '2-digit',
-                      hour12: true,
-                    })}
-                  </p>
+                <p className="text-sm text-gray-700">{comment.content}</p>
+                
+                {/* Vote buttons */}
+                <div className="flex gap-4 mt-1">
+                  <VoteButton
+                    type="up"
+                    count={voteData.likes}
+                    active={voteData.userVote === 'LIKE'}
+                    onClick={handleLike}
+                  />
+                  <VoteButton
+                    type="down"
+                    count={voteData.dislikes}
+                    active={voteData.userVote === 'DISLIKE'}
+                    onClick={handleDislike}
+                  />
                 </div>
               </div>
-              <p className="text-sm text-gray-700">{comment.content}</p>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="text-sm text-gray-500">No comments yet</div>
         )}
