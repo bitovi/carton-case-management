@@ -1,3 +1,6 @@
+export { Alert } from './Alert';
+export type { AlertProps } from './Alert';
+
 export { AlertDialog } from './AlertDialog';
 export type { AlertDialogProps } from './AlertDialog';
 
