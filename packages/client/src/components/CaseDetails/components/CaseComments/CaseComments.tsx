@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Textarea } from '@/components/obra';
+import { VoteButton } from '@/components/common/VoteButton';
 import type { CaseCommentsProps } from './types';
 
 export function CaseComments({ caseData }: CaseCommentsProps) {
@@ -34,6 +35,9 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
             name: currentUser.name,
             email: currentUser.email,
           },
+          likeCount: 0,
+          dislikeCount: 0,
+          currentUserVote: undefined,
         };
 
         utils.case.getById.setData(
@@ -62,6 +66,83 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
       utils.case.getById.invalidate({ id: caseData.id });
     },
   });
+
+  const voteMutation = trpc.comment.vote.useMutation({
+    onMutate: async (variables) => {
+      // Cancel outgoing refetches
+      await utils.case.getById.cancel({ id: caseData.id });
+
+      // Snapshot previous value
+      const previousCase = utils.case.getById.getData({ id: caseData.id });
+
+      // Optimistically update vote
+      if (previousCase && currentUser) {
+        const updatedComments = previousCase.comments?.map((comment) => {
+          if (comment.id !== variables.commentId) return comment;
+
+          const currentVote = comment.currentUserVote;
+          let newLikeCount = comment.likeCount || 0;
+          let newDislikeCount = comment.dislikeCount || 0;
+          let newCurrentUserVote: 'LIKE' | 'DISLIKE' | undefined = variables.voteType;
+
+          // If clicking same vote, remove it
+          if (currentVote === variables.voteType) {
+            newCurrentUserVote = undefined;
+            if (variables.voteType === 'LIKE') {
+              newLikeCount = Math.max(0, newLikeCount - 1);
+            } else {
+              newDislikeCount = Math.max(0, newDislikeCount - 1);
+            }
+          } else {
+            // Remove previous vote if exists
+            if (currentVote === 'LIKE') {
+              newLikeCount = Math.max(0, newLikeCount - 1);
+            } else if (currentVote === 'DISLIKE') {
+              newDislikeCount = Math.max(0, newDislikeCount - 1);
+            }
+
+            // Add new vote
+            if (variables.voteType === 'LIKE') {
+              newLikeCount += 1;
+            } else {
+              newDislikeCount += 1;
+            }
+          }
+
+          return {
+            ...comment,
+            likeCount: newLikeCount,
+            dislikeCount: newDislikeCount,
+            currentUserVote: newCurrentUserVote,
+          };
+        });
+
+        utils.case.getById.setData(
+          { id: caseData.id },
+          {
+            ...previousCase,
+            comments: updatedComments,
+          }
+        );
+      }
+
+      return { previousCase };
+    },
+    onError: (_err, _variables, context) => {
+      // Rollback on error
+      if (context?.previousCase) {
+        utils.case.getById.setData({ id: caseData.id }, context.previousCase);
+      }
+    },
+    onSettled: () => {
+      // Refetch to sync with server
+      utils.case.getById.invalidate({ id: caseData.id });
+    },
+  });
+
+  const handleVote = (commentId: string, voteType: 'LIKE' | 'DISLIKE') => {
+    voteMutation.mutate({ commentId, voteType });
+  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -117,6 +198,22 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
                 </div>
               </div>
               <p className="text-sm text-gray-700">{comment.content}</p>
+              <div className="flex gap-4 items-center">
+                <VoteButton
+                  type="up"
+                  active={comment.currentUserVote === 'LIKE'}
+                  count={comment.likeCount}
+                  showCount={true}
+                  onClick={() => handleVote(comment.id, 'LIKE')}
+                />
+                <VoteButton
+                  type="down"
+                  active={comment.currentUserVote === 'DISLIKE'}
+                  count={comment.dislikeCount}
+                  showCount={true}
+                  onClick={() => handleVote(comment.id, 'DISLIKE')}
+                />
+              </div>
             </div>
           ))
         ) : (

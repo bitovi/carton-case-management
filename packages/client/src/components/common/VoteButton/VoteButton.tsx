@@ -14,11 +14,7 @@ export function VoteButton({
 }: VoteButtonProps) {
   const Icon = type === 'up' ? ThumbsUp : ThumbsDown;
   
-  const colorClasses = active
-    ? type === 'up'
-      ? 'text-teal-500' 
-      : 'text-red-500'   
-    : 'text-slate-700';  
+  const colorClasses = active ? 'text-teal-500' : 'text-slate-700';
 
   const button = (
     <button
@@ -33,7 +29,10 @@ export function VoteButton({
       aria-label={type === 'up' ? 'Upvote' : 'Downvote'}
       aria-pressed={active}
     >
-      <Icon className="h-6 w-6 shrink-0" />
+      <Icon 
+        className="h-6 w-6 shrink-0" 
+        fill={active ? 'currentColor' : 'none'}
+      />
       {showCount && count !== undefined && (
         <span className="text-sm leading-[21px] tracking-[0.07px]">
           {count}
