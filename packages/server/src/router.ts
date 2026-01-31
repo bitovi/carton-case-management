@@ -251,6 +251,17 @@ export const appRouter = router({
                   email: true,
                 },
               },
+              votes: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      email: true,
+                    },
+                  },
+                },
+              },
             },
             orderBy: {
               createdAt: 'desc',
@@ -354,6 +365,55 @@ export const appRouter = router({
             },
           },
         });
+      }),
+    
+    vote: publicProcedure
+      .input(
+        z.object({
+          commentId: z.string(),
+          voteType: z.enum(['UP', 'DOWN']).nullable(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated',
+          });
+        }
+
+        const { commentId, voteType } = input;
+
+        // If voteType is null, remove the vote
+        if (voteType === null) {
+          await ctx.prisma.commentVote.deleteMany({
+            where: {
+              commentId,
+              userId: ctx.userId,
+            },
+          });
+          return { success: true };
+        }
+
+        // Otherwise, upsert the vote (create or update)
+        await ctx.prisma.commentVote.upsert({
+          where: {
+            commentId_userId: {
+              commentId,
+              userId: ctx.userId,
+            },
+          },
+          create: {
+            commentId,
+            userId: ctx.userId,
+            voteType,
+          },
+          update: {
+            voteType,
+          },
+        });
+
+        return { success: true };
       }),
   }),
 });
