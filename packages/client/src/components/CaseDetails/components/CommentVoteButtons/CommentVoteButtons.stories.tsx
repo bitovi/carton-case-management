@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import type { ReactNode } from 'react';
 import { CommentVoteButtons } from './CommentVoteButtons';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { httpBatchLink } from '@trpc/client';
@@ -21,7 +22,7 @@ const trpcClient = trpc.createClient({
   ],
 });
 
-const TRPCWrapper = ({ children }: { children: React.ReactNode }) => (
+const TRPCWrapper = ({ children }: { children: ReactNode }) => (
   <trpc.Provider client={trpcClient} queryClient={queryClient}>
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   </trpc.Provider>

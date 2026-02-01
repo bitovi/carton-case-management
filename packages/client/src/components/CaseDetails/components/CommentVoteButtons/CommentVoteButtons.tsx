@@ -9,8 +9,6 @@ export function CommentVoteButtons({
   currentUserId,
   onVoteSuccess,
 }: CommentVoteButtonsProps) {
-  const utils = trpc.useUtils();
-
   const voteToggleMutation = trpc.vote.toggle.useMutation({
     onSuccess: () => {
       // Invalidate the case query to refresh vote counts
