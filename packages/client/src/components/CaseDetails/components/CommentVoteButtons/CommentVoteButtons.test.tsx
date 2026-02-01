@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CommentVoteButtons } from './CommentVoteButtons';
-import { createWrapper } from '@/test/utils';
+import { createTrpcWrapper } from '@/test/utils';
 
 const mockOnVoteSuccess = vi.fn();
 
@@ -20,14 +20,14 @@ describe('CommentVoteButtons', () => {
 
   describe('Rendering', () => {
     it('renders both like and dislike buttons', () => {
-      render(<CommentVoteButtons {...defaultProps} />, { wrapper: createWrapper() });
+      render(<CommentVoteButtons {...defaultProps} />, { wrapper: createTrpcWrapper() });
       
       expect(screen.getByLabelText('Upvote')).toBeInTheDocument();
       expect(screen.getByLabelText('Downvote')).toBeInTheDocument();
     });
 
     it('does not show counts when there are no votes', () => {
-      render(<CommentVoteButtons {...defaultProps} />, { wrapper: createWrapper() });
+      render(<CommentVoteButtons {...defaultProps} />, { wrapper: createTrpcWrapper() });
       
       expect(screen.queryByText('0')).not.toBeInTheDocument();
       expect(screen.queryByText(/\d+/)).not.toBeInTheDocument();
@@ -43,7 +43,7 @@ describe('CommentVoteButtons', () => {
 
       render(
         <CommentVoteButtons {...defaultProps} votes={votes} />,
-        { wrapper: createWrapper() }
+        { wrapper: createTrpcWrapper() }
       );
 
       expect(screen.getByText('2')).toBeInTheDocument();
@@ -56,7 +56,7 @@ describe('CommentVoteButtons', () => {
 
       render(
         <CommentVoteButtons {...defaultProps} votes={votes} />,
-        { wrapper: createWrapper() }
+        { wrapper: createTrpcWrapper() }
       );
 
       expect(screen.getByText('1')).toBeInTheDocument();
@@ -71,7 +71,7 @@ describe('CommentVoteButtons', () => {
 
       render(
         <CommentVoteButtons {...defaultProps} votes={votes} />,
-        { wrapper: createWrapper() }
+        { wrapper: createTrpcWrapper() }
       );
 
       const counts = screen.getAllByText(/\d+/);
@@ -89,7 +89,7 @@ describe('CommentVoteButtons', () => {
 
       render(
         <CommentVoteButtons {...defaultProps} votes={votes} />,
-        { wrapper: createWrapper() }
+        { wrapper: createTrpcWrapper() }
       );
 
       const likeButton = screen.getByLabelText('Upvote');
@@ -104,7 +104,7 @@ describe('CommentVoteButtons', () => {
 
       render(
         <CommentVoteButtons {...defaultProps} votes={votes} />,
-        { wrapper: createWrapper() }
+        { wrapper: createTrpcWrapper() }
       );
 
       const dislikeButton = screen.getByLabelText('Downvote');
@@ -119,7 +119,7 @@ describe('CommentVoteButtons', () => {
 
       render(
         <CommentVoteButtons {...defaultProps} votes={votes} />,
-        { wrapper: createWrapper() }
+        { wrapper: createTrpcWrapper() }
       );
 
       expect(screen.getByLabelText('Upvote')).toHaveAttribute('aria-pressed', 'false');
@@ -133,7 +133,7 @@ describe('CommentVoteButtons', () => {
 
       render(
         <CommentVoteButtons {...defaultProps} currentUserId={undefined} votes={votes} />,
-        { wrapper: createWrapper() }
+        { wrapper: createTrpcWrapper() }
       );
 
       expect(screen.getByLabelText('Upvote')).toHaveAttribute('aria-pressed', 'false');
@@ -150,7 +150,7 @@ describe('CommentVoteButtons', () => {
 
       render(
         <CommentVoteButtons {...defaultProps} votes={votes} />,
-        { wrapper: createWrapper() }
+        { wrapper: createTrpcWrapper() }
       );
 
       // VoteButton will handle the tooltip display
@@ -164,7 +164,7 @@ describe('CommentVoteButtons', () => {
 
       render(
         <CommentVoteButtons {...defaultProps} votes={votes} />,
-        { wrapper: createWrapper() }
+        { wrapper: createTrpcWrapper() }
       );
 
       expect(screen.getByLabelText('Downvote')).toBeInTheDocument();
