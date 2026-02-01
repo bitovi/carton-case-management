@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Textarea } from '@/components/obra';
+import { CommentVoteButtons } from '../CommentVoteButtons';
 import type { CaseCommentsProps } from './types';
 
 export function CaseComments({ caseData }: CaseCommentsProps) {
@@ -117,6 +118,12 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
                 </div>
               </div>
               <p className="text-sm text-gray-700">{comment.content}</p>
+              <CommentVoteButtons
+                commentId={comment.id}
+                votes={comment.votes || []}
+                currentUserId={currentUser?.id}
+                onVoteSuccess={() => utils.case.getById.invalidate({ id: caseData.id })}
+              />
             </div>
           ))
         ) : (

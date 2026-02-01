@@ -6,6 +6,11 @@ export type CaseCommentsProps = {
       content: string;
       createdAt: string;
       author: { id: string; name: string; email: string };
+      votes?: Array<{
+        id: string;
+        voteType: 'LIKE' | 'DISLIKE';
+        user: { id: string; name: string };
+      }>;
     }>;
   };
 };
