@@ -251,6 +251,16 @@ export const appRouter = router({
                   email: true,
                 },
               },
+              votes: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                },
+              },
             },
             orderBy: {
               createdAt: 'desc',
@@ -354,6 +364,70 @@ export const appRouter = router({
             },
           },
         });
+      }),
+  }),
+
+  // Vote routes
+  vote: router({
+    toggle: publicProcedure
+      .input(
+        z.object({
+          commentId: z.string(),
+          voteType: z.enum(['LIKE', 'DISLIKE']),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated',
+          });
+        }
+
+        const { commentId, voteType } = input;
+
+        // Check if user has already voted on this comment
+        const existingVote = await ctx.prisma.commentVote.findUnique({
+          where: {
+            commentId_userId: {
+              commentId,
+              userId: ctx.userId,
+            },
+          },
+        });
+
+        // If voting the same type, remove the vote
+        if (existingVote && existingVote.voteType === voteType) {
+          await ctx.prisma.commentVote.delete({
+            where: {
+              commentId_userId: {
+                commentId,
+                userId: ctx.userId,
+              },
+            },
+          });
+          return { action: 'removed', voteType };
+        }
+
+        // If voting different type or no existing vote, upsert
+        await ctx.prisma.commentVote.upsert({
+          where: {
+            commentId_userId: {
+              commentId,
+              userId: ctx.userId,
+            },
+          },
+          create: {
+            commentId,
+            userId: ctx.userId,
+            voteType,
+          },
+          update: {
+            voteType,
+          },
+        });
+
+        return { action: existingVote ? 'changed' : 'created', voteType };
       }),
   }),
 });
