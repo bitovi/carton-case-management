@@ -12,7 +12,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toast, setToast] = React.useState<ToastState | null>(null);
 
   const showToast = React.useCallback((options: ToastOptions) => {
-    const id = Math.random().toString(36).substring(2, 9);
+    const id = crypto.randomUUID();
     setToast({ ...options, id });
   }, []);
 

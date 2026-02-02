@@ -90,7 +90,7 @@ export const CustomIcon: Story = {
   ),
 };
 
-export const NoAutoDissmiss: Story = {
+export const NoAutoDismiss: Story = {
   render: () => (
     <ToastDemo
       variant="success"
