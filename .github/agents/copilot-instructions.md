@@ -4,12 +4,25 @@ Auto-generated from all feature plans. Last updated: 2025-12-24
 
 ## Skills
 
+**REQUIRED:** Before implementing any feature, you MUST:
+1. **Analyze available skills** - Review the skills table below and read relevant skill documentation in `.github/skills/`
+2. **Apply appropriate skills** - Use the skills that match your task (e.g., component-reuse before creating any UI, figma-implement-component when working from designs)
+3. **Follow skill workflows** - Skills provide step-by-step processes that prevent common mistakes and ensure quality
+
 This project uses Agent Skills for specialized workflows. See `.github/skills/`:
 
-| Skill | Purpose |
-|-------|---------|
-| `cross-package-types` | Type flow between shared, server, and client packages |
-| `create-skill` | How to create new Agent Skills for this project |
+| Skill | Purpose | When to Use |
+|-------|---------|-------------|
+| `component-reuse` | Ensure existing UI components are reused before creating new ones | **REQUIRED** before implementing any UI from Figma, tickets, or mockups |
+| `figma-implement-component` | Implement React components from Figma designs | After component-reuse confirms no existing component, use to build new components from Figma |
+| `figma-design-react` | Design React components from Figma files | When analyzing Figma designs to propose component architecture and props API |
+| `figma-component-sync` | Check React components against Figma design source | When reviewing implementations, syncing designs, or auditing visual accuracy |
+| `figma-connect-component` | Generate Figma Code Connect mapping for components | When linking React components to their Figma counterparts |
+| `figma-connect-shadcn` | Connect shadcn/ui components to Figma | After adding shadcn components via `npx shadcn@latest add` |
+| `figma-explore` | Explore Figma files to discover pages and components | When you need to list components in a Figma file or find component node IDs |
+| `create-react-modlet` | Create React components following the modlet pattern | When creating any component in `packages/client/src/components/` |
+| `cross-package-types` | Type flow between shared, server, and client packages | When working with types across package boundaries |
+| `create-skill` | How to create new Agent Skills for this project | When asked to document a workflow or teach Copilot a new capability |
 
 ## Package-Specific Instructions
 
