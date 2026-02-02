@@ -13,6 +13,7 @@ import {
 } from '@/components/obra/Select';
 import { type CasePriority, CASE_PRIORITY_OPTIONS } from '@carton/shared/client';
 import { Label } from '@/components/obra/Label';
+import { Toast } from '@/components/obra/Toast';
 
 type ValidationErrors = {
   title?: string;
@@ -30,13 +31,16 @@ export function CreateCasePage() {
   const [priority, setPriority] = useState<CasePriority>('MEDIUM');
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [touched, setTouched] = useState<Set<string>>(new Set());
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [createdCaseId, setCreatedCaseId] = useState<string | null>(null);
 
   const { data: customers } = trpc.customer.list.useQuery();
   const { data: users } = trpc.user.list.useQuery();
   const createCase = trpc.case.create.useMutation({
     onSuccess: (data) => {
       utils.case.list.invalidate();
-      navigate(`/cases/${data.id}`);
+      setCreatedCaseId(data.id);
+      setShowSuccessToast(true);
     },
   });
 
@@ -80,6 +84,14 @@ export function CreateCasePage() {
       assignedTo: assignedTo || undefined,
       priority,
     });
+  };
+
+  const handleToastClose = (open: boolean) => {
+    setShowSuccessToast(open);
+    if (!open && createdCaseId) {
+      // Navigate after toast is closed
+      navigate(`/cases/${createdCaseId}`);
+    }
   };
 
   return (
@@ -230,6 +242,15 @@ export function CreateCasePage() {
           </div>
         )}
       </form>
+
+      <Toast
+        open={showSuccessToast}
+        onOpenChange={handleToastClose}
+        variant="success"
+        title="Success!"
+        message="A new claim has been created."
+        icon="🎉"
+      />
     </div>
   );
 }

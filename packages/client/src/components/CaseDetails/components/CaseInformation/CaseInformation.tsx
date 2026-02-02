@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { List, MoreVertical, Trash } from 'lucide-react';
+import { List, MoreVertical, Trash, FolderX } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/obra/Button';
 import { formatCaseNumber, type CaseStatus, CASE_STATUS_OPTIONS } from '@carton/shared/client';
@@ -13,11 +13,14 @@ import {
 } from '@/components/obra/Select';
 import { MoreOptionsMenu, MenuItem } from '@/components/common/MoreOptionsMenu';
 import { ConfirmationDialog } from '@/components/common/ConfirmationDialog';
+import { Toast } from '@/components/obra/Toast';
 import { useNavigate } from 'react-router-dom';
 import type { CaseInformationProps } from './types';
 
 export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformationProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [showDeleteToast, setShowDeleteToast] = useState(false);
+  const [deletedCaseTitle, setDeletedCaseTitle] = useState('');
   const navigate = useNavigate();
 
   const utils = trpc.useUtils();
@@ -58,7 +61,9 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
   const deleteCase = trpc.case.delete.useMutation({
     onSuccess: () => {
       utils.case.list.invalidate();
-      navigate('/cases');
+      setIsDeleteDialogOpen(false);
+      setDeletedCaseTitle(caseData.title);
+      setShowDeleteToast(true);
     },
     onError: (error) => {
       console.error('Failed to delete case:', error);
@@ -82,6 +87,14 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
 
   const handleDeleteConfirm = () => {
     deleteCase.mutate({ id: caseId });
+  };
+
+  const handleDeleteToastClose = (open: boolean) => {
+    setShowDeleteToast(open);
+    if (!open) {
+      // Navigate after toast is closed
+      navigate('/cases');
+    }
   };
 
   const handleStatusChange = (newStatus: string) => {
@@ -211,6 +224,15 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
         confirmClassName="bg-red-600 hover:bg-red-700"
         isLoading={deleteCase.isPending}
         loadingText="Deleting..."
+      />
+
+      <Toast
+        open={showDeleteToast}
+        onOpenChange={handleDeleteToastClose}
+        variant="neutral"
+        title="Deleted"
+        message={`"${deletedCaseTitle}" case has been successfully deleted.`}
+        icon={<FolderX className="h-10 w-10 text-gray-600" />}
       />
     </>
   );
