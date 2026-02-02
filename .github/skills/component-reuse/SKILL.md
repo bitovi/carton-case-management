@@ -7,6 +7,16 @@ description: Ensure existing UI components are reused before creating new ones. 
 
 This skill ensures existing components are discovered and reused before creating new ones. It prevents duplicate components and maintains design system consistency.
 
+## No Component Creation Without Audit
+
+**You are FORBIDDEN from creating any new component file until you have:**
+
+1. Completed the full audit process below
+2. Output the audit table showing your search results
+3. Confirmed no existing component can serve the same purpose
+
+**If you skip this audit and create a component that duplicates existing functionality, you have failed this task.**
+
 ## When to Use
 
 - Before implementing any UI element from a Figma design
@@ -21,12 +31,13 @@ This skill ensures existing components are discovered and reused before creating
 
 ## Why This Matters
 
-Figma component names often differ from codebase component names. For example:
-- Figma calls it "Toast" → Codebase has "Alert"
-- Figma calls it "Input Field" → Codebase has "TextField"
-- Figma calls it "CTA Button" → Codebase has "Button"
+Figma layer names ≠ actual component names. Tickets requesting UI features often need **behavior systems** using existing components, not new UI components.
 
-Skipping the audit leads to duplicate components with slightly different names.
+**Anti-pattern:** Creating wrapper components like:
+```tsx
+export function NewComponent(props) { return <ExistingComponent {...props} />; }
+```
+**Instead:** Use ExistingComponent directly in your system.
 
 ## Workflow Overview
 ```
@@ -53,9 +64,23 @@ Before writing any UI code, identify all components needed:
 
 Create a list of all components you'll need to implement.
 
-### Step 2: Search the Codebase
+### Step 2: Check What Component Figma Actually Uses 
 
-For **each component** identified, perform a thorough search:
+Call `mcp_com_figma_mcp_get_metadata` first:
+```javascript
+mcp_com_figma_mcp_get_metadata({ nodeId, fileKey })
+```
+
+Response shows the real component:
+```xml
+<instance name="ComponentName" />
+```
+
+**If it says `name="ComponentName"`, search for ComponentName in your codebase, not the Figma layer name.**
+
+### Step 3: Search the Codebase
+
+For **each component** identified (using the **metadata name**, not the Figma layer name), perform a thorough search:
 
 **Search strategies (use ALL of these):**
 
@@ -67,12 +92,15 @@ For **each component** identified, perform a thorough search:
    - Input → TextField, TextInput, Field
    - Dropdown → Select, Combobox, Picker
    - Card → Panel, Tile, Container
+   - Vote → Like, Thumbs, Rating, Reaction
 4. **Partial matches**: Search for root words (e.g., "button" finds "IconButton", "ButtonGroup")
 
 **Search locations:**
 
 - `components/` directory and subdirectories
-- `ui/` directory
+- `obra/` directory
+- `common/` directory
+- Feature-specific component folders
 - Any design system or shared component folders
 - `packages/` in monorepos
 
@@ -89,9 +117,19 @@ ls -la src/components/
 ls -la packages/*/src/components/
 ```
 
-### Step 3: Document Audit Results
+### Step 4: Get Implementation Details
 
-**REQUIRED**: Output an audit table before proceeding with any implementation.
+Call `get_design_context` for props and styling details.
+
+CodeConnectSnippets confirm component choice:
+```jsx
+<ComponentName prop1="value" prop2="..." />
+```
+
+**You MUST output this audit table BEFORE creating any component files.**
+
+If you do not output this table, STOP and output it now.
+
 ```
 ## Component Audit Results
 
@@ -110,19 +148,38 @@ ls -la packages/*/src/components/
 - Do NOT create a wrapper or duplicate
 
 **For components marked CREATE:**
+
+**BEFORE creating, you MUST answer these questions:**
+
+1. What existing components did you find that are similar?
+2. Why can't any of them be used or extended?
+3. What specific functionality is missing that requires a new component?
+
+If you cannot answer all three questions, GO BACK and reuse an existing component.
+
+Only after answering these questions:
 - Invoke the `figma-implement-component` skill
 - Wait for component creation to complete
 - Then use the newly created component
 
-## Red Flags - Stop and Re-Search
 
 **STOP** if you're about to create a component that:
 
-- Has a generic/common name (Button, Input, Modal, Card, Alert, Toast, Dialog, etc.)
-- Serves a common UI purpose (feedback, navigation, form input, layout)
+- Has a generic/common name (Button, Input, Modal, Card, Alert, Dialog, etc.)
+- Serves a common UI purpose (feedback, navigation, form input, layout, interaction)
 - Looks similar to something you've seen elsewhere in the codebase
 
-These almost certainly already exist. Run additional searches with different terms.
+**These almost certainly already exist.** If you found ANY component in similar directories, CHECK IT FIRST before creating anything new.
+
+### Specific Examples of What NOT to Create
+
+| If Figma says... | DO NOT create... | Instead, check for... |
+|------------------|------------------|----------------------|
+| Notification | Notification.tsx | Alert, Toast, Snackbar, Banner |
+| Popup | Popup.tsx | Dialog, Modal, Overlay, Sheet |
+| Input Field | InputField.tsx | Input, TextField, TextInput |
+| Action Button | ActionButton.tsx | Button (with variant prop) |
+| Vote Widget | VoteWidget.tsx | VoteButton, Like, Rating, Thumbs |
 
 ## Integration with Other Skills
 
@@ -140,28 +197,28 @@ When implementing features from tickets:
 
 ## Examples
 
-### Example 1: Toast Already Exists as Alert
+### Example 1: Notification Already Exists as Alert
 
-**Figma shows**: "Toast" component for success messages
+**Figma shows**: "Notification" component for success messages
 
 **Audit process**:
 ```
-Search: "toast" → No results
+Search: "notification" → No results
 Search: "alert" → Found src/components/Alert/Alert.tsx
-Search: "notification" → Found src/components/Alert/Alert.tsx (same file)
+Search: "toast" → Found src/components/Alert/Alert.tsx (same file)
 
 Reviewing Alert.tsx... supports: success, error, warning, info variants
-This matches the Toast functionality needed.
+This matches the Notification functionality needed.
 ```
 
 **Audit output**:
 ```
 | Figma Component | Search Terms Used | Codebase Match | Action |
 |-----------------|-------------------|----------------|--------|
-| Toast | toast, alert, notification | src/components/Alert/Alert.tsx | REUSE |
+| Notification | notification, alert, toast | src/components/Alert/Alert.tsx | REUSE |
 ```
 
-**Action**: Import and use Alert component, do NOT create Toast.
+**Action**: Import and use Alert component, do NOT create Notification.
 
 ### Example 2: Component Genuinely Missing
 

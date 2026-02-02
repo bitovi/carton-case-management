@@ -22,7 +22,7 @@ packages/client/
 │   ├── App.tsx            # Root component with routing
 │   ├── index.css          # Global styles
 │   ├── components/
-│   │   ├── ui/            # Shadcn UI components
+│   │   ├── obra/          # Obra UI components
 │   │   ├── common/        # Reusable custom components
 │   │   ├── CaseList/      # Feature components (modlet pattern)
 │   │   ├── CaseDetails/
@@ -147,20 +147,6 @@ function CreateCase() {
 }
 ```
 
-## Shadcn UI Components
-
-Located in `src/components/ui/`. Install new components:
-
-```bash
-npx shadcn@latest add button
-npx shadcn@latest add dialog
-npx shadcn@latest add select
-```
-
-Always prefer Shadcn components over native HTML:
-- ✅ `<Button>` not `<button>`
-- ✅ `<Select>` not `<select>`
-- ✅ `<Input>` not `<input>`
 
 ## Styling
 
