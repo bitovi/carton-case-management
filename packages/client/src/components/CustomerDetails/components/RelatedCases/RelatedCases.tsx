@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
-import { formatCaseNumber } from '@carton/shared';
+import { formatCaseNumber } from '@carton/shared/client';
 
 interface RelatedCasesProps {
   cases: Array<{
