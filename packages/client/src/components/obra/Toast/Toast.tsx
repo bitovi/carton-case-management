@@ -23,6 +23,19 @@ export function Toast({
     }
   }, [open, duration, onDismiss]);
 
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && onDismiss) {
+        onDismiss();
+      }
+    };
+
+    if (open) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [open, onDismiss]);
+
   if (!open) return null;
 
   const typeStyles = {
