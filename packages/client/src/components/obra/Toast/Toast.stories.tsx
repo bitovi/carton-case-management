@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
 import { Toast } from './Toast';
 
 const meta: Meta<typeof Toast> = {
@@ -18,7 +19,7 @@ export const Success: Story = {
     type: 'Success',
     title: 'Success!',
     message: 'A new claim has been created.',
-    onDismiss: () => console.log('Dismissed'),
+    onDismiss: fn(),
   },
 };
 
@@ -27,7 +28,7 @@ export const Deleted: Story = {
     type: 'Deleted',
     title: 'Deleted',
     message: '"Fraud Investigation" case has been successfully deleted.',
-    onDismiss: () => console.log('Dismissed'),
+    onDismiss: fn(),
   },
 };
 
@@ -36,6 +37,6 @@ export const CustomIcon: Story = {
     title: 'Custom Icon',
     message: 'This toast has a custom icon.',
     icon: <span style={{ fontSize: '32px' }}>⭐</span>,
-    onDismiss: () => console.log('Dismissed'),
+    onDismiss: fn(),
   },
 };
