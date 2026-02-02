@@ -35,6 +35,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
             name: currentUser.name,
             email: currentUser.email,
           },
+          // New comments start with no votes
           votes: [],
         };
 
