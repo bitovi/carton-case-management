@@ -315,7 +315,9 @@ describe('ToastContext', () => {
   describe('Integration', () => {
     it('provides stable references for showToast and hideToast', () => {
       let renderCount = 0;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let showToastRef: any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let hideToastRef: any;
 
       function TestStability() {

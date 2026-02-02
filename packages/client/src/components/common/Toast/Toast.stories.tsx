@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Toast } from './Toast';
-import { useState } from 'react';
+import { useState, type ComponentProps } from 'react';
 import { Button } from '@/components/obra/Button';
 import { FileQuestion } from 'lucide-react';
 
@@ -17,7 +17,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Helper component to control open state in stories
-function ToastDemo(props: Omit<React.ComponentProps<typeof Toast>, 'open' | 'onDismiss'>) {
+function ToastDemo(props: Omit<ComponentProps<typeof Toast>, 'open' | 'onDismiss'>) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -36,7 +36,7 @@ export const Success: Story = {
       message="Your changes have been saved successfully."
     />
   ),
-  args: {} as any,
+  args: {} as never,
 };
 
 export const SuccessLongMessage: Story = {
@@ -47,6 +47,7 @@ export const SuccessLongMessage: Story = {
       message="Your changes have been saved successfully and all related records have been updated. The system is now processing the updates in the background."
     />
   ),
+  args: {} as never,
 };
 
 export const Error: Story = {
@@ -57,6 +58,7 @@ export const Error: Story = {
       message="Case #2024-001 has been permanently deleted."
     />
   ),
+  args: {} as never,
 };
 
 export const ErrorWithCaseName: Story = {
@@ -67,6 +69,7 @@ export const ErrorWithCaseName: Story = {
       message="John Doe vs. Acme Corp case has been permanently deleted."
     />
   ),
+  args: {} as never,
 };
 
 export const Neutral: Story = {
@@ -77,6 +80,7 @@ export const Neutral: Story = {
       message="Your session will expire in 5 minutes."
     />
   ),
+  args: {} as never,
 };
 
 export const CustomIcon: Story = {
@@ -88,6 +92,7 @@ export const CustomIcon: Story = {
       icon={<FileQuestion className="h-6 w-6 text-blue-600" />}
     />
   ),
+  args: {} as never,
 };
 
 export const NoAutoDismiss: Story = {
@@ -99,6 +104,7 @@ export const NoAutoDismiss: Story = {
       autoDismiss={false}
     />
   ),
+  args: {} as never,
 };
 
 export const CustomDuration: Story = {
@@ -110,6 +116,7 @@ export const CustomDuration: Story = {
       duration={3000}
     />
   ),
+  args: {} as never,
 };
 
 export const AlwaysOpen: Story = {
@@ -122,42 +129,46 @@ export const AlwaysOpen: Story = {
   },
 };
 
+// Extract MultipleVariants demo into a separate component
+function MultipleVariantsDemo() {
+  const [openSuccess, setOpenSuccess] = useState(false);
+  const [openError, setOpenError] = useState(false);
+  const [openNeutral, setOpenNeutral] = useState(false);
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Button onClick={() => setOpenSuccess(true)}>Show Success Toast</Button>
+      <Button onClick={() => setOpenError(true)}>Show Error Toast</Button>
+      <Button onClick={() => setOpenNeutral(true)}>Show Neutral Toast</Button>
+
+      <Toast
+        variant="success"
+        title="Success!"
+        message="Operation completed successfully."
+        open={openSuccess}
+        onDismiss={() => setOpenSuccess(false)}
+      />
+
+      <Toast
+        variant="error"
+        title="Deleted"
+        message="Item has been permanently deleted."
+        open={openError}
+        onDismiss={() => setOpenError(false)}
+      />
+
+      <Toast
+        variant="neutral"
+        title="Information"
+        message="This is a neutral notification."
+        open={openNeutral}
+        onDismiss={() => setOpenNeutral(false)}
+      />
+    </div>
+  );
+}
+
 export const MultipleVariants: Story = {
-  render: () => {
-    const [openSuccess, setOpenSuccess] = useState(false);
-    const [openError, setOpenError] = useState(false);
-    const [openNeutral, setOpenNeutral] = useState(false);
-
-    return (
-      <div className="flex flex-col gap-4">
-        <Button onClick={() => setOpenSuccess(true)}>Show Success Toast</Button>
-        <Button onClick={() => setOpenError(true)}>Show Error Toast</Button>
-        <Button onClick={() => setOpenNeutral(true)}>Show Neutral Toast</Button>
-
-        <Toast
-          variant="success"
-          title="Success!"
-          message="Operation completed successfully."
-          open={openSuccess}
-          onDismiss={() => setOpenSuccess(false)}
-        />
-
-        <Toast
-          variant="error"
-          title="Deleted"
-          message="Item has been permanently deleted."
-          open={openError}
-          onDismiss={() => setOpenError(false)}
-        />
-
-        <Toast
-          variant="neutral"
-          title="Information"
-          message="This is a neutral notification."
-          open={openNeutral}
-          onDismiss={() => setOpenNeutral(false)}
-        />
-      </div>
-    );
-  },
+  render: () => <MultipleVariantsDemo />,
+  args: {} as never,
 };

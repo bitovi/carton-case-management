@@ -38,7 +38,7 @@ export function Toast({
   duration = 10000,
   icon,
 }: ToastProps) {
-  const timeoutRef = React.useRef<NodeJS.Timeout>();
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout>>();
 
   // Auto-dismiss timer
   React.useEffect(() => {
