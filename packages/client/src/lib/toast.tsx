@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useState, useCallback, ReactNode, useEffect, useRef } from 'react';
 import { Toast } from '@/components/obra/Toast';
 
 interface ToastConfig {
@@ -17,42 +17,40 @@ const ToastContext = createContext<ToastContextValue | undefined>(undefined);
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toast, setToast] = useState<(ToastConfig & { open: boolean }) | null>(null);
-  const [timeoutId, setTimeoutId] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const timeoutIdRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const hideToast = useCallback(() => {
     setToast(null);
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      setTimeoutId(null);
+    if (timeoutIdRef.current) {
+      clearTimeout(timeoutIdRef.current);
+      timeoutIdRef.current = null;
     }
-  }, [timeoutId]);
+  }, []);
 
   const showToast = useCallback((config: ToastConfig) => {
     // Clear any existing timeout
-    if (timeoutId) {
-      clearTimeout(timeoutId);
+    if (timeoutIdRef.current) {
+      clearTimeout(timeoutIdRef.current);
     }
 
     // Replace any existing toast (no stacking)
     setToast({ ...config, open: true });
 
     // Auto-dismiss after 10 seconds
-    const newTimeoutId = window.setTimeout(() => {
+    timeoutIdRef.current = setTimeout(() => {
       setToast(null);
-      setTimeoutId(null);
+      timeoutIdRef.current = null;
     }, 10000);
-
-    setTimeoutId(newTimeoutId);
-  }, [timeoutId]);
+  }, []);
 
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+      if (timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current);
       }
     };
-  }, [timeoutId]);
+  }, []);
 
   return (
     <ToastContext.Provider value={{ showToast, hideToast }}>
