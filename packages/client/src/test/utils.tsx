@@ -4,6 +4,7 @@ import { ReactElement, ReactNode } from 'react';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import { trpc } from '../lib/trpc';
 import { httpBatchLink } from '@trpc/client';
+import { ToastProvider } from '../lib/toast';
 
 export function createTestQueryClient(): QueryClient {
   return new QueryClient({
@@ -42,7 +43,9 @@ export function createTrpcWrapper(queryClient?: QueryClient) {
       <BrowserRouter>
         <trpc.Provider client={trpcClient} queryClient={testQueryClient}>
           <QueryClientProvider client={testQueryClient}>
-            {children}
+            <ToastProvider>
+              {children}
+            </ToastProvider>
           </QueryClientProvider>
         </trpc.Provider>
       </BrowserRouter>
@@ -72,7 +75,9 @@ export function createMemoryRouterWrapper(initialEntries: string[], queryClient?
       <MemoryRouter initialEntries={initialEntries}>
         <trpc.Provider client={trpcClient} queryClient={testQueryClient}>
           <QueryClientProvider client={testQueryClient}>
-            {children}
+            <ToastProvider>
+              {children}
+            </ToastProvider>
           </QueryClientProvider>
         </trpc.Provider>
       </MemoryRouter>
