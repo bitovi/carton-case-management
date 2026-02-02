@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { FolderClosed, Users } from 'lucide-react';
+import { ToastProvider } from './contexts/ToastContext';
 import { Header } from './components/Header';
 import { MenuList } from './components/MenuList';
 import { CasePage } from './pages/CasePage';
@@ -49,21 +50,23 @@ function App() {
     .toUpperCase();
 
   return (
-    <div className="h-screen bg-[#dfe2e2] flex flex-col">
-      <Header userInitials={userInitials} />
-      <MenuList items={menuItems} />
-      <div className="flex flex-1 overflow-hidden lg:pl-[68px]">
-        <main className="flex-1 lg:p-6 overflow-auto">
-          <Routes>
-            <Route path="/" element={<CasePage />} />
-            <Route path="/cases/" element={<CasePage />} />
-            <Route path="/cases/:id" element={<CasePage />} />
-            <Route path="/customers/" element={<CustomerPage />} />
-            <Route path="/customers/:id" element={<CustomerPage />} />
-          </Routes>
-        </main>
+    <ToastProvider>
+      <div className="h-screen bg-[#dfe2e2] flex flex-col">
+        <Header userInitials={userInitials} />
+        <MenuList items={menuItems} />
+        <div className="flex flex-1 overflow-hidden lg:pl-[68px]">
+          <main className="flex-1 lg:p-6 overflow-auto">
+            <Routes>
+              <Route path="/" element={<CasePage />} />
+              <Route path="/cases/" element={<CasePage />} />
+              <Route path="/cases/:id" element={<CasePage />} />
+              <Route path="/customers/" element={<CustomerPage />} />
+              <Route path="/customers/:id" element={<CustomerPage />} />
+            </Routes>
+          </main>
+        </div>
       </div>
-    </div>
+    </ToastProvider>
   );
 }
 
