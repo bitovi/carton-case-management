@@ -1,5 +1,5 @@
 ---
-name: implement-component
+name: figma-implement-component
 description: Implement React components from Figma designs. Use after figma-design-react has analyzed the design. Delegates to create-react-modlet for folder structure, then adds Figma-specific implementation, stories for each variant, Code Connect mapping, and README with design context.
 ---
 

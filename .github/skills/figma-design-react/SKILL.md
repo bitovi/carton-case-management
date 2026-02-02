@@ -381,7 +381,7 @@ See full details: `.temp/design-components/button/proposed-api.md`
 
 ## Related Skills
 
-- **implement-component**: Use this skill next to build the component from the analysis
+- **figma-implement-component**: Use this skill next to build the component from the analysis
 - **create-react-modlet**: Defines the modlet folder structure for components
 - **figma-connect-component**: Detailed Code Connect mapping guidance
 - **figma-component-sync**: Use to check existing implementations against Figma designs
