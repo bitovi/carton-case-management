@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Textarea } from '@/components/obra';
+import { VoteButton } from '@/components/common/VoteButton';
 import type { CaseCommentsProps } from './types';
 
 export function CaseComments({ caseData }: CaseCommentsProps) {
@@ -34,6 +35,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
             name: currentUser.name,
             email: currentUser.email,
           },
+          votes: [],
         };
 
         utils.case.getById.setData(
@@ -63,6 +65,13 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
     },
   });
 
+  const toggleVoteMutation = trpc.vote.toggle.useMutation({
+    onSuccess: () => {
+      // Refetch case to update vote counts
+      utils.case.getById.invalidate({ id: caseData.id });
+    },
+  });
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!newComment.trim() || !currentUser) return;
@@ -70,6 +79,13 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
     createCommentMutation.mutate({
       caseId: caseData.id,
       content: newComment.trim(),
+    });
+  };
+
+  const handleVote = (commentId: string, voteType: 'LIKE' | 'DISLIKE') => {
+    toggleVoteMutation.mutate({
+      commentId,
+      voteType,
     });
   };
 
@@ -93,32 +109,69 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
       </form>
       <div className="flex flex-col gap-4 md:overflow-y-auto md:flex-1 md:min-h-0">
         {caseData.comments && caseData.comments.length > 0 ? (
-          caseData.comments.map((comment) => (
-            <div key={comment.id} className="flex flex-col gap-2 py-2">
-              <div className="flex gap-2 items-center">
-                <div className="w-10 flex items-center justify-center text-sm font-semibold text-gray-900">
-                  {comment.author.name
-                    .split(' ')
-                    .map((n) => n[0])
-                    .join('')}
+          caseData.comments.map((comment) => {
+            // Calculate vote counts and determine user's vote
+            const votes = comment.votes || [];
+            const likeVotes = votes.filter((v) => v.voteType === 'LIKE');
+            const dislikeVotes = votes.filter((v) => v.voteType === 'DISLIKE');
+            const likeCount = likeVotes.length;
+            const dislikeCount = dislikeVotes.length;
+            
+            const userVote = currentUser
+              ? votes.find((v) => v.userId === currentUser.id)
+              : undefined;
+            const hasLiked = userVote?.voteType === 'LIKE';
+            const hasDisliked = userVote?.voteType === 'DISLIKE';
+
+            // Get voter names for tooltips
+            const likeVoters = likeVotes.map((v) => v.user.name);
+            const dislikeVoters = dislikeVotes.map((v) => v.user.name);
+
+            return (
+              <div key={comment.id} className="flex flex-col gap-2 py-2">
+                <div className="flex gap-2 items-center">
+                  <div className="w-10 flex items-center justify-center text-sm font-semibold text-gray-900">
+                    {comment.author.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')}
+                  </div>
+                  <div className="flex flex-col">
+                    <p className="text-sm font-medium">{comment.author.name}</p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(comment.createdAt).toLocaleString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true,
+                      })}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <p className="text-sm font-medium">{comment.author.name}</p>
-                  <p className="text-xs text-gray-500">
-                    {new Date(comment.createdAt).toLocaleString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric',
-                      hour: 'numeric',
-                      minute: '2-digit',
-                      hour12: true,
-                    })}
-                  </p>
+                <p className="text-sm text-gray-700">{comment.content}</p>
+                <div className="flex gap-4 items-center">
+                  <VoteButton
+                    type="up"
+                    active={hasLiked}
+                    count={likeCount}
+                    showCount={likeCount > 0}
+                    voters={likeVoters}
+                    onClick={() => handleVote(comment.id, 'LIKE')}
+                  />
+                  <VoteButton
+                    type="down"
+                    active={hasDisliked}
+                    count={dislikeCount}
+                    showCount={dislikeCount > 0}
+                    voters={dislikeVoters}
+                    onClick={() => handleVote(comment.id, 'DISLIKE')}
+                  />
                 </div>
               </div>
-              <p className="text-sm text-gray-700">{comment.content}</p>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="text-sm text-gray-500">No comments yet</div>
         )}
