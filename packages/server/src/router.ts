@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { router, publicProcedure } from './trpc.js';
 import { formatDate, casePrioritySchema, caseStatusSchema } from '@carton/shared';
+import { VoteTypeSchema } from '@carton/shared/generated';
 import { TRPCError } from '@trpc/server';
 
 export const appRouter = router({
@@ -211,7 +212,7 @@ export const appRouter = router({
         });
       }),
     getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
-      return ctx.prisma.case.findUnique({
+      const caseData = await ctx.prisma.case.findUnique({
         where: { id: input.id },
         include: {
           customer: {
@@ -251,6 +252,16 @@ export const appRouter = router({
                   email: true,
                 },
               },
+              votes: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                },
+              },
             },
             orderBy: {
               createdAt: 'desc',
@@ -258,6 +269,31 @@ export const appRouter = router({
           },
         },
       });
+
+      if (!caseData) {
+        return null;
+      }
+
+      // Transform comments to include vote counts and current user's vote
+      const commentsWithVoteInfo = caseData.comments.map((comment) => {
+        const likeVotes = comment.votes.filter((v) => v.voteType === 'LIKE');
+        const dislikeVotes = comment.votes.filter((v) => v.voteType === 'DISLIKE');
+        const userVote = ctx.userId ? comment.votes.find((v) => v.userId === ctx.userId) : null;
+
+        return {
+          ...comment,
+          likeCount: likeVotes.length,
+          dislikeCount: dislikeVotes.length,
+          userVote: userVote?.voteType || null,
+          likeVoters: likeVotes.map((v) => v.user),
+          dislikeVoters: dislikeVotes.map((v) => v.user),
+        };
+      });
+
+      return {
+        ...caseData,
+        comments: commentsWithVoteInfo,
+      };
     }),
     create: publicProcedure
       .input(
@@ -354,6 +390,72 @@ export const appRouter = router({
             },
           },
         });
+      }),
+    vote: publicProcedure
+      .input(
+        z.object({
+          commentId: z.string(),
+          voteType: VoteTypeSchema.optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated',
+          });
+        }
+
+        const { commentId, voteType } = input;
+
+        // Find existing vote
+        const existingVote = await ctx.prisma.commentVote.findUnique({
+          where: {
+            commentId_userId: {
+              commentId,
+              userId: ctx.userId,
+            },
+          },
+        });
+
+        // If no voteType provided, remove the vote
+        if (!voteType) {
+          if (existingVote) {
+            await ctx.prisma.commentVote.delete({
+              where: { id: existingVote.id },
+            });
+          }
+          return { success: true, action: 'removed' };
+        }
+
+        // If vote exists, update or delete
+        if (existingVote) {
+          if (existingVote.voteType === voteType) {
+            // Same vote type - remove it
+            await ctx.prisma.commentVote.delete({
+              where: { id: existingVote.id },
+            });
+            return { success: true, action: 'removed' };
+          } else {
+            // Different vote type - update it
+            await ctx.prisma.commentVote.update({
+              where: { id: existingVote.id },
+              data: { voteType },
+            });
+            return { success: true, action: 'updated' };
+          }
+        }
+
+        // Create new vote
+        await ctx.prisma.commentVote.create({
+          data: {
+            commentId,
+            userId: ctx.userId,
+            voteType,
+          },
+        });
+
+        return { success: true, action: 'created' };
       }),
   }),
 });
