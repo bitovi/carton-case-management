@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { router, publicProcedure } from './trpc.js';
 import { formatDate, casePrioritySchema, caseStatusSchema } from '@carton/shared';
+import { VoteTypeSchema } from '@carton/shared/generated';
 import { TRPCError } from '@trpc/server';
 
 export const appRouter = router({
@@ -251,6 +252,17 @@ export const appRouter = router({
                   email: true,
                 },
               },
+              votes: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      email: true,
+                    },
+                  },
+                },
+              },
             },
             orderBy: {
               createdAt: 'desc',
@@ -354,6 +366,77 @@ export const appRouter = router({
             },
           },
         });
+      }),
+    vote: publicProcedure
+      .input(
+        z.object({
+          commentId: z.string(),
+          voteType: VoteTypeSchema.nullable(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated',
+          });
+        }
+
+        const { commentId, voteType } = input;
+
+        // If voteType is null, remove the vote
+        if (voteType === null) {
+          await ctx.prisma.commentVote.deleteMany({
+            where: {
+              commentId,
+              userId: ctx.userId,
+            },
+          });
+          return { success: true, action: 'removed' };
+        }
+
+        // Check if user already voted on this comment
+        const existingVote = await ctx.prisma.commentVote.findUnique({
+          where: {
+            commentId_userId: {
+              commentId,
+              userId: ctx.userId,
+            },
+          },
+        });
+
+        if (existingVote) {
+          // If voting the same type, remove the vote
+          if (existingVote.voteType === voteType) {
+            await ctx.prisma.commentVote.delete({
+              where: {
+                id: existingVote.id,
+              },
+            });
+            return { success: true, action: 'removed' };
+          } else {
+            // If voting different type, update the vote
+            await ctx.prisma.commentVote.update({
+              where: {
+                id: existingVote.id,
+              },
+              data: {
+                voteType,
+              },
+            });
+            return { success: true, action: 'updated' };
+          }
+        } else {
+          // Create new vote
+          await ctx.prisma.commentVote.create({
+            data: {
+              commentId,
+              userId: ctx.userId,
+              voteType,
+            },
+          });
+          return { success: true, action: 'created' };
+        }
       }),
   }),
 });
