@@ -35,7 +35,7 @@ export function CommentVoteButtons({ commentId, votes, currentUserId }: CommentV
                 // Update existing vote
                 newVotes[userVoteIndex] = {
                   ...newVotes[userVoteIndex],
-                  voteType: variables.voteType,
+                  voteType: variables.voteType as 'LIKE' | 'DISLIKE',
                 };
               } else {
                 // Add new vote
@@ -43,7 +43,7 @@ export function CommentVoteButtons({ commentId, votes, currentUserId }: CommentV
                   id: `temp-${Date.now()}`,
                   commentId,
                   userId: currentUserId,
-                  voteType: variables.voteType,
+                  voteType: variables.voteType as 'LIKE' | 'DISLIKE',
                   createdAt: new Date().toISOString(),
                   updatedAt: new Date().toISOString(),
                   user: {

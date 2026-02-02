@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { router, publicProcedure } from './trpc.js';
-import { formatDate, casePrioritySchema, caseStatusSchema } from '@carton/shared';
-import { VoteTypeSchema } from '@carton/shared/generated';
+import { formatDate, casePrioritySchema, caseStatusSchema, VoteTypeSchema } from '@carton/shared';
 import { TRPCError } from '@trpc/server';
 
 export const appRouter = router({
@@ -421,18 +420,18 @@ export const appRouter = router({
                 id: existingVote.id,
               },
               data: {
-                voteType,
+                voteType: voteType as 'LIKE' | 'DISLIKE',
               },
             });
             return { success: true, action: 'updated' };
           }
         } else {
-          // Create new vote
+          // Create new vote (we know voteType is not null here)
           await ctx.prisma.commentVote.create({
             data: {
               commentId,
               userId: ctx.userId,
-              voteType,
+              voteType: voteType as 'LIKE' | 'DISLIKE',
             },
           });
           return { success: true, action: 'created' };
