@@ -5,6 +5,7 @@ import { MenuList } from './components/MenuList';
 import { CasePage } from './pages/CasePage';
 import { CustomerPage } from './pages/CustomerPage';
 import { trpc } from './lib/trpc';
+import { ToastProvider } from './context/ToastContext';
 
 function App() {
   const location = useLocation();
@@ -49,21 +50,23 @@ function App() {
     .toUpperCase();
 
   return (
-    <div className="h-screen bg-[#dfe2e2] flex flex-col">
-      <Header userInitials={userInitials} />
-      <MenuList items={menuItems} />
-      <div className="flex flex-1 overflow-hidden lg:pl-[68px]">
-        <main className="flex-1 lg:p-6 overflow-auto">
-          <Routes>
-            <Route path="/" element={<CasePage />} />
-            <Route path="/cases/" element={<CasePage />} />
-            <Route path="/cases/:id" element={<CasePage />} />
-            <Route path="/customers/" element={<CustomerPage />} />
-            <Route path="/customers/:id" element={<CustomerPage />} />
-          </Routes>
-        </main>
+    <ToastProvider>
+      <div className="h-screen bg-[#dfe2e2] flex flex-col">
+        <Header userInitials={userInitials} />
+        <MenuList items={menuItems} />
+        <div className="flex flex-1 overflow-hidden lg:pl-[68px]">
+          <main className="flex-1 lg:p-6 overflow-auto">
+            <Routes>
+              <Route path="/" element={<CasePage />} />
+              <Route path="/cases/" element={<CasePage />} />
+              <Route path="/cases/:id" element={<CasePage />} />
+              <Route path="/customers/" element={<CustomerPage />} />
+              <Route path="/customers/:id" element={<CustomerPage />} />
+            </Routes>
+          </main>
+        </div>
       </div>
-    </div>
+    </ToastProvider>
   );
 }
 
