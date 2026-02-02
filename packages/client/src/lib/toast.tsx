@@ -1,6 +1,9 @@
 import { createContext, useContext, useState, useCallback, ReactNode, useEffect, useRef } from 'react';
 import { Toast } from '@/components/obra/Toast';
 
+// Auto-dismiss duration for toast notifications (in milliseconds)
+const TOAST_AUTO_DISMISS_DURATION = 10000;
+
 interface ToastConfig {
   type?: 'Success' | 'Deleted';
   title: string;
@@ -40,7 +43,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     timeoutIdRef.current = setTimeout(() => {
       setToast(null);
       timeoutIdRef.current = null;
-    }, 10000);
+    }, TOAST_AUTO_DISMISS_DURATION);
   }, []);
 
   // Cleanup timeout on unmount
