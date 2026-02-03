@@ -2,6 +2,7 @@ import figma from '@figma/code-connect';
 import { Dialog } from './Dialog';
 import { DialogHeader } from './DialogHeader/DialogHeader';
 import { DialogFooter } from './DialogFooter/DialogFooter';
+import { Button } from '../Button';
 
 figma.connect(
   Dialog,
@@ -19,7 +20,12 @@ figma.connect(
       <Dialog 
         type={props.type}
         header={<DialogHeader type="Header" title="Title" onClose={() => {}} />}
-        footer={<DialogFooter type="2 Buttons Right" primaryAction={{ label: 'Primary', onClick: () => {} }} secondaryAction={{ label: 'Secondary', onClick: () => {} }} />}
+        footer={
+          <DialogFooter type="2 Buttons Right">
+            <Button variant="outline">Secondary</Button>
+            <Button variant="primary">Primary</Button>
+          </DialogFooter>
+        }
       >
         <div>Content</div>
       </Dialog>
