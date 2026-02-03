@@ -10,6 +10,9 @@ export type { ButtonProps } from './Button';
 export { Card } from './Card';
 export type { CardProps } from './Card';
 
+export { Checkbox } from './Checkbox';
+export type { CheckboxProps } from './Checkbox';
+
 export { DialogFooter } from './Dialog';
 export type { DialogFooterProps } from './Dialog';
 
