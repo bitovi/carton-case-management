@@ -1,14 +1,19 @@
-export interface RelatedCase {
+export interface RelationshipItem {
   id: string;
   title: string;
-  caseNumber: string;
+  subtitle: string;
 }
 
-export interface RelatedCasesAccordionProps {
+export interface RelationshipManagerAccordionProps {
   /**
-   * Array of related cases to display
+   * Title of the accordion
    */
-  cases: RelatedCase[];
+  accordionTitle: string;
+
+  /**
+   * Array of relationship items to display
+   */
+  items: RelationshipItem[];
 
   /**
    * Whether the accordion is open by default

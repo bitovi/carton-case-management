@@ -1,52 +1,52 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { RelatedCasesAccordion } from './RelatedCasesAccordion';
+import { RelationshipManagerAccordion } from './RelationshipManagerAccordion';
 
-const mockCases = [
+const mockItems = [
   {
     id: '1',
     title: 'Policy Coverage Inquiry',
-    caseNumber: '#CAS-242315-2125',
+    subtitle: '#CAS-242315-2125',
   },
   {
     id: '2',
     title: 'Premium Adjustment Request',
-    caseNumber: '#CAS-242315-2126',
+    subtitle: '#CAS-242315-2126',
   },
 ];
 
-describe('RelatedCasesAccordion', () => {
-  it('renders with cases', () => {
-    render(<RelatedCasesAccordion cases={mockCases} />);
-    expect(screen.getByText('Related Cases')).toBeInTheDocument();
+describe('RelationshipManagerAccordion', () => {
+  it('renders with items', () => {
+    render(<RelationshipManagerAccordion accordionTitle="Relationships" items={mockItems} />);
+    expect(screen.getByText('Relationships')).toBeInTheDocument();
   });
 
   it('starts closed by default', () => {
-    const { container } = render(<RelatedCasesAccordion cases={mockCases} />);
-    const caseTitle = screen.queryByText('Policy Coverage Inquiry');
-    if (caseTitle) {
-      expect(caseTitle).not.toBeVisible();
+    const { container } = render(<RelationshipManagerAccordion accordionTitle="Relationships" items={mockItems} />);
+    const itemTitle = screen.queryByText('Policy Coverage Inquiry');
+    if (itemTitle) {
+      expect(itemTitle).not.toBeVisible();
     } else {
-      expect(caseTitle).not.toBeInTheDocument();
+      expect(itemTitle).not.toBeInTheDocument();
     }
   });
 
   it('starts open when defaultOpen is true', () => {
-    render(<RelatedCasesAccordion cases={mockCases} defaultOpen />);
+    render(<RelationshipManagerAccordion accordionTitle="Relationships" items={mockItems} defaultOpen />);
     expect(screen.getByText('Policy Coverage Inquiry')).toBeVisible();
   });
 
   it('expands when clicked', async () => {
     const user = userEvent.setup();
-    render(<RelatedCasesAccordion cases={mockCases} />);
+    render(<RelationshipManagerAccordion accordionTitle="Relationships" items={mockItems} />);
 
-    await user.click(screen.getByText('Related Cases'));
+    await user.click(screen.getByText('Relationships'));
     expect(screen.getByText('Policy Coverage Inquiry')).toBeVisible();
   });
 
-  it('displays all cases', () => {
-    render(<RelatedCasesAccordion cases={mockCases} defaultOpen />);
+  it('displays all items', () => {
+    render(<RelationshipManagerAccordion accordionTitle="Relationships" items={mockItems} defaultOpen />);
     expect(screen.getByText('Policy Coverage Inquiry')).toBeInTheDocument();
     expect(screen.getByText('#CAS-242315-2125')).toBeInTheDocument();
     expect(screen.getByText('Premium Adjustment Request')).toBeInTheDocument();
@@ -57,8 +57,9 @@ describe('RelatedCasesAccordion', () => {
     const user = userEvent.setup();
     const onAddClick = vi.fn();
     render(
-      <RelatedCasesAccordion
-        cases={mockCases}
+      <RelationshipManagerAccordion
+        accordionTitle="Relationships"
+        items={mockItems}
         defaultOpen
         onAddClick={onAddClick}
       />
@@ -69,13 +70,13 @@ describe('RelatedCasesAccordion', () => {
   });
 
   it('does not show add button when onAddClick is not provided', () => {
-    render(<RelatedCasesAccordion cases={mockCases} defaultOpen />);
+    render(<RelationshipManagerAccordion accordionTitle="Relationships" items={mockItems} defaultOpen />);
     expect(screen.queryByText('Add')).not.toBeInTheDocument();
   });
 
   it('applies custom className', () => {
     const { container } = render(
-      <RelatedCasesAccordion cases={mockCases} className="custom-class" />
+      <RelationshipManagerAccordion accordionTitle="Relationships" items={mockItems} className="custom-class" />
     );
     expect(container.firstChild).toHaveClass('custom-class');
   });

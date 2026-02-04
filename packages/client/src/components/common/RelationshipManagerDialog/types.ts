@@ -1,4 +1,4 @@
-export interface AddRelatedCasesDialogProps {
+export interface RelationshipManagerDialogProps {
   /**
    * Whether the dialog is open
    */
@@ -10,18 +10,23 @@ export interface AddRelatedCasesDialogProps {
   onOpenChange: (open: boolean) => void;
 
   /**
-   * Array of available cases
+   * Title for the dialog content
    */
-  cases: Array<{
+  title: string;
+
+  /**
+   * Array of available items
+   */
+  items: Array<{
     id: string;
     title: string;
-    caseNumber: string;
+    subtitle: string;
   }>;
 
   /**
-   * Array of selected case IDs
+   * Array of selected item IDs
    */
-  selectedCases: string[];
+  selectedItems: string[];
 
   /**
    * Callback when selection changes

@@ -1,8 +1,8 @@
 import figma from '@figma/code-connect';
-import { RelatedCasesAccordion } from './RelatedCasesAccordion';
+import { RelationshipManagerAccordion } from './RelationshipManagerAccordion';
 
 figma.connect(
-  RelatedCasesAccordion,
+  RelationshipManagerAccordion,
   'https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-id=1040-1662',
   {
     props: {
@@ -12,13 +12,14 @@ figma.connect(
       }),
     },
     example: ({ defaultOpen }) => (
-      <RelatedCasesAccordion
+      <RelationshipManagerAccordion
+        accordionTitle="Related Cases"
         defaultOpen={defaultOpen}
-        cases={[
+        items={[
           {
             id: '1',
             title: 'Policy Coverage Inquiry',
-            caseNumber: '#CAS-242315-2125',
+            subtitle: '#CAS-242315-2125',
           },
         ]}
         onAddClick={() => {}}

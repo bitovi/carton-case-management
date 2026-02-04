@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { AddRelatedCasesDialog } from './AddRelatedCasesDialog';
+import { RelationshipManagerDialog } from './RelationshipManagerDialog';
 
-const meta: Meta<typeof AddRelatedCasesDialog> = {
-  component: AddRelatedCasesDialog,
-  title: 'Components/CaseDetails/AddRelatedCasesDialog',
+const meta: Meta<typeof RelationshipManagerDialog> = {
+  component: RelationshipManagerDialog,
+  title: 'Components/Common/RelationshipManagerDialog',
   tags: ['autodocs'],
   parameters: {
     layout: 'centered',
@@ -15,28 +15,28 @@ const meta: Meta<typeof AddRelatedCasesDialog> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof AddRelatedCasesDialog>;
+type Story = StoryObj<typeof RelationshipManagerDialog>;
 
-const mockCases = [
+const mockItems = [
   {
     id: '1',
     title: 'Policy Coverage Inquiry',
-    caseNumber: '#CAS-242315-2125',
+    subtitle: '#CAS-242315-2125',
   },
   {
     id: '2',
     title: 'Premium Adjustment Request',
-    caseNumber: '#CAS-242315-2126',
+    subtitle: '#CAS-242315-2126',
   },
   {
     id: '3',
     title: 'Claim Status Update',
-    caseNumber: '#CAS-242315-2127',
+    subtitle: '#CAS-242315-2127',
   },
   {
     id: '4',
     title: 'Fraud Investigation',
-    caseNumber: '#CAS-242315-2128',
+    subtitle: '#CAS-242315-2128',
   },
 ];
 
@@ -44,8 +44,8 @@ export const Default: Story = {
   args: {
     open: true,
     onOpenChange: () => {},
-    cases: mockCases,
-    selectedCases: ['1'],
+    items: mockItems,
+    selectedItems: ['1'],
     onSelectionChange: () => {},
     onAdd: () => console.log('Add clicked'),
   },
@@ -56,8 +56,8 @@ export const NoSelection: Story = {
   args: {
     open: true,
     onOpenChange: () => {},
-    cases: mockCases,
-    selectedCases: [],
+    items: mockItems,
+    selectedItems: [],
     onSelectionChange: () => {},
     onAdd: () => console.log('Add clicked'),
   },

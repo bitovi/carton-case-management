@@ -1,57 +1,57 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AddRelatedCasesDialog } from './AddRelatedCasesDialog';
+import { RelationshipManagerDialog } from './RelationshipManagerDialog';
 
-const mockCases = [
+const mockItems = [
   {
     id: '1',
     title: 'Policy Coverage Inquiry',
-    caseNumber: '#CAS-242315-2125',
+    subtitle: '#CAS-242315-2125',
   },
   {
     id: '2',
     title: 'Premium Adjustment Request',
-    caseNumber: '#CAS-242315-2126',
+    subtitle: '#CAS-242315-2126',
   },
 ];
 
-describe('AddRelatedCasesDialog', () => {
+describe('RelationshipManagerDialog', () => {
   it('renders when open', () => {
     render(
-      <AddRelatedCasesDialog
+      <RelationshipManagerDialog
         open={true}
         onOpenChange={vi.fn()}
-        cases={mockCases}
-        selectedCases={[]}
+        items={mockItems}
+        selectedItems={[]}
         onSelectionChange={vi.fn()}
         onAdd={vi.fn()}
       />
     );
-    expect(screen.getByText('Add Related Cases')).toBeInTheDocument();
+    expect(screen.getByText('Add Relationships')).toBeInTheDocument();
   });
 
   it('does not render when closed', () => {
     render(
-      <AddRelatedCasesDialog
+      <RelationshipManagerDialog
         open={false}
         onOpenChange={vi.fn()}
-        cases={mockCases}
-        selectedCases={[]}
+        items={mockItems}
+        selectedItems={[]}
         onSelectionChange={vi.fn()}
         onAdd={vi.fn()}
       />
     );
-    expect(screen.queryByText('Add Related Cases')).not.toBeInTheDocument();
+    expect(screen.queryByText('Add Relationships')).not.toBeInTheDocument();
   });
 
-  it('displays all cases', () => {
+  it('displays all items', () => {
     render(
-      <AddRelatedCasesDialog
+      <RelationshipManagerDialog
         open={true}
         onOpenChange={vi.fn()}
-        cases={mockCases}
-        selectedCases={[]}
+        items={mockItems}
+        selectedItems={[]}
         onSelectionChange={vi.fn()}
         onAdd={vi.fn()}
       />
@@ -62,11 +62,11 @@ describe('AddRelatedCasesDialog', () => {
 
   it('shows selected state correctly', () => {
     render(
-      <AddRelatedCasesDialog
+      <RelationshipManagerDialog
         open={true}
         onOpenChange={vi.fn()}
-        cases={mockCases}
-        selectedCases={['1']}
+        items={mockItems}
+        selectedItems={['1']}
         onSelectionChange={vi.fn()}
         onAdd={vi.fn()}
       />
@@ -80,11 +80,11 @@ describe('AddRelatedCasesDialog', () => {
     const user = userEvent.setup();
     const onSelectionChange = vi.fn();
     render(
-      <AddRelatedCasesDialog
+      <RelationshipManagerDialog
         open={true}
         onOpenChange={vi.fn()}
-        cases={mockCases}
-        selectedCases={['1']}
+        items={mockItems}
+        selectedItems={['1']}
         onSelectionChange={onSelectionChange}
         onAdd={vi.fn()}
       />
@@ -100,11 +100,11 @@ describe('AddRelatedCasesDialog', () => {
     const user = userEvent.setup();
     const onAdd = vi.fn();
     render(
-      <AddRelatedCasesDialog
+      <RelationshipManagerDialog
         open={true}
         onOpenChange={vi.fn()}
-        cases={mockCases}
-        selectedCases={['1']}
+        items={mockItems}
+        selectedItems={['1']}
         onSelectionChange={vi.fn()}
         onAdd={onAdd}
       />
@@ -114,13 +114,13 @@ describe('AddRelatedCasesDialog', () => {
     expect(onAdd).toHaveBeenCalledOnce();
   });
 
-  it('disables add button when no cases selected', () => {
+  it('disables add button when no items selected', () => {
     render(
-      <AddRelatedCasesDialog
+      <RelationshipManagerDialog
         open={true}
         onOpenChange={vi.fn()}
-        cases={mockCases}
-        selectedCases={[]}
+        items={mockItems}
+        selectedItems={[]}
         onSelectionChange={vi.fn()}
         onAdd={vi.fn()}
       />
@@ -132,11 +132,11 @@ describe('AddRelatedCasesDialog', () => {
     const user = userEvent.setup();
     const onOpenChange = vi.fn();
     render(
-      <AddRelatedCasesDialog
+      <RelationshipManagerDialog
         open={true}
         onOpenChange={onOpenChange}
-        cases={mockCases}
-        selectedCases={[]}
+        items={mockItems}
+        selectedItems={[]}
         onSelectionChange={vi.fn()}
         onAdd={vi.fn()}
       />

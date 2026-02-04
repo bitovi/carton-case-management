@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { RelatedCasesAccordion } from './RelatedCasesAccordion';
+import { RelationshipManagerAccordion } from './RelationshipManagerAccordion';
 
-const meta: Meta<typeof RelatedCasesAccordion> = {
-  component: RelatedCasesAccordion,
-  title: 'Components/CaseDetails/CaseEssentialDetails/RelatedCasesAccordion',
+const meta: Meta<typeof RelationshipManagerAccordion> = {
+  component: RelationshipManagerAccordion,
+  title: 'Components/Common/RelationshipManagerAccordion',
   tags: ['autodocs'],
   parameters: {
     layout: 'centered',
@@ -15,19 +15,20 @@ const meta: Meta<typeof RelatedCasesAccordion> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof RelatedCasesAccordion>;
+type Story = StoryObj<typeof RelationshipManagerAccordion>;
 
-const mockCases = [
+const mockItems = [
   {
     id: '1',
     title: 'Policy Coverage Inquiry',
-    caseNumber: '#CAS-242315-2125',
+    subtitle: '#CAS-242315-2125',
   },
 ];
 
 export const Closed: Story = {
   args: {
-    cases: mockCases,
+    accordionTitle: 'Related Cases',
+    items: mockItems,
     defaultOpen: false,
     onAddClick: () => console.log('Add clicked'),
   },
@@ -35,7 +36,8 @@ export const Closed: Story = {
 
 export const Open: Story = {
   args: {
-    cases: mockCases,
+    accordionTitle: 'Related Cases',
+    items: mockItems,
     defaultOpen: true,
     onAddClick: () => console.log('Add clicked'),
   },
@@ -43,21 +45,22 @@ export const Open: Story = {
 
 export const MultipleCases: Story = {
   args: {
-    cases: [
+    accordionTitle: 'Related Cases',
+    items: [
       {
         id: '1',
         title: 'Policy Coverage Inquiry',
-        caseNumber: '#CAS-242315-2125',
+        subtitle: '#CAS-242315-2125',
       },
       {
         id: '2',
         title: 'Premium Adjustment Request',
-        caseNumber: '#CAS-242315-2126',
+        subtitle: '#CAS-242315-2126',
       },
       {
         id: '3',
         title: 'Claim Status Update',
-        caseNumber: '#CAS-242315-2127',
+        subtitle: '#CAS-242315-2127',
       },
     ],
     defaultOpen: true,
@@ -67,7 +70,8 @@ export const MultipleCases: Story = {
 
 export const WithoutAddButton: Story = {
   args: {
-    cases: mockCases,
+    accordionTitle: 'Related Cases',
+    items: mockItems,
     defaultOpen: true,
   },
 };

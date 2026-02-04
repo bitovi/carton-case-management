@@ -1,28 +1,28 @@
 import figma from '@figma/code-connect';
-import { AddRelatedCasesDialog } from './AddRelatedCasesDialog';
+import { RelationshipManagerDialog } from './RelationshipManagerDialog';
 
 figma.connect(
-  AddRelatedCasesDialog,
+  RelationshipManagerDialog,
   'https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-id=1043-1742',
   {
     props: {},
     example: () => (
-      <AddRelatedCasesDialog
+      <RelationshipManagerDialog
         open={true}
         onOpenChange={() => {}}
-        cases={[
+        items={[
           {
             id: '1',
             title: 'Policy Coverage Inquiry',
-            caseNumber: '#CAS-242315-2125',
+            subtitle: '#CAS-242315-2125',
           },
           {
             id: '2',
             title: 'Premium Adjustment Request',
-            caseNumber: '#CAS-242315-2126',
+            subtitle: '#CAS-242315-2126',
           },
         ]}
-        selectedCases={['1']}
+        selectedItems={['1']}
         onSelectionChange={() => {}}
         onAdd={() => {}}
       />
