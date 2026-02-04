@@ -18,6 +18,8 @@ figma.connect(
     },
     example: (props) => (
       <Dialog 
+        open={true}
+        onOpenChange={() => {}}
         type={props.type}
         header={<DialogHeader type="Header" title="Title" onClose={() => {}} />}
         footer={

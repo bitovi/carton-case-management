@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { useState } from 'react';
 import { Dialog } from './Dialog';
 import { DialogHeader } from './DialogHeader/DialogHeader';
 import { DialogFooter } from './DialogFooter/DialogFooter';
@@ -19,10 +20,23 @@ const meta: Meta<typeof Dialog> = {
 export default meta;
 type Story = StoryObj<typeof Dialog>;
 
+const DialogWrapper = ({ children, ...props }: Omit<React.ComponentProps<typeof Dialog>, 'open' | 'onOpenChange'>) => {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open Dialog</Button>
+      <Dialog {...props} open={open} onOpenChange={setOpen}>
+        {children}
+      </Dialog>
+    </>
+  );
+};
+
 export const Desktop: Story = {
+  render: (args) => <DialogWrapper {...args} />,
   args: {
     type: 'Desktop',
-    onClose: () => console.log('Close clicked'),
     children: (
       <div className="p-6">
         <h3 className="text-lg font-semibold mb-2">Desktop Dialog</h3>
@@ -35,6 +49,7 @@ export const Desktop: Story = {
 };
 
 export const DesktopScrollable: Story = {
+  render: (args) => <DialogWrapper {...args} />,
   args: {
     type: 'Desktop Scrollable',
     header: (
@@ -71,9 +86,9 @@ export const DesktopScrollable: Story = {
 };
 
 export const Mobile: Story = {
+  render: (args) => <DialogWrapper {...args} />,
   args: {
     type: 'Mobile',
-    onClose: () => console.log('Close clicked'),
     children: (
       <div className="p-4">
         <h3 className="text-base font-semibold mb-2">Mobile Dialog</h3>
@@ -86,6 +101,7 @@ export const Mobile: Story = {
 };
 
 export const MobileFullScreenScrollable: Story = {
+  render: (args) => <DialogWrapper {...args} />,
   args: {
     type: 'Mobile Full Screen Scrollable',
     header: (
@@ -117,9 +133,9 @@ export const MobileFullScreenScrollable: Story = {
 };
 
 export const WithCustomContent: Story = {
+  render: (args) => <DialogWrapper {...args} />,
   args: {
     type: 'Desktop',
-    onClose: () => console.log('Close clicked'),
     children: (
       <div className="p-6 space-y-4">
         <h2 className="text-xl font-bold">Custom Content</h2>

@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/obra/Button';
 import type { DialogHeaderProps } from './types';
 
 export function DialogHeader({ 
@@ -15,17 +16,16 @@ export function DialogHeader({
   return (
     <div 
       className={cn(
-        'flex flex-col h-[52px] w-full',
+        'flex h-[52px] w-full',
         {
-          'items-start justify-between p-4': isHeader,
-          'items-end p-4': isCloseOnly,
-          'items-end justify-center pl-4 py-4': isIconButtonClose,
+          'items-center justify-between px-4': isHeader,
+          'items-center justify-end px-4': isCloseOnly || isIconButtonClose,
         },
         className
       )}
     >
       {isHeader && (
-        <div className="flex items-center justify-between w-full">
+        <>
           <h2 className="text-xl font-semibold leading-6 text-foreground">
             {title || 'Title'}
           </h2>
@@ -35,9 +35,9 @@ export function DialogHeader({
             className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
             aria-label="Close"
           >
-            <X className="h-6 w-6" />
+            <X className="h-4 w-4" />
           </button>
-        </div>
+        </>
       )}
       {isCloseOnly && (
         <button
@@ -46,18 +46,19 @@ export function DialogHeader({
           className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
           aria-label="Close"
         >
-          <X className="h-6 w-6" />
+          <X className="h-4 w-4" />
         </button>
       )}
       {isIconButtonClose && (
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="regular"
           onClick={onClose}
-          className="flex items-center justify-center min-h-9 min-w-9 p-2 rounded-lg bg-transparent hover:bg-accent transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
           aria-label="Close"
+          className="h-9 w-9 p-0"
         >
           <X className="h-4 w-4" />
-        </button>
+        </Button>
       )}
     </div>
   );

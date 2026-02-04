@@ -2,6 +2,16 @@ import type { ReactNode } from 'react';
 
 export interface DialogProps {
   /**
+   * Whether the dialog is open
+   */
+  open: boolean;
+  
+  /**
+   * Callback when dialog state should change
+   */
+  onOpenChange: (open: boolean) => void;
+  
+  /**
    * Type of dialog layout
    * @default 'Desktop'
    * @figma Variant: Type
@@ -28,7 +38,8 @@ export interface DialogProps {
   footer?: ReactNode;
   
   /**
-   * Callback when close button is clicked
+   * Callback when close button is clicked (legacy, prefer onOpenChange)
+   * @deprecated Use onOpenChange instead
    */
   onClose?: () => void;
   
