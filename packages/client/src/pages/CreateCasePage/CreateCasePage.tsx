@@ -13,6 +13,7 @@ import {
 } from '@/components/obra/Select';
 import { type CasePriority, CASE_PRIORITY_OPTIONS } from '@carton/shared/client';
 import { Label } from '@/components/obra/Label';
+import { useToast } from '@/components/common/Toast';
 
 type ValidationErrors = {
   title?: string;
@@ -23,6 +24,7 @@ type ValidationErrors = {
 export function CreateCasePage() {
   const navigate = useNavigate();
   const utils = trpc.useUtils();
+  const { showToast } = useToast();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [customerId, setCustomerId] = useState('');
@@ -36,6 +38,11 @@ export function CreateCasePage() {
   const createCase = trpc.case.create.useMutation({
     onSuccess: (data) => {
       utils.case.list.invalidate();
+      showToast({
+        type: 'success',
+        title: 'Success!',
+        message: 'A new claim has been created.',
+      });
       navigate(`/cases/${data.id}`);
     },
   });
