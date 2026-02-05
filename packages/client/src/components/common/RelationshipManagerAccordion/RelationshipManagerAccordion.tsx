@@ -13,7 +13,7 @@ export function RelationshipManagerAccordion({
   const accordionValue = accordionTitle.toLowerCase().replace(/\s+/g, '-');
   
   return (
-    <div className={cn('w-[200px]', className)}>
+    <div className={cn('w-full sm:w-[200px]', className)}>
       <Accordion
         type="single"
         collapsible
@@ -27,19 +27,21 @@ export function RelationshipManagerAccordion({
             },
             content: (
               <div className="flex flex-col gap-3">
-                {items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center justify-between rounded-lg px-4 py-2"
-                  >
-                    <div className="flex flex-col text-sm leading-[21px]">
-                      <p className="font-semibold text-teal-600">
-                        {item.title}
-                      </p>
-                      <p className="text-gray-950">{item.subtitle}</p>
+                <div className="flex flex-col gap-3 max-h-[200px] overflow-y-auto">
+                  {items.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between rounded-lg px-4 py-2"
+                    >
+                      <div className="flex flex-col text-sm leading-[21px]">
+                        <p className="font-semibold text-teal-600">
+                          {item.title}
+                        </p>
+                        <p className="text-gray-950">{item.subtitle}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
                 {onAddClick && (
                   <Button
                     variant="secondary"
