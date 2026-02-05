@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { CustomerInformation } from './components/CustomerInformation';
-import { RelatedCases } from './components/RelatedCases';
+import { RelatedCasesAccordion } from '../common/RelatedCasesAccordion';
 import type { CustomerDetailsProps } from './types';
 
 export function CustomerDetails({ onMenuClick }: CustomerDetailsProps) {
@@ -45,7 +45,7 @@ export function CustomerDetails({ onMenuClick }: CustomerDetailsProps) {
       </div>
 
       {/* Related Cases Sidebar */}
-      <RelatedCases cases={customerData.cases} />
+      <RelatedCasesAccordion cases={customerData.cases} />
     </div>
   );
 }
