@@ -9,8 +9,8 @@ export type { AccordionTriggerProps, AccordionContentProps } from './Accordion';
 export { Alert } from './Alert';
 export type { AlertProps } from './Alert';
 
-export { AlertDialog } from './AlertDialog';
-export type { AlertDialogProps } from './AlertDialog';
+export { OldAlertDialog } from './OldAlertDialog';
+export type { OldAlertDialogProps } from './OldAlertDialog';
 
 export { Button, buttonVariants } from './Button';
 export type { ButtonProps } from './Button';

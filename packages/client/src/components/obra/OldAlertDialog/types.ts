@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
 
-export interface AlertDialogProps {
+export interface OldAlertDialogProps {
   /**
    * Dialog type variant controlling layout and alignment
    * @default 'mobile'

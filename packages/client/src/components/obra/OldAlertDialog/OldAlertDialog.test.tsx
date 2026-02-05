@@ -1,13 +1,13 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AlertDialog } from './AlertDialog';
+import { OldAlertDialog } from './OldAlertDialog';
 import { Button } from '@/components/obra/Button';
 
-describe('AlertDialog', () => {
+describe('OldAlertDialog', () => {
   it('should render title and description', () => {
     render(
-      <AlertDialog
+      <OldAlertDialog
         open={true}
         title="Delete Item"
         description="This action cannot be undone."
@@ -21,7 +21,7 @@ describe('AlertDialog', () => {
 
   it('should render mobile variant with correct layout', () => {
     render(
-      <AlertDialog
+      <OldAlertDialog
         open={true}
         type="mobile"
         title="Mobile Dialog"
@@ -37,7 +37,7 @@ describe('AlertDialog', () => {
 
   it('should render desktop variant with correct layout', () => {
     render(
-      <AlertDialog
+      <OldAlertDialog
         open={true}
         type="desktop"
         title="Desktop Dialog"
@@ -56,7 +56,7 @@ describe('AlertDialog', () => {
     const handleAction = vi.fn();
 
     render(
-      <AlertDialog
+      <OldAlertDialog
         open={true}
         title="Test"
         description="Test description"
@@ -74,7 +74,7 @@ describe('AlertDialog', () => {
     const handleCancel = vi.fn();
 
     render(
-      <AlertDialog
+      <OldAlertDialog
         open={true}
         title="Test"
         description="Test description"
@@ -89,7 +89,7 @@ describe('AlertDialog', () => {
 
   it('should render with custom action and cancel buttons', () => {
     render(
-      <AlertDialog
+      <OldAlertDialog
         open={true}
         title="Custom Buttons"
         description="Test with custom button styles"

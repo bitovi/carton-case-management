@@ -1,4 +1,4 @@
-import { AlertDialog } from '@/components/obra';
+import { OldAlertDialog } from '@/components/obra';
 import { Button } from '@/components/obra/Button';
 
 export interface ConfirmationDialogProps {
@@ -27,7 +27,7 @@ export function ConfirmationDialog({
   loadingText,
 }: ConfirmationDialogProps) {
   return (
-    <AlertDialog
+    <OldAlertDialog
       open={open}
       onOpenChange={onOpenChange}
       title={title}

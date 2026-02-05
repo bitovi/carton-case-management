@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
-import { AlertDialog } from './AlertDialog';
+import { OldAlertDialog } from './OldAlertDialog';
 import { Button } from '@/components/obra/Button';
 
-const meta: Meta<typeof AlertDialog> = {
-  component: AlertDialog,
-  title: 'Obra/AlertDialog',
+const meta: Meta<typeof OldAlertDialog> = {
+  component: OldAlertDialog,
+  title: 'Obra/OldAlertDialog',
   tags: ['autodocs'],
   parameters: {
     layout: 'centered',
@@ -31,7 +31,7 @@ const meta: Meta<typeof AlertDialog> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof AlertDialog>;
+type Story = StoryObj<typeof OldAlertDialog>;
 
 export const Mobile: Story = {
   args: {
