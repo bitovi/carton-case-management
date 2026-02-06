@@ -14,7 +14,10 @@ export default {
   		},
   		colors: {
   			background: 'var(--background)',
-  			foreground: 'var(--foreground)',
+  			foreground: {
+  				DEFAULT: 'var(--foreground)',
+  				alt: 'var(--foreground-alt)'
+  			},
   			card: {
   				DEFAULT: 'var(--card)',
   				foreground: 'var(--card-foreground)'
@@ -25,11 +28,13 @@ export default {
   			},
   			primary: {
   				DEFAULT: 'var(--primary)',
-  				foreground: 'var(--primary-foreground)'
+  				foreground: 'var(--primary-foreground)',
+  				hover: 'var(--primary-hover)'
   			},
   			secondary: {
   				DEFAULT: 'var(--secondary)',
-  				foreground: 'var(--secondary-foreground)'
+  				foreground: 'var(--secondary-foreground)',
+  				hover: 'var(--secondary-hover)'
   			},
   			muted: {
   				DEFAULT: 'var(--muted)',
@@ -37,15 +42,53 @@ export default {
   			},
   			accent: {
   				DEFAULT: 'var(--accent)',
-  				foreground: 'var(--accent-foreground)'
+  				foreground: 'var(--accent-foreground)',
+  				0: 'var(--accent-0)',
+  				2: 'var(--accent-2)',
+  				3: 'var(--accent-3)'
   			},
   			destructive: {
   				DEFAULT: 'var(--destructive)',
-  				foreground: 'var(--destructive-foreground)'
+  				foreground: 'var(--destructive-foreground)',
+  				subtle: 'var(--destructive-subtle)',
+  				border: 'var(--destructive-border)'
   			},
-  			border: 'var(--border)',
+  			border: {
+  				DEFAULT: 'var(--border)',
+  				0: 'var(--border-0)',
+  				1: 'var(--border-1)',
+  				3: 'var(--border-3)',
+  				4: 'var(--border-4)',
+  				5: 'var(--border-5)'
+  			},
   			input: 'var(--input)',
-  			ring: 'var(--ring)',
+  			ring: {
+  				DEFAULT: 'var(--ring)',
+  				error: 'var(--ring-error)'
+  			},
+  			ghost: {
+  				DEFAULT: 'var(--ghost)',
+  				hover: 'var(--ghost-hover)',
+  				foreground: 'var(--ghost-foreground)'
+  			},
+  			outline: {
+  				DEFAULT: 'var(--outline)',
+  				hover: 'var(--outline-hover)',
+  				active: 'var(--outline-active)'
+  			},
+  			backdrop: 'var(--backdrop)',
+  			'mid-alt': 'var(--mid-alt)',
+  			'body-background': 'var(--body-background)',
+  			sidebar: {
+  				DEFAULT: 'var(--sidebar)',
+  				foreground: 'var(--sidebar-foreground)',
+  				accent: 'var(--sidebar-accent)',
+  				'accent-foreground': 'var(--sidebar-accent-foreground)',
+  				primary: 'var(--sidebar-primary)',
+  				'primary-foreground': 'var(--sidebar-primary-foreground)',
+  				border: 'var(--sidebar-border)',
+  				ring: 'var(--sidebar-ring)'
+  			},
   			chart: {
   				'1': 'var(--chart-1)',
   				'2': 'var(--chart-2)',

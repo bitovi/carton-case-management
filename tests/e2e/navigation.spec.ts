@@ -81,7 +81,8 @@ test.describe('MenuList Navigation', () => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
 
-    await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
+    const caseList = page.locator('.flex-1.lg\\:hidden .flex.flex-col.gap-2 a');
+    await expect(caseList.first()).toBeVisible({ timeout: 10000 });
 
     const menu = page.locator('nav[aria-label="Main menu"]');
     await expect(menu).toBeAttached();

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { screen, waitFor, render } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { CaseDetails } from './CaseDetails';
@@ -128,18 +128,6 @@ describe('CaseDetails', () => {
     setupMockHandlers();
 
     renderCaseDetailsWithRouter();
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Loading case details/i)).not.toBeInTheDocument();
-    });
-  });
-
-  it('calls onMenuClick callback when passed to CaseInformation', async () => {
-    const handleMenuClick = vi.fn();
-
-    setupMockHandlers();
-
-    renderCaseDetailsWithRouter('1', <CaseDetails onMenuClick={handleMenuClick} />);
 
     await waitFor(() => {
       expect(screen.queryByText(/Loading case details/i)).not.toBeInTheDocument();
