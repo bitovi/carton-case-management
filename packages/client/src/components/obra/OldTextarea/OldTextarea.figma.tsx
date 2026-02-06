@@ -1,8 +1,8 @@
 import figma from '@figma/code-connect';
-import { Textarea } from './Textarea';
+import { OldTextarea } from './OldTextarea';
 
 figma.connect(
-  Textarea,
+  OldTextarea,
   'https://www.figma.com/design/MQUbIrlfuM8qnr9XZ7jc82/Obra-shadcn-ui--Carton-?node-id=16-1745',
   {
     props: {
@@ -29,7 +29,7 @@ figma.connect(
       }),
     },
     example: ({ roundness, error, disabled, placeholder, defaultValue }) => (
-      <Textarea
+      <OldTextarea
         roundness={roundness}
         error={error}
         disabled={disabled}
@@ -39,4 +39,3 @@ figma.connect(
     ),
   }
 );
-

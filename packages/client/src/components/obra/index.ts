@@ -63,8 +63,8 @@ export type { SkeletonProps } from './Skeleton';
 export { Popover, PopoverTrigger, PopoverContent } from './Popover';
 export type { PopoverProps, PopoverTriggerProps, PopoverContentProps } from './Popover';
 
-export { Textarea } from './Textarea';
-export type { TextareaProps } from './Textarea';
+export { OldTextarea } from './OldTextarea';
+export type { OldTextareaProps } from './OldTextarea';
 
 export { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from './Tooltip';
 export type {

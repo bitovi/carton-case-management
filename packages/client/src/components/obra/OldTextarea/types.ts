@@ -1,6 +1,6 @@
 import { TextareaHTMLAttributes } from "react";
 
-export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+export interface OldTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   /**
    * Border radius variant
    * @default 'default'
@@ -27,4 +27,3 @@ export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
    */
   className?: string;
 }
-

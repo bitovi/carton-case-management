@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Textarea } from './Textarea';
+import { OldTextarea } from './OldTextarea';
 
-const meta: Meta<typeof Textarea> = {
-  component: Textarea,
-  title: 'Obra/Textarea',
+const meta: Meta<typeof OldTextarea> = {
+  component: OldTextarea,
+  title: 'Obra/OldTextarea',
   tags: ['autodocs'],
   parameters: {
     design: {
@@ -21,7 +21,7 @@ const meta: Meta<typeof Textarea> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Textarea>;
+type Story = StoryObj<typeof OldTextarea>;
 
 export const Default: Story = {
   args: {},
@@ -60,4 +60,3 @@ export const NonResizable: Story = {
     showResizable: false,
   },
 };
-

@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import type { TextareaProps } from './types';
+import type { OldTextareaProps } from './types';
 
 const roundnessClasses = {
   default: 'rounded-md',
   round: 'rounded-lg',
 } as const;
 
-export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+export const OldTextarea = React.forwardRef<HTMLTextAreaElement, OldTextareaProps>(
   (
     {
       roundness = 'default',
@@ -42,5 +42,4 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   }
 );
 
-Textarea.displayName = 'Textarea';
-
+OldTextarea.displayName = 'OldTextarea';

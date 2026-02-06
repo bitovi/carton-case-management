@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/obra/Button';
 import { Input } from '@/components/obra/Input';
-import { Textarea } from '@/components/obra';
+import { OldTextarea } from '@/components/obra';
 import {
   Select,
   SelectContent,
@@ -111,7 +111,7 @@ export function CreateCasePage() {
           <Label htmlFor="description" className="text-sm font-medium">
             Case Description *
           </Label>
-          <Textarea
+          <OldTextarea
             id="description"
             value={description}
             onChange={(e) => {

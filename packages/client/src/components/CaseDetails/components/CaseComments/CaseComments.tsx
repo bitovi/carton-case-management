@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { trpc } from '@/lib/trpc';
-import { Textarea } from '@/components/obra';
+import { OldTextarea } from '@/components/obra';
 import type { CaseCommentsProps } from './types';
 
 export function CaseComments({ caseData }: CaseCommentsProps) {
@@ -77,7 +77,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
     <div className="flex flex-col gap-4 lg:flex-1 lg:min-h-0">
       <h2 className="text-base font-semibold">Comments</h2>
       <form onSubmit={handleSubmit}>
-        <Textarea
+        <OldTextarea
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           className="min-h-[80px] resize-none"

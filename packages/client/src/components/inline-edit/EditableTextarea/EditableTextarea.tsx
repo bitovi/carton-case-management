@@ -11,7 +11,7 @@ import * as React from 'react';
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Textarea } from '@/components/obra';
+import { OldTextarea } from '@/components/obra';
 import { Button } from '@/components/obra/Button';
 import type { ZodSchema } from 'zod';
 
@@ -251,7 +251,7 @@ export function EditableTextarea({
 
         {/* Textarea container */}
         <div className="flex flex-col w-full">
-          <Textarea
+          <OldTextarea
             ref={textareaRef}
             value={editValue}
             onChange={(e) => {

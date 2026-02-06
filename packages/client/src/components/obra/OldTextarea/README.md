@@ -1,4 +1,4 @@
-# Textarea
+# OldTextarea
 
 A multi-line text input component with support for different visual states (placeholder, value, error, focus, disabled), two roundness variants (default and round), and an optional resize handle.
 
@@ -10,8 +10,8 @@ https://www.figma.com/design/MQUbIrlfuM8qnr9XZ7jc82/Obra-shadcn-ui--Carton-?node
 
 | Category | Figma | Implementation | File | Reason |
 |----------|-------|----------------|------|--------|
-| States | Separate Focus/Error Focus variants | Handled by CSS pseudo-classes | Textarea.tsx | Browser handles focus automatically with :focus-visible |
-| States | Separate Empty/Value/Placeholder | Controlled by value/placeholder props | Textarea.tsx | Standard React controlled component pattern |
+| States | Separate Focus/Error Focus variants | Handled by CSS pseudo-classes | OldTextarea.tsx | Browser handles focus automatically with :focus-visible |
+| States | Separate Empty/Value/Placeholder | Controlled by value/placeholder props | OldTextarea.tsx | Standard React controlled component pattern |
 
 ## Design-to-Code Mapping
 
@@ -43,7 +43,7 @@ https://www.figma.com/design/MQUbIrlfuM8qnr9XZ7jc82/Obra-shadcn-ui--Carton-?node
 ## Props API
 
 ```typescript
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface OldTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   roundness?: 'default' | 'round';
   showResizable?: boolean;
   error?: boolean;
@@ -62,13 +62,13 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
 
 ```tsx
 // Basic textarea
-<Textarea placeholder="Type your message here." />
+<OldTextarea placeholder="Type your message here." />
 
 // With rounded corners
-<Textarea roundness="round" placeholder="Type your message here." />
+<OldTextarea roundness="round" placeholder="Type your message here." />
 
 // Error state
-<Textarea 
+<OldTextarea 
   error 
   aria-invalid={true}
   aria-describedby="error-message"
@@ -76,13 +76,13 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
 />
 
 // Disabled
-<Textarea disabled value="Value" />
+<OldTextarea disabled value="Value" />
 
 // Non-resizable
-<Textarea showResizable={false} placeholder="Fixed size textarea" />
+<OldTextarea showResizable={false} placeholder="Fixed size textarea" />
 
 // Controlled with error handling
-<Textarea 
+<OldTextarea 
   value={message}
   onChange={(e) => setMessage(e.target.value)}
   error={!!errors.message}
@@ -90,4 +90,3 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
   placeholder="Enter your message"
 />
 ```
-
