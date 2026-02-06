@@ -94,6 +94,14 @@ For **each component** identified (using the **metadata name**, not the Figma la
    - Vote → Like, Thumbs, Rating, Reaction
 4. **Partial matches**: Search for root words (e.g., "button" finds "IconButton", "ButtonGroup")
 
+**⚠️ IMPORTANT: Ignore Deprecated Components**
+
+If you find a component prefixed with `Old` (e.g., `OldAlertDialog`, `OldTextarea`, `OldButton`), **DO NOT use it**. These are deprecated components being phased out.
+
+- Mark as `NOT FOUND` in your audit
+- Proceed to CREATE the new version using `figma-implement-component`
+- Example: Finding `OldAlertDialog` means you should implement `AlertDialog` as a new component
+
 **Search locations:**
 
 - `components/` directory and subdirectories
@@ -136,6 +144,7 @@ If you do not output this table, STOP and output it now.
 |-----------------|-------------------|----------------|--------|
 | Toast | toast, alert, notification, snackbar | src/components/Alert/Alert.tsx | REUSE |
 | Action Button | button, action-button, cta | src/components/Button/Button.tsx | REUSE |
+| AlertDialog | alert, dialog, alert-dialog | src/components/obra/OldAlertDialog (DEPRECATED) | CREATE |
 | User Card | card, user-card, profile-card | NOT FOUND | CREATE |
 ```
 
@@ -219,7 +228,30 @@ This matches the Notification functionality needed.
 
 **Action**: Import and use Alert component, do NOT create Notification.
 
-### Example 2: Component Genuinely Missing
+### Example 2: Found Deprecated "Old" Component
+
+**Figma shows**: "AlertDialog" component in Obra design system
+
+**Audit process**:
+```
+Search: "alertdialog" → Found src/components/obra/OldAlertDialog/
+Search: "alert-dialog" → Found src/components/obra/OldAlertDialog/
+Search: "dialog" → Found src/components/obra/Dialog/, OldAlertDialog/
+
+Reviewing OldAlertDialog... component is prefixed with "Old" - DEPRECATED
+Must implement the new AlertDialog component instead.
+```
+
+**Audit output**:
+```
+| Figma Component | Search Terms Used | Codebase Match | Action |
+|-----------------|-------------------|----------------|--------|
+| AlertDialog | alertdialog, alert-dialog, dialog | src/components/obra/OldAlertDialog (DEPRECATED) | CREATE |
+```
+
+**Action**: Invoke `figma-implement-component` skill to create the new AlertDialog component.
+
+### Example 3: Component Genuinely Missing
 
 **Figma shows**: "Rating Stars" component
 
@@ -248,6 +280,7 @@ Searched components/, ui/, packages/ → Nothing similar found
 3. **Assuming "not found" after one search** - Use multiple search strategies
 4. **Creating wrappers** - If a component exists, use it directly; don't wrap it
 5. **Ignoring design system folders** - Check for shared/common component libraries
+6. **Using "Old" prefixed components** - These are deprecated; create the new version instead
 
 ## Quality Checklist
 
