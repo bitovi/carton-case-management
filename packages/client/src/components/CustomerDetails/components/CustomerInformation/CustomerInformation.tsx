@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { List, MoreVertical, Trash, Star } from 'lucide-react';
+import { MoreVertical, Trash, Star } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/obra/Button';
 import { EditableTitle } from '@/components/inline-edit';
@@ -19,13 +19,11 @@ interface CustomerInformationProps {
     dateJoined: Date | string;
     satisfactionRate: number | null;
   };
-  onMenuClick?: () => void;
 }
 
 export function CustomerInformation({
   customerId,
   customerData,
-  onMenuClick,
 }: CustomerInformationProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
@@ -135,38 +133,27 @@ export function CustomerInformation({
   return (
     <>
       <div className="flex flex-col gap-6">
-        {/* Mobile: Menu button + Title */}
-        <div className="flex items-start gap-4 lg:hidden w-full">
-          <Button
-            onClick={onMenuClick}
-            variant="outline"
-            size="small"
-            className="flex-shrink-0 w-9 h-9 bg-[#e8feff] border-gray-300 shadow-sm hover:bg-[#bcecef] px-0"
-            aria-label="Open customer list"
-          >
-            <List size={16} className="text-gray-700" />
-          </Button>
-          <div className="flex flex-col gap-1 flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <EditableTitle
-                value={customerData.firstName}
-                onSave={handleFirstNameSave}
-                className="text-2xl font-semibold truncate"
-              />
-              <EditableTitle
-                value={customerData.lastName}
-                onSave={handleLastNameSave}
-                className="text-2xl font-semibold truncate"
-              />
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-sm text-gray-600">@</span>
-              <EditableTitle
-                value={customerData.username}
-                onSave={handleUsernameSave}
-                className="text-sm text-gray-600"
-              />
-            </div>
+        {/* Mobile: Title */}
+        <div className="flex flex-col gap-1 lg:hidden w-full">
+          <div className="flex items-center gap-2">
+            <EditableTitle
+              value={customerData.firstName}
+              onSave={handleFirstNameSave}
+              className="text-2xl font-semibold truncate"
+            />
+            <EditableTitle
+              value={customerData.lastName}
+              onSave={handleLastNameSave}
+              className="text-2xl font-semibold truncate"
+            />
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-sm text-gray-600">@</span>
+            <EditableTitle
+              value={customerData.username}
+              onSave={handleUsernameSave}
+              className="text-sm text-gray-600"
+            />
           </div>
         </div>
 

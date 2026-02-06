@@ -134,18 +134,6 @@ describe('CaseDetails', () => {
     });
   });
 
-  it('calls onMenuClick callback when passed to CaseInformation', async () => {
-    const handleMenuClick = vi.fn();
-
-    setupMockHandlers();
-
-    renderCaseDetailsWithRouter('1', <CaseDetails onMenuClick={handleMenuClick} />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Loading case details/i)).not.toBeInTheDocument();
-    });
-  });
-
   it('renders mobile layout with correct order', async () => {
     setupMockHandlers();
 

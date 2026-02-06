@@ -183,7 +183,7 @@ const meta: Meta<typeof CaseDetails> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof CaseDetails>;
 
 export const Default: Story = {};
 

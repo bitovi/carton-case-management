@@ -3,9 +3,8 @@ import { trpc } from '@/lib/trpc';
 import { CaseInformation } from './components/CaseInformation';
 import { CaseComments } from './components/CaseComments';
 import { CaseEssentialDetails } from './components/CaseEssentialDetails';
-import type { CaseDetailsProps } from './types';
 
-export function CaseDetails({ onMenuClick }: CaseDetailsProps) {
+export function CaseDetails() {
   const { id } = useParams<{ id: string }>();
   const { data: caseData, isLoading } = trpc.case.getById.useQuery({ id: id! }, { enabled: !!id });
 
@@ -35,7 +34,7 @@ export function CaseDetails({ onMenuClick }: CaseDetailsProps) {
     <div className="flex flex-1 flex-col overflow-hidden">
       {/* Mobile Layout */}
       <div className="flex flex-col w-full lg:hidden gap-4 overflow-y-auto flex-1 pb-6">
-        <CaseInformation caseId={caseData.id} caseData={caseData} onMenuClick={onMenuClick} />
+        <CaseInformation caseId={caseData.id} caseData={caseData} />
         <CaseEssentialDetails caseId={caseData.id} caseData={caseData} />
         <CaseComments caseData={caseData} />
       </div>
@@ -43,7 +42,7 @@ export function CaseDetails({ onMenuClick }: CaseDetailsProps) {
       {/* Desktop Layout */}
       <div className="hidden lg:flex flex-1 gap-4 overflow-hidden">
         <div className="flex flex-col px-1 flex-1 gap-6 overflow-y-auto">
-          <CaseInformation caseId={caseData.id} caseData={caseData} onMenuClick={onMenuClick} />
+          <CaseInformation caseId={caseData.id} caseData={caseData} />
           <div className="h-[9px]" />
           <CaseComments caseData={caseData} />
         </div>
