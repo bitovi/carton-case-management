@@ -23,10 +23,10 @@ export const OldTextarea = React.forwardRef<HTMLTextAreaElement, OldTextareaProp
         ref={ref}
         className={cn(
           'h-[76px] w-full px-3 py-2',
-          'bg-white',
+          'bg-amber-50/30',
           'font-[Inter] text-sm font-normal leading-[21px] tracking-[0.5px]',
           'text-[#020617] placeholder:text-[#64748b]',
-          'border border-[#e2e8f0]',
+          'border-2 border-amber-200/40',
           'shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]',
           roundnessClasses[roundness],
           {"resize-vertical": showResizable, "resize-none": !showResizable},
