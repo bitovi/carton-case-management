@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { List, MoreVertical, Trash } from 'lucide-react';
+import { MoreVertical, Trash } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/obra/Button';
 import { formatCaseNumber, type CaseStatus, CASE_STATUS_OPTIONS } from '@carton/shared/client';
@@ -16,7 +16,7 @@ import { ConfirmationDialog } from '@/components/common/ConfirmationDialog';
 import { useNavigate } from 'react-router-dom';
 import type { CaseInformationProps } from './types';
 
-export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformationProps) {
+export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -94,28 +94,17 @@ export function CaseInformation({ caseId, caseData, onMenuClick }: CaseInformati
   return (
     <>
       <div className="flex flex-col gap-4">
-        {/* Mobile: Menu button + Title */}
-        <div className="flex items-start gap-4 lg:hidden w-full">
-          <Button
-            onClick={onMenuClick}
-            variant="outline"
-            size="mini"
-            className="flex-shrink-0 w-9 h-9 bg-[#e8feff] border-gray-300 shadow-sm hover:bg-[#bcecef]"
-            aria-label="Open case list"
-          >
-            <List size={16} className="text-gray-700" />
-          </Button>
-          <div className="flex flex-col gap-1 flex-1 min-w-0">
-            <EditableTitle
-              value={caseData.title}
-              onSave={handleTitleSave}
-              className="text-xl font-semibold truncate"
-              readonly={updateCase.isPending}
-            />
-            <p className="text-base font-semibold text-gray-600">
-              {formatCaseNumber(caseData.id, caseData.createdAt)}
-            </p>
-          </div>
+        {/* Mobile: Title */}
+        <div className="flex flex-col gap-1 lg:hidden w-full">
+          <EditableTitle
+            value={caseData.title}
+            onSave={handleTitleSave}
+            className="text-xl font-semibold truncate"
+            readonly={updateCase.isPending}
+          />
+          <p className="text-base font-semibold text-gray-600">
+            {formatCaseNumber(caseData.id, caseData.createdAt)}
+          </p>
         </div>
 
         {/* Mobile: Status Badge */}

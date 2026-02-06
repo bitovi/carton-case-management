@@ -2,9 +2,8 @@ import { useParams } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { CustomerInformation } from './components/CustomerInformation';
 import { RelatedCasesAccordion } from '../common/RelatedCasesAccordion';
-import type { CustomerDetailsProps } from './types';
 
-export function CustomerDetails({ onMenuClick }: CustomerDetailsProps) {
+export function CustomerDetails() {
   const { id } = useParams<{ id: string }>();
   const { data: customerData, isLoading } = trpc.customer.getById.useQuery(
     { id: id! },
@@ -40,7 +39,6 @@ export function CustomerDetails({ onMenuClick }: CustomerDetailsProps) {
         <CustomerInformation
           customerId={customerData.id}
           customerData={customerData}
-          onMenuClick={onMenuClick}
         />
       </div>
 

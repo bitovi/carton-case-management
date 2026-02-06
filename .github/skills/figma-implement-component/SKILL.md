@@ -25,9 +25,12 @@ This skill implements React components from analyzed Figma designs. It creates c
 
 ## Prerequisites
 
-- Figma design analyzed with `figma-design-react` skill
-- Design context file at `.temp/design-components/{component-name}/design-context.md`
-- Proposed API file at `.temp/design-components/{component-name}/proposed-api.md`
+- Figma design URL (required if design analysis doesn't exist)
+- OR existing design analysis files:
+  - Design context file at `.temp/design-components/{component-name}/design-context.md`
+  - Proposed API file at `.temp/design-components/{component-name}/proposed-api.md`
+
+**Note:** If design analysis files don't exist, this skill will automatically invoke `figma-design-react` to generate them.
 
 ## Workflow Overview
 
@@ -35,7 +38,10 @@ This skill implements React components from analyzed Figma designs. It creates c
 ┌─────────────────────────────────────────────────────────────────┐
 │ 0. CREATE TODO LIST - Track all steps systematically           │
 ├─────────────────────────────────────────────────────────────────┤
-│ 1. VERIFY - Check for design analysis files                    │
+│ 1. VERIFY AND GENERATE - Check for design analysis files       │
+│    → If missing: Invoke figma-design-react skill                │
+│    → Creates .temp/design-components/{name}/design-context.md   │
+│    → Creates .temp/design-components/{name}/proposed-api.md     │
 ├─────────────────────────────────────────────────────────────────┤
 │ 2. CREATE MODLET - Build folder structure using modlet pattern │
 ├─────────────────────────────────────────────────────────────────┤
@@ -47,7 +53,8 @@ This skill implements React components from analyzed Figma designs. It creates c
 ├─────────────────────────────────────────────────────────────────┤
 │ 6. CODE CONNECT - Create .figma.tsx mapping file               │
 ├─────────────────────────────────────────────────────────────────┤
-│ 7. VERIFY - Run tests, check types, confirm Storybook renders  │├─────────────────────────────────────────────────────────────────┤
+│ 7. VERIFY - Run tests, check types, confirm Storybook renders  │
+├─────────────────────────────────────────────────────────────────┤
 │ 8. PLAYWRIGHT VISUAL TEST - Test Storybook against Figma design│
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -83,8 +90,8 @@ manage_todo_list({
   todoList: [
     {
       id: 1,
-      title: 'Verify design analysis files exist',
-      description: 'Check for .temp/design-components/{name}/design-context.md and proposed-api.md',
+      title: 'Verify and generate design analysis',
+      description: 'Use file_search to check for design-context.md and proposed-api.md. If missing, invoke figma-design-react via runSubagent. Do not proceed without these files.',
       status: 'not-started'
     },
     {
@@ -159,8 +166,8 @@ manage_todo_list({
   todoList: [
     {
       id: 1,
-      title: 'Verify design analysis files exist',
-      description: 'Check for design-context.md and proposed-api.md',
+      title: 'Verify and generate design analysis',
+      description: 'Use file_search to check for design-context.md and proposed-api.md. If missing, invoke figma-design-react via runSubagent. Do not proceed without these files.',
       status: 'not-started'
     },
     {
@@ -253,9 +260,9 @@ manage_todo_list({
 
 Mark each task as `in-progress` before starting it, complete the work, then mark it `completed` immediately. Do not batch completion updates.
 
-### Step 1: Verify Design Analysis Exists
+### Step 1: Verify and Generate Design Analysis
 
-Check for required files:
+**Mandatory blocker: You must create or verify these files exist BEFORE proceeding to Step 2:**
 
 ```
 .temp/design-components/{component-name}/
@@ -263,12 +270,35 @@ Check for required files:
 └── proposed-api.md      # Suggested component API
 ```
 
-**If files don't exist:**
-1. Ask user for Figma URL
-2. Run `figma-design-react` skill first
-3. Return to this skill after analysis is complete
+**Calling `mcp_figma_get_design_context` directly is not a substitute for this step. That tool provides raw data but does NOT create the design analysis files required for implementation.**
 
-**If files exist:**
+**Step 1a: Check if design analysis files exist**
+
+Use `file_search` to look for both files:
+- `.temp/design-components/*/design-context.md`
+- `.temp/design-components/*/proposed-api.md`
+
+**If either file is missing, stop and invoke figma-design-react:**
+
+1. Request Figma URL from user if not provided
+2. **Invoke figma-design-react skill** using `runSubagent`:
+   ```javascript
+   runSubagent({
+     description: "Run figma-design-react for {component-name}",
+     prompt: `Read the skill file at .github/skills/figma-design-react/SKILL.md and follow it to analyze the Figma design at:
+     
+     {figma-url}
+     
+     Create design-context.md and proposed-api.md in .temp/design-components/{component-name}/.
+     
+     Return the full paths of the created files when complete.`
+   })
+   ```
+3. **Wait for subagent to complete** - do not proceed until files are confirmed created
+4. **Use `file_search` again** to verify both files now exist
+5. If files still don't exist, STOP and report error to user
+
+**Only after BOTH files exist:**
 1. Read `design-context.md` to get Figma data and URL
 2. Read `proposed-api.md` to understand props and variants
 3. **Check if multiple components are recommended** (see Step 1b)

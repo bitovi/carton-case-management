@@ -55,14 +55,6 @@ export const Default: Story = {
   },
 };
 
-export const WithMenuButton: Story = {
-  args: {
-    caseId: '1',
-    caseData: mockCaseData,
-    onMenuClick: () => console.log('Menu clicked'),
-  },
-};
-
 export const TodoStatus: Story = {
   args: {
     caseId: '1',
