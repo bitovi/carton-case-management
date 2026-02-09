@@ -4,6 +4,119 @@
 
 @layer base {
   :root {
+    /* ========================================
+       Bitovi Design System
+       ======================================== */
+    
+    /* Secondary Neutral Gray */
+    --gray-950: #192627;
+    --gray-900: #233132;
+    --gray-800: #334041;
+    --gray-700: #4c5b5c;
+    --gray-600: #687879;
+    --gray-500: #869597;
+    --gray-400: #a3adad;
+    --gray-300: #bfc5c6;
+    --gray-200: #dfe2e2;
+    --gray-100: #f4f5f5;
+    --gray-50: #fbfcfc;
+    --white: #ffffff;
+    
+    /* Primary Brand Teal */
+    --teal-950: #002a2d;
+    --teal-900: #023538;
+    --teal-800: #00464a;
+    --teal-700: #04646a;
+    --teal-600: #00848b;
+    --teal-500: #01a6ae;
+    --teal-400: #4cbec5;
+    --teal-300: #87d3d9;
+    --teal-200: #bcecef;
+    --teal-100: #e8feff;
+    --teal-50: #f3feff;
+    
+    /* Primary Brand BitOrange */
+    --orange-950: #3e1510;
+    --orange-900: #4f1b14;
+    --orange-800: #6a2017;
+    --orange-700: #972e1d;
+    --orange-600: #c73d26;
+    --orange-500: #f5532d;
+    --orange-400: #ff805f;
+    --orange-300: #ffad93;
+    --orange-200: #ffd7ca;
+    --orange-100: #fff2ed;
+    --orange-50: #fffbf9;
+    
+    /* Tertiary Green */
+    --green-950: #142a12;
+    --green-900: #1b3518;
+    --green-800: #254622;
+    --green-700: #376532;
+    --green-600: #4a8544;
+    --green-500: #5fa657;
+    --green-400: #7bbe74;
+    --green-300: #9bd694;
+    --green-200: #c7eec2;
+    --green-100: #ecffe9;
+    --green-50: #f6fff4;
+    
+    /* Tertiary Yellow */
+    --yellow-950: #3d1800;
+    --yellow-900: #4a2000;
+    --yellow-800: #5e2e00;
+    --yellow-700: #834600;
+    --yellow-600: #a85f01;
+    --yellow-500: #cf7c01;
+    --yellow-400: #ea9518;
+    --yellow-300: #ffb75a;
+    --yellow-200: #ffdbac;
+    --yellow-100: #fff3e3;
+    --yellow-50: #fffcf6;
+    
+    /* Tertiary Violet */
+    --violet-950: #30104a;
+    --violet-900: #3b1959;
+    --violet-800: #4c276e;
+    --violet-700: #6c3a9b;
+    --violet-600: #9245d5;
+    --violet-500: #b068f4;
+    --violet-400: #be94ed;
+    --violet-300: #d2b5f7;
+    --violet-200: #e8dbf9;
+    --violet-100: #f8f2ff;
+    --violet-50: #fdfbff;
+    
+    /* Tertiary Blue */
+    --blue-950: #0f2344;
+    --blue-900: #142c55;
+    --blue-800: #163a75;
+    --blue-700: #2755a1;
+    --blue-600: #3871cf;
+    --blue-500: #5b91e9;
+    --blue-400: #78aafe;
+    --blue-300: #a3c5fe;
+    --blue-200: #d1e2ff;
+    --blue-100: #f0f6ff;
+    --blue-50: #fafcff;
+    
+    /* Tertiary Pink */
+    --pink-950: #410633;
+    --pink-900: #4f0e3f;
+    --pink-800: #631c50;
+    --pink-700: #8c2a72;
+    --pink-600: #b73996;
+    --pink-500: #da5ab6;
+    --pink-400: #e981c9;
+    --pink-300: #f2aad9;
+    --pink-200: #f8d6eb;
+    --pink-100: #fdecf6;
+    --pink-50: #fefafc;
+
+    /* ========================================
+       Obra Design System
+       ======================================== */
+    
     /* General colors */
     --background: #ffffff; /* general/background */
     --foreground: #020617; /* general/foreground */

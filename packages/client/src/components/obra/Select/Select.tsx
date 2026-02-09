@@ -27,7 +27,7 @@ const selectTriggerVariants = cva(
     'border border-solid',
     'rounded-lg',
     'bg-white',
-    'border-[var(--border-3)]',
+    'border-border',
     'shadow-xs',
     'transition-colors',
     'outline-none',

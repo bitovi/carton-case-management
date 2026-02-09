@@ -24,6 +24,9 @@ export type { CardProps } from './Card';
 export { Checkbox } from './Checkbox';
 export type { CheckboxProps } from './Checkbox';
 
+export { Dialog } from './Dialog';
+export type { DialogProps } from './Dialog';
+
 export { DialogFooter } from './Dialog';
 export type { DialogFooterProps } from './Dialog';
 
