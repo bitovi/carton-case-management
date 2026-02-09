@@ -352,14 +352,13 @@ describe('appRouter', () => {
           title: 'New Case',
           description: 'Description',
           customerId: 'customer-1',
+          createdBy: 'employee-1',
           priority: 'MEDIUM' as const,
         };
 
         const mockCreatedCase = {
           id: 'case-1',
           ...input,
-          createdBy: 'user-1',
-          updatedBy: 'user-1',
         };
 
         mockContext.userId = 'user-1';
@@ -371,8 +370,6 @@ describe('appRouter', () => {
         expect(mockPrisma.case.create).toHaveBeenCalledWith({
           data: {
             ...input,
-            createdBy: 'user-1',
-            updatedBy: 'user-1',
           },
         });
         expect(result).toEqual(mockCreatedCase);
@@ -388,6 +385,7 @@ describe('appRouter', () => {
             title: 'New Case',
             description: 'Description',
             customerId: 'customer-1',
+            createdBy: 'employee-1',
           })
         ).rejects.toThrow(TRPCError);
         await expect(
@@ -395,6 +393,7 @@ describe('appRouter', () => {
             title: 'New Case',
             description: 'Description',
             customerId: 'customer-1',
+            createdBy: 'employee-1',
           })
         ).rejects.toMatchObject({
           code: 'UNAUTHORIZED',
@@ -406,7 +405,8 @@ describe('appRouter', () => {
           title: 'New Case',
           description: 'Description',
           customerId: 'customer-1',
-          assignedTo: 'user-2',
+          createdBy: 'employee-1',
+          assignedTo: 'employee-2',
         };
 
         mockContext.userId = 'user-1';
@@ -418,8 +418,6 @@ describe('appRouter', () => {
         expect(mockPrisma.case.create).toHaveBeenCalledWith({
           data: {
             ...input,
-            createdBy: 'user-1',
-            updatedBy: 'user-1',
           },
         });
       });

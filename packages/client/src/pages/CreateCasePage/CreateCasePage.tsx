@@ -32,7 +32,13 @@ export function CreateCasePage() {
   const [touched, setTouched] = useState<Set<string>>(new Set());
 
   const { data: customers } = trpc.customer.list.useQuery();
-  const { data: users } = trpc.user.list.useQuery();
+  const { data: employees } = trpc.employee.list.useQuery();
+  
+  // For now use Alex Morgan as the default employee
+  const defaultEmployee = employees?.find(
+    (emp) => emp.firstName === 'Alex' && emp.lastName === 'Morgan'
+  );
+  
   const createCase = trpc.case.create.useMutation({
     onSuccess: (data) => {
       utils.case.list.invalidate();
@@ -73,12 +79,18 @@ export function CreateCasePage() {
       return;
     }
 
+    if (!defaultEmployee) {
+      alert('Default employee (Alex Morgan) not found. Please ensure the database is seeded correctly.');
+      return;
+    }
+
     createCase.mutate({
       title,
       description,
       customerId,
       assignedTo: assignedTo || undefined,
       priority,
+      createdBy: defaultEmployee.id,
     });
   };
 
@@ -202,9 +214,9 @@ export function CreateCasePage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="__EMPTY__">Unassigned</SelectItem>
-              {users?.map((user: { id: string; name: string }) => (
-                <SelectItem key={user.id} value={user.id}>
-                  {user.name}
+              {employees?.map((employee: { id: string; firstName: string; lastName: string }) => (
+                <SelectItem key={employee.id} value={employee.id}>
+                  {employee.firstName} {employee.lastName}
                 </SelectItem>
               ))}
             </SelectContent>

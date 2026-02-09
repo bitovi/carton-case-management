@@ -49,10 +49,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  createdCases  Case[]    @relation("CreatedBy")
-  updatedCases  Case[]    @relation("UpdatedBy")
-  assignedCases Case[]    @relation("AssignedTo")
-  comments      Comment[]
+  comments Comment[]
 }
 
 model Customer {
@@ -69,6 +66,20 @@ model Customer {
   cases Case[]
 }
 
+model Employee {
+  id         String   @id @default(uuid())
+  firstName  String
+  lastName   String
+  username   String   @unique
+  email      String   @unique
+  dateJoined DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  createdCases  Case[] @relation("EmployeeCreatedBy")
+  assignedCases Case[] @relation("EmployeeAssignedTo")
+}
+
 model Case {
   id          String       @id @default(uuid())
   title       String
@@ -77,20 +88,17 @@ model Case {
   status      CaseStatus   @default(TO_DO)
   priority    CasePriority @default(MEDIUM)
   createdBy   String
-  updatedBy   String
   assignedTo  String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
   customer Customer  @relation(fields: [customerId], references: [id])
-  creator  User      @relation("CreatedBy", fields: [createdBy], references: [id])
-  updater  User      @relation("UpdatedBy", fields: [updatedBy], references: [id])
-  assignee User?     @relation("AssignedTo", fields: [assignedTo], references: [id])
+  creator  Employee  @relation("EmployeeCreatedBy", fields: [createdBy], references: [id])
+  assignee Employee? @relation("EmployeeAssignedTo", fields: [assignedTo], references: [id])
   comments Comment[]
 
   @@index([customerId])
   @@index([createdBy])
-  @@index([updatedBy])
   @@index([assignedTo])
 }
 

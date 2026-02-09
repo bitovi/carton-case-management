@@ -17,7 +17,6 @@ const mockCase: NonNullable<CaseByIdOutput> = {
   priority: 'MEDIUM',
   customerId: '1',
   createdBy: '1',
-  updatedBy: '2',
   assignedTo: '2',
   customer: {
     id: '1',
@@ -26,17 +25,14 @@ const mockCase: NonNullable<CaseByIdOutput> = {
   },
   creator: {
     id: '1',
-    name: 'John Doe',
+    firstName: 'John',
+    lastName: 'Doe',
     email: 'john@example.com',
   },
   assignee: {
     id: '2',
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-  },
-  updater: {
-    id: '2',
-    name: 'Jane Smith',
+    firstName: 'Jane',
+    lastName: 'Smith',
     email: 'jane@example.com',
   },
   createdAt: new Date('2024-01-15T10:00:00Z'),
@@ -108,18 +104,24 @@ const mockCustomers = [
   },
 ];
 
-const mockUsers = [
+const mockEmployees = [
   {
     id: '1',
-    name: 'John Doe',
+    firstName: 'John',
+    lastName: 'Doe',
+    username: 'jdoe',
     email: 'john@example.com',
+    dateJoined: new Date('2024-01-01T00:00:00Z'),
     createdAt: new Date('2024-01-01T00:00:00Z'),
     updatedAt: new Date('2024-01-01T00:00:00Z'),
   },
   {
     id: '2',
-    name: 'Jane Smith',
+    firstName: 'Jane',
+    lastName: 'Smith',
+    username: 'jsmith',
     email: 'jane@example.com',
+    dateJoined: new Date('2024-01-02T00:00:00Z'),
     createdAt: new Date('2024-01-02T00:00:00Z'),
     updatedAt: new Date('2024-01-02T00:00:00Z'),
   },
@@ -156,14 +158,14 @@ const meta: Meta<typeof CaseDetails> = {
             result: { data: mockCustomers },
           });
         }),
-        http.get('*/trpc/user.list*', () => {
+        http.get('*/trpc/employee.list*', () => {
           return HttpResponse.json({
-            result: { data: mockUsers },
+            result: { data: mockEmployees },
           });
         }),
-        http.post('*/trpc/user.list*', () => {
+        http.post('*/trpc/employee.list*', () => {
           return HttpResponse.json({
-            result: { data: mockUsers },
+            result: { data: mockEmployees },
           });
         }),
       ],

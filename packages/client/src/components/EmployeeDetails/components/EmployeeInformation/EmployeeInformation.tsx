@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MoreVertical, Trash, Star } from 'lucide-react';
+import { MoreVertical, Trash } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/obra/Button';
 import { EditableTitle, EditableText } from '@/components/inline-edit';
@@ -8,126 +8,98 @@ import { MoreOptionsMenu, MenuItem } from '@/components/common/MoreOptionsMenu';
 import { ConfirmationDialog } from '@/components/common/ConfirmationDialog';
 import { useNavigate } from 'react-router-dom';
 
-interface CustomerInformationProps {
-  customerId: string;
-  customerData: {
+interface EmployeeInformationProps {
+  employeeId: string;
+  employeeData: {
     id: string;
     firstName: string;
     lastName: string;
     username: string;
     email: string;
     dateJoined: Date | string;
-    satisfactionRate: number | null;
   };
 }
 
-export function CustomerInformation({
-  customerId,
-  customerData,
-}: CustomerInformationProps) {
+export function EmployeeInformation({
+  employeeId,
+  employeeData,
+}: EmployeeInformationProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
 
   const utils = trpc.useUtils();
-  const updateCustomer = trpc.customer.update.useMutation({
+  const updateEmployee = trpc.employee.update.useMutation({
     onMutate: async (variables) => {
-      await utils.customer.getById.cancel({ id: customerId });
-      const previousCustomer = utils.customer.getById.getData({ id: customerId });
+      await utils.employee.getById.cancel({ id: employeeId });
+      const previousEmployee = utils.employee.getById.getData({ id: employeeId });
 
-      if (previousCustomer) {
-        utils.customer.getById.setData(
-          { id: customerId },
+      if (previousEmployee) {
+        utils.employee.getById.setData(
+          { id: employeeId },
           {
-            ...previousCustomer,
+            ...previousEmployee,
             ...variables,
           }
         );
       }
 
-      return { previousCustomer };
+      return { previousEmployee };
     },
     onSuccess: () => {
-      utils.customer.getById.invalidate({ id: customerId });
-      utils.customer.list.invalidate();
+      utils.employee.getById.invalidate({ id: employeeId });
+      utils.employee.list.invalidate();
     },
     onError: (error, _variables, context) => {
-      console.error('Failed to update customer:', error);
-      if (context?.previousCustomer) {
-        utils.customer.getById.setData({ id: customerId }, context.previousCustomer);
+      console.error('Failed to update employee:', error);
+      if (context?.previousEmployee) {
+        utils.employee.getById.setData({ id: employeeId }, context.previousEmployee);
       }
       alert('Failed to save changes. Please try again.');
     },
   });
 
-  const deleteCustomer = trpc.customer.delete.useMutation({
+  const deleteEmployee = trpc.employee.delete.useMutation({
     onSuccess: () => {
-      utils.customer.list.invalidate();
-      navigate('/customers');
+      utils.employee.list.invalidate();
+      navigate('/employees');
     },
     onError: (error) => {
-      console.error('Failed to delete customer:', error);
-      alert('Failed to delete customer. Please try again.');
+      console.error('Failed to delete employee:', error);
+      alert('Failed to delete employee. Please try again.');
       setIsDeleteDialogOpen(false);
     },
   });
 
   const handleFirstNameSave = async (newFirstName: string): Promise<void> => {
-    await updateCustomer.mutateAsync({
-      id: customerId,
+    await updateEmployee.mutateAsync({
+      id: employeeId,
       firstName: newFirstName,
     });
   };
 
   const handleLastNameSave = async (newLastName: string): Promise<void> => {
-    await updateCustomer.mutateAsync({
-      id: customerId,
+    await updateEmployee.mutateAsync({
+      id: employeeId,
       lastName: newLastName,
     });
   };
 
   const handleUsernameSave = async (newUsername: string): Promise<void> => {
-    await updateCustomer.mutateAsync({
-      id: customerId,
+    await updateEmployee.mutateAsync({
+      id: employeeId,
       username: newUsername,
     });
   };
 
   const handleEmailSave = async (newEmail: string): Promise<void> => {
-    await updateCustomer.mutateAsync({
-      id: customerId,
+    await updateEmployee.mutateAsync({
+      id: employeeId,
       email: newEmail,
     });
   };
 
   const handleDeleteConfirm = () => {
-    deleteCustomer.mutate({ id: customerId });
-  };
-
-  const renderStars = (rating: number | null) => {
-    if (rating === null) return null;
-    
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-
-    return (
-      <div className="flex items-center gap-1">
-        {[...Array(fullStars)].map((_, i) => (
-          <Star key={`full-${i}`} size={20} className="fill-orange-400 text-orange-400" />
-        ))}
-        {hasHalfStar && (
-          <div className="relative">
-            <Star size={20} className="text-orange-400" />
-            <div className="absolute inset-0 overflow-hidden w-1/2">
-              <Star size={20} className="fill-orange-400 text-orange-400" />
-            </div>
-          </div>
-        )}
-        {[...Array(emptyStars)].map((_, i) => (
-          <Star key={`empty-${i}`} size={20} className="text-orange-400" />
-        ))}
-      </div>
-    );
+    deleteEmployee.mutate({ id: employeeId });
   };
 
   return (
@@ -137,12 +109,12 @@ export function CustomerInformation({
         <div className="flex flex-col gap-1 lg:hidden w-full">
           <div className="flex items-center gap-2">
             <EditableTitle
-              value={customerData.firstName}
+              value={employeeData.firstName}
               onSave={handleFirstNameSave}
               className="text-2xl font-semibold truncate"
             />
             <EditableTitle
-              value={customerData.lastName}
+              value={employeeData.lastName}
               onSave={handleLastNameSave}
               className="text-2xl font-semibold truncate"
             />
@@ -150,7 +122,7 @@ export function CustomerInformation({
           <div className="flex items-center gap-1">
             <span className="text-sm text-gray-600">@</span>
             <EditableTitle
-              value={customerData.username}
+              value={employeeData.username}
               onSave={handleUsernameSave}
               className="text-sm text-gray-600"
             />
@@ -162,12 +134,12 @@ export function CustomerInformation({
           <div className="flex flex-col gap-1 flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <EditableTitle
-                value={customerData.firstName}
+                value={employeeData.firstName}
                 onSave={handleFirstNameSave}
                 className="text-2xl font-semibold truncate"
               />
               <EditableTitle
-                value={customerData.lastName}
+                value={employeeData.lastName}
                 onSave={handleLastNameSave}
                 className="text-2xl font-semibold truncate"
               />
@@ -175,7 +147,7 @@ export function CustomerInformation({
             <div className="flex items-center gap-1">
               <span className="text-sm text-gray-600">@</span>
               <EditableTitle
-                value={customerData.username}
+                value={employeeData.username}
                 onSave={handleUsernameSave}
                 className="text-sm text-gray-600"
               />
@@ -199,29 +171,24 @@ export function CustomerInformation({
               icon={<Trash size={16} className="text-destructive" />}
               className="text-destructive hover:text-destructive"
             >
-              Delete Customer
+              Delete Employee
             </MenuItem>
           </MoreOptionsMenu>
         </div>
 
-        {/* Customer Details */}
+        {/* Employee Details */}
         <div className="flex flex-col gap-4">
           <div>
             <p className="text-sm font-medium text-gray-500 mb-1">Date Joined</p>
-            <p className="text-base">{format(new Date(customerData.dateJoined), 'M/d/yyyy')}</p>
+            <p className="text-base">{format(new Date(employeeData.dateJoined), 'M/d/yyyy')}</p>
           </div>
 
           <EditableText
             label="Email Address"
-            value={customerData.email}
+            value={employeeData.email}
             onSave={handleEmailSave}
             type="email"
           />
-
-          <div>
-            <p className="text-sm font-medium text-gray-500 mb-1">Satisfaction Rate</p>
-            {renderStars(customerData.satisfactionRate)}
-          </div>
         </div>
 
         {/* Mobile: More menu */}
@@ -240,7 +207,7 @@ export function CustomerInformation({
               icon={<Trash size={16} className="text-destructive" />}
               className="text-destructive hover:text-destructive"
             >
-              Delete Customer
+              Delete Employee
             </MenuItem>
           </MoreOptionsMenu>
         </div>
@@ -250,11 +217,11 @@ export function CustomerInformation({
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         onConfirm={handleDeleteConfirm}
-        title="Delete Customer"
-        description="Are you sure you want to delete this customer? This action cannot be undone and will also delete all associated cases."
+        title="Delete Employee"
+        description="Are you sure you want to delete this employee? This action cannot be undone and will also delete all associated cases."
         confirmText="Delete"
         confirmClassName="bg-red-600 hover:bg-red-700"
-        isLoading={deleteCustomer.isPending}
+        isLoading={deleteEmployee.isPending}
       />
     </>
   );

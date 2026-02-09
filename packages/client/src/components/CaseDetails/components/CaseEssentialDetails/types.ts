@@ -6,11 +6,9 @@ export type CaseEssentialDetailsProps = {
     priority?: string;
     createdAt: string;
     updatedAt: string;
-    assignee: { id: string; name: string } | null;
+    assignee: { id: string; firstName: string; lastName: string; email: string } | null;
     assignedTo: string | null;
-    creator: { id: string; name: string; email: string };
+    creator: { id: string; firstName: string; lastName: string; email: string };
     createdBy: string;
-    updater: { id: string; name: string; email: string };
-    updatedBy: string;
   };
 };

@@ -8,7 +8,7 @@ import type { AppRouter } from '@carton/server/src/router';
 
 type CaseListOutput = inferProcedureOutput<AppRouter['case']['list']>;
 type CustomerListOutput = inferProcedureOutput<AppRouter['customer']['list']>;
-type UserListOutput = inferProcedureOutput<AppRouter['user']['list']>;
+type EmployeeListOutput = inferProcedureOutput<AppRouter['employee']['list']>;
 
 const mockCustomers: CustomerListOutput = [
   {
@@ -46,18 +46,24 @@ const mockCustomers: CustomerListOutput = [
   },
 ];
 
-const mockUsers: UserListOutput = [
+const mockEmployees: EmployeeListOutput = [
   {
     id: '1',
-    name: 'John Doe',
+    firstName: 'John',
+    lastName: 'Doe',
+    username: 'jdoe',
     email: 'john@example.com',
+    dateJoined: new Date('2024-01-01T00:00:00Z'),
     createdAt: new Date('2024-01-01T00:00:00Z'),
     updatedAt: new Date('2024-01-01T00:00:00Z'),
   },
   {
     id: '2',
-    name: 'Jane Smith',
+    firstName: 'Jane',
+    lastName: 'Smith',
+    username: 'jsmith',
     email: 'jane@example.com',
+    dateJoined: new Date('2024-01-02T00:00:00Z'),
     createdAt: new Date('2024-01-02T00:00:00Z'),
     updatedAt: new Date('2024-01-02T00:00:00Z'),
   },
@@ -73,12 +79,10 @@ const mockCases: CaseListOutput = [
     priority: 'HIGH',
     customerId: '1',
     createdBy: '1',
-    updatedBy: '2',
     assignedTo: '2',
     customer: { id: '1', firstName: 'Acme', lastName: 'Corp' },
-    creator: { id: '1', name: 'John Doe', email: 'john@example.com' },
-    assignee: { id: '2', name: 'Jane Smith', email: 'jane@example.com' },
-    updater: { id: '2', name: 'Jane Smith', email: 'jane@example.com' },
+    creator: { id: '1', firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
+    assignee: { id: '2', firstName: 'Jane', lastName: 'Smith', email: 'jane@example.com' },
     createdAt: new Date('2024-01-15T10:00:00Z'),
     updatedAt: new Date('2024-01-16T14:30:00Z'),
   },
@@ -90,12 +94,10 @@ const mockCases: CaseListOutput = [
     priority: 'MEDIUM',
     customerId: '2',
     createdBy: '1',
-    updatedBy: '1',
     assignedTo: null,
     customer: { id: '2', firstName: 'Tech Solutions', lastName: 'Inc' },
-    creator: { id: '1', name: 'John Doe', email: 'john@example.com' },
+    creator: { id: '1', firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
     assignee: null,
-    updater: { id: '1', name: 'John Doe', email: 'john@example.com' },
     createdAt: new Date('2024-01-16T08:00:00Z'),
     updatedAt: new Date('2024-01-16T08:00:00Z'),
   },
@@ -107,12 +109,10 @@ const mockCases: CaseListOutput = [
     priority: 'LOW',
     customerId: '3',
     createdBy: '2',
-    updatedBy: '1',
     assignedTo: '1',
     customer: { id: '3', firstName: 'Global', lastName: 'Systems' },
-    creator: { id: '2', name: 'Jane Smith', email: 'jane@example.com' },
-    assignee: { id: '1', name: 'John Doe', email: 'john@example.com' },
-    updater: { id: '1', name: 'John Doe', email: 'john@example.com' },
+    creator: { id: '2', firstName: 'Jane', lastName: 'Smith', email: 'jane@example.com' },
+    assignee: { id: '1', firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
     createdAt: new Date('2024-01-10T09:00:00Z'),
     updatedAt: new Date('2024-01-20T16:00:00Z'),
   },
@@ -135,8 +135,8 @@ const createHandlers = (getByIdData: (typeof mockCases)[0] | null, listData: typ
             return { result: { data: listData } };
           } else if (proc.includes('customer.list')) {
             return { result: { data: mockCustomers } };
-          } else if (proc.includes('user.list')) {
-            return { result: { data: mockUsers } };
+          } else if (proc.includes('employee.list')) {
+            return { result: { data: mockEmployees } };
           }
           return { result: { data: null } };
         });
@@ -150,8 +150,8 @@ const createHandlers = (getByIdData: (typeof mockCases)[0] | null, listData: typ
         return HttpResponse.json({ result: { data: listData } });
       } else if (path.includes('customer.list')) {
         return HttpResponse.json({ result: { data: mockCustomers } });
-      } else if (path.includes('user.list')) {
-        return HttpResponse.json({ result: { data: mockUsers } });
+      } else if (path.includes('employee.list')) {
+        return HttpResponse.json({ result: { data: mockEmployees } });
       }
     }),
     http.post(/.*\/trpc/, async ({ request }) => {
@@ -167,8 +167,8 @@ const createHandlers = (getByIdData: (typeof mockCases)[0] | null, listData: typ
             return { result: { data: listData } };
           } else if (proc.includes('customer.list')) {
             return { result: { data: mockCustomers } };
-          } else if (proc.includes('user.list')) {
-            return { result: { data: mockUsers } };
+          } else if (proc.includes('employee.list')) {
+            return { result: { data: mockEmployees } };
           }
           return { result: { data: null } };
         });
@@ -183,8 +183,8 @@ const createHandlers = (getByIdData: (typeof mockCases)[0] | null, listData: typ
         return HttpResponse.json({ result: { data: listData } });
       } else if (proc.includes('customer.list')) {
         return HttpResponse.json({ result: { data: mockCustomers } });
-      } else if (proc.includes('user.list')) {
-        return HttpResponse.json({ result: { data: mockUsers } });
+      } else if (proc.includes('employee.list')) {
+        return HttpResponse.json({ result: { data: mockEmployees } });
       }
     }),
   ];
@@ -348,17 +348,17 @@ export const NoCases: Story = {
             },
           });
         }),
-        http.get(/.*\/trpc\/user\.list/, () => {
+        http.get(/.*\/trpc\/employee\.list/, () => {
           return HttpResponse.json({
             result: {
-              data: mockUsers,
+              data: mockEmployees,
             },
           });
         }),
-        http.post(/.*\/trpc\/user\.list/, () => {
+        http.post(/.*\/trpc\/employee\.list/, () => {
           return HttpResponse.json({
             result: {
-              data: mockUsers,
+              data: mockEmployees,
             },
           });
         }),

@@ -159,6 +159,99 @@ export const appRouter = router({
     }),
   }),
 
+  employee: router({
+    list: publicProcedure.query(async ({ ctx }) => {
+      return ctx.prisma.employee.findMany({
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          email: true,
+          dateJoined: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+        orderBy: {
+          lastName: 'asc',
+        },
+      });
+    }),
+    getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+      const employee = await ctx.prisma.employee.findUnique({
+        where: { id: input.id },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          email: true,
+          dateJoined: true,
+          createdAt: true,
+          updatedAt: true,
+          createdCases: {
+            select: {
+              id: true,
+              title: true,
+              status: true,
+              priority: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+            orderBy: {
+              createdAt: 'desc',
+            },
+          },
+        },
+      });
+
+      if (!employee) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Employee not found',
+        });
+      }
+
+      return employee;
+    }),
+    create: publicProcedure
+      .input(
+        z.object({
+          firstName: z.string().min(1),
+          lastName: z.string().min(1),
+          username: z.string().min(1),
+          email: z.string().email(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        return ctx.prisma.employee.create({
+          data: input,
+        });
+      }),
+    update: publicProcedure
+      .input(
+        z.object({
+          id: z.string(),
+          firstName: z.string().optional(),
+          lastName: z.string().optional(),
+          username: z.string().optional(),
+          email: z.string().email().optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        return ctx.prisma.employee.update({
+          where: { id },
+          data,
+        });
+      }),
+    delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+      return ctx.prisma.employee.delete({
+        where: { id: input.id },
+      });
+    }),
+  }),
+
   case: router({
     list: publicProcedure
       .input(
@@ -186,21 +279,16 @@ export const appRouter = router({
             creator: {
               select: {
                 id: true,
-                name: true,
-                email: true,
-              },
-            },
-            updater: {
-              select: {
-                id: true,
-                name: true,
+                firstName: true,
+                lastName: true,
                 email: true,
               },
             },
             assignee: {
               select: {
                 id: true,
-                name: true,
+                firstName: true,
+                lastName: true,
                 email: true,
               },
             },
@@ -224,21 +312,16 @@ export const appRouter = router({
           creator: {
             select: {
               id: true,
-              name: true,
-              email: true,
-            },
-          },
-          updater: {
-            select: {
-              id: true,
-              name: true,
+              firstName: true,
+              lastName: true,
               email: true,
             },
           },
           assignee: {
             select: {
               id: true,
-              name: true,
+              firstName: true,
+              lastName: true,
               email: true,
             },
           },
@@ -267,22 +350,12 @@ export const appRouter = router({
           assignedTo: z.string().optional(),
           customerId: z.string(),
           priority: casePrioritySchema.optional(),
+          createdBy: z.string(), // Employee ID
         })
       )
       .mutation(async ({ ctx, input }) => {
-        if (!ctx.userId) {
-          throw new TRPCError({
-            code: 'UNAUTHORIZED',
-            message: 'Not authenticated',
-          });
-        }
-
         return ctx.prisma.case.create({
-          data: {
-            ...input,
-            createdBy: ctx.userId,
-            updatedBy: ctx.userId,
-          },
+          data: input,
         });
       }),
     update: publicProcedure
@@ -298,19 +371,11 @@ export const appRouter = router({
         })
       )
       .mutation(async ({ ctx, input }) => {
-        if (!ctx.userId) {
-          throw new TRPCError({
-            code: 'UNAUTHORIZED',
-            message: 'Not authenticated',
-          });
-        }
-
         const { id, ...data } = input;
         return ctx.prisma.case.update({
           where: { id },
           data: {
             ...data,
-            updatedBy: ctx.userId,
             updatedAt: new Date(),
           },
         });

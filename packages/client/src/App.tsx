@@ -1,9 +1,10 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { FolderClosed, Users } from 'lucide-react';
+import { FolderClosed, Users, Bot } from 'lucide-react';
 import { Header } from './components/Header';
 import { MenuList } from './components/MenuList';
 import { CasePage } from './pages/CasePage';
 import { CustomerPage } from './pages/CustomerPage';
+import { EmployeePage } from './pages/EmployeePage';
 import { trpc } from './lib/trpc';
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
   
   const menuItems = [
     { id: 'home', label: 'Cases', path: '/cases/', icon: <FolderClosed size={20} />, isActive: location.pathname === '/' || location.pathname.startsWith('/cases') },
+    { id: 'employees', label: 'Employees', path: '/employees/', icon: <Bot size={20} />, isActive: location.pathname.startsWith('/employees') },
     { id: 'customers', label: 'Customers', path: '/customers/', icon: <Users size={20} />, isActive: location.pathname.startsWith('/customers') },
   ];
   const { data: user, isLoading, error } = trpc.auth.me.useQuery();
@@ -58,6 +60,8 @@ function App() {
             <Route path="/" element={<CasePage />} />
             <Route path="/cases/" element={<CasePage />} />
             <Route path="/cases/:id" element={<CasePage />} />
+            <Route path="/employees/" element={<EmployeePage />} />
+            <Route path="/employees/:id" element={<EmployeePage />} />
             <Route path="/customers/" element={<CustomerPage />} />
             <Route path="/customers/:id" element={<CustomerPage />} />
           </Routes>
