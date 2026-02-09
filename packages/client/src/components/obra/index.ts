@@ -69,6 +69,9 @@ export type { PopoverProps, PopoverTriggerProps, PopoverContentProps } from './P
 export { Textarea } from './Textarea';
 export type { TextareaProps } from './Textarea';
 
+export { Toast, ToastProvider, useToast } from './Toast';
+export type { ToastProps, ToastData, ToastContextValue } from './Toast';
+
 export { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from './Tooltip';
 export type {
   TooltipProviderProps,
