@@ -795,7 +795,7 @@ npm run storybook
 **Tell the user which stories to check:**
 
 ```
-✅ Implementation complete!
+Implementation complete!
 
 ## Verify in Storybook
 
@@ -862,9 +862,9 @@ Determine what behaviors to test based on the component's purpose and the Figma 
 #### Report Results
 
 After testing all stories, document:
-- ✅ Stories that match Figma
-- ⚠️ Any accepted visual differences (add to README "Accepted Design Differences")
-- ❌ Issues found that need fixing
+- Stories that match Figma
+- Any accepted visual differences (add to README "Accepted Design Differences")
+- Issues found that need fixing
 
 **After completion:** Mark Step 11 as `completed` in todo list.
 
@@ -876,13 +876,13 @@ After completion, the modlet should contain:
 
 ```
 packages/client/src/components/common/{ComponentName}/
-├── index.ts                      # ✅ Re-exports
-├── {ComponentName}.tsx           # ✅ Component
-├── {ComponentName}.test.tsx      # ✅ Tests
-├── {ComponentName}.stories.tsx   # ✅ Stories for each variant
-├── {ComponentName}.figma.tsx     # ✅ Code Connect
-├── types.ts                      # ✅ TypeScript types
-└── README.md                     # ✅ Figma source & mapping
+├── index.ts                      
+├── {ComponentName}.tsx           
+├── {ComponentName}.test.tsx      
+├── {ComponentName}.stories.tsx   
+├── {ComponentName}.figma.tsx     
+├── types.ts                      
+└── README.md                     
 ```
 
 ## Quality Checklist
