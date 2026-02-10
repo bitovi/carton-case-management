@@ -21,10 +21,6 @@ export interface FiltersDialogProps {
    * @default "Filters"
    */
   title?: string;
-    /**
-   * Accessible description for the filters section
-   */
-  description?: string;
   
   /**
    * Callback when Apply button is clicked

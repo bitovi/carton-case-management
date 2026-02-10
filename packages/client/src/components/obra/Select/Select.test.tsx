@@ -163,7 +163,7 @@ describe('Select', () => {
         </Select>
       );
       const trigger = screen.getByRole('combobox');
-      expect(trigger).toHaveClass('border-[var(--border-3)]');
+      expect(trigger).toHaveClass('border-border');
     });
   });
 

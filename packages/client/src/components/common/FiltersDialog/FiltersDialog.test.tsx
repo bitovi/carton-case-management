@@ -53,16 +53,6 @@ describe('FiltersDialog', () => {
     expect(screen.getByText('Custom Filters')).toBeInTheDocument();
   });
 
-  it('renders description when provided', () => {
-    render(
-      <FiltersDialog
-        {...defaultProps}
-        description="Filter cases by various criteria"
-      />
-    );
-    expect(screen.getByText('Filter cases by various criteria')).toBeInTheDocument();
-  });
-
   it('renders Clear and Apply buttons', () => {
     render(<FiltersDialog {...defaultProps} />);
     expect(screen.getByRole('button', { name: 'Clear' })).toBeInTheDocument();

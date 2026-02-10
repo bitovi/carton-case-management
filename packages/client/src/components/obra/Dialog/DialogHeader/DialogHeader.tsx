@@ -30,11 +30,9 @@ export function DialogHeader({
       {isHeader && (
         <>
           <div className="flex flex-col gap-1">
-            {title && (
-              <DialogTitle className="text-xl font-semibold leading-6 text-foreground">
-                {title || 'Title'}
-              </DialogTitle>
-            )}
+            <DialogTitle className="text-xl font-semibold leading-6 text-foreground">
+              {title || 'Title'}
+            </DialogTitle>
             {description && (
               <DialogDescription className="text-sm text-muted-foreground">
                 {description}
