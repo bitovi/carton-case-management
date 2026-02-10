@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
+import { User, AlertCircle } from 'lucide-react';
 import { MultiSelect } from './MultiSelect';
 
 const meta = {
@@ -9,6 +10,22 @@ const meta = {
     layout: 'centered',
   },
   tags: ['autodocs'],
+  argTypes: {
+    size: {
+      control: 'select',
+      options: ['mini', 'small', 'regular', 'large'],
+    },
+    layout: {
+      control: 'select',
+      options: ['single', 'stacked'],
+    },
+    error: {
+      control: 'boolean',
+    },
+    disabled: {
+      control: 'boolean',
+    },
+  },
 } satisfies Meta<typeof MultiSelect>;
 
 export default meta;
@@ -119,6 +136,145 @@ export const AllCustomersSelected: Story = {
     label: 'Customer',
     options: customerOptions,
     value: customerOptions.map(opt => opt.value),
+    onChange: () => {},
+  },
+  render: (args) => (
+    <div className="w-[342px]">
+      <MultiSelectWrapper {...args} />
+    </div>
+  ),
+};
+
+export const SizeVariants: Story = {
+  render: () => (
+    <div className="w-[342px] space-y-4">
+      <div>
+        <p className="text-xs font-semibold mb-2">Mini</p>
+        <MultiSelectWrapper
+          size="mini"
+          label="Customer"
+          options={customerOptions}
+          value={['sarah-johnson']}
+          onChange={() => {}}
+        />
+      </div>
+      <div>
+        <p className="text-xs font-semibold mb-2">Small</p>
+        <MultiSelectWrapper
+          size="small"
+          label="Customer"
+          options={customerOptions}
+          value={['sarah-johnson']}
+          onChange={() => {}}
+        />
+      </div>
+      <div>
+        <p className="text-xs font-semibold mb-2">Regular (Default)</p>
+        <MultiSelectWrapper
+          size="regular"
+          label="Customer"
+          options={customerOptions}
+          value={['sarah-johnson']}
+          onChange={() => {}}
+        />
+      </div>
+      <div>
+        <p className="text-xs font-semibold mb-2">Large</p>
+        <MultiSelectWrapper
+          size="large"
+          label="Customer"
+          options={customerOptions}
+          value={['sarah-johnson']}
+          onChange={() => {}}
+        />
+      </div>
+    </div>
+  ),
+};
+
+export const SingleLayout: Story = {
+  args: {
+    layout: 'single',
+    label: 'Customer',
+    options: customerOptions,
+    value: ['sarah-johnson', 'michael-brown'],
+    onChange: () => {},
+  },
+  render: (args) => (
+    <div className="w-[342px]">
+      <MultiSelectWrapper {...args} />
+    </div>
+  ),
+};
+
+export const SingleLayoutWithPrependText: Story = {
+  args: {
+    layout: 'single',
+    prependText: 'Filter:',
+    options: customerOptions,
+    value: ['sarah-johnson'],
+    onChange: () => {},
+  },
+  render: (args) => (
+    <div className="w-[342px]">
+      <MultiSelectWrapper {...args} />
+    </div>
+  ),
+};
+
+export const WithLeftDecoration: Story = {
+  args: {
+    label: 'Customer',
+    leftDecoration: <User className="w-5 h-5" />,
+    options: customerOptions,
+    value: ['sarah-johnson'],
+    onChange: () => {},
+  },
+  render: (args) => (
+    <div className="w-[342px]">
+      <MultiSelectWrapper {...args} />
+    </div>
+  ),
+};
+
+export const ErrorState: Story = {
+  args: {
+    label: 'Customer',
+    options: customerOptions,
+    value: [],
+    error: true,
+    onChange: () => {},
+  },
+  render: (args) => (
+    <div className="w-[342px]">
+      <MultiSelectWrapper {...args} />
+      <p className="text-xs text-[var(--destructive-foreground)] mt-1">Please select at least one customer</p>
+    </div>
+  ),
+};
+
+export const DisabledState: Story = {
+  args: {
+    label: 'Customer',
+    options: customerOptions,
+    value: ['sarah-johnson'],
+    disabled: true,
+    onChange: () => {},
+  },
+  render: (args) => (
+    <div className="w-[342px]">
+      <MultiSelectWrapper {...args} />
+    </div>
+  ),
+};
+
+export const DisabledWithError: Story = {
+  args: {
+    label: 'Customer',
+    options: customerOptions,
+    value: [],
+    disabled: true,
+    error: true,
     onChange: () => {},
   },
   render: (args) => (

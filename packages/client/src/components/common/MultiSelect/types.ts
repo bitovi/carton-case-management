@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 export interface MultiSelectOption {
   value: string;
   label: string;
@@ -5,9 +7,19 @@ export interface MultiSelectOption {
 
 export interface MultiSelectProps {
   /**
-   * Label for the select (shown above the trigger)
+   * Size variants (affects height and spacing)
    */
-  label: string;
+  size?: 'mini' | 'small' | 'regular' | 'large';
+  
+  /**
+   * Layout variants (changes DOM structure)
+   */
+  layout?: 'single' | 'stacked';
+  
+  /**
+   * Label text (only shown in stacked layout)
+   */
+  label?: string;
   
   /**
    * Available options
@@ -29,6 +41,26 @@ export interface MultiSelectProps {
    * @default "None selected"
    */
   placeholder?: string;
+  
+  /**
+   * Prepend text (only shown in single layout)
+   */
+  prependText?: string;
+  
+  /**
+   * Left decoration (icon, avatar, etc.)
+   */
+  leftDecoration?: ReactNode;
+  
+  /**
+   * Error state (shows red border)
+   */
+  error?: boolean;
+  
+  /**
+   * Disabled state
+   */
+  disabled?: boolean;
   
   /**
    * Additional CSS classes

@@ -76,6 +76,27 @@ Scan the description and comments for:
    - After relevant sections
    - Under specific sub-tasks/comments (if applicable)
 
+### Step 4.5: Extract Behavioral Requirements
+
+Before implementing, analyze acceptance criteria and extract interaction behaviors into a table.
+
+Output the following table:
+
+**Behavioral Requirements:**
+| User Action | When Effect Takes Place | State Management Pattern | Notes |
+|-------------|------------------------|--------------------------|-------|
+| Form field change | On Save/Submit button | Draft vs Applied state | Changes stored locally until committed |
+| Modal/Dialog close | On X vs Confirm | Confirm commits, X discards | Need to reset state on cancel |
+| Search input | On type vs on button | Debounced immediate vs manual trigger | Depends on acceptance criteria |
+| ... | ... | ... | ... |
+
+**Key Questions to Answer:**
+- Do changes apply immediately or on button click?
+- Is there a draft/preview state vs applied state?
+- What happens on Cancel vs Apply vs Close?
+- When does data fetching occur?
+
+
 ### Step 5: Implement the Ticket Logic
 
 Implement the functionality described in the enriched ticket content while following these guidelines:
@@ -93,6 +114,10 @@ Implement the functionality described in the enriched ticket content while follo
 - Match the exact styling from the design: borders, padding, fonts, colors, and spacing
 - Replicate the structure and spacing as shown, using raw HTML elements if necessary instead of forcing design system components
 - Do not add containers, headers, wrappers, or other elements not present in the design reference
+
+### Step 6: Validation Before Completion
+
+Before marking complete, validate the implementation following the validation skill workflow.
 
 ## Expected Output
 
