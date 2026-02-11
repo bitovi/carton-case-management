@@ -27,7 +27,7 @@ export function RelationshipManagerAccordion({
             },
             content: (
               <div className="flex flex-col gap-3">
-                <div className="flex flex-col gap-3 max-h-[200px] overflow-y-auto">
+                <div className="flex flex-col gap-3">
                   {items.map((item) => (
                     <div
                       key={item.id}
