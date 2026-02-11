@@ -43,7 +43,7 @@ export async function autoLoginMiddleware(req: Request, res: Response, next: Nex
         // Also set on req.cookies so context can pick it up for this request
         req.cookies = req.cookies || {};
         req.cookies.userId = user.id;
-        console.log(`Auto-logged in as: ${user.name} (${user.email})`);
+        console.log(`Auto-logged in as: ${user.firstName} ${user.lastName} (${user.email})`);
       }
     } catch (error) {
       console.error('Auto-login failed:', error);

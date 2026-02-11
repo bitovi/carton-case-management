@@ -89,7 +89,10 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
             value={caseData.assignedTo || UNASSIGNED_VALUE}
             options={[
               { value: UNASSIGNED_VALUE, label: 'Unassigned' },
-              ...(users || []).map((u: { id: string; name: string }) => ({ value: u.id, label: u.name })),
+              ...(users || []).map((user: { id: string; firstName: string; lastName: string }) => ({ 
+                value: user.id, 
+                label: `${user.firstName} ${user.lastName}` 
+              })),
             ]}
             onSave={handleAssigneeChange}
             readonly={updateCaseMutation.isPending}
@@ -107,7 +110,9 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
           </div>
           <div className="flex flex-col">
             <span className="text-xs text-gray-950 tracking-[0.18px] leading-4 px-1">Created By</span>
-            <p className="text-sm font-medium px-1 py-2">{caseData.creator.name}</p>
+            <p className="text-sm font-medium px-1 py-2">
+              {caseData.creator.firstName} {caseData.creator.lastName}
+            </p>
           </div>
           <div className="flex flex-col">
             <span className="text-xs text-gray-950 tracking-[0.18px] leading-4 px-1">Last Updated</span>
@@ -118,10 +123,6 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
                 day: 'numeric',
               })}
             </p>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xs text-gray-950 tracking-[0.18px] leading-4 px-1">Updated By</span>
-            <p className="text-sm font-medium px-1 py-2">{caseData.updater.name}</p>
           </div>
         </>
       )}

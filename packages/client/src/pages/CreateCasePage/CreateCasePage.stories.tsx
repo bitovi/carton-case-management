@@ -48,15 +48,21 @@ const mockCustomers: CustomerListOutput = [
 const mockUsers: UserListOutput = [
   {
     id: '1',
-    name: 'John Doe',
+    firstName: 'John',
+    lastName: 'Doe',
+    username: 'jdoe',
     email: 'john@example.com',
+    dateJoined: new Date('2024-01-01T00:00:00Z'),
     createdAt: new Date('2024-01-01T00:00:00Z'),
     updatedAt: new Date('2024-01-01T00:00:00Z'),
   },
   {
     id: '2',
-    name: 'Jane Smith',
+    firstName: 'Jane',
+    lastName: 'Smith',
+    username: 'jsmith',
     email: 'jane@example.com',
+    dateJoined: new Date('2024-01-02T00:00:00Z'),
     createdAt: new Date('2024-01-02T00:00:00Z'),
     updatedAt: new Date('2024-01-02T00:00:00Z'),
   },
