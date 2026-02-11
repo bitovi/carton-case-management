@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
-import { User, AlertCircle } from 'lucide-react';
+import { User } from 'lucide-react';
 import { MultiSelect } from './MultiSelect';
 
 const meta = {

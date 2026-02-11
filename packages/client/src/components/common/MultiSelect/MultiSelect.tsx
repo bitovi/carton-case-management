@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { cva } from 'class-variance-authority';
 import { ChevronDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/obra';
 import { Checkbox } from '@/components/obra';
