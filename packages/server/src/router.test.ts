@@ -55,7 +55,8 @@ describe('appRouter', () => {
         const mockUser = {
           id: 'user-1',
           email: 'test@example.com',
-          name: 'Test User',
+          firstName: 'Test',
+          lastName: 'User',
         };
 
         mockContext.userId = 'user-1';
@@ -69,7 +70,8 @@ describe('appRouter', () => {
           select: {
             id: true,
             email: true,
-            name: true,
+            firstName: true,
+            lastName: true,
           },
         });
         expect(result).toEqual(mockUser);
@@ -107,14 +109,20 @@ describe('appRouter', () => {
           {
             id: 'user-1',
             email: 'user1@example.com',
-            name: 'User 1',
+            firstName: 'User',
+            lastName: 'One',
+            username: 'user1',
+            dateJoined: new Date(),
             createdAt: new Date(),
             updatedAt: new Date(),
           },
           {
             id: 'user-2',
             email: 'user2@example.com',
-            name: 'User 2',
+            firstName: 'User',
+            lastName: 'Two',
+            username: 'user2',
+            dateJoined: new Date(),
             createdAt: new Date(),
             updatedAt: new Date(),
           },
@@ -129,9 +137,15 @@ describe('appRouter', () => {
           select: {
             id: true,
             email: true,
-            name: true,
+            firstName: true,
+            lastName: true,
+            username: true,
+            dateJoined: true,
             createdAt: true,
             updatedAt: true,
+          },
+          orderBy: {
+            lastName: 'asc',
           },
         });
         expect(result).toEqual(mockUsers);
@@ -143,9 +157,13 @@ describe('appRouter', () => {
         const mockUser = {
           id: 'user-1',
           email: 'test@example.com',
-          name: 'Test User',
+          firstName: 'Test',
+          lastName: 'User',
+          username: 'testuser',
+          dateJoined: new Date(),
           createdAt: new Date(),
           updatedAt: new Date(),
+          createdCases: [],
         };
 
         mockPrisma.user.findUnique.mockResolvedValue(mockUser);
@@ -158,9 +176,25 @@ describe('appRouter', () => {
           select: {
             id: true,
             email: true,
-            name: true,
+            firstName: true,
+            lastName: true,
+            username: true,
+            dateJoined: true,
             createdAt: true,
             updatedAt: true,
+            createdCases: {
+              select: {
+                id: true,
+                title: true,
+                status: true,
+                priority: true,
+                createdAt: true,
+                updatedAt: true,
+              },
+              orderBy: {
+                createdAt: 'desc',
+              },
+            },
           },
         });
         expect(result).toEqual(mockUser);
@@ -302,7 +336,7 @@ describe('appRouter', () => {
             {
               id: 'comment-1',
               content: 'Test comment',
-              author: { id: 'user-1', name: 'User 1', email: 'user1@example.com' },
+              author: { id: 'user-1', firstName: 'User', lastName: 'One', email: 'user1@example.com' },
             },
           ],
         };
@@ -327,7 +361,7 @@ describe('appRouter', () => {
             comments: {
               include: {
                 author: {
-                  select: { id: true, name: true, email: true },
+                  select: { id: true, firstName: true, lastName: true, email: true },
                 },
               },
               orderBy: { createdAt: 'desc' },
@@ -471,7 +505,8 @@ describe('appRouter', () => {
           authorId: 'user-1',
           author: {
             id: 'user-1',
-            name: 'Test User',
+            firstName: 'Test',
+            lastName: 'User',
             email: 'test@example.com',
           },
         };
@@ -491,7 +526,8 @@ describe('appRouter', () => {
             author: {
               select: {
                 id: true,
-                name: true,
+                firstName: true,
+                lastName: true,
                 email: true,
               },
             },

@@ -63,7 +63,8 @@ describe('autoLoginMiddleware', () => {
   it('should set cookie when no userId cookie exists', async () => {
     const mockUser = {
       id: 'user-123',
-      name: 'Alex Morgan',
+      firstName: 'Alex',
+      lastName: 'Morgan',
       email: FIRST_USER_EMAIL,
     };
 
@@ -80,7 +81,7 @@ describe('autoLoginMiddleware', () => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     expect(consoleLogSpy).toHaveBeenCalledWith(
-      `Auto-logged in as: ${mockUser.name} (${mockUser.email})`
+      `Auto-logged in as: ${mockUser.firstName} ${mockUser.lastName} (${mockUser.email})`
     );
     expect(mockNext).toHaveBeenCalled();
   });
@@ -88,7 +89,8 @@ describe('autoLoginMiddleware', () => {
   it('should also set req.cookies.userId so context can access it immediately', async () => {
     const mockUser = {
       id: 'user-123',
-      name: 'Alex Morgan',
+      firstName: 'Alex',
+      lastName: 'Morgan',
       email: FIRST_USER_EMAIL,
     };
 
@@ -267,13 +269,15 @@ describe('autoLoginMiddleware', () => {
 
     const existingUser = {
       id: 'user-with-wrong-email',
-      name: 'Alex Morgan',
+      firstName: 'Alex',
+      lastName: 'Morgan',
       email: FIRST_USER_EMAIL,
     };
 
     const correctUser = {
       id: 'correct-user-id',
-      name: 'Jordan Doe',
+      firstName: 'Jordan',
+      lastName: 'Doe',
       email: 'jordan.doe@carton.com',
     };
 
