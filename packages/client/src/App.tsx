@@ -5,6 +5,7 @@ import { MenuList } from './components/MenuList';
 import { CasePage } from './pages/CasePage';
 import { CustomerPage } from './pages/CustomerPage';
 import { UserPage } from './pages/UserPage';
+import { AdminPage } from './pages/AdminPage';
 import { trpc } from './lib/trpc';
 
 function App() {
@@ -60,6 +61,7 @@ function App() {
             <Route path="/users/:id" element={<UserPage />} />
             <Route path="/customers/" element={<CustomerPage />} />
             <Route path="/customers/:id" element={<CustomerPage />} />
+            <Route path="/x7k9p2m4t8q1" element={<AdminPage />} />
           </Routes>
         </main>
       </div>

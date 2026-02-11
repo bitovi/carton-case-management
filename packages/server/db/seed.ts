@@ -1,7 +1,7 @@
 import { prisma } from '@carton/shared';
 import { FIRST_USER_EMAIL } from './constants.js';
 
-async function main() {
+export async function clearAndSeedDatabase() {
   console.log('Clearing existing data...');
 
   // Delete all existing data in correct order (respecting foreign keys)
@@ -316,7 +316,7 @@ async function main() {
   console.log(`Created ${await prisma.comment.count()} comments`);
 }
 
-main()
+clearAndSeedDatabase()
   .catch((e) => {
     console.error('Error seeding database:', e);
     process.exit(1);

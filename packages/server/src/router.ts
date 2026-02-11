@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { router, publicProcedure } from './trpc.js';
 import { formatDate, casePrioritySchema, caseStatusSchema } from '@carton/shared';
 import { TRPCError } from '@trpc/server';
+import { clearAndSeedDatabase } from '../db/seed.js';
 
 export const appRouter = router({
   health: publicProcedure.query(() => {
@@ -400,6 +401,24 @@ export const appRouter = router({
           },
         });
       }),
+  }),
+
+  admin: router({
+    resetDatabase: publicProcedure.mutation(async () => {
+      try {
+        await clearAndSeedDatabase();
+        return { 
+          success: true, 
+          message: 'Database reset and seeded successfully',
+          timestamp: new Date().toISOString()
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error instanceof Error ? error.message : 'Failed to reset database',
+        });
+      }
+    }),
   }),
 });
 
