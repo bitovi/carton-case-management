@@ -31,7 +31,8 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
           authorId: currentUser.id,
           author: {
             id: currentUser.id,
-            name: currentUser.name,
+            firstName: currentUser.firstName,
+            lastName: currentUser.lastName,
             email: currentUser.email,
           },
         };
@@ -97,13 +98,10 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
             <div key={comment.id} className="flex flex-col gap-2 py-2">
               <div className="flex gap-2 items-center">
                 <div className="w-10 flex items-center justify-center text-sm font-semibold text-gray-900">
-                  {comment.author.name
-                    .split(' ')
-                    .map((n) => n[0])
-                    .join('')}
+                  {comment.author.firstName[0]}{comment.author.lastName[0]}
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-sm font-medium">{comment.author.name}</p>
+                  <p className="text-sm font-medium">{comment.author.firstName} {comment.author.lastName}</p>
                   <p className="text-xs text-gray-500">
                     {new Date(comment.createdAt).toLocaleString('en-US', {
                       month: 'long',

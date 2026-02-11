@@ -22,9 +22,8 @@ describe('CaseEssentialDetails', () => {
           {
             result: {
               data: [
-                { id: '2', name: 'Test Assignee', email: 'assignee@test.com' },
-                { id: '3', name: 'Test Creator', email: 'creator@test.com' },
-                { id: '4', name: 'Test Updater', email: 'updater@test.com' },
+                { id: '2', firstName: 'Test', lastName: 'Assignee', email: 'assignee@test.com' },
+                { id: '3', firstName: 'Test', lastName: 'Creator', email: 'creator@test.com' },
               ],
             },
           },
@@ -39,12 +38,10 @@ describe('CaseEssentialDetails', () => {
       customerId: '1',
       createdAt: new Date(2026, 0, 2).toISOString(),
       updatedAt: new Date(2026, 0, 2).toISOString(),
-      assignee: { id: '2', name: 'Test Assignee', email: 'assignee@test.com' },
+      assignee: { id: '2', firstName: 'Test', lastName: 'Assignee', email: 'assignee@test.com' },
       assignedTo: '2',
-      creator: { id: '3', name: 'Test Creator', email: 'creator@test.com' },
+      creator: { id: '3', firstName: 'Test', lastName: 'Creator', email: 'creator@test.com' },
       createdBy: '3',
-      updater: { id: '4', name: 'Test Updater', email: 'updater@test.com' },
-      updatedBy: '4',
     };
 
     renderWithTrpc(<CaseEssentialDetails caseId="1" caseData={mockCaseData} />);

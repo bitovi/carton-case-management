@@ -15,7 +15,8 @@ export function CaseList({ onCaseClick }: CaseListProps) {
       <div className="flex flex-col gap-2 w-full lg:w-[200px]">
         <Button
           onClick={() => navigate('/cases/new')}
-          className="w-full mb-2 bg-[#00848b] hover:bg-[#006d73] text-white"
+          variant="secondary"
+          className="w-full mb-2"
         >
           Create Case
         </Button>
@@ -36,7 +37,8 @@ export function CaseList({ onCaseClick }: CaseListProps) {
       <div className="flex flex-col gap-4 w-full lg:w-[200px] p-4">
         <Button
           onClick={() => navigate('/cases/new')}
-          className="w-full mb-2 bg-[#00848b] hover:bg-[#006d73] text-white"
+          variant="secondary"
+          className="w-full mb-2"
         >
           Create Case
         </Button>
@@ -56,7 +58,8 @@ export function CaseList({ onCaseClick }: CaseListProps) {
       <div className="flex flex-col gap-2 w-full lg:w-[200px] p-4">
         <Button
           onClick={() => navigate('/cases/new')}
-          className="w-full mb-2 bg-[#00848b] hover:bg-[#006d73] text-white"
+          variant="secondary"
+          className="w-full mb-2"
         >
           Create Case
         </Button>
@@ -71,7 +74,8 @@ export function CaseList({ onCaseClick }: CaseListProps) {
     <div className="flex flex-col gap-2 w-full lg:w-[200px]">
       <Button
         onClick={() => navigate('/cases/new')}
-        className="w-full mb-2 bg-[#00848b] hover:bg-[#006d73] text-white"
+        variant="secondary"
+        className="w-full mb-2"
       >
         Create Case
       </Button>

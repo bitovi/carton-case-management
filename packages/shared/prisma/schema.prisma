@@ -42,17 +42,19 @@ enum CasePriority {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(uuid())
+  firstName  String
+  lastName   String
+  username   String   @unique
+  email      String   @unique
+  password   String
+  dateJoined DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  createdCases  Case[]    @relation("CreatedBy")
-  updatedCases  Case[]    @relation("UpdatedBy")
-  assignedCases Case[]    @relation("AssignedTo")
   comments      Comment[]
+  createdCases  Case[]    @relation("UserCreatedBy")
+  assignedCases Case[]    @relation("UserAssignedTo")
 }
 
 model Customer {
@@ -77,20 +79,17 @@ model Case {
   status      CaseStatus   @default(TO_DO)
   priority    CasePriority @default(MEDIUM)
   createdBy   String
-  updatedBy   String
   assignedTo  String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
-  customer Customer  @relation(fields: [customerId], references: [id])
-  creator  User      @relation("CreatedBy", fields: [createdBy], references: [id])
-  updater  User      @relation("UpdatedBy", fields: [updatedBy], references: [id])
-  assignee User?     @relation("AssignedTo", fields: [assignedTo], references: [id])
+  customer Customer @relation(fields: [customerId], references: [id])
+  creator  User     @relation("UserCreatedBy", fields: [createdBy], references: [id])
+  assignee User?    @relation("UserAssignedTo", fields: [assignedTo], references: [id])
   comments Comment[]
 
   @@index([customerId])
   @@index([createdBy])
-  @@index([updatedBy])
   @@index([assignedTo])
 }
 
