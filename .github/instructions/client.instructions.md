@@ -11,7 +11,7 @@ This package contains the React frontend application.
 - **React Components**: UI components following modlet pattern
 - **tRPC Client**: Type-safe API calls
 - **Pages**: Route-level components
-- **Styling**: Tailwind CSS with Shadcn UI components
+- **Styling**: Tailwind CSS
 
 ## Directory Structure
 

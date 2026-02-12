@@ -1,6 +1,6 @@
 # Button
 
-A versatile button component supporting multiple visual variants, sizes, roundness options, and optional icons. Matches the Obra shadcn-ui design system from Figma.
+A versatile button component supporting multiple visual variants, sizes, roundness options, and optional icons. Matches the Obra design system from Figma.
 
 ## Figma Source
 

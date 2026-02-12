@@ -12,7 +12,7 @@ Create responsive Header and Menu List navigation components for the Carton Case
 ## Technical Context
 
 **Language/Version**: TypeScript 5.x (via Node.js runtime in devcontainer)  
-**Primary Dependencies**: React 18, Vite, tRPC, React Query, Shadcn UI, Tailwind CSS  
+**Primary Dependencies**: React 18, Vite, tRPC, React Query, Tailwind CSS  
 **Storage**: N/A (UI components only, no data persistence required)  
 **Testing**: Vitest (unit/integration), Playwright (E2E), Storybook (component development)  
 **Target Platform**: Modern web browsers (Chrome, Firefox, Safari, Edge), responsive viewports from 320px to 1920px+
@@ -51,7 +51,7 @@ _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
   - Storybook required for Header and MenuList components
   - Stories must demonstrate desktop/mobile variants, interactive states
   - Components isolated and testable with prop overrides
-  - Shadcn UI patterns for consistency
+  - Radix UI patterns for consistency
   - WCAG 2.1 AA accessibility (keyboard navigation, ARIA labels)
 - ✅ **E2E Testing for User Flows**:
   - E2E test for header logo navigation to home page
@@ -77,12 +77,12 @@ After completing research and design phases:
 - ✅ **Testing Strategy**: Multi-layer testing approach documented (Vitest + Storybook + Playwright)
 - ✅ **Accessibility**: WCAG 2.1 AA compliance requirements documented with specific ARIA attributes
 - ✅ **Architecture**: Component structure follows monorepo client package organization
-- ✅ **Dependencies**: All new dependencies align with existing stack (Shadcn UI, React Router, Lucide icons)
+- ✅ **Dependencies**: All new dependencies align with existing stack (Radix UI, React Router, Lucide icons)
 
 **Technology Decisions**:
 
 - React Router `Link` component for navigation (existing pattern)
-- Shadcn UI Dropdown Menu for accessible dropdown (consistent with stack)
+- Radix UI Dropdown Menu for accessible dropdown (consistent with stack)
 - Tailwind CSS responsive utilities for mobile/desktop layouts (existing pattern)
 - Inline SVG for logo (simple, performant, no extra dependencies)
 - Local React state for dropdown (`useState`)
@@ -96,7 +96,7 @@ After completing research and design phases:
 - UI-only feature with no database or API changes
 - All patterns and technologies align with existing codebase
 - Comprehensive testing strategy covers all interaction flows
-- Accessibility built-in from the start with Shadcn UI primitives
+- Accessibility built-in from the start with Radix UI primitives
 
 ## Project Structure
 
@@ -127,7 +127,7 @@ packages/
 │   │   │   │   ├── MenuList.stories.tsx
 │   │   │   │   ├── MenuList.test.tsx
 │   │   │   │   └── index.ts     # Export barrel
-│   │   │   └── ui/              # Existing Shadcn UI components
+│   │   │   └── ui/              # Existing Obra UI components
 │   │   ├── assets/              # NEW: Static assets
 │   │   │   └── logo.svg         # Carton logo SVG
 │   │   ├── pages/

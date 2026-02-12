@@ -15,7 +15,7 @@ This guide helps you quickly start implementing the inline editable components f
 
 - Node.js 18+ and npm
 - Repository cloned and dependencies installed
-- Understanding of React, TypeScript, and Shadcn UI patterns
+- Understanding of React, TypeScript, and Radix UI patterns
 
 ---
 

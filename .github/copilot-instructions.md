@@ -19,7 +19,6 @@ This project uses Agent Skills for specialized workflows. See `.github/skills/`:
 | `figma-design-react` | Design React components from Figma files | When analyzing Figma designs to propose component architecture and props API |
 | `figma-component-sync` | Check React components against Figma design source | When reviewing implementations, syncing designs, or auditing visual accuracy |
 | `figma-connect-component` | Generate Figma Code Connect mapping for components | When linking React components to their Figma counterparts |
-| `figma-connect-shadcn` | Connect shadcn/ui components to Figma | After adding shadcn components via `npx shadcn@latest add` |
 | `figma-explore` | Explore Figma files to discover pages and components | When you need to list components in a Figma file or find component node IDs |
 | `create-react-modlet` | Create React components following the modlet pattern | When creating any component in `packages/client/src/components/` |
 | `cross-package-types` | Type flow between shared, server, and client packages | When working with types across package boundaries |
@@ -36,10 +35,10 @@ Each package has detailed instructions in `.github/instructions/`:
 | `client.instructions.md` | `packages/client/**` | React components, UI, tRPC client usage |
 
 ## Active Technologies
-- TypeScript 5.x, React 18.3.x + Shadcn UI components (Input, Select, Button), Radix UI primitives, Lucide icons, Tailwind CSS, Zod (validation) (004-inline-edit-components)
+- TypeScript 5.x, React 18.3.x + Radix UI primitives, Lucide icons, Tailwind CSS, Zod (validation) (004-inline-edit-components)
 - N/A (components are presentational; save handled by consumer callbacks) (004-inline-edit-components)
 
-- TypeScript 5.x (via Node.js runtime in devcontainer) + React 18, Vite, tRPC, React Query, Shadcn UI, Tailwind CSS (002-header-menu-components)
+- TypeScript 5.x (via Node.js runtime in devcontainer) + React 18, Vite, tRPC, React Query, Tailwind CSS (002-header-menu-components)
 - N/A (UI components only, no data persistence required) (002-header-menu-components)
 
 - TypeScript 5.x / Node.js 22+ + React 18, tRPC 11, @tanstack/react-query 5, Vite 6, Prisma (ORM) (001-trpc-react-query)
@@ -91,11 +90,7 @@ TypeScript 5.x / Node.js 22+: Follow standard conventions
   - Logic could be reused elsewhere
   - Component file exceeds ~100 lines
   - Examples: `useCaseFilters`, `useFormValidation`, `useDebounce`
-- **Shadcn UI Components**:
-  - Always prioritize using Shadcn UI components over native HTML elements (e.g., use Shadcn Select instead of `<select>`, Shadcn Input instead of `<input>`, etc.)
-  - If a needed component is not available, install the Shadcn equivalent using `npx shadcn@latest add [component-name]`
-  - Shadcn components should be installed to `packages/client/src/components/ui/` directory and exported via `packages/client/src/components/ui/index.ts`
-- **Custom Components**: If a custom component must be built on top of underlying Shadcn components (e.g., EditableSelect, ConfirmationDialog), it should go in `packages/client/src/components/common/`
+- **Custom Components**: Custom components should go in `packages/client/src/components/common/`
 - **Domain Wrapper Components**: When using generic/common components in a specific domain context:
   - Create a domain-specific wrapper component in the domain's `components/` folder
   - The wrapper encapsulates domain logic (hooks, state management, data fetching)
@@ -146,9 +141,9 @@ TypeScript 5.x / Node.js 22+: Follow standard conventions
 - **Cascading Deletes**: Always configure cascading deletes (`onDelete: Cascade`) in Prisma schema when an entity has related data that should be removed when the parent is deleted
 
 ## Recent Changes
-- 004-inline-edit-components: Added TypeScript 5.x, React 18.3.x + Shadcn UI components (Input, Select, Button), Radix UI primitives, Lucide icons, Tailwind CSS, Zod (validation)
+- 004-inline-edit-components: Added TypeScript 5.x, React 18.3.x + Radix UI primitives, Lucide icons, Tailwind CSS, Zod (validation)
 
-- 002-header-menu-components: Added TypeScript 5.x (via Node.js runtime in devcontainer) + React 18, Vite, tRPC, React Query, Shadcn UI, Tailwind CSS
+- 002-header-menu-components: Added TypeScript 5.x (via Node.js runtime in devcontainer) + React 18, Vite, tRPC, React Query, Tailwind CSS
 
 - 001-trpc-react-query: Added TypeScript 5.x / Node.js 22+ + React 18, tRPC 11, @tanstack/react-query 5, Vite 6, Prisma (ORM)
 

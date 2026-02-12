@@ -12,7 +12,7 @@ Build a comprehensive library of inline editable components with a composable `B
 ## Technical Context
 
 **Language/Version**: TypeScript 5.x, React 18.3.x  
-**Primary Dependencies**: Shadcn UI components (Input, Select, Button), Radix UI primitives, Lucide icons, Tailwind CSS, Zod (validation)  
+**Primary Dependencies**: Radix UI primitives, Lucide icons, Tailwind CSS, Zod (validation)  
 **Storage**: N/A (components are presentational; save handled by consumer callbacks)  
 **Testing**: Vitest (unit/component tests), Storybook (visual/interactive), Playwright (E2E)  
 **Target Platform**: Web (Vite bundled SPA)  
@@ -30,7 +30,7 @@ Build a comprehensive library of inline editable components with a composable `B
 | I. Type Safety First | Strict TypeScript, no `any`, Zod validation | ✅ PASS | Components use generics, Zod for validation prop |
 | II. API Contract Integrity | N/A for presentational components | ✅ PASS | No API changes; save handled by consumer |
 | III. Test-Informed Development | Unit tests, Storybook, E2E for pages | ✅ PASS | Will add tests + stories for all components |
-| IV. Component Development Standards | Shadcn UI first, Storybook required | ✅ PASS | Uses existing Shadcn primitives (Input, Select, Button) |
+| IV. Component Development Standards | Radix UI components, Storybook required | ✅ PASS | Uses existing Radix UI primitives |
 | V. E2E Testing for User Flows | E2E for critical user flows | ✅ PASS | Migration will preserve existing E2E coverage |
 
 **Pre-Phase 0 Gate**: ✅ PASSED - No violations. Proceed to research.
@@ -42,7 +42,7 @@ Build a comprehensive library of inline editable components with a composable `B
 | I. Type Safety | ✅ PASS | Generic `BaseEditable<T>`, typed props, Zod/function validation |
 | II. API Contract | ✅ PASS | No server changes; component-only feature |
 | III. Testing | ✅ PASS | Test + story requirements documented in quickstart.md |
-| IV. Components | ✅ PASS | All variants use existing Shadcn UI (Input, Select, Button, etc.) |
+| IV. Components | ✅ PASS | All variants use existing components and primitives |
 | V. E2E | ✅ PASS | Existing E2E tests cover case detail pages; migration preserves coverage |
 
 **Post-Design Gate**: ✅ PASSED - Design adheres to all constitutional principles.

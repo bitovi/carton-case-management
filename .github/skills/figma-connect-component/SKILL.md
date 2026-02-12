@@ -11,7 +11,7 @@ User provides a Figma component URL (or component name) and wants to generate th
 1. **Figma component identifier** (one of):
    - Full URL: `https://figma.com/design/{fileKey}/{fileName}?node-id={nodeId}`
    - File key + node ID: `fileKey: abc123, nodeId: 45:67`
-   - Evidence file path: `.temp/figma-explore/{component}.json` or `.temp/figma-connect-shadcn/{component}.json`
+   - Evidence file path: `.temp/figma-explore/{component}.json`
    - Component name (will search for URL in project files)
 2. **Code component folder path** (e.g., `src/components/Button/Button.tsx`)
 
@@ -51,7 +51,7 @@ Example evidence file structure:
 
 If only a Figma URL or node ID is provided:
 
-1. **Search for existing evidence files** in `.temp/figma-explore/` or `.temp/figma-connect-shadcn/` that match the component name
+1. **Search for existing evidence files** in `.temp/figma-explore/` that match the component name
 2. **If not found, use MCP tools**:
    - Call `mcp_figma_get_metadata` with `nodeId` and `fileKey`
    - Call `mcp_figma_get_design_context` with `nodeId` and `fileKey`
@@ -60,7 +60,7 @@ If only a Figma URL or node ID is provided:
 If no URL or evidence file provided, search for it:
 1. Check `{ComponentFolder}/README.md` for "Figma Source" section
 2. Check `specs/**/tasks.md` for component-to-Figma mapping tables
-3. Check `.temp/figma-explore/figma-components-index.json` or `.temp/figma-connect-shadcn/figma-components-index.json` for matching component names
+3. Check `.temp/figma-explore/figma-components-index.json` for matching component names
 4. Check prior conversation context for file key
 
 ### 3. Read Code Component

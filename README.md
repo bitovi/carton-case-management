@@ -14,7 +14,7 @@ A modern case management application built with React, Node.js, tRPC, and Prisma
 
 This application follows a monorepo structure using npm workspaces:
 
-- **packages/client** - React frontend with Vite, Tailwind CSS, and Shadcn UI
+- **packages/client** - React frontend with Vite and Tailwind CSS
 - **packages/server** - Node.js backend with tRPC, Prisma, and SQLite
 - **packages/shared** - Shared types and utilities used by both client and server
 
@@ -25,7 +25,6 @@ This application follows a monorepo structure using npm workspaces:
 - React 18 with TypeScript
 - Vite as build tool
 - tRPC for type-safe API calls
-- Shadcn UI components
 - Tailwind CSS for styling
 - React Router for routing
 - Storybook for component development

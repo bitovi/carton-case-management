@@ -105,7 +105,7 @@ interface EditableSelectProps {
 
 ### Behavior
 
-- **Edit UI**: Select dropdown (Shadcn Select component)
+- **Edit UI**: Select dropdown (Obra Select component)
 - **Save Trigger**: Auto-save on selection
 - **Keyboard**: Arrow keys to navigate, Enter to select
 - **Close Behavior**: Closing dropdown without selection = cancel
@@ -147,7 +147,7 @@ interface EditableDateProps {
 
 ### Behavior
 
-- **Edit UI**: DatePicker (Shadcn Popover + Calendar)
+- **Edit UI**: DatePicker (Popover + Calendar)
 - **Save Trigger**: Auto-save on date selection
 - **Display Format**: Localized date string (e.g., "Jan 14, 2026")
 - **Close Behavior**: Closing without selection = cancel

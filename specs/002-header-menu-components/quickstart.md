@@ -48,9 +48,6 @@ Edit `packages/client/src/index.css`:
 # Navigate to client package
 cd packages/client
 
-# Install Shadcn UI dropdown menu component
-npx shadcn@latest add dropdown-menu
-
 # Install Lucide React icons (if not already installed)
 npm install lucide-react
 ```
@@ -534,7 +531,7 @@ Check all stories render correctly.
 
 ### Issue: Dropdown doesn't close on outside click
 
-**Solution**: Ensure Shadcn UI dropdown-menu is properly installed and DropdownMenu component is managing state correctly.
+**Solution**: Ensure dropdown-menu component is properly installed and DropdownMenu component is managing state correctly.
 
 ### Issue: Tailwind classes not applying
 

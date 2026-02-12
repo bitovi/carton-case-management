@@ -247,7 +247,7 @@ className = 'w-10 h-10 rounded-full bg-white flex items-center justify-center te
 ## Dependencies
 
 - `react-router-dom`: For `Link` component
-- `@radix-ui/react-dropdown-menu` or Shadcn UI dropdown: For accessible dropdown
+- `@radix-ui/react-dropdown-menu`: For accessible dropdown
 - `lucide-react` (optional): For any additional icons
 
 ## Breaking Change Policy

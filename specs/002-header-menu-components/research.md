@@ -65,26 +65,26 @@
 
 **Finding**:
 
-- Project uses **Shadcn UI** components (based on Radix UI primitives)
+- Project uses **Radix UI** components for accessible primitives
 - Existing components use Radix UI: `@radix-ui/react-slot` found in Button component
-- Shadcn UI provides dropdown menu primitives
+- Radix UI provides dropdown menu primitives
 - Pattern uses `cva` (class-variance-authority) for variant management
 
-**Decision**: Use Shadcn UI Dropdown Menu component
+**Decision**: Use Radix UI Dropdown Menu component
 
-- Install `dropdown-menu` from Shadcn UI registry: `npx shadcn@latest add dropdown-menu`
+- Use `@radix-ui/react-dropdown-menu` for dropdown functionality
 - Provides accessibility out of the box (ARIA attributes, keyboard navigation)
 - Includes trigger, content, and item components
 - Handles click-outside-to-close automatically
 - Consistent with existing UI component patterns
 
-**Rationale**: Shadcn UI is already the established pattern in the project. It provides production-ready accessible components that handle complex interactions (focus management, keyboard navigation, click-outside) without custom implementation.
+**Rationale**: Radix UI provides production-ready accessible components that handle complex interactions (focus management, keyboard navigation, click-outside) without custom implementation.
 
 **Alternatives Considered**:
 
 - Custom dropdown with state management: Reinventing the wheel, accessibility concerns, more testing required
 - Headless UI: Another library, not consistent with current stack
-- Material UI: Heavy dependency, design inconsistency with Shadcn UI
+- Material UI: Heavy dependency, design inconsistency
 
 ### 4. SVG Logo Integration
 
@@ -240,7 +240,7 @@
 Header Component:
 ├── Carton Logo (inline SVG, clickable via Link)
 ├── Application Name (responsive text via Tailwind)
-└── User Avatar (Shadcn Dropdown Menu)
+└── User Avatar (Dropdown Menu)
     └── DropdownMenuContent (empty placeholder)
 
 MenuList Component:
@@ -255,7 +255,7 @@ MenuList Component:
 | ----------------- | ------------------------------- | ------------------------------------------ |
 | Navigation        | React Router Link               | SPA routing, accessibility, type safety    |
 | Responsive Design | Tailwind CSS utilities          | Mobile-first, performant, existing pattern |
-| Dropdown Menu     | Shadcn UI Dropdown              | Accessible, consistent with stack          |
+| Dropdown Menu     | Radix UI Dropdown               | Accessible, consistent with stack          |
 | SVG Logo          | Inline in component             | Simple, no extra requests, styleable       |
 | State Management  | React useState                  | Local state sufficient for dropdown        |
 | Accessibility     | ARIA + semantic HTML            | WCAG 2.1 AA compliance                     |

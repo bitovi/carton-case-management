@@ -2,7 +2,7 @@
  * EditableSelect Component
  *
  * Inline editable dropdown/select field for selection from a list of options.
- * Uses BaseEditable for state management and Shadcn Select for the dropdown UI.
+ * Uses BaseEditable for state management and the Obra Select component for the dropdown UI.
  *
  * @module inline-edit/EditableSelect
  */

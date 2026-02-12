@@ -192,13 +192,13 @@ const handleBlur = (e: React.FocusEvent) => {
 
 ---
 
-### 7. Shadcn UI Component Usage
+### 7. Component Usage
 
-**Context**: Identify which existing Shadcn components will be used.
+**Context**: Identify which existing components will be used.
 
-**Decision**: Use existing components from `packages/client/src/components/ui/`:
+**Decision**: Use existing components from `packages/client/src/components/`:
 
-| Edit Component | Shadcn Dependencies |
+| Edit Component | Dependencies |
 |----------------|---------------------|
 | EditableText | Input |
 | EditableTextarea | Textarea |
@@ -210,7 +210,7 @@ const handleBlur = (e: React.FocusEvent) => {
 | EditableTitle | Input (styled as heading) |
 | All | Button (icon buttons for save/cancel) |
 
-**Rationale**: Constitution requires using existing Shadcn components first. All needed primitives are already available.
+**Rationale**: All needed primitives are already available.
 
 ---
 
@@ -224,6 +224,6 @@ All technical unknowns have been resolved:
 4. ✅ Error handling: Catch promise rejection, re-enter edit mode, inline error
 5. ✅ Click-outside: `onBlur` with `relatedTarget` check
 6. ✅ Migration: Straightforward prop mapping; new features are additive
-7. ✅ Dependencies: All Shadcn components already available
+7. ✅ Dependencies: All components already available
 
 **Ready for Phase 1: Design & Contracts**

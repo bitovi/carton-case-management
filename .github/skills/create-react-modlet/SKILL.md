@@ -25,7 +25,7 @@ Components are organized in `packages/client/src/components/`:
 
 ```
 packages/client/src/components/
-├── ui/              # Shadcn UI components (DO NOT modify manually)
+├── obra/            # Obra UI components
 ├── common/          # Shared reusable components
 ├── inline-edit/     # Inline editing components (grouping folder)
 ├── Header/          # Feature component
@@ -201,18 +201,8 @@ Use the `@/` alias for imports:
 
 ```tsx
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/obra/Button';
 import { SomeComponent } from '@/components/common/SomeComponent';
-```
-
-### Shadcn UI Components
-
-Reuse components from `@/components/ui/`:
-
-```tsx
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
 ```
 
 ### Tailwind CSS

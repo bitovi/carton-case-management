@@ -1,6 +1,6 @@
 # Label
 
-An accessible form label component that supports both inline and block layout modes. Matches the Obra shadcn-ui design system from Figma.
+An accessible form label component that supports both inline and block layout modes. Matches the Obra design system from Figma.
 
 ## Figma Source
 

@@ -118,7 +118,7 @@ export const WithRichContent: Story = {
           <div className="space-y-2">
             <p>Install the component from your terminal:</p>
             <code className="block bg-muted p-2 rounded text-sm">
-              npx shadcn@latest add accordion
+              npm install @radix-ui/react-accordion
             </code>
           </div>
         ),

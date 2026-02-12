@@ -277,7 +277,7 @@ As a developer building forms, I want to programmatically control whether a fiel
 
 ## Assumptions
 
-- The existing Shadcn UI components (Input, Select, Button, etc.) will be used as building blocks for edit mode UIs
+- Existing UI components (Input, Select, Button, etc.) will be used as building blocks for edit mode UIs
 - The teal color (#00848b) used for Save buttons matches the existing design system
 - Date picker will use the existing DatePicker component from `packages/client/src/components/ui/date-picker.tsx`
 - Check and X icons will use Lucide icons (already in the project)

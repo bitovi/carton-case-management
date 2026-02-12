@@ -93,7 +93,7 @@ packages/
 │   │   │   ├── HomePage.test.tsx  # Unit tests (TO UPDATE)
 │   │   │   └── HomePage.stories.tsx # Storybook stories (EXISTING)
 │   │   └── components/
-│   │       └── ui/                # Shadcn UI components
+│   │       └── obra/              # Obra UI components
 │   ├── package.json               # Dependencies already include react-query
 │   └── vite.config.ts
 │

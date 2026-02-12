@@ -38,7 +38,7 @@ This is a **web application monorepo**:
 - [ ] T001 Create Header and MenuList component directories at packages/client/src/components/Header and packages/client/src/components/MenuList
 - [ ] T002 Create assets directory at packages/client/src/assets
 - [ ] T003 [P] Add CSS color variables to packages/client/src/index.css for header and menu
-- [ ] T004 [P] Install Shadcn UI dropdown-menu component via npx shadcn@latest add dropdown-menu
+- [ ] T004 [P] Install dependencies if needed (Radix UI, Lucide React)
 - [ ] T005 [P] Install lucide-react icons package via npm install lucide-react (if not already installed)
 
 **Checkpoint**: Directory structure and dependencies ready
@@ -118,12 +118,12 @@ This is a **web application monorepo**:
 - [ ] T032 [US2] Add userInitials prop to HeaderProps interface (default: "AM") in packages/client/src/components/Header/Header.tsx
 - [ ] T033 [US2] Add onAvatarClick optional callback prop to HeaderProps in packages/client/src/components/Header/Header.tsx
 - [ ] T034 [US2] Implement user avatar circle with initials display in packages/client/src/components/Header/Header.tsx
-- [ ] T035 [US2] Integrate Shadcn UI DropdownMenu component (Trigger, Content) in packages/client/src/components/Header/Header.tsx
+- [ ] T035 [US2] Integrate Radix UI DropdownMenu component (Trigger, Content) in packages/client/src/components/Header/Header.tsx
 - [ ] T036 [US2] Implement dropdown open/close state with useState in packages/client/src/components/Header/Header.tsx
 - [ ] T037 [US2] Implement empty dropdown content (placeholder for future items) in packages/client/src/components/Header/Header.tsx
 - [ ] T038 [US2] Add ARIA attributes (aria-label="User menu", aria-expanded, aria-haspopup) in packages/client/src/components/Header/Header.tsx
 - [ ] T039 [US2] Implement keyboard support (Enter to toggle, Escape to close) in packages/client/src/components/Header/Header.tsx
-- [ ] T040 [US2] Add click-outside-to-close functionality via Shadcn UI dropdown behavior in packages/client/src/components/Header/Header.tsx
+- [ ] T040 [US2] Add click-outside-to-close functionality via dropdown behavior in packages/client/src/components/Header/Header.tsx
 
 ### Unit Tests for User Story 2
 
