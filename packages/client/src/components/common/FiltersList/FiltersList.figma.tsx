@@ -38,12 +38,12 @@ const filtersListConfig = {
 figma.connect(
   FiltersList,
   'https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-id=1033-19601',
-  filtersListConfig
+  { ...filtersListConfig }
 );
 
 // Connect to Riot Training version
 figma.connect(
   FiltersList,
   'https://www.figma.com/design/7W0r8XwvVXzGSOJhvV9c3o/App-Design?node-id=1033-19601',
-  filtersListConfig
+  { ...filtersListConfig }
 );

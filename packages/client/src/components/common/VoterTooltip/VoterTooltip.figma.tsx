@@ -22,12 +22,12 @@ const voterTooltipConfig = {
 figma.connect(
   VoterTooltip,
   'https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-id=3311-8265',
-  voterTooltipConfig
+  { ...voterTooltipConfig }
 );
 
 // Connect to Riot Training version
 figma.connect(
   VoterTooltip,
   'https://www.figma.com/design/7W0r8XwvVXzGSOJhvV9c3o/App-Design?node-id=3311-8265',
-  voterTooltipConfig
+  { ...voterTooltipConfig }
 );

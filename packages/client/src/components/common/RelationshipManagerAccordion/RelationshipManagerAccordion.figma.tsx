@@ -28,12 +28,12 @@ const relationshipManagerAccordionConfig = {
 figma.connect(
   RelationshipManagerAccordion,
   'https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-id=1040-1662',
-  relationshipManagerAccordionConfig
+  { ...relationshipManagerAccordionConfig }
 );
 
 // Connect to Riot Training version
 figma.connect(
   RelationshipManagerAccordion,
   'https://www.figma.com/design/7W0r8XwvVXzGSOJhvV9c3o/App-Design?node-id=1040-1662',
-  relationshipManagerAccordionConfig
+  { ...relationshipManagerAccordionConfig }
 );
