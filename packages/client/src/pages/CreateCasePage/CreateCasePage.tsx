@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PartyPopper } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/obra/Button';
 import { Input } from '@/components/obra/Input';
@@ -13,6 +14,7 @@ import {
 } from '@/components/obra/Select';
 import { type CasePriority, CASE_PRIORITY_OPTIONS } from '@carton/shared/client';
 import { Label } from '@/components/obra/Label';
+import { useToast } from '@/components/obra/Toast';
 
 type ValidationErrors = {
   title?: string;
@@ -23,6 +25,7 @@ type ValidationErrors = {
 export function CreateCasePage() {
   const navigate = useNavigate();
   const utils = trpc.useUtils();
+  const { toast } = useToast();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [customerId, setCustomerId] = useState('');
@@ -42,6 +45,12 @@ export function CreateCasePage() {
   const createCase = trpc.case.create.useMutation({
     onSuccess: (data) => {
       utils.case.list.invalidate();
+      toast({
+        variant: 'success',
+        title: 'Success!',
+        description: 'A new claim has been created.',
+        icon: <PartyPopper className="h-5 w-5" />,
+      });
       navigate(`/cases/${data.id}`);
     },
   });

@@ -1,4 +1,5 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import { FolderClosed, Users, Bot } from 'lucide-react';
 import { Header } from './components/Header';
 import { MenuList } from './components/MenuList';
@@ -6,9 +7,18 @@ import { CasePage } from './pages/CasePage';
 import { CustomerPage } from './pages/CustomerPage';
 import { UserPage } from './pages/UserPage';
 import { trpc } from './lib/trpc';
+import { useToast } from './components/obra/Toast';
 
 function App() {
   const location = useLocation();
+  const { toasts, dismiss } = useToast();
+  
+  // Clear all toasts on navigation
+  useEffect(() => {
+    toasts.forEach((toast) => {
+      dismiss(toast.id);
+    });
+  }, [location.pathname]);
   
   const menuItems = [
     { id: 'home', label: 'Cases', path: '/cases/', icon: <FolderClosed size={20} />, isActive: location.pathname === '/' || location.pathname.startsWith('/cases') },

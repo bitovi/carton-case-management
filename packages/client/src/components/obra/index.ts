@@ -85,3 +85,6 @@ export type {
   TooltipTriggerProps,
   TooltipContentProps,
 } from './Tooltip';
+
+export { Toast, ToastProvider, ToastContextProvider, useToast, Toaster } from './Toast';
+export type { ToastProps, ToastProviderProps, UseToastOptions } from './Toast';
