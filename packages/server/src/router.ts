@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { router, publicProcedure } from './trpc.js';
-import { formatDate, casePrioritySchema, caseStatusSchema } from '@carton/shared';
+import { formatDate, casePrioritySchema, caseStatusSchema, ReactionTypeSchema } from '@carton/shared';
 import { TRPCError } from '@trpc/server';
 
 export const appRouter = router({
@@ -313,6 +313,13 @@ export const appRouter = router({
                   email: true,
                 },
               },
+              reactions: {
+                select: {
+                  id: true,
+                  type: true,
+                  userId: true,
+                },
+              },
             },
             orderBy: {
               createdAt: 'desc',
@@ -399,6 +406,61 @@ export const appRouter = router({
             },
           },
         });
+      }),
+  }),
+
+  commentReaction: router({
+    toggle: publicProcedure
+      .input(
+        z.object({
+          commentId: z.string(),
+          type: ReactionTypeSchema,
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated',
+          });
+        }
+
+        // Check if user already has a reaction on this comment
+        const existingReaction = await ctx.prisma.commentReaction.findUnique({
+          where: {
+            commentId_userId: {
+              commentId: input.commentId,
+              userId: ctx.userId,
+            },
+          },
+        });
+
+        // If same reaction exists, remove it (toggle off)
+        if (existingReaction && existingReaction.type === input.type) {
+          await ctx.prisma.commentReaction.delete({
+            where: { id: existingReaction.id },
+          });
+          return { action: 'removed', type: input.type };
+        }
+
+        // If different reaction exists, update it
+        if (existingReaction && existingReaction.type !== input.type) {
+          await ctx.prisma.commentReaction.update({
+            where: { id: existingReaction.id },
+            data: { type: input.type },
+          });
+          return { action: 'updated', type: input.type };
+        }
+
+        // If no reaction exists, create it
+        await ctx.prisma.commentReaction.create({
+          data: {
+            commentId: input.commentId,
+            userId: ctx.userId,
+            type: input.type,
+          },
+        });
+        return { action: 'created', type: input.type };
       }),
   }),
 });

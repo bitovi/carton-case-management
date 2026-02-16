@@ -1,11 +1,10 @@
+import type { inferRouterOutputs } from '@trpc/server';
+import type { AppRouter } from '@carton/server/src/router';
+
+type RouterOutput = inferRouterOutputs<AppRouter>;
+
+export type CaseWithComments = NonNullable<RouterOutput['case']['getById']>;
+
 export type CaseCommentsProps = {
-  caseData: {
-    id: string;
-    comments?: Array<{
-      id: string;
-      content: string;
-      createdAt: string;
-      author: { id: string; firstName: string; lastName: string; email: string };
-    }>;
-  };
+  caseData: CaseWithComments;
 };

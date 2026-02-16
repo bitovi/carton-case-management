@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Textarea } from '@/components/obra';
+import { CommentReactions } from './components/CommentReactions';
 import type { CaseCommentsProps } from './types';
 
 export function CaseComments({ caseData }: CaseCommentsProps) {
@@ -35,6 +36,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
             lastName: currentUser.lastName,
             email: currentUser.email,
           },
+          reactions: [],
         };
 
         utils.case.getById.setData(
@@ -64,6 +66,77 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
     },
   });
 
+  const reactionMutation = trpc.commentReaction.toggle.useMutation({
+    onMutate: async ({ commentId, type }) => {
+      // Cancel outgoing refetches
+      await utils.case.getById.cancel({ id: caseData.id });
+
+      // Snapshot previous value
+      const previousCase = utils.case.getById.getData({ id: caseData.id });
+
+      // Optimistically update the cache
+      if (previousCase && currentUser) {
+        const updatedComments = previousCase.comments?.map((comment) => {
+          if (comment.id === commentId) {
+            // Find existing reaction by current user
+            const existingReaction = comment.reactions.find(
+              (r) => r.userId === currentUser.id
+            );
+
+            let newReactions = [...comment.reactions];
+
+            if (existingReaction) {
+              if (existingReaction.type === type) {
+                // Remove reaction (toggle off)
+                newReactions = newReactions.filter(
+                  (r) => r.userId !== currentUser.id
+                );
+              } else {
+                // Update reaction type
+                newReactions = newReactions.map((r) =>
+                  r.userId === currentUser.id ? { ...r, type } : r
+                );
+              }
+            } else {
+              // Add new reaction
+              newReactions.push({
+                id: `temp-${Date.now()}`,
+                type,
+                userId: currentUser.id,
+              });
+            }
+
+            return {
+              ...comment,
+              reactions: newReactions,
+            };
+          }
+          return comment;
+        });
+
+        utils.case.getById.setData(
+          { id: caseData.id },
+          {
+            ...previousCase,
+            comments: updatedComments,
+          }
+        );
+      }
+
+      return { previousCase };
+    },
+    onError: (_err, _variables, context) => {
+      // Rollback on error
+      if (context?.previousCase) {
+        utils.case.getById.setData({ id: caseData.id }, context.previousCase);
+      }
+    },
+    onSettled: () => {
+      // Refetch to sync with server
+      utils.case.getById.invalidate({ id: caseData.id });
+    },
+  });
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!newComment.trim() || !currentUser) return;
@@ -72,6 +145,16 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
       caseId: caseData.id,
       content: newComment.trim(),
     });
+  };
+
+  const handleReactionToggle = (commentId: string, type: 'LIKE' | 'DISLIKE') => {
+    if (!currentUser) {
+      // In production, this would show a login prompt
+      console.warn('User must be authenticated to react to comments');
+      return;
+    }
+
+    reactionMutation.mutate({ commentId, type });
   };
 
   return (
@@ -115,6 +198,13 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
                 </div>
               </div>
               <p className="text-sm text-gray-700">{comment.content}</p>
+              <CommentReactions
+                commentId={comment.id}
+                reactions={comment.reactions}
+                currentUserId={currentUser?.id}
+                onReactionToggle={(type) => handleReactionToggle(comment.id, type)}
+                isLoading={reactionMutation.isPending}
+              />
             </div>
           ))
         ) : (

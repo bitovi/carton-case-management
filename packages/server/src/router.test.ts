@@ -363,6 +363,9 @@ describe('appRouter', () => {
                 author: {
                   select: { id: true, firstName: true, lastName: true, email: true },
                 },
+                reactions: {
+                  select: { id: true, type: true, userId: true },
+                },
               },
               orderBy: { createdAt: 'desc' },
             },
