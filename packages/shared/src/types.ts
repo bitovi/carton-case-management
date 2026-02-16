@@ -1,19 +1,21 @@
 import { z } from 'zod';
 
 // Re-export enum schemas from generated
-export { CasePrioritySchema, CaseStatusSchema } from './generated/index.js';
-export type { CasePriorityType, CaseStatusType } from './generated/index.js';
+export { CasePrioritySchema, CaseStatusSchema, VoteTypeSchema } from './generated/index.js';
+export type { CasePriorityType, CaseStatusType, VoteTypeType } from './generated/index.js';
 
 // Import for local alias
-import { CasePrioritySchema, CaseStatusSchema } from './generated/index.js';
+import { CasePrioritySchema, CaseStatusSchema, VoteTypeSchema } from './generated/index.js';
 
 // Lowercase aliases for backwards compatibility
 export const casePrioritySchema = CasePrioritySchema;
 export const caseStatusSchema = CaseStatusSchema;
+export const voteTypeSchema = VoteTypeSchema;
 
 // Legacy type aliases for backwards compatibility
 export type CasePriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 export type CaseStatus = 'TO_DO' | 'IN_PROGRESS' | 'COMPLETED' | 'CLOSED';
+export type VoteType = 'UP' | 'DOWN';
 
 export const emailSchema = z.string().email();
 export const passwordSchema = z.string().min(8);
