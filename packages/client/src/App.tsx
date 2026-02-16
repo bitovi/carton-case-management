@@ -18,6 +18,7 @@ function App() {
     toasts.forEach((toast) => {
       dismiss(toast.id);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
   
   const menuItems = [

@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-import * as ToastPrimitives from '@radix-ui/react-toast';
 
 export interface ToastProps {
   /**

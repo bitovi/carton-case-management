@@ -100,7 +100,7 @@ describe('Toast', () => {
   });
 
   it('should apply destructive variant styles', () => {
-    const { container } = render(
+    render(
       <ToastProvider>
         <Toast
           variant="destructive"
