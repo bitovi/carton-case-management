@@ -51,6 +51,7 @@ const mockCase: NonNullable<CaseByIdOutput> = {
       },
       createdAt: new Date('2024-01-15T11:00:00Z'),
       updatedAt: new Date('2024-01-15T11:00:00Z'),
+      votes: [],
     },
     {
       id: '2',
@@ -66,6 +67,7 @@ const mockCase: NonNullable<CaseByIdOutput> = {
       },
       createdAt: new Date('2024-01-16T09:15:00Z'),
       updatedAt: new Date('2024-01-16T09:15:00Z'),
+      votes: [],
     },
   ],
 };
