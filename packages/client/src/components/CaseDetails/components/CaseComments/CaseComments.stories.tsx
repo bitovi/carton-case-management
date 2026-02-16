@@ -7,8 +7,11 @@ import { CaseComments } from './CaseComments';
 const mockUsers = [
   {
     id: '1',
-    name: 'Alex Morgan',
+    firstName: 'Alex',
+    lastName: 'Morgan',
     email: 'alex@example.com',
+    username: 'alex',
+    dateJoined: new Date('2024-01-01'),
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
   },
@@ -26,8 +29,25 @@ const mockCaseData = {
       createdAt: new Date('2024-01-15T10:00:00Z').toISOString(),
       author: {
         id: '1',
-        name: 'Alex Morgan',
+        firstName: 'Alex',
+        lastName: 'Morgan',
+        email: 'alex@example.com',
       },
+      votes: [
+        {
+          id: 'v1',
+          userId: '2',
+          voteType: 'UP' as const,
+          commentId: '1',
+          createdAt: new Date('2024-01-15T11:00:00Z').toISOString(),
+          updatedAt: new Date('2024-01-15T11:00:00Z').toISOString(),
+          user: {
+            id: '2',
+            firstName: 'Jane',
+            lastName: 'Smith',
+          },
+        },
+      ],
     },
     {
       id: '2',
@@ -35,8 +55,38 @@ const mockCaseData = {
       createdAt: new Date('2024-01-16T14:30:00Z').toISOString(),
       author: {
         id: '2',
-        name: 'Jane Smith',
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane@example.com',
       },
+      votes: [
+        {
+          id: 'v2',
+          userId: '1',
+          voteType: 'UP' as const,
+          commentId: '2',
+          createdAt: new Date('2024-01-16T15:00:00Z').toISOString(),
+          updatedAt: new Date('2024-01-16T15:00:00Z').toISOString(),
+          user: {
+            id: '1',
+            firstName: 'Alex',
+            lastName: 'Morgan',
+          },
+        },
+        {
+          id: 'v3',
+          userId: '3',
+          voteType: 'DOWN' as const,
+          commentId: '2',
+          createdAt: new Date('2024-01-16T16:00:00Z').toISOString(),
+          updatedAt: new Date('2024-01-16T16:00:00Z').toISOString(),
+          user: {
+            id: '3',
+            firstName: 'John',
+            lastName: 'Doe',
+          },
+        },
+      ],
     },
   ],
 };
@@ -108,8 +158,11 @@ export const ManyComments: Story = {
           createdAt: new Date('2024-01-17T09:15:00Z').toISOString(),
           author: {
             id: '1',
-            name: 'Alex Morgan',
+            firstName: 'Alex',
+            lastName: 'Morgan',
+            email: 'alex@example.com',
           },
+          votes: [],
         },
         {
           id: '4',
@@ -117,8 +170,25 @@ export const ManyComments: Story = {
           createdAt: new Date('2024-01-17T15:45:00Z').toISOString(),
           author: {
             id: '3',
-            name: 'John Doe',
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john@example.com',
           },
+          votes: [
+            {
+              id: 'v4',
+              userId: '1',
+              voteType: 'UP' as const,
+              commentId: '4',
+              createdAt: new Date('2024-01-17T16:00:00Z').toISOString(),
+              updatedAt: new Date('2024-01-17T16:00:00Z').toISOString(),
+              user: {
+                id: '1',
+                firstName: 'Alex',
+                lastName: 'Morgan',
+              },
+            },
+          ],
         },
         {
           id: '5',
@@ -126,8 +196,11 @@ export const ManyComments: Story = {
           createdAt: new Date('2024-01-18T11:20:00Z').toISOString(),
           author: {
             id: '2',
-            name: 'Jane Smith',
+            firstName: 'Jane',
+            lastName: 'Smith',
+            email: 'jane@example.com',
           },
+          votes: [],
         },
       ],
     },

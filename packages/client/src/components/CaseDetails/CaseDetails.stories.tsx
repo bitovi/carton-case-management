@@ -51,6 +51,21 @@ const mockCase: NonNullable<CaseByIdOutput> = {
       },
       createdAt: new Date('2024-01-15T11:00:00Z'),
       updatedAt: new Date('2024-01-15T11:00:00Z'),
+      votes: [
+        {
+          id: 'v1',
+          commentId: '1',
+          userId: '1',
+          voteType: 'UP' as const,
+          createdAt: new Date('2024-01-15T12:00:00Z'),
+          updatedAt: new Date('2024-01-15T12:00:00Z'),
+          user: {
+            id: '1',
+            firstName: 'John',
+            lastName: 'Doe',
+          },
+        },
+      ],
     },
     {
       id: '2',
@@ -66,6 +81,34 @@ const mockCase: NonNullable<CaseByIdOutput> = {
       },
       createdAt: new Date('2024-01-16T09:15:00Z'),
       updatedAt: new Date('2024-01-16T09:15:00Z'),
+      votes: [
+        {
+          id: 'v2',
+          commentId: '2',
+          userId: '3',
+          voteType: 'UP' as const,
+          createdAt: new Date('2024-01-16T10:00:00Z'),
+          updatedAt: new Date('2024-01-16T10:00:00Z'),
+          user: {
+            id: '3',
+            firstName: 'Alice',
+            lastName: 'Johnson',
+          },
+        },
+        {
+          id: 'v3',
+          commentId: '2',
+          userId: '4',
+          voteType: 'DOWN' as const,
+          createdAt: new Date('2024-01-16T11:00:00Z'),
+          updatedAt: new Date('2024-01-16T11:00:00Z'),
+          user: {
+            id: '4',
+            firstName: 'Bob',
+            lastName: 'Wilson',
+          },
+        },
+      ],
     },
   ],
 };

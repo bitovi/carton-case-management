@@ -27,6 +27,12 @@ describe('appRouter', () => {
       comment: {
         create: vi.fn(),
       },
+      commentVote: {
+        findUnique: vi.fn(),
+        create: vi.fn(),
+        update: vi.fn(),
+        delete: vi.fn(),
+      },
     };
 
     mockContext = {
@@ -337,6 +343,7 @@ describe('appRouter', () => {
               id: 'comment-1',
               content: 'Test comment',
               author: { id: 'user-1', firstName: 'User', lastName: 'One', email: 'user1@example.com' },
+              votes: [],
             },
           ],
         };
@@ -362,6 +369,13 @@ describe('appRouter', () => {
               include: {
                 author: {
                   select: { id: true, firstName: true, lastName: true, email: true },
+                },
+                votes: {
+                  include: {
+                    user: {
+                      select: { id: true, firstName: true, lastName: true },
+                    },
+                  },
                 },
               },
               orderBy: { createdAt: 'desc' },
