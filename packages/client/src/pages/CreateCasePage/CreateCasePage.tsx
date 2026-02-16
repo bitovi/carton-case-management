@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/obra/Button';
 import { Input } from '@/components/obra/Input';
-import { Textarea } from '@/components/obra';
+import { Textarea, useToast } from '@/components/obra';
 import {
   Select,
   SelectContent,
@@ -23,6 +23,7 @@ type ValidationErrors = {
 export function CreateCasePage() {
   const navigate = useNavigate();
   const utils = trpc.useUtils();
+  const { success } = useToast();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [customerId, setCustomerId] = useState('');
@@ -42,6 +43,7 @@ export function CreateCasePage() {
   const createCase = trpc.case.create.useMutation({
     onSuccess: (data) => {
       utils.case.list.invalidate();
+      success('Success!', 'A new claim has been created.');
       navigate(`/cases/${data.id}`);
     },
   });
