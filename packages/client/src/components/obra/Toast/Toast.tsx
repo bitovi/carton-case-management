@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { X, PartyPopper, TriangleAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/obra/Button';

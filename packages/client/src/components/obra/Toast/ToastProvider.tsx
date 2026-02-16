@@ -3,10 +3,11 @@ import {
   useContext,
   useState,
   useCallback,
+  useRef,
+  useEffect,
   type ReactNode,
 } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
 import type { ToastConfig, ToastContextValue } from './types';
 import type { ToastProps } from './types';
 import { Toast } from './Toast';
@@ -26,18 +27,31 @@ let toastCounter = 0;
 export function ToastProvider({ children }: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const location = useLocation();
+  const timeoutsRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
   // Clear all toasts on navigation
   useEffect(() => {
     setToasts([]);
+    // Clear all timeouts when navigating
+    timeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
+    timeoutsRef.current.clear();
   }, [location.pathname]);
 
   const dismiss = useCallback((id: string) => {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
+    // Clear the timeout for this toast
+    const timeout = timeoutsRef.current.get(id);
+    if (timeout) {
+      clearTimeout(timeout);
+      timeoutsRef.current.delete(id);
+    }
   }, []);
 
   const dismissAll = useCallback(() => {
     setToasts([]);
+    // Clear all timeouts
+    timeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
+    timeoutsRef.current.clear();
   }, []);
 
   const toast = useCallback((config: ToastConfig) => {
@@ -56,9 +70,10 @@ export function ToastProvider({ children }: ToastProviderProps) {
 
     // Auto-dismiss after duration
     if (duration > 0) {
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         dismiss(id);
       }, duration);
+      timeoutsRef.current.set(id, timeout);
     }
   }, [dismiss]);
 
