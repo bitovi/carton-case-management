@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Textarea } from '@/components/obra';
+import { ReactionStatistics } from '@/components/common/ReactionStatistics';
 import type { CaseCommentsProps } from './types';
 
 export function CaseComments({ caseData }: CaseCommentsProps) {
@@ -115,6 +116,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
                 </div>
               </div>
               <p className="text-sm text-gray-700">{comment.content}</p>
+              <CommentVoting commentId={comment.id} />
             </div>
           ))
         ) : (
@@ -122,5 +124,42 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
         )}
       </div>
     </div>
+  );
+}
+
+function CommentVoting({ commentId }: { commentId: string }) {
+  const utils = trpc.useUtils();
+  
+  // Fetch vote stats for this comment
+  const { data: voteStats } = trpc.comment.getVoteStats.useQuery({ commentId });
+  
+  // Vote mutation
+  const voteMutation = trpc.comment.vote.useMutation({
+    onSuccess: () => {
+      // Invalidate vote stats to refetch
+      utils.comment.getVoteStats.invalidate({ commentId });
+    },
+  });
+
+  const handleUpvote = () => {
+    voteMutation.mutate({ commentId, voteType: 'UP' });
+  };
+
+  const handleDownvote = () => {
+    voteMutation.mutate({ commentId, voteType: 'DOWN' });
+  };
+
+  if (!voteStats) return null;
+
+  return (
+    <ReactionStatistics
+      userVote={voteStats.userVote}
+      upvotes={voteStats.upvotes}
+      upvoters={voteStats.upvoters}
+      downvotes={voteStats.downvotes}
+      downvoters={voteStats.downvoters}
+      onUpvote={handleUpvote}
+      onDownvote={handleDownvote}
+    />
   );
 }
