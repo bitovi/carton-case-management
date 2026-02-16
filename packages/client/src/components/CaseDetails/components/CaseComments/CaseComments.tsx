@@ -153,7 +153,7 @@ function CommentVoting({ commentId }: { commentId: string }) {
 
   return (
     <ReactionStatistics
-      userVote={voteStats.userVote}
+      userVote={voteStats.userVote as 'none' | 'up' | 'down'}
       upvotes={voteStats.upvotes}
       upvoters={voteStats.upvoters}
       downvotes={voteStats.downvotes}
