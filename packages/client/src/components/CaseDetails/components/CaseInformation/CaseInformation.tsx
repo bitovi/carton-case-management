@@ -13,12 +13,28 @@ import {
 } from '@/components/obra/Select';
 import { MoreOptionsMenu, MenuItem } from '@/components/common/MoreOptionsMenu';
 import { ConfirmationDialog } from '@/components/common/ConfirmationDialog';
+import { ReactionStatistics } from '@/components/common/ReactionStatistics';
+import { useReaction } from '@/hooks/useReaction';
 import { useNavigate } from 'react-router-dom';
 import type { CaseInformationProps } from './types';
 
 export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
+
+  // Reaction hook for case likes/dislikes
+  const {
+    upvotes,
+    downvotes,
+    upvoters,
+    downvoters,
+    userVote,
+    toggleUpvote,
+    toggleDownvote,
+  } = useReaction({
+    entityType: 'CASE',
+    entityId: caseId,
+  });
 
   const utils = trpc.useUtils();
   const updateCase = trpc.case.update.useMutation({
@@ -188,6 +204,19 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
             return null;
           }}
         />
+
+        {/* Reactions */}
+        <div className="mt-2">
+          <ReactionStatistics
+            userVote={userVote}
+            upvotes={upvotes}
+            downvotes={downvotes}
+            upvoters={upvoters}
+            downvoters={downvoters}
+            onUpvote={toggleUpvote}
+            onDownvote={toggleDownvote}
+          />
+        </div>
       </div>
 
       <ConfirmationDialog

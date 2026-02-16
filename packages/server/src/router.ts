@@ -401,6 +401,153 @@ export const appRouter = router({
         });
       }),
   }),
+
+  reaction: router({
+    // Toggle a reaction (create, update, or delete)
+    toggle: publicProcedure
+      .input(
+        z.object({
+          entityType: z.enum(['CASE', 'COMMENT']),
+          entityId: z.string(),
+          type: z.enum(['UP', 'DOWN']),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Must be logged in to react',
+          });
+        }
+
+        // Check if user already has a reaction for this entity
+        const existingReaction = await ctx.prisma.reaction.findUnique({
+          where: {
+            userId_entityType_entityId: {
+              userId: ctx.userId,
+              entityType: input.entityType,
+              entityId: input.entityId,
+            },
+          },
+        });
+
+        // If clicking the same reaction type, remove it (toggle off)
+        if (existingReaction && existingReaction.type === input.type) {
+          await ctx.prisma.reaction.delete({
+            where: { id: existingReaction.id },
+          });
+          return { action: 'removed' as const, type: input.type };
+        }
+
+        // If user has a different reaction, update it (switch)
+        if (existingReaction && existingReaction.type !== input.type) {
+          await ctx.prisma.reaction.update({
+            where: { id: existingReaction.id },
+            data: { type: input.type },
+          });
+          return { action: 'switched' as const, type: input.type };
+        }
+
+        // Otherwise, create a new reaction
+        await ctx.prisma.reaction.create({
+          data: {
+            userId: ctx.userId,
+            entityType: input.entityType,
+            entityId: input.entityId,
+            type: input.type,
+          },
+        });
+        return { action: 'created' as const, type: input.type };
+      }),
+
+    // Get reaction statistics for an entity
+    getByEntity: publicProcedure
+      .input(
+        z.object({
+          entityType: z.enum(['CASE', 'COMMENT']),
+          entityId: z.string(),
+        })
+      )
+      .query(async ({ ctx, input }) => {
+        const reactions = await ctx.prisma.reaction.findMany({
+          where: {
+            entityType: input.entityType,
+            entityId: input.entityId,
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        });
+
+        const upReactions = reactions.filter((r) => r.type === 'UP');
+        const downReactions = reactions.filter((r) => r.type === 'DOWN');
+
+        const userReaction = ctx.userId
+          ? reactions.find((r) => r.userId === ctx.userId)
+          : null;
+
+        return {
+          upvotes: upReactions.length,
+          downvotes: downReactions.length,
+          upvoters: upReactions.map((r) => `${r.user.firstName} ${r.user.lastName}`),
+          downvoters: downReactions.map((r) => `${r.user.firstName} ${r.user.lastName}`),
+          userVote: userReaction ? (userReaction.type === 'UP' ? ('up' as const) : ('down' as const)) : ('none' as const),
+        };
+      }),
+
+    // Get reaction statistics for multiple entities (batch query)
+    getByEntities: publicProcedure
+      .input(
+        z.object({
+          entityType: z.enum(['CASE', 'COMMENT']),
+          entityIds: z.array(z.string()),
+        })
+      )
+      .query(async ({ ctx, input }) => {
+        const reactions = await ctx.prisma.reaction.findMany({
+          where: {
+            entityType: input.entityType,
+            entityId: { in: input.entityIds },
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        });
+
+        // Group reactions by entity ID
+        const reactionsByEntity = input.entityIds.map((entityId) => {
+          const entityReactions = reactions.filter((r) => r.entityId === entityId);
+          const upReactions = entityReactions.filter((r) => r.type === 'UP');
+          const downReactions = entityReactions.filter((r) => r.type === 'DOWN');
+          const userReaction = ctx.userId
+            ? entityReactions.find((r) => r.userId === ctx.userId)
+            : null;
+
+          return {
+            entityId,
+            upvotes: upReactions.length,
+            downvotes: downReactions.length,
+            upvoters: upReactions.map((r) => `${r.user.firstName} ${r.user.lastName}`),
+            downvoters: downReactions.map((r) => `${r.user.firstName} ${r.user.lastName}`),
+            userVote: userReaction ? (userReaction.type === 'UP' ? ('up' as const) : ('down' as const)) : ('none' as const),
+          };
+        });
+
+        return reactionsByEntity;
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

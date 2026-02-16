@@ -41,6 +41,16 @@ enum CasePriority {
   URGENT
 }
 
+enum ReactionType {
+  UP
+  DOWN
+}
+
+enum ReactionEntityType {
+  CASE
+  COMMENT
+}
+
 model User {
   id         String   @id @default(uuid())
   firstName  String
@@ -53,8 +63,9 @@ model User {
   updatedAt  DateTime @updatedAt
 
   comments      Comment[]
-  createdCases  Case[]    @relation("UserCreatedBy")
-  assignedCases Case[]    @relation("UserAssignedTo")
+  createdCases  Case[]     @relation("UserCreatedBy")
+  assignedCases Case[]     @relation("UserAssignedTo")
+  reactions     Reaction[]
 }
 
 model Customer {
@@ -106,4 +117,21 @@ model Comment {
 
   @@index([caseId])
   @@index([authorId])
+}
+
+model Reaction {
+  id         String             @id @default(uuid())
+  type       ReactionType       // UP or DOWN
+  entityType ReactionEntityType // CASE or COMMENT
+  entityId   String             // ID of the case or comment
+  userId     String             // User who reacted
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Ensure one reaction per user per entity
+  @@unique([userId, entityType, entityId])
+  @@index([entityType, entityId])
+  @@index([userId])
 }
