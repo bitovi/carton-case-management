@@ -14,6 +14,9 @@ function App() {
   const { toasts, dismiss } = useToast();
   
   // Clear all toasts on navigation
+  // Note: We intentionally don't include 'toasts' and 'dismiss' in the dependency array
+  // because we only want to trigger this effect when the pathname changes, not when toasts change.
+  // The toasts array and dismiss function are stable references from the context.
   useEffect(() => {
     toasts.forEach((toast) => {
       dismiss(toast.id);

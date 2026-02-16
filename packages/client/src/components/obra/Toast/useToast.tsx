@@ -18,7 +18,7 @@ export function ToastContextProvider({ children }: { children: React.ReactNode }
   const [toasts, setToasts] = React.useState<ToastState[]>([]);
 
   const addToast = React.useCallback((options: UseToastOptions) => {
-    const id = Math.random().toString(36).substring(2, 9);
+    const id = crypto.randomUUID();
     setToasts((prev) => [...prev, { ...options, id, open: true }]);
     return id;
   }, []);
