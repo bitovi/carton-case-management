@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { FiltersTrigger } from './FiltersTrigger';
 
 const meta = {
-  title: 'Common/FiltersTrigger',
+  title: 'Components/Common/FiltersTrigger',
   component: FiltersTrigger,
   parameters: {
     layout: 'centered',

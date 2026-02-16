@@ -4,7 +4,7 @@ import { FiltersDialog } from './FiltersDialog';
 import type { FilterItem } from '../FiltersList/types';
 
 const meta = {
-  title: 'Common/FiltersDialog',
+  title: 'Components/Common/FiltersDialog',
   component: FiltersDialog,
   parameters: {
     layout: 'centered',

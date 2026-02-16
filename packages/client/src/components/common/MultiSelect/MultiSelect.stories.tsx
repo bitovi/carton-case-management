@@ -4,7 +4,7 @@ import { User } from 'lucide-react';
 import { MultiSelect } from './MultiSelect';
 
 const meta = {
-  title: 'Common/MultiSelect',
+  title: 'Components/Common/MultiSelect',
   component: MultiSelect,
   parameters: {
     layout: 'centered',

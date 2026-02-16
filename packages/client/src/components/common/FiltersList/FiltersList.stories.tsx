@@ -4,7 +4,7 @@ import { FiltersList } from './FiltersList';
 import type { FilterItem } from './types';
 
 const meta = {
-  title: 'Common/FiltersList',
+  title: 'Components/Common/FiltersList',
   component: FiltersList,
   parameters: {
     layout: 'centered',
