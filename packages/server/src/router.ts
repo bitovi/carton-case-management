@@ -400,6 +400,93 @@ export const appRouter = router({
           },
         });
       }),
+    
+    toggleVote: publicProcedure
+      .input(
+        z.object({
+          commentId: z.string(),
+          voteType: z.enum(['UP', 'DOWN']),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated',
+          });
+        }
+
+        const { commentId, voteType } = input;
+
+        // Check if user already voted on this comment
+        const existingVote = await ctx.prisma.commentVote.findUnique({
+          where: {
+            commentId_userId: {
+              commentId,
+              userId: ctx.userId,
+            },
+          },
+        });
+
+        if (existingVote) {
+          // If same vote type, remove the vote (toggle off)
+          if (existingVote.voteType === voteType) {
+            await ctx.prisma.commentVote.delete({
+              where: { id: existingVote.id },
+            });
+            return { action: 'removed', voteType };
+          }
+          
+          // If different vote type, update to new type
+          await ctx.prisma.commentVote.update({
+            where: { id: existingVote.id },
+            data: { voteType },
+          });
+          return { action: 'changed', voteType };
+        }
+
+        // No existing vote, create new one
+        await ctx.prisma.commentVote.create({
+          data: {
+            commentId,
+            userId: ctx.userId,
+            voteType,
+          },
+        });
+        return { action: 'added', voteType };
+      }),
+    
+    getVotes: publicProcedure
+      .input(z.object({ commentId: z.string() }))
+      .query(async ({ ctx, input }) => {
+        const votes = await ctx.prisma.commentVote.findMany({
+          where: { commentId: input.commentId },
+          include: {
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        });
+
+        const upvotes = votes.filter((v) => v.voteType === 'UP');
+        const downvotes = votes.filter((v) => v.voteType === 'DOWN');
+        
+        const userVote = ctx.userId
+          ? votes.find((v) => v.userId === ctx.userId)?.voteType
+          : null;
+
+        return {
+          upvotes: upvotes.length,
+          downvotes: downvotes.length,
+          upvoters: upvotes.map((v) => `${v.user.firstName} ${v.user.lastName}`),
+          downvoters: downvotes.map((v) => `${v.user.firstName} ${v.user.lastName}`),
+          userVote: userVote ? (userVote === 'UP' ? 'up' : 'down') : 'none',
+        };
+      }),
   }),
 });
 
