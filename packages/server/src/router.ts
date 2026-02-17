@@ -464,19 +464,6 @@ export const appRouter = router({
       .query(async ({ ctx, input }) => {
         const votes = await ctx.prisma.commentVote.findMany({
           where: { commentId: input.commentId },
-          include: {
-            comment: {
-              include: {
-                author: {
-                  select: {
-                    id: true,
-                    firstName: true,
-                    lastName: true,
-                  },
-                },
-              },
-            },
-          },
           orderBy: {
             createdAt: 'asc',
           },

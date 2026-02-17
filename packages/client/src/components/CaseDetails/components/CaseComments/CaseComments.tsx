@@ -96,7 +96,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
       <div className="flex flex-col gap-4">
         {caseData.comments && caseData.comments.length > 0 ? (
           caseData.comments.map((comment) => (
-            <CommentItem key={comment.id} comment={comment} caseId={caseData.id} />
+            <CommentItem key={comment.id} comment={comment} />
           ))
         ) : (
           <div className="text-sm text-gray-500">No comments yet</div>

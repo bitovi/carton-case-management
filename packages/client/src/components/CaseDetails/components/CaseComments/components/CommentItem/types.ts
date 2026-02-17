@@ -10,5 +10,4 @@ export interface CommentItemProps {
       email: string;
     };
   };
-  caseId: string;
 }
