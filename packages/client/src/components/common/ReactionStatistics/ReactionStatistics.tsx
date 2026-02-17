@@ -17,7 +17,7 @@ export function ReactionStatistics({
       <VoteButton
         type="up"
         active={userVote === 'up'}
-        showCount={userVote === 'up'}
+        showCount={upvotes > 0}
         count={upvotes}
         voters={upvoters}
         onClick={onUpvote}
@@ -25,7 +25,7 @@ export function ReactionStatistics({
       <VoteButton
         type="down"
         active={userVote === 'down'}
-        showCount={userVote === 'down'}
+        showCount={downvotes > 0}
         count={downvotes}
         voters={downvoters}
         onClick={onDownvote}
