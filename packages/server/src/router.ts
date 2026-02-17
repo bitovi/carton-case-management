@@ -400,6 +400,102 @@ export const appRouter = router({
           },
         });
       }),
+    vote: publicProcedure
+      .input(
+        z.object({
+          commentId: z.string(),
+          voteType: z.enum(['UP', 'DOWN']),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated',
+          });
+        }
+
+        const { commentId, voteType } = input;
+
+        // Check if user already voted
+        const existingVote = await ctx.prisma.commentVote.findUnique({
+          where: {
+            commentId_userId: {
+              commentId,
+              userId: ctx.userId,
+            },
+          },
+        });
+
+        // If user already voted with the same type, remove the vote
+        if (existingVote && existingVote.voteType === voteType) {
+          await ctx.prisma.commentVote.delete({
+            where: {
+              id: existingVote.id,
+            },
+          });
+          return { action: 'removed', voteType };
+        }
+
+        // If user voted with different type, update the vote
+        if (existingVote && existingVote.voteType !== voteType) {
+          await ctx.prisma.commentVote.update({
+            where: {
+              id: existingVote.id,
+            },
+            data: {
+              voteType,
+            },
+          });
+          return { action: 'changed', voteType };
+        }
+
+        // Create new vote
+        await ctx.prisma.commentVote.create({
+          data: {
+            commentId,
+            userId: ctx.userId,
+            voteType,
+          },
+        });
+        return { action: 'added', voteType };
+      }),
+    getVoteStats: publicProcedure
+      .input(z.object({ commentId: z.string() }))
+      .query(async ({ ctx, input }) => {
+        const votes = await ctx.prisma.commentVote.findMany({
+          where: {
+            commentId: input.commentId,
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: 'asc',
+          },
+        });
+
+        const upvotes = votes.filter((v) => v.voteType === 'UP');
+        const downvotes = votes.filter((v) => v.voteType === 'DOWN');
+
+        const userVote = ctx.userId
+          ? votes.find((v) => v.userId === ctx.userId)?.voteType
+          : undefined;
+
+        return {
+          upvotes: upvotes.length,
+          downvotes: downvotes.length,
+          upvoters: upvotes.map((v) => `${v.user.firstName} ${v.user.lastName}`),
+          downvoters: downvotes.map((v) => `${v.user.firstName} ${v.user.lastName}`),
+          userVote: userVote === 'UP' ? 'up' : userVote === 'DOWN' ? 'down' : 'none',
+        };
+      }),
   }),
 });
 
