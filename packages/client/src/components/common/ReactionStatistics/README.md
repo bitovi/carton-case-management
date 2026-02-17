@@ -27,8 +27,10 @@ https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-
 | Figma Property | Type | React Prop | Notes |
 |----------------|------|------------|-------|
 | UserVote | Variant | `userVote?: 'none' \| 'up' \| 'down'` | Default 'none' - controls active button |
-| - | - | `upvotes?: number` | Upvote count (shown when userVote='up') |
-| - | - | `downvotes?: number` | Downvote count (shown when userVote='down') |
+| - | - | `upvotes?: number` | Upvote count (shown when upvotes > 0) |
+| - | - | `downvotes?: number` | Downvote count (shown when downvotes > 0) |
+| - | - | `upvoters?: string[]` | Array of upvoter names for tooltip |
+| - | - | `downvoters?: string[]` | Array of downvoter names for tooltip |
 | - | - | `onUpvote?: () => void` | Upvote click handler |
 | - | - | `onDownvote?: () => void` | Downvote click handler |
 
@@ -42,6 +44,7 @@ https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-
 
 ### Layout Variations
 
-- **userVote='none'**: Two inactive buttons, no counts
-- **userVote='up'**: Active up button + count, inactive down button
-- **userVote='down'**: Inactive up button, active down button + count
+- **userVote='none', no votes**: Two inactive buttons, no counts
+- **userVote='none', has votes**: Inactive buttons with visible counts
+- **userVote='up'**: Active up button (teal) + count, inactive down button with count if downvotes > 0
+- **userVote='down'**: Inactive up button with count if upvotes > 0, active down button (red) + count

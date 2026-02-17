@@ -29,21 +29,26 @@ describe('ReactionStatistics', () => {
   });
 
   describe('UserVote variant behavior', () => {
-    it('shows no counts when userVote="none"', () => {
+    it('shows counts when votes exist even when userVote="none"', () => {
       render(<ReactionStatistics userVote="none" upvotes={5} downvotes={3} />);
-      expect(screen.queryByText('5')).not.toBeInTheDocument();
-      expect(screen.queryByText('3')).not.toBeInTheDocument();
+      expect(screen.getByText('5')).toBeInTheDocument();
+      expect(screen.getByText('3')).toBeInTheDocument();
     });
 
-    it('shows only upvote count when userVote="up"', () => {
+    it('shows no counts when no votes exist', () => {
+      render(<ReactionStatistics userVote="none" upvotes={0} downvotes={0} />);
+      expect(screen.queryByText('0')).not.toBeInTheDocument();
+    });
+
+    it('shows both counts when userVote="up" and both have votes', () => {
       render(<ReactionStatistics userVote="up" upvotes={5} downvotes={3} />);
       expect(screen.getByText('5')).toBeInTheDocument();
-      expect(screen.queryByText('3')).not.toBeInTheDocument();
+      expect(screen.getByText('3')).toBeInTheDocument();
     });
 
-    it('shows only downvote count when userVote="down"', () => {
+    it('shows both counts when userVote="down" and both have votes', () => {
       render(<ReactionStatistics userVote="down" upvotes={5} downvotes={3} />);
-      expect(screen.queryByText('5')).not.toBeInTheDocument();
+      expect(screen.getByText('5')).toBeInTheDocument();
       expect(screen.getByText('3')).toBeInTheDocument();
     });
 
@@ -106,13 +111,15 @@ describe('ReactionStatistics', () => {
   describe('Default prop values', () => {
     it('defaults userVote to "none"', () => {
       render(<ReactionStatistics upvotes={5} downvotes={3} />);
-      expect(screen.queryByText('5')).not.toBeInTheDocument();
-      expect(screen.queryByText('3')).not.toBeInTheDocument();
+      // With new behavior, counts show when votes exist even if userVote="none"
+      expect(screen.getByText('5')).toBeInTheDocument();
+      expect(screen.getByText('3')).toBeInTheDocument();
     });
 
     it('defaults upvotes and downvotes to 0', () => {
       render(<ReactionStatistics userVote="up" />);
-      expect(screen.getByText('0')).toBeInTheDocument();
+      // No counts should show when default is 0
+      expect(screen.queryByText('0')).not.toBeInTheDocument();
     });
   });
 });
