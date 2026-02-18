@@ -17,16 +17,18 @@ describe('VoteButton', () => {
   });
 
   describe('Active state', () => {
-    it('applies teal color when type="up" and active=true', () => {
+    it('applies teal background when type="up" and active=true', () => {
       render(<VoteButton type="up" active={true} />);
       const button = screen.getByLabelText('Upvote');
-      expect(button).toHaveClass('text-teal-500');
+      expect(button).toHaveClass('bg-teal-500');
+      expect(button).toHaveClass('text-white');
     });
 
-    it('applies red color when type="down" and active=true', () => {
+    it('applies red background when type="down" and active=true', () => {
       render(<VoteButton type="down" active={true} />);
       const button = screen.getByLabelText('Downvote');
-      expect(button).toHaveClass('text-red-500');
+      expect(button).toHaveClass('bg-red-500');
+      expect(button).toHaveClass('text-white');
     });
 
     it('applies gray color when active=false', () => {
