@@ -1,7 +1,7 @@
 name: Deploy Carton Case Manager
 
 on:
-workflow_call:
+  workflow_call:
     inputs:
       environment:
         description: 'Environment to deploy to'
