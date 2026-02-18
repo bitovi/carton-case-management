@@ -16,13 +16,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@prisma/client": "^6.1.0",
+    "@prisma/client": "^6.19.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^2.1.9",
     "@vitest/ui": "^2.1.8",
-    "prisma": "^6.1.0",
+    "prisma": "^6.19.2",
     "vitest": "^2.1.8",
     "zod-prisma-types": "^3.1.8"
   }

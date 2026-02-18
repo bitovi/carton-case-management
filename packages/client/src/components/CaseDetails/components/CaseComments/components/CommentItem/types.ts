@@ -4,6 +4,8 @@ import type { AppRouter } from '@carton/server';
 type RouterOutputs = inferRouterOutputs<AppRouter>;
 type CaseDetailResponse = Exclude<RouterOutputs['case']['getById'], null>;
 
-export type CaseCommentsProps = {
-  caseData: CaseDetailResponse;
-};
+export type CommentType = CaseDetailResponse['comments'][number];
+
+export interface CommentItemProps {
+  comment: CommentType;
+}

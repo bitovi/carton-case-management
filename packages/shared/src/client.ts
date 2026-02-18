@@ -2,12 +2,13 @@
 // Use this entry point for client-side code
 
 // Types from generated Zod schemas (type-only import from @prisma/client is tree-shaken)
-export { CasePrioritySchema, CaseStatusSchema } from './generated/index.js';
-export type { CasePriorityType, CaseStatusType } from './generated/index.js';
+export { CasePrioritySchema, CaseStatusSchema, VoteTypeSchema } from './generated/index.js';
+export type { CasePriorityType, CaseStatusType, VoteTypeType } from './generated/index.js';
 
 // Legacy type aliases for backwards compatibility
 export type CasePriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 export type CaseStatus = 'TO_DO' | 'IN_PROGRESS' | 'COMPLETED' | 'CLOSED';
+export type VoteType = 'UP' | 'DOWN';
 
 // Helper constants for UI
 export const CASE_PRIORITY_OPTIONS = [

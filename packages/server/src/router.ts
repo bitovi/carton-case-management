@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { router, publicProcedure } from './trpc.js';
-import { formatDate, casePrioritySchema, caseStatusSchema } from '@carton/shared';
+import { formatDate, casePrioritySchema, caseStatusSchema, VoteTypeSchema } from '@carton/shared';
 import { TRPCError } from '@trpc/server';
 
 export const appRouter = router({
@@ -399,6 +399,102 @@ export const appRouter = router({
             },
           },
         });
+      }),
+
+    vote: publicProcedure
+      .input(
+        z.object({
+          commentId: z.string(),
+          voteType: VoteTypeSchema,
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated',
+          });
+        }
+
+        const { commentId, voteType } = input;
+
+        // Check if user has already voted on this comment
+        const existingVote = await ctx.prisma.commentVote.findUnique({
+          where: {
+            commentId_userId: {
+              commentId,
+              userId: ctx.userId,
+            },
+          },
+        });
+
+        // If same vote type, remove the vote (toggle off)
+        if (existingVote && existingVote.voteType === voteType) {
+          await ctx.prisma.commentVote.delete({
+            where: {
+              id: existingVote.id,
+            },
+          });
+          return { action: 'removed', voteType };
+        }
+
+        // If different vote type or no vote, upsert the vote
+        await ctx.prisma.commentVote.upsert({
+          where: {
+            commentId_userId: {
+              commentId,
+              userId: ctx.userId,
+            },
+          },
+          create: {
+            commentId,
+            userId: ctx.userId,
+            voteType,
+          },
+          update: {
+            voteType,
+          },
+        });
+
+        return { action: existingVote ? 'updated' : 'created', voteType };
+      }),
+
+    getVoteStats: publicProcedure
+      .input(
+        z.object({
+          commentId: z.string(),
+        })
+      )
+      .query(async ({ ctx, input }) => {
+        const votes = await ctx.prisma.commentVote.findMany({
+          where: {
+            commentId: input.commentId,
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        });
+
+        const upvotes = votes.filter((v) => v.voteType === 'UP');
+        const downvotes = votes.filter((v) => v.voteType === 'DOWN');
+
+        const userVote = ctx.userId
+          ? votes.find((v) => v.userId === ctx.userId)
+          : undefined;
+
+        return {
+          upvoteCount: upvotes.length,
+          downvoteCount: downvotes.length,
+          upvoters: upvotes.map((v) => `${v.user.firstName} ${v.user.lastName}`),
+          downvoters: downvotes.map((v) => `${v.user.firstName} ${v.user.lastName}`),
+          userVote: userVote ? (userVote.voteType === 'UP' ? 'up' : 'down') : 'none',
+        };
       }),
   }),
 });
