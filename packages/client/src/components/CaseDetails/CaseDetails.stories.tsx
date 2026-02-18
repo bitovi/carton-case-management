@@ -51,6 +51,16 @@ const mockCase: NonNullable<CaseByIdOutput> = {
       },
       createdAt: new Date('2024-01-15T11:00:00Z'),
       updatedAt: new Date('2024-01-15T11:00:00Z'),
+      voteStats: {
+        upvotes: 2,
+        downvotes: 0,
+        upvoters: [
+          { id: '1', name: 'John Doe' },
+          { id: '3', name: 'Bob Johnson' },
+        ],
+        downvoters: [],
+        userVote: 'up' as const,
+      },
     },
     {
       id: '2',
@@ -66,6 +76,15 @@ const mockCase: NonNullable<CaseByIdOutput> = {
       },
       createdAt: new Date('2024-01-16T09:15:00Z'),
       updatedAt: new Date('2024-01-16T09:15:00Z'),
+      voteStats: {
+        upvotes: 0,
+        downvotes: 1,
+        upvoters: [],
+        downvoters: [
+          { id: '4', name: 'Alice Williams' },
+        ],
+        userVote: 'none' as const,
+      },
     },
   ],
 };
