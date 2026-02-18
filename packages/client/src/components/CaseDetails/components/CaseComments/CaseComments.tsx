@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Textarea } from '@/components/obra';
+import { CommentItem } from './components/CommentItem';
 import type { CaseCommentsProps } from './types';
 
 export function CaseComments({ caseData }: CaseCommentsProps) {
@@ -95,27 +96,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
       <div className="flex flex-col gap-4">
         {caseData.comments && caseData.comments.length > 0 ? (
           caseData.comments.map((comment) => (
-            <div key={comment.id} className="flex flex-col gap-2 py-2">
-              <div className="flex gap-2 items-center">
-                <div className="w-10 flex items-center justify-center text-sm font-semibold text-gray-900">
-                  {comment.author.firstName[0]}{comment.author.lastName[0]}
-                </div>
-                <div className="flex flex-col">
-                  <p className="text-sm font-medium">{comment.author.firstName} {comment.author.lastName}</p>
-                  <p className="text-xs text-gray-500">
-                    {new Date(comment.createdAt).toLocaleString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric',
-                      hour: 'numeric',
-                      minute: '2-digit',
-                      hour12: true,
-                    })}
-                  </p>
-                </div>
-              </div>
-              <p className="text-sm text-gray-700">{comment.content}</p>
-            </div>
+            <CommentItem key={comment.id} comment={comment} caseId={caseData.id} />
           ))
         ) : (
           <div className="text-sm text-gray-500">No comments yet</div>
