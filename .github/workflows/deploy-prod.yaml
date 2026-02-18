@@ -14,5 +14,5 @@ jobs:
     uses: ./.github/workflows/deploy.yaml
     secrets: inherit
     with:
-      environment: prod
+      environment: production
       ecr-repo: carton-case-management-app

@@ -75,6 +75,7 @@ resource "aws_ecs_service" "main" {
   desired_count   = 1
   launch_type     = "FARGATE"
   wait_for_steady_state = false
+  force_new_deployment = true
 
   network_configuration {
     security_groups  = ["sg-0df8cac4b783cd6fc"]

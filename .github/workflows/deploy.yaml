@@ -1,7 +1,7 @@
 name: Deploy Carton Case Manager
 
 on:
-  workflow_call:
+workflow_call:
     inputs:
       environment:
         description: 'Environment to deploy to'
@@ -39,8 +39,9 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: arn:aws:iam::810329399955:role/carton-case-management-ecr-role
         aws-region: ${{ env.AWS_REGION }}
+        aws-access-key-id: ${{ secrets.AWS_SECRET_ACCESS_KEY_JIRA_INTEGRATIONS }}
+        aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY_ID_JIRA_INTEGRATIONS }}
 
     - name: Login to Amazon ECR
       id: login-ecr
@@ -59,3 +60,14 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+    - name: Create New Deployment to ECS with Terraform
+      id: deploy-image
+      env:
+        ENVIRONMENT: ${{ inputs.environment }}
+      run: |
+        cd infra
+        terraform workspace select $ENVIRONMENT
+        terraform taint aws_ecs_task_definition.main
+        terraform apply -var-file="environments/$ENVIRONMENT/$ENVIRONMENT.tfvars" -auto-approve
+      
