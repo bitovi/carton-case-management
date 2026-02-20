@@ -73,6 +73,7 @@ jobs:
         TF_VAR_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_JIRA_INTEGRATIONS }}
       run: |
         cd infra
+        terraform init
         terraform workspace select $ENVIRONMENT
         terraform taint aws_ecs_task_definition.main
         terraform apply -var-file="environments/$ENVIRONMENT/$ENVIRONMENT.tfvars" -auto-approve
