@@ -1,0 +1,13 @@
+name: DB Reset Staging
+
+on:
+  workflow_dispatch:
+
+
+jobs:
+  deploy-carton:
+    name: DB Reset Carton Case Management Staging
+    uses: ./.github/workflows/db_reset.yaml
+    secrets: inherit
+    with:
+      environment: staging

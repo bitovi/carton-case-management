@@ -1,0 +1,12 @@
+name: DB Reset Production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-carton:
+    name: DB Reset Carton Case Management Production
+    uses: ./.github/workflows/db_reset.yaml
+    secrets: inherit
+    with:
+      environment: production
