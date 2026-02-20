@@ -85,16 +85,10 @@ test.describe('CasePage', () => {
     await page.goto('/');
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
+    
+    const essentialDetailsButton = page.getByRole('button', { name: /essential details/i });
+    await expect(essentialDetailsButton).toBeVisible({ timeout: 10000 });
 
-    const statusLabel = page.locator('text=/Status:/i').first();
-    await expect(statusLabel)
-      .toBeVisible()
-      .catch(() => {});
-
-    const priorityLabel = page.locator('text=/Priority:/i').first();
-    await expect(priorityLabel)
-      .toBeVisible()
-      .catch(() => {});
   });
 
   test('should display case comments section', async ({ page }) => {
@@ -123,6 +117,11 @@ test.describe('CasePage', () => {
 
     await page.goto('/');
 
+    const caseList = page.locator('.flex-1.lg\\:hidden .flex.flex-col.gap-2 a');
+    await expect(caseList.first()).toBeVisible({ timeout: 10000 });
+
+    await caseList.first().click();
+
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
     const caseTitle = page.getByRole('heading', { level: 1 });
@@ -140,6 +139,11 @@ test.describe('CasePage', () => {
     await page.setViewportSize({ width: 375, height: 667 });
 
     await page.goto('/');
+
+    const caseList = page.locator('.flex-1.lg\\:hidden .flex.flex-col.gap-2 a');
+    await expect(caseList.first()).toBeVisible({ timeout: 10000 });
+
+    await caseList.first().click();
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
@@ -159,6 +163,11 @@ test.describe('CasePage', () => {
     await page.setViewportSize({ width: 375, height: 667 });
 
     await page.goto('/');
+
+    const caseList = page.locator('.flex-1.lg\\:hidden .flex.flex-col.gap-2 a');
+    await expect(caseList.first()).toBeVisible({ timeout: 10000 });
+
+    await caseList.first().click();
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 

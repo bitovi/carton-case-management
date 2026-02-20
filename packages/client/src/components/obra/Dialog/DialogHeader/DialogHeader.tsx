@@ -1,27 +1,75 @@
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/obra/Button';
+import { DialogTitle } from '../DialogTitle';
+import { DialogDescription } from '../DialogDescription';
 import type { DialogHeaderProps } from './types';
 
-export function DialogHeader({ 
+export function DialogHeader({
+  type = 'Header',
   title,
+  description,
   onClose,
-  className 
+  className,
 }: DialogHeaderProps) {
+  const isHeader = type === 'Header';
+  const isCloseOnly = type === 'Close Only';
+  const isIconButtonClose = type === 'Icon Button Close';
+
   return (
-    <div className={cn('flex items-center justify-end', {'justify-between' : !!title}, className)}>
-      {title && (
-        <h2 className="text-xl font-semibold leading-6 tracking-tight text-foreground">
-          {title}
-        </h2>
+    <div
+      className={cn(
+        'flex h-[52px] w-full',
+        {
+          'items-center justify-between px-4': isHeader,
+          'items-center justify-end px-4': isCloseOnly || isIconButtonClose,
+        },
+        className
       )}
-      <button
-        type="button"
-        onClick={onClose}
-        className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
-        aria-label="Close"
-      >
-        <X className="h-4 w-4" />
-      </button>
+    >
+      {isHeader && (
+        <>
+          <div className="flex flex-col gap-1">
+            <DialogTitle className="text-xl font-semibold leading-6 text-foreground">
+              {title || 'Title'}
+            </DialogTitle>
+            {description && (
+              <DialogDescription className="text-sm text-muted-foreground">
+                {description}
+              </DialogDescription>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
+            aria-label="Close"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </>
+      )}
+      {isCloseOnly && (
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
+          aria-label="Close"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      )}
+      {isIconButtonClose && (
+        <Button
+          variant="ghost"
+          size="regular"
+          onClick={onClose}
+          aria-label="Close"
+          className="h-9 w-9 p-0"
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      )}
     </div>
   );
 }

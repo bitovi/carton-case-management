@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { screen, waitFor, render } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { CaseDetails } from './CaseDetails';
@@ -18,11 +18,9 @@ const mockCaseData = {
     name: 'John Customer',
   },
   createdBy: '1',
-  creator: { id: '1', name: 'John Doe', email: 'john@example.com' },
+  creator: { id: '1', firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
   assignedTo: '2',
-  assignee: { id: '2', name: 'Jane Doe', email: 'jane@example.com' },
-  updatedBy: '1',
-  updater: { id: '1', name: 'John Doe', email: 'john@example.com' },
+  assignee: { id: '2', firstName: 'Jane', lastName: 'Doe', email: 'jane@example.com' },
   createdAt: new Date(2024, 0, 1).toISOString(),
   updatedAt: new Date(2024, 0, 2).toISOString(),
   comments: [
@@ -30,7 +28,7 @@ const mockCaseData = {
       id: '1',
       content: 'Test comment',
       authorId: '1',
-      author: { id: '1', name: 'John Doe', email: 'john@example.com' },
+      author: { id: '1', firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
       createdAt: new Date(2024, 0, 1).toISOString(),
     },
   ],
@@ -67,8 +65,8 @@ const setupMockHandlers = (caseData: typeof mockCaseData | null = mockCaseData, 
         {
           result: {
             data: [
-              { id: '1', name: 'John Doe', email: 'john@example.com' },
-              { id: '2', name: 'Jane Doe', email: 'jane@example.com' },
+              { id: '1', firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
+              { id: '2', firstName: 'Jane', lastName: 'Doe', email: 'jane@example.com' },
             ],
           },
         },
@@ -128,18 +126,6 @@ describe('CaseDetails', () => {
     setupMockHandlers();
 
     renderCaseDetailsWithRouter();
-
-    await waitFor(() => {
-      expect(screen.queryByText(/Loading case details/i)).not.toBeInTheDocument();
-    });
-  });
-
-  it('calls onMenuClick callback when passed to CaseInformation', async () => {
-    const handleMenuClick = vi.fn();
-
-    setupMockHandlers();
-
-    renderCaseDetailsWithRouter('1', <CaseDetails onMenuClick={handleMenuClick} />);
 
     await waitFor(() => {
       expect(screen.queryByText(/Loading case details/i)).not.toBeInTheDocument();

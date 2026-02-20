@@ -81,50 +81,48 @@ export function CreateCustomerPage() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6 h-full flex-1 overflow-auto">
+    <div className="w-full bg-white rounded-lg shadow-sm p-6 h-full flex-1 overflow-auto">
       <h1 className="text-2xl font-bold mb-6">Create New Customer</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label htmlFor="firstName" className="text-sm font-medium">
-              First Name *
-            </label>
-            <Input
-              id="firstName"
-              value={firstName}
-              onChange={(e) => {
-                setFirstName(e.target.value);
-                if (touched.has('firstName')) validateForm();
-              }}
-              onBlur={() => handleBlur('firstName')}
-              placeholder="Enter first name"
-              className={touched.has('firstName') && validationErrors.firstName ? 'border-red-500' : ''}
-            />
-            {touched.has('firstName') && validationErrors.firstName && (
-              <p className="text-sm text-red-600">{validationErrors.firstName}</p>
-            )}
-          </div>
+        <div className="space-y-2">
+          <label htmlFor="firstName" className="text-sm font-medium">
+            First Name *
+          </label>
+          <Input
+            id="firstName"
+            value={firstName}
+            onChange={(e) => {
+              setFirstName(e.target.value);
+              if (touched.has('firstName')) validateForm();
+            }}
+            onBlur={() => handleBlur('firstName')}
+            placeholder="Enter first name"
+            className={touched.has('firstName') && validationErrors.firstName ? 'border-red-500' : ''}
+          />
+          {touched.has('firstName') && validationErrors.firstName && (
+            <p className="text-sm text-red-600">{validationErrors.firstName}</p>
+          )}
+        </div>
 
-          <div className="space-y-2">
-            <label htmlFor="lastName" className="text-sm font-medium">
-              Last Name *
-            </label>
-            <Input
-              id="lastName"
-              value={lastName}
-              onChange={(e) => {
-                setLastName(e.target.value);
-                if (touched.has('lastName')) validateForm();
-              }}
-              onBlur={() => handleBlur('lastName')}
-              placeholder="Enter last name"
-              className={touched.has('lastName') && validationErrors.lastName ? 'border-red-500' : ''}
-            />
-            {touched.has('lastName') && validationErrors.lastName && (
-              <p className="text-sm text-red-600">{validationErrors.lastName}</p>
-            )}
-          </div>
+        <div className="space-y-2">
+          <label htmlFor="lastName" className="text-sm font-medium">
+            Last Name *
+          </label>
+          <Input
+            id="lastName"
+            value={lastName}
+            onChange={(e) => {
+              setLastName(e.target.value);
+              if (touched.has('lastName')) validateForm();
+            }}
+            onBlur={() => handleBlur('lastName')}
+            placeholder="Enter last name"
+            className={touched.has('lastName') && validationErrors.lastName ? 'border-red-500' : ''}
+          />
+          {touched.has('lastName') && validationErrors.lastName && (
+            <p className="text-sm text-red-600">{validationErrors.lastName}</p>
+          )}
         </div>
 
         <div className="space-y-2">

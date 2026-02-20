@@ -24,9 +24,9 @@ test.describe('Error Handling', () => {
 
     await page.goto('/');
 
-    await expect(page.getByText('Error loading cases')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText('Error loading cases').first()).toBeVisible({ timeout: 15000 });
 
-    const retryButton = page.getByRole('button', { name: /retry/i });
+    const retryButton = page.getByRole('button', { name: /retry/i }).first();
     await expect(retryButton).toBeVisible();
   });
 
@@ -59,15 +59,15 @@ test.describe('Error Handling', () => {
 
     await page.goto('/');
 
-    await expect(page.getByText('Error loading cases')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText('Error loading cases').first()).toBeVisible({ timeout: 15000 });
 
     shouldError = false;
 
-    await page.getByRole('button', { name: /retry/i }).click();
+    await page.getByRole('button', { name: /retry/i }).first().click();
 
     const caseList = page.locator('.flex.flex-col.gap-2 a');
     await expect(caseList.first()).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText('Error loading cases')).not.toBeVisible();
+    await expect(page.getByText('Error loading cases').first()).not.toBeVisible();
   });
 
   test('should display loading spinner while fetching', async ({ page }) => {
@@ -133,7 +133,7 @@ test.describe('Error Handling', () => {
 
     await page.goto('/');
 
-    await expect(page.getByText('No cases found')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('No cases found').first()).toBeVisible({ timeout: 10000 });
 
     const caseLinks = page.locator('.flex.flex-col.gap-2 a');
     await expect(caseLinks).toHaveCount(0);
@@ -162,8 +162,8 @@ test.describe('Error Handling', () => {
 
     await page.goto('/');
 
-    await expect(page.getByText('Error loading cases')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText('Error loading cases').first()).toBeVisible({ timeout: 15000 });
 
-    await expect(page.getByRole('button', { name: /retry/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /retry/i }).first()).toBeVisible();
   });
 });

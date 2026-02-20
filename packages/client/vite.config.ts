@@ -10,6 +10,7 @@ export default defineConfig({
     },
   },
   server: {
+    allowedHosts: ['carton.bitovi.tools', 'carton-staging.bitovi.tools'],
     host: '0.0.0.0',
     port: 5173,
     open: false,

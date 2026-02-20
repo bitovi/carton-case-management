@@ -5,258 +5,320 @@ description: Ensure existing UI components are reused before creating new ones. 
 
 # Skill: Component Reuse
 
-This skill ensures existing components are discovered and reused before creating new ones. It prevents duplicate components and maintains design system consistency.
+Ensures existing components are discovered and reused before creating new ones to prevent duplicates and maintain design system consistency.
 
-## No Component Creation Without Audit
+## Required Before Creating Components
 
-**You are FORBIDDEN from creating any new component file until you have:**
-
-1. Completed the full audit process below
-2. Output the audit table showing your search results
-3. Confirmed no existing component can serve the same purpose
-
-**If you skip this audit and create a component that duplicates existing functionality, you have failed this task.**
+Complete the audit process and output the audit table before creating any new component files.
 
 ## When to Use
 
-- Before implementing any UI element from a Figma design
-- When a ticket or task requires adding UI components to a page
+- Before implementing UI elements from Figma designs
+- When tickets require adding UI components
 - Before creating any new component file
-- When you see a component name in Figma that might already exist in the codebase
 
-## When NOT to Use
+## When Not to Use
 
 - For non-UI code (APIs, utilities, hooks)
-- When explicitly told to create a new component regardless of existing ones
+- When explicitly told to create new components regardless of existing ones
 
-## Why This Matters
+## Key Principles
 
-Figma layer names ≠ actual component names. Tickets requesting UI features often need **behavior systems** using existing components, not new UI components.
+1. Figma layer names ≠ actual component names
+2. Let Figma Code Connect reveal existing components - don't guess names
+3. Use existing components directly, avoid wrapper components
+4. CodeConnectSnippets indicate the component already exists in the codebase
 
-**Anti-pattern:** Creating wrapper components like:
-```tsx
-export function NewComponent(props) { return <ExistingComponent {...props} />; }
+## Workflow
+
 ```
-**Instead:** Use ExistingComponent directly in your system.
-
-## Workflow Overview
-```
-┌─────────────────────────────────────────────────────────────────┐
-│ 1. EXTRACT - List all components referenced in the design      │
-├─────────────────────────────────────────────────────────────────┤
-│ 2. SEARCH - For each component, search codebase thoroughly     │
-├─────────────────────────────────────────────────────────────────┤
-│ 3. DOCUMENT - Output audit results before any implementation   │
-├─────────────────────────────────────────────────────────────────┤
-│ 4. DECIDE - Reuse existing OR delegate to figma-implement      │
-└─────────────────────────────────────────────────────────────────┘
+1. Extract all Figma URLs from Jira ticket
+2. Call get_design_context on each link
+3. Extract component names from CodeConnectSnippets
+4. Search exact names first (remove spaces)
+5. Search variations only if exact search fails
+6. Output audit table
+7. Reuse existing or delegate to figma-implement-component
 ```
 
-## Step-by-Step Instructions
+## Step-by-Step Process
 
-### Step 1: Extract Component References
+### Step 0: Extract Figma Links
 
-Before writing any UI code, identify all components needed:
+When working from a Jira ticket, extract all Figma URLs:
+- Ticket description
+- Supporting Artifacts section
+- Comments or attachments
 
-1. **From Figma designs**: Check component names, annotations, and linked design system references
-2. **From ticket/requirements**: Note any UI elements mentioned
-3. **From mockups/screenshots**: Identify recognizable UI patterns
+Example format:
+```
+- https://www.figma.com/design/FILE_KEY?node-id=123-456 (Feature Button)
+- https://www.figma.com/design/FILE_KEY?node-id=789-012 (Feature Active)
+```
 
-Create a list of all components you'll need to implement.
+### Step 1: Get Design Context for Each Link
 
-### Step 2: Check What Component Figma Actually Uses 
+Call `mcp_figma_get_design_context` for every Figma URL:
 
-Call `mcp_com_figma_mcp_get_metadata` first:
 ```javascript
-mcp_com_figma_mcp_get_metadata({ nodeId, fileKey })
+mcp_figma_get_design_context({ 
+  nodeId: "123-456",
+  clientFrameworks: "react",
+  clientLanguages: "typescript"
+})
 ```
 
-Response shows the real component:
-```xml
-<instance name="ComponentName" />
-```
+Each screen may reference different components via Code Connect.
 
-**If it says `name="ComponentName"`, search for ComponentName in your codebase, not the Figma layer name.**
+### Step 2: Extract Component Names
 
-### Step 3: Search the Codebase
+Look for CodeConnectSnippet elements in each response:
 
-For **each component** identified (using the **metadata name**, not the Figma layer name), perform a thorough search:
-
-**Search strategies (use ALL of these):**
-
-1. **Exact name**: Search for the exact component name from Figma
-2. **Design system prefix**: If the project uses a prefix (e.g., `Acme`, `DS`), search with and without it
-3. **Synonyms and related terms**: Search for functionally equivalent names
-   - Notification → Alert, Toast, Snackbar, Message, Banner
-   - Modal → Dialog, Popup, Overlay
-   - Input → TextField, TextInput, Field
-   - Dropdown → Select, Combobox, Picker
-   - Card → Panel, Tile, Container
-   - Vote → Like, Thumbs, Rating, Reaction
-4. **Partial matches**: Search for root words (e.g., "button" finds "IconButton", "ButtonGroup")
-
-**Search locations:**
-
-- `components/` directory and subdirectories
-- `obra/` directory
-- `common/` directory
-- Feature-specific component folders
-- Any design system or shared component folders
-- `packages/` in monorepos
-
-**Search commands:**
-```bash
-# Search for component files
-find . -type f -name "*.tsx" | xargs grep -l "ComponentName"
-
-# Search for exports
-grep -r "export.*ComponentName" --include="*.ts" --include="*.tsx"
-
-# Search in common component directories
-ls -la src/components/
-ls -la packages/*/src/components/
-```
-
-### Step 4: Get Implementation Details
-
-Call `get_design_context` for props and styling details.
-
-CodeConnectSnippets confirm component choice:
 ```jsx
-<ComponentName prop1="value" prop2="..." />
+<CodeConnectSnippet data-name="Feature Dialog">
+  <FeatureDialog open={true} onOpenChange={() => {}} />
+</CodeConnectSnippet>
 ```
 
-**You MUST output this audit table BEFORE creating any component files.**
+Extract from each snippet:
+1. Component tag name (e.g., `FeatureDialog`) - most important
+2. The `data-name` attribute (e.g., "Feature Dialog")
+3. Any imports at the top
 
-If you do not output this table, STOP and output it now.
+Create a list of all unique component names found across all Figma links.
 
+### Step 3: Search Exact Names
+
+For every component found in CodeConnectSnippets, search using the exact name (remove spaces from data-name):
+
+- "Feature Dialog" → Search: `FeatureDialog`
+- "Feature Trigger" → Search: `FeatureTrigger`
+
+```bash
+grep_search "FeatureDialog" --includePattern="**/*.tsx"
+file_search "**/FeatureDialog/**"
+semantic_search "FeatureDialog component implementation"
 ```
-## Component Audit Results
 
-| Figma Component | Search Terms Used | Codebase Match | Action |
-|-----------------|-------------------|----------------|--------|
-| Toast | toast, alert, notification, snackbar | src/components/Alert/Alert.tsx | REUSE |
-| Action Button | button, action-button, cta | src/components/Button/Button.tsx | REUSE |
-| User Card | card, user-card, profile-card | NOT FOUND | CREATE |
+### Step 4: Search Variations (Only if Exact Search Failed)
+
+If exact name search found nothing, try variations:
+
+- "Feature Dialog" → Try: `FeatureModal`, `Feature`, `Dialog`
+- "Feature Trigger" → Try: `FeatureButton`, `TriggerButton`
+
+Search common synonyms:
+- Trigger → Button, Toggle, Activator
+- Sheet → Dialog, Modal, Drawer, Panel
+- Dialog → Modal, Popup, Overlay
+
+```bash
+grep_search "Feature.*Button|Feature.*Trigger" --isRegexp=true --includePattern="**/*.tsx"
+semantic_search "feature trigger button component"
 ```
 
-### Step 4: Take Action
+### Step 5: Output Audit Table
 
-**For components marked REUSE:**
-- Import and use the existing component
-- Adapt props as needed to match the design
-- Do NOT create a wrapper or duplicate
+Output this table before creating any components:
+```
+| Figma Screen | Figma Component | CodeConnect Name | Exact Search | Variation Search | Location | Action |
+|--------------|-----------------|------------------|--------------|------------------|----------|--------|
+| 123-456 | Feature Trigger | FeatureTrigger | NOT FOUND | Found as FeatureButton | common/FeatureButton/ | REUSE |
+| 789-012 | Feature Sheet | FeatureDialog | FOUND | N/A | common/FeatureDialog/ | WRAP |
+| 345-678 | Custom Widget | CustomWidget | NOT FOUND | NOT FOUND | NOT FOUND | CREATE |
+```
 
-**For components marked CREATE:**
+Column definitions:
+- **Figma Screen**: Node ID from Figma URL
+- **Figma Component**: The `data-name` from CodeConnectSnippet
+- **CodeConnect Name**: Component tag (e.g., `<FeatureTrigger>`)
+- **Exact Search**: Did searching the CodeConnect name find anything?
+- **Variation Search**: What variation/synonym search succeeded?
+- **Location**: Path to existing component
+- **Action**: REUSE (use directly), WRAP (create domain wrapper), or CREATE (new component)
 
-**BEFORE creating, you MUST answer these questions:**
+**How to determine Action**:
+- **REUSE**: Component is domain-specific or already scoped (e.g., `CaseCard`, `CustomerForm`)
+- **WRAP**: Component is generic/common and needs domain logic (e.g., `FiltersDialog`, `ConfirmationDialog`)
+- **CREATE**: Component doesn't exist after exhaustive search
 
-1. What existing components did you find that are similar?
-2. Why can't any of them be used or extended?
-3. What specific functionality is missing that requires a new component?
+### Step 6: Take Action
 
-If you cannot answer all three questions, GO BACK and reuse an existing component.
+For components marked REUSE:
+- Import and use the existing component directly
+- Adapt props as needed
+- No wrapper needed
 
-Only after answering these questions:
-- Invoke the `figma-implement-component` skill
-- Wait for component creation to complete
-- Then use the newly created component
+For components marked WRAP:
+- Create a domain-specific wrapper in the domain's `components/` folder
+- The wrapper encapsulates domain logic (hooks, state, data fetching)
+- The wrapper passes domain data to the generic component
+- Example: `FeatureGenericComponent` wraps `GenericComponent` + `useFeatureData()`
+- See "Domain Wrapper Components" in copilot-instructions.md for full pattern
 
+For components marked CREATE:
+- Answer these questions first:
+  1. What similar components did you find?
+  2. Why can't they be used or extended?
+  3. What specific functionality is missing?
+- If you cannot answer all three, reuse an existing component
+- Otherwise, invoke the `figma-implement-component` skill
 
-**STOP** if you're about to create a component that:
+### Warning Signs to Stop
 
-- Has a generic/common name (Button, Input, Modal, Card, Alert, Dialog, etc.)
-- Serves a common UI purpose (feedback, navigation, form input, layout, interaction)
-- Looks similar to something you've seen elsewhere in the codebase
+Do not create components that:
+- Have generic names (Button, Input, Modal, Card, Alert, Dialog)
+- Serve common UI purposes (feedback, navigation, forms)
+- Look similar to something you've seen elsewhere
 
-**These almost certainly already exist.** If you found ANY component in similar directories, CHECK IT FIRST before creating anything new.
+Check existing components first. These almost certainly already exist.
 
-### Specific Examples of What NOT to Create
+### What Not to Create
 
-| If Figma says... | DO NOT create... | Instead, check for... |
-|------------------|------------------|----------------------|
+| If Figma says... | Don't create... | Check for... |
+|------------------|-----------------|--------------|
 | Notification | Notification.tsx | Alert, Toast, Snackbar, Banner |
 | Popup | Popup.tsx | Dialog, Modal, Overlay, Sheet |
 | Input Field | InputField.tsx | Input, TextField, TextInput |
 | Action Button | ActionButton.tsx | Button (with variant prop) |
-| Vote Widget | VoteWidget.tsx | VoteButton, Like, Rating, Thumbs |
 
 ## Integration with Other Skills
 
-This skill works as a **gate** before other implementation skills:
+This skill acts as a gate before implementation:
 ```
-User Request → component-reuse (audit) → Implementation
-                                      ↓
-                         figma-implement-component (if CREATE)
+User Request → component-reuse (audit) → figma-implement-component (if CREATE) → Implementation
 ```
-
-When implementing features from tickets:
-1. Run component-reuse audit FIRST
-2. For missing components, delegate to figma-implement-component
-3. Continue with feature implementation using existing + newly created components
 
 ## Examples
 
-### Example 1: Notification Already Exists as Alert
+### Example 1: Feature Component Audit
 
-**Figma shows**: "Notification" component for success messages
-
-**Audit process**:
+Step 0: Extract links from ticket
 ```
-Search: "notification" → No results
-Search: "alert" → Found src/components/Alert/Alert.tsx
-Search: "toast" → Found src/components/Alert/Alert.tsx (same file)
-
-Reviewing Alert.tsx... supports: success, error, warning, info variants
-This matches the Notification functionality needed.
+1. node-id=123-456 (Feature Button)
+2. node-id=789-012 (Feature Active)
 ```
 
-**Audit output**:
-```
-| Figma Component | Search Terms Used | Codebase Match | Action |
-|-----------------|-------------------|----------------|--------|
-| Notification | notification, alert, toast | src/components/Alert/Alert.tsx | REUSE |
-```
-
-**Action**: Import and use Alert component, do NOT create Notification.
-
-### Example 2: Component Genuinely Missing
-
-**Figma shows**: "Rating Stars" component
-
-**Audit process**:
-```
-Search: "rating" → No results
-Search: "stars" → No results  
-Search: "score" → No results
-Search: "review" → No results
-Searched components/, ui/, packages/ → Nothing similar found
+Step 1: Get context for both links
+```javascript
+mcp_figma_get_design_context({ nodeId: "123-456" }) // No CodeConnect
+mcp_figma_get_design_context({ nodeId: "789-012" }) // Returns FeatureDialog
 ```
 
-**Audit output**:
+Step 2: Extract names
 ```
-| Figma Component | Search Terms Used | Codebase Match | Action |
-|-----------------|-------------------|----------------|--------|
-| Rating Stars | rating, stars, score, review | NOT FOUND | CREATE |
+- FeatureDialog (from CodeConnect)
+- FeatureTrigger (from layer name)
 ```
 
-**Action**: Invoke `figma-implement-component` skill to create RatingStars component.
+Step 3: Search exact
+```
+FeatureDialog → FOUND at common/FeatureDialog/
+FeatureTrigger → NOT FOUND
+```
 
-## Common Mistakes to Avoid
+Step 4: Search variations
+```
+FeatureButton → FOUND at common/FeatureButton/
+```
 
-1. **Searching only the exact Figma name** - Always search synonyms
-2. **Creating before searching** - The audit MUST complete before any file creation
-3. **Assuming "not found" after one search** - Use multiple search strategies
-4. **Creating wrappers** - If a component exists, use it directly; don't wrap it
-5. **Ignoring design system folders** - Check for shared/common component libraries
+Step 5: Audit table
+```
+| Screen | Component | CodeConnect | Exact | Variation | Location | Action |
+| 789-012 | Feature Panel | GenericDialog | FOUND | N/A | common/GenericDialog/ | WRAP |
+| 123-456 | Feature Trigger | FeatureTrigger | NOT FOUND | FeatureButton | common/FeatureButton/ | REUSE |
+```
+
+Step 6: 
+- For GenericDialog: Create FeatureGenericDialog wrapper in Feature domain
+- For FeatureButton: Import and use directly
+
+### Example 2: Component Already Exists
+
+Figma shows "Notification" → CodeConnect shows `<Alert variant="success" />`
+
+Search "Alert" → Found at obra/Alert/
+
+Action: REUSE Alert, don't create Notification
+
+### Example 3: Generic Component Needs Domain Wrapper
+
+Figma shows "Feature Panel" → CodeConnect shows `<GenericDialog />`
+
+Search "GenericDialog" → Found at common/GenericDialog/
+
+Analysis: GenericDialog is generic (accepts any data/config), but FeatureName needs specific:
+- Domain-specific data sources
+- Custom validation logic
+- useFeatureData hook for state management
+
+Action: WRAP
+- Create FeatureGenericDialog in FeatureName/components/
+- Use useFeatureData hook
+- Pass data to GenericDialog
+
+Result:
+```tsx
+// FeatureName/components/FeatureGenericDialog/FeatureGenericDialog.tsx
+export function FeatureGenericDialog({ open, onOpenChange }) {
+  const { data, handleAction, handleClear } = useFeatureData();
+  return (
+    <GenericDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      data={data}
+      onAction={handleAction}
+      onClear={handleClear}
+    />
+  );
+}
+```
+
+### Example 4: Component Missing
+
+Figma shows "Custom Component" → No CodeConnect
+
+Search "CustomComponent" → NOT FOUND
+Search "Custom", "Component" → NOT FOUND
+
+Action: Create via figma-implement-component skill
+
+## Common Mistakes
+
+### Not checking Figma first
+Incorrect: See "feature" mentioned → Create FeatureButton
+Correct: Extract Figma links → Call get_design_context → Check CodeConnect → Search exact names
+
+### Calling get_design_context on only one link
+Incorrect: Ticket has 3 links → Check first one only
+Correct: Call get_design_context on all 3 links
+
+### Searching variations before exact names
+Incorrect: CodeConnect shows "FeatureTrigger" → Search "feature button badge"
+Correct: Search exact "FeatureTrigger" first → Then try variations
+
+### Creating before auditing
+Incorrect: Need feature button → Create FeatureButton.tsx
+Correct: Run audit → Output table → Confirm missing → Then create
+
+### Ignoring CodeConnectSnippets
+Incorrect: See `<FeatureDialog />` in CodeConnect → Create new FeatureDialog
+Correct: CodeConnect presence means it exists → Search for it → Reuse it
+
+### Searching only one term
+Incorrect: Search "FeatureDialog" → Not found → Create it
+Correct: Search "FeatureDialog" → "FeatureModal" → "Dialog" → Semantic search → Then decide
 
 ## Quality Checklist
 
 Before proceeding to implementation:
 
-- [ ] Listed all components needed from the design
-- [ ] Searched using at least 3 different terms per component
-- [ ] Checked all likely directories for existing components
-- [ ] Output the audit table with clear REUSE/CREATE decisions
-- [ ] For REUSE: Verified the existing component meets the design requirements
-- [ ] For CREATE: Ready to invoke figma-implement-component skill
+- [ ] Extracted all Figma links from ticket
+- [ ] Called get_design_context on every link
+- [ ] Identified all CodeConnectSnippets
+- [ ] Searched exact names first
+- [ ] Searched variations only after exact search failed
+- [ ] Output the audit table
+- [ ] For REUSE: Verified component meets requirements
+- [ ] For CREATE: Confirmed exhaustive search found nothing
+- [ ] No duplicates: Not creating what exists with different name

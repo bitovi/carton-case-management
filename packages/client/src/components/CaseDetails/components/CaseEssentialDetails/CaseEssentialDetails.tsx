@@ -13,9 +13,36 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
   const { data: users } = trpc.user.list.useQuery();
 
   const updateCaseMutation = trpc.case.update.useMutation({
+    onMutate: async (variables) => {
+      // Cancel any outgoing refetches
+      await trpcUtils.case.getById.cancel({ id: caseId });
+
+      // Snapshot the previous value
+      const previousCase = trpcUtils.case.getById.getData({ id: caseId });
+
+      // Optimistically update the cache
+      if (previousCase) {
+        trpcUtils.case.getById.setData(
+          { id: caseId },
+          {
+            ...previousCase,
+            ...variables,
+          }
+        );
+      }
+
+      return { previousCase };
+    },
     onSuccess: () => {
       trpcUtils.case.getById.invalidate({ id: caseId });
       trpcUtils.case.list.invalidate();
+    },
+    onError: (error, _variables, context) => {
+      console.error('Failed to update case:', error);
+      // Roll back to previous value on error
+      if (context?.previousCase) {
+        trpcUtils.case.getById.setData({ id: caseId }, context.previousCase);
+      }
     },
   });
 
@@ -76,6 +103,7 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
             onSave={handleCustomerChange}
             readonly={updateCaseMutation.isPending}
             placeholder="Select customer"
+            showSavingState={false}
           />
           <EditableSelect
             label="Priority"
@@ -83,17 +111,22 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
             options={[...CASE_PRIORITY_OPTIONS]}
             onSave={handlePriorityChange}
             readonly={updateCaseMutation.isPending}
+            showSavingState={false}
           />
           <EditableSelect
             label="Assigned To"
             value={caseData.assignedTo || UNASSIGNED_VALUE}
             options={[
               { value: UNASSIGNED_VALUE, label: 'Unassigned' },
-              ...(users || []).map((u: { id: string; name: string }) => ({ value: u.id, label: u.name })),
+              ...(users || []).map((user: { id: string; firstName: string; lastName: string }) => ({ 
+                value: user.id, 
+                label: `${user.firstName} ${user.lastName}` 
+              })),
             ]}
             onSave={handleAssigneeChange}
             readonly={updateCaseMutation.isPending}
             placeholder="Unassigned"
+            showSavingState={false}
           />
           <div className="flex flex-col">
             <span className="text-xs text-gray-950 tracking-[0.18px] leading-4 px-1">Date Opened</span>
@@ -107,7 +140,9 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
           </div>
           <div className="flex flex-col">
             <span className="text-xs text-gray-950 tracking-[0.18px] leading-4 px-1">Created By</span>
-            <p className="text-sm font-medium px-1 py-2">{caseData.creator.name}</p>
+            <p className="text-sm font-medium px-1 py-2">
+              {caseData.creator.firstName} {caseData.creator.lastName}
+            </p>
           </div>
           <div className="flex flex-col">
             <span className="text-xs text-gray-950 tracking-[0.18px] leading-4 px-1">Last Updated</span>
@@ -118,10 +153,6 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
                 day: 'numeric',
               })}
             </p>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xs text-gray-950 tracking-[0.18px] leading-4 px-1">Updated By</span>
-            <p className="text-sm font-medium px-1 py-2">{caseData.updater.name}</p>
           </div>
         </>
       )}

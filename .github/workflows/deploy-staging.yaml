@@ -1,0 +1,22 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy-carton:
+    name: Deploy Carton Case Management Staging
+    uses: ./.github/workflows/deploy.yaml
+    secrets: inherit
+    with:
+      environment: staging
+      ecr-repo: carton-case-management-app

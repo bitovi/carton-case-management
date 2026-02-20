@@ -31,7 +31,8 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
           authorId: currentUser.id,
           author: {
             id: currentUser.id,
-            name: currentUser.name,
+            firstName: currentUser.firstName,
+            lastName: currentUser.lastName,
             email: currentUser.email,
           },
         };
@@ -74,7 +75,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
   };
 
   return (
-    <div className="flex flex-col gap-4 lg:flex-1 lg:min-h-0">
+    <div className="flex flex-col gap-4">
       <h2 className="text-base font-semibold">Comments</h2>
       <form onSubmit={handleSubmit}>
         <Textarea
@@ -91,19 +92,16 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
           }}
         />
       </form>
-      <div className="flex flex-col gap-4 md:overflow-y-auto md:flex-1 md:min-h-0">
+      <div className="flex flex-col gap-4">
         {caseData.comments && caseData.comments.length > 0 ? (
           caseData.comments.map((comment) => (
             <div key={comment.id} className="flex flex-col gap-2 py-2">
               <div className="flex gap-2 items-center">
                 <div className="w-10 flex items-center justify-center text-sm font-semibold text-gray-900">
-                  {comment.author.name
-                    .split(' ')
-                    .map((n) => n[0])
-                    .join('')}
+                  {comment.author.firstName[0]}{comment.author.lastName[0]}
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-sm font-medium">{comment.author.name}</p>
+                  <p className="text-sm font-medium">{comment.author.firstName} {comment.author.lastName}</p>
                   <p className="text-xs text-gray-500">
                     {new Date(comment.createdAt).toLocaleString('en-US', {
                       month: 'long',

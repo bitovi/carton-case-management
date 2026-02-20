@@ -1,0 +1,1 @@
+export { RelatedCasesAccordion } from './RelatedCasesAccordion';

@@ -43,6 +43,11 @@ export interface EditableSelectProps {
   onSave: (newValue: string) => Promise<void>;
   /** Zod schema or validation function */
   validate?: ZodSchema<string> | ((value: string) => string | null);
+  /**
+   * If false, skip the "saving" state. Useful with optimistic updates.
+   * Defaults to true.
+   */
+  showSavingState?: boolean;
 }
 
 /**
@@ -180,6 +185,7 @@ export function EditableSelect({
   onEditingChange,
   onSave,
   validate,
+  showSavingState = true,
 }: EditableSelectProps) {
   // Find the label for the current value
   const selectedOption = options.find((opt) => opt.value === value);
@@ -215,6 +221,7 @@ export function EditableSelect({
       onSave={onSave}
       validate={validate}
       exitOnBlur={false} // Select uses portal, blur happens when clicking dropdown
+      showSavingState={showSavingState}
       formatValue={formatValue}
       renderEditMode={(props) => (
         <EditModeRenderer

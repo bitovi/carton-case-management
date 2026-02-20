@@ -4,16 +4,17 @@ Auto-generated from all feature plans. Last updated: 2025-12-24
 
 ## Skills
 
-**REQUIRED:** Before implementing any feature, you MUST:
-1. **Analyze available skills** - Review the skills table below and read relevant skill documentation in `.github/skills/`
-2. **Apply appropriate skills** - Use the skills that match your task (e.g., component-reuse before creating any UI, figma-implement-component when working from designs)
-3. **Follow skill workflows** - Skills provide step-by-step processes that prevent common mistakes and ensure quality
+Before implementing any feature:
+1. Review the skills table below and read relevant documentation in `.github/skills/`
+2. Apply skills that match your task (e.g., component-reuse before creating UI)
+3. Follow skill workflows to prevent common mistakes
 
 This project uses Agent Skills for specialized workflows. See `.github/skills/`:
 
 | Skill | Purpose | When to Use |
 |-------|---------|-------------|
-| `component-reuse` | Ensure existing UI components are reused before creating new ones | **REQUIRED** before implementing any UI from Figma, tickets, or mockups |
+| `component-reuse` | Ensure existing UI components are reused before creating new ones | Before implementing any UI from Figma, tickets, or mockups |
+| `validate-implementation` | Validate implementations for runtime errors, accessibility, and API compliance | Before marking any feature complete or committing code |
 | `figma-implement-component` | Implement React components from Figma designs | After component-reuse confirms no existing component, use to build new components from Figma |
 | `figma-design-react` | Design React components from Figma files | When analyzing Figma designs to propose component architecture and props API |
 | `figma-component-sync` | Check React components against Figma design source | When reviewing implementations, syncing designs, or auditing visual accuracy |
@@ -75,6 +76,7 @@ TypeScript 5.x / Node.js 22+: Follow standard conventions
 - No tsx or ts files should have inline comments.
 - All styling should be done using Tailwind CSS classes in an external CSS file.
 - Responsive designing should be implemented using Tailwind CSS utilities.
+- Extract complex logic into custom hooks when it can be reused or when it bloats the component file.
 
 ### Component Architecture
 
@@ -83,11 +85,44 @@ TypeScript 5.x / Node.js 22+: Follow standard conventions
   - Every component must have accompanying tests (`.test.tsx` files)
   - Every component should have Storybook stories (`.stories.tsx` files) for documentation and visual testing
   - Tests should cover main functionality, edge cases, and user interactions
+- **Custom Hooks - when**:
+  - Component has >3 pieces of related state
+  - Logic involves complex calculations/transformations
+  - Logic could be reused elsewhere
+  - Component file exceeds ~100 lines
+  - Examples: `useCaseFilters`, `useFormValidation`, `useDebounce`
 - **Shadcn UI Components**:
   - Always prioritize using Shadcn UI components over native HTML elements (e.g., use Shadcn Select instead of `<select>`, Shadcn Input instead of `<input>`, etc.)
   - If a needed component is not available, install the Shadcn equivalent using `npx shadcn@latest add [component-name]`
   - Shadcn components should be installed to `packages/client/src/components/ui/` directory and exported via `packages/client/src/components/ui/index.ts`
 - **Custom Components**: If a custom component must be built on top of underlying Shadcn components (e.g., EditableSelect, ConfirmationDialog), it should go in `packages/client/src/components/common/`
+- **Domain Wrapper Components**: When using generic/common components in a specific domain context:
+  - Create a domain-specific wrapper component in the domain's `components/` folder
+  - The wrapper encapsulates domain logic (hooks, state management, data fetching)
+  - The wrapper passes domain data to the generic component
+  - Example structure:
+    ```
+    components/common/GenericComponent/        # Generic, reusable
+    components/FeatureName/
+      components/FeatureGenericComponent/      # Domain wrapper
+    ```
+  - Example implementation:
+    ```tsx
+    // Domain wrapper
+    export function FeatureGenericComponent({ open, onOpenChange }) {
+      const { data, handleAction, handleClear } = useFeatureData();
+      return (
+        <GenericComponent
+          open={open}
+          onOpenChange={onOpenChange}
+          data={data}
+          onAction={handleAction}
+          onClear={handleClear}
+        />
+      );
+    }
+    ```
+  - Benefits: Generic components stay reusable, domain logic stays in domain folders, easier testing, clear separation of concerns
 
 ### UX Patterns
 

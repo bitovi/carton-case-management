@@ -17,7 +17,6 @@ const mockCase: NonNullable<CaseByIdOutput> = {
   priority: 'MEDIUM',
   customerId: '1',
   createdBy: '1',
-  updatedBy: '2',
   assignedTo: '2',
   customer: {
     id: '1',
@@ -26,17 +25,14 @@ const mockCase: NonNullable<CaseByIdOutput> = {
   },
   creator: {
     id: '1',
-    name: 'John Doe',
+    firstName: 'John',
+    lastName: 'Doe',
     email: 'john@example.com',
   },
   assignee: {
     id: '2',
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-  },
-  updater: {
-    id: '2',
-    name: 'Jane Smith',
+    firstName: 'Jane',
+    lastName: 'Smith',
     email: 'jane@example.com',
   },
   createdAt: new Date('2024-01-15T10:00:00Z'),
@@ -49,7 +45,8 @@ const mockCase: NonNullable<CaseByIdOutput> = {
       authorId: '2',
       author: {
         id: '2',
-        name: 'Jane Smith',
+        firstName: 'Jane',
+        lastName: 'Smith',
         email: 'jane@example.com',
       },
       createdAt: new Date('2024-01-15T11:00:00Z'),
@@ -63,7 +60,8 @@ const mockCase: NonNullable<CaseByIdOutput> = {
       authorId: '2',
       author: {
         id: '2',
-        name: 'Jane Smith',
+        firstName: 'Jane',
+        lastName: 'Smith',
         email: 'jane@example.com',
       },
       createdAt: new Date('2024-01-16T09:15:00Z'),
@@ -111,15 +109,21 @@ const mockCustomers = [
 const mockUsers = [
   {
     id: '1',
-    name: 'John Doe',
+    firstName: 'John',
+    lastName: 'Doe',
+    username: 'jdoe',
     email: 'john@example.com',
+    dateJoined: new Date('2024-01-01T00:00:00Z'),
     createdAt: new Date('2024-01-01T00:00:00Z'),
     updatedAt: new Date('2024-01-01T00:00:00Z'),
   },
   {
     id: '2',
-    name: 'Jane Smith',
+    firstName: 'Jane',
+    lastName: 'Smith',
+    username: 'jsmith',
     email: 'jane@example.com',
+    dateJoined: new Date('2024-01-02T00:00:00Z'),
     createdAt: new Date('2024-01-02T00:00:00Z'),
     updatedAt: new Date('2024-01-02T00:00:00Z'),
   },
@@ -183,7 +187,7 @@ const meta: Meta<typeof CaseDetails> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof CaseDetails>;
 
 export const Default: Story = {};
 

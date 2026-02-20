@@ -68,6 +68,7 @@ export function BaseEditable<T>({
   validate,
   exitOnBlur = true,
   formatValue,
+  showSavingState = true,
 }: BaseEditableProps<T>) {
   // State management
   const [internalState, setInternalState] = useState<EditableState>('rest');
@@ -131,9 +132,11 @@ export function BaseEditable<T>({
         return;
       }
 
-      // Transition to saving state
-      setInternalState('saving');
-      setPendingValue(newValue);
+      // Transition to saving state (if enabled)
+      if (showSavingState) {
+        setInternalState('saving');
+        setPendingValue(newValue);
+      }
 
       try {
         await onSave(newValue);
@@ -156,7 +159,7 @@ export function BaseEditable<T>({
         }
       }
     },
-    [validate, onSave, isControlled, onEditingChange]
+    [validate, onSave, isControlled, onEditingChange, showSavingState]
   );
 
   /**

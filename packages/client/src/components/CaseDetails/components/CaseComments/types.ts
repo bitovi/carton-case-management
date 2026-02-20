@@ -5,7 +5,7 @@ export type CaseCommentsProps = {
       id: string;
       content: string;
       createdAt: string;
-      author: { id: string; name: string; email: string };
+      author: { id: string; firstName: string; lastName: string; email: string };
     }>;
   };
 };

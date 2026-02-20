@@ -10,12 +10,10 @@ const mockCaseData: CaseEssentialDetailsProps['caseData'] = {
   priority: 'MEDIUM',
   createdAt: new Date('2024-01-15T10:00:00Z').toISOString(),
   updatedAt: new Date('2024-01-16T14:30:00Z').toISOString(),
-  assignee: { id: '2', name: 'Jane Smith' },
+  assignee: { id: '2', firstName: 'Jane', lastName: 'Smith', email: 'jane@example.com' },
   assignedTo: '2',
-  creator: { id: '3', name: 'John Doe', email: 'john@example.com' },
+  creator: { id: '3', firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
   createdBy: '3',
-  updater: { id: '2', name: 'Jane Smith', email: 'jane@example.com' },
-  updatedBy: '2',
 };
 
 const mockCustomers = [

@@ -9,5 +9,4 @@ export type CaseInformationProps = {
     description: string;
     createdAt: Date | string;
   };
-  onMenuClick?: () => void;
 };

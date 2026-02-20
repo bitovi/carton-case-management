@@ -1,0 +1,1430 @@
+---
+Metadata:
+  AWSToolsMetrics:
+    IaC_Generator: "arn:aws:cloudformation:us-east-2:810329399955:generatedTemplate/063697ab-b647-4897-ac8c-53d56d92fc27"
+Resources:
+  LogsLogStreamEcscartonapplication8529bff7755a49f2bbac3cc837d6c876:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/8529bff7755a49f2bbac3cc837d6c876"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcscartonapplication95c4fc639f0e44028f3ddfb486a063ec:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/95c4fc639f0e44028f3ddfb486a063ec"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcscartonapplication06ab79393c3647b2bb87ac33c83b4d99:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/06ab79393c3647b2bb87ac33c83b4d99"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2SubnetNetworkAclAssociationLK:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::SubnetNetworkAclAssociation"
+    DeletionPolicy: "Retain"
+    Properties:
+      NetworkAclId:
+        Ref: "EC2NetworkAcl"
+      SubnetId:
+        Ref: "EC2SubnetU9"
+  LogsLogStreamEcscartonapplication956ce3d98b1d463b8b8e00db589de8cd:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/956ce3d98b1d463b8b8e00db589de8cd"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2NetworkInterfaceAttachmentAi:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::NetworkInterfaceAttachment"
+    DeletionPolicy: "Retain"
+    Properties:
+      NetworkInterfaceId: "eni-0882ce3ba1a128859"
+      DeviceIndex: "1"
+      DeleteOnTermination: false
+  EC2InternetGatewayLe:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::InternetGateway"
+    DeletionPolicy: "Retain"
+    Properties:
+      Tags: []
+  EC2SubnetNetworkAclAssociation:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::SubnetNetworkAclAssociation"
+    DeletionPolicy: "Retain"
+    Properties:
+      NetworkAclId:
+        Ref: "EC2NetworkAcl"
+      SubnetId:
+        Ref: "EC2SubnetNA"
+  LogsLogStreamEcscartonapplication7525919dac6742cba61e13e2409519b1:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/7525919dac6742cba61e13e2409519b1"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2EIP3224869:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::EIP"
+    DeletionPolicy: "Retain"
+    Properties:
+      PublicIpv4Pool: "amazon"
+      Domain: "vpc"
+      Tags: []
+      NetworkBorderGroup: "us-east-2"
+  EC2SubnetNetworkAclAssociationSb:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::SubnetNetworkAclAssociation"
+    DeletionPolicy: "Retain"
+    Properties:
+      NetworkAclId:
+        Ref: "EC2NetworkAcl"
+      SubnetId:
+        Ref: "EC2Subnet"
+  LogsLogStreamEcscartonapplicationa96a18679bdf42369f1d29e17c9c0b96:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/a96a18679bdf42369f1d29e17c9c0b96"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcscartonapplication51e5df36b702472f8eda68b55970a82c:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/51e5df36b702472f8eda68b55970a82c"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2RouteK2:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Route"
+    DeletionPolicy: "Retain"
+    Properties:
+      RouteTableId:
+        Ref: "EC2RouteTable"
+      DestinationCidrBlock:
+        Fn::GetAtt:
+        - "EC2VPC"
+        - "CidrBlock"
+      GatewayId: "local"
+      VpcEndpointId: "local"
+  LogsLogGroupecscartoncasemanagementtask:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogGroup"
+    DeletionPolicy: "Retain"
+    Properties:
+      FieldIndexPolicies: []
+      LogGroupClass: "STANDARD"
+      LogGroupName: "/ecs/carton-case-management-task"
+      DeletionProtectionEnabled: false
+      DataProtectionPolicy: {}
+  EC2SubnetQy:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Subnet"
+    DeletionPolicy: "Retain"
+    Properties:
+      MapPublicIpOnLaunch: false
+      EnableDns64: false
+      VpcId:
+        Ref: "EC2VPC"
+      AvailabilityZoneId: "use2-az1"
+      PrivateDnsNameOptionsOnLaunch:
+        EnableResourceNameDnsARecord: false
+        HostnameType: "ip-name"
+        EnableResourceNameDnsAAAARecord: false
+      CidrBlock: "10.32.127.0/28"
+      Ipv6Native: false
+      Tags:
+      - Value: "carton-case-management-subnet-public1-us-east-2a"
+        Key: "Name"
+  EC2InternetGateway:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::InternetGateway"
+    DeletionPolicy: "Retain"
+    Properties:
+      Tags:
+      - Value: "carton-case-management-igw"
+        Key: "Name"
+  LogsLogStreamEcscartonapplicationf75d66285b834433a96dcab9f0673728:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/f75d66285b834433a96dcab9f0673728"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2NetworkAcl:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::NetworkAcl"
+    DeletionPolicy: "Retain"
+    Properties:
+      VpcId:
+        Ref: "EC2VPC"
+      Tags: []
+  EC2RouteTableV2:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::RouteTable"
+    DeletionPolicy: "Retain"
+    Properties:
+      VpcId:
+        Ref: "EC2VPC"
+  LogsLogStreamEcscartonapplication835bebcfef3546d197b41ae7262343be:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/835bebcfef3546d197b41ae7262343be"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  ElasticLoadBalancingV2LoadBalancerLoadbalancerappcartoncasemanagementelbf5985e4f077f78a5:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
+    DeletionPolicy: "Retain"
+    Properties:
+      IpAddressType: "ipv4"
+      SecurityGroups:
+      - "sg-0df8cac4b783cd6fc"
+      LoadBalancerAttributes:
+      - Value: ""
+        Key: "access_logs.s3.prefix"
+      - Value: "append"
+        Key: "routing.http.xff_header_processing.mode"
+      - Value: "true"
+        Key: "routing.http2.enabled"
+      - Value: "false"
+        Key: "waf.fail_open.enabled"
+      - Value: ""
+        Key: "connection_logs.s3.bucket"
+      - Value: "false"
+        Key: "access_logs.s3.enabled"
+      - Value: "false"
+        Key: "zonal_shift.config.enabled"
+      - Value: "defensive"
+        Key: "routing.http.desync_mitigation_mode"
+      - Value: ""
+        Key: "connection_logs.s3.prefix"
+      - Value: ""
+        Key: "health_check_logs.s3.prefix"
+      - Value: "false"
+        Key: "routing.http.x_amzn_tls_version_and_cipher_suite.enabled"
+      - Value: "false"
+        Key: "routing.http.preserve_host_header.enabled"
+      - Value: "true"
+        Key: "load_balancing.cross_zone.enabled"
+      - Value: "false"
+        Key: "health_check_logs.s3.enabled"
+      - Value: ""
+        Key: "health_check_logs.s3.bucket"
+      - Value: "false"
+        Key: "routing.http.xff_client_port.enabled"
+      - Value: ""
+        Key: "access_logs.s3.bucket"
+      - Value: "false"
+        Key: "deletion_protection.enabled"
+      - Value: "3600"
+        Key: "client_keep_alive.seconds"
+      - Value: "false"
+        Key: "routing.http.drop_invalid_header_fields.enabled"
+      - Value: "false"
+        Key: "connection_logs.s3.enabled"
+      - Value: "60"
+        Key: "idle_timeout.timeout_seconds"
+      Subnets:
+      - Ref: "EC2Subnet"
+      - Ref: "EC2SubnetQy"
+      Type: "application"
+      Scheme: "internet-facing"
+      EnablePrefixForIpv6SourceNat: "off"
+      Tags: []
+      Name: "carton-case-management-elb"
+      SubnetMappings:
+      - SubnetId:
+          Ref: "EC2SubnetQy"
+      - SubnetId:
+          Ref: "EC2Subnet"
+  LogsLogStreamEcscartonapplicationf50b653a0afc4ba5bf5bbbd71604695c:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/f50b653a0afc4ba5bf5bbbd71604695c"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2EIP31419117:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::EIP"
+    DeletionPolicy: "Retain"
+    Properties:
+      PublicIpv4Pool: "amazon"
+      Domain: "vpc"
+      Tags: []
+      NetworkBorderGroup: "us-east-2"
+  EC2Subnet:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Subnet"
+    DeletionPolicy: "Retain"
+    Properties:
+      MapPublicIpOnLaunch: false
+      EnableDns64: false
+      VpcId:
+        Ref: "EC2VPC"
+      AvailabilityZoneId: "use2-az2"
+      PrivateDnsNameOptionsOnLaunch:
+        EnableResourceNameDnsARecord: false
+        HostnameType: "ip-name"
+        EnableResourceNameDnsAAAARecord: false
+      CidrBlock: "10.32.127.16/28"
+      Ipv6Native: false
+      Tags:
+      - Value: "carton-case-management-subnet-public2-us-east-2b"
+        Key: "Name"
+  EC2SecurityGroup:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::SecurityGroup"
+    DeletionPolicy: "Retain"
+    Properties:
+      GroupDescription: "default VPC security group"
+      GroupName: "default"
+      VpcId:
+        Ref: "EC2VPC"
+      SecurityGroupIngress:
+      - IpProtocol: "-1"
+        FromPort: -1
+        SourceSecurityGroupId:
+          Fn::GetAtt:
+          - "EC2VPC"
+          - "DefaultSecurityGroup"
+        ToPort: -1
+        SourceSecurityGroupOwnerId: "810329399955"
+      - CidrIp: "0.0.0.0/0"
+        IpProtocol: "tcp"
+        FromPort: 443
+        ToPort: 443
+      - CidrIp: "0.0.0.0/0"
+        IpProtocol: "icmp"
+        FromPort: -1
+        ToPort: -1
+      SecurityGroupEgress:
+      - CidrIp: "0.0.0.0/0"
+        IpProtocol: "-1"
+        FromPort: -1
+        ToPort: -1
+  LogsLogStreamEcscartonapplication11f6b13c560444b6ab4c36937b394ae7:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/11f6b13c560444b6ab4c36937b394ae7"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcsexecutecommandjxe34zxs224p6u236zxe42gg4a:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs-execute-command-jxe34zxs224p6u236zxe42gg4a"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2NetworkInterfaceAj:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::NetworkInterface"
+    DeletionPolicy: "Retain"
+    Properties:
+      SourceDestCheck: true
+      InterfaceType: "interface"
+      Description: "arn:aws:ecs:us-east-2:810329399955:attachment/ba4397da-5d25-4408-90b5-cd624c6b159d"
+      PrivateIpAddress: "10.32.127.148"
+      SecondaryPrivateIpAddressCount: 0
+      Ipv6PrefixCount: 0
+      Ipv4Prefixes: []
+      Ipv4PrefixCount: 0
+      GroupSet:
+      - "sg-0df8cac4b783cd6fc"
+      Ipv6Prefixes: []
+      SubnetId:
+        Ref: "EC2SubnetNA"
+      Tags: []
+  LogsLogStreamEcsexecutecommand45ougo33iotjhr6g56759pguza:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs-execute-command-45ougo33iotjhr6g56759pguza"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcscartonapplication66d8209b15aa4abcbf121bcc0e199dd0:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/66d8209b15aa4abcbf121bcc0e199dd0"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2NetworkInterfaceC7:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::NetworkInterface"
+    DeletionPolicy: "Retain"
+    Properties:
+      SourceDestCheck: true
+      InterfaceType: "interface"
+      Description: "ELB app/carton-case-management-elb/f5985e4f077f78a5"
+      PrivateIpAddress: "10.32.127.11"
+      SecondaryPrivateIpAddressCount: 0
+      Ipv6PrefixCount: 0
+      Ipv4Prefixes: []
+      Ipv4PrefixCount: 0
+      GroupSet:
+      - "sg-0df8cac4b783cd6fc"
+      Ipv6Prefixes: []
+      SubnetId:
+        Ref: "EC2SubnetQy"
+      Tags: []
+  LogsLogStreamEcscartonapplication0ef8e0d876794c13b0bfff7050630a32:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/0ef8e0d876794c13b0bfff7050630a32"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcscartonapplicationbdee77dd98284fe08fe005fd48995e7a:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/bdee77dd98284fe08fe005fd48995e7a"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcscartonapplication0a0e8af3e87a4152b97492d53b2c43b0:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/0a0e8af3e87a4152b97492d53b2c43b0"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2RouteY6:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Route"
+    DeletionPolicy: "Retain"
+    Properties:
+      NatGatewayId:
+        Ref: "EC2NatGateway"
+      RouteTableId:
+        Ref: "EC2RouteTableFU"
+      DestinationCidrBlock: "0.0.0.0/0"
+  ECSTaskDefinitionTaskdefinitioncartoncasemanagementtask5:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::ECS::TaskDefinition"
+    DeletionPolicy: "Retain"
+    Properties:
+      TaskRoleArn:
+        Fn::GetAtt:
+        - "IAMRoleEcsTaskExecutionRole"
+        - "Arn"
+      InferenceAccelerators: []
+      Memory: "3072"
+      PlacementConstraints: []
+      Cpu: "1024"
+      RequiresCompatibilities:
+      - "FARGATE"
+      NetworkMode: "awsvpc"
+      EnableFaultInjection: false
+      ExecutionRoleArn:
+        Fn::GetAtt:
+        - "IAMRoleEcsTaskExecutionRole"
+        - "Arn"
+      RuntimePlatform:
+        OperatingSystemFamily: "LINUX"
+        CpuArchitecture: "ARM64"
+      Volumes:
+      - ConfiguredAtLaunch: true
+        Name: "app-data"
+      ContainerDefinitions:
+      - ExtraHosts: []
+        Secrets: []
+        VolumesFrom: []
+        Cpu: 0
+        EntryPoint: []
+        DnsServers: []
+        Image: "810329399955.dkr.ecr.us-east-2.amazonaws.com/carton-case-management-app:latest"
+        Essential: true
+        LogConfiguration:
+          SecretOptions: []
+          Options:
+            awslogs-group: "/ecs/carton-case-management-task"
+            awslogs-create-group: "true"
+            awslogs-region: "us-east-2"
+            awslogs-stream-prefix: "ecs"
+          LogDriver: "awslogs"
+        ResourceRequirements: []
+        EnvironmentFiles: []
+        Name: "carton-application"
+        MountPoints:
+        - ReadOnly: false
+          SourceVolume: "app-data"
+          ContainerPath: "/packages/server/db"
+        DependsOn: []
+        DockerLabels: {}
+        PortMappings:
+        - ContainerPort: 5173
+          AppProtocol: "http"
+          Protocol: "tcp"
+          HostPort: 5173
+          Name: "5173"
+        - ContainerPort: 3001
+          AppProtocol: "http"
+          Protocol: "tcp"
+          HostPort: 3001
+          Name: "3001"
+        DockerSecurityOptions: []
+        SystemControls: []
+        Command: []
+        DnsSearchDomains: []
+        Environment:
+        - Value: "file:./db/dev.db"
+          Name: "DATABASE_URL"
+        - Value: "development"
+          Name: "NODE_ENV"
+        Links: []
+        CredentialSpecs: []
+        Ulimits: []
+      Family: "carton-case-management-task"
+      Tags: []
+  EC2RouteTableK9:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::RouteTable"
+    DeletionPolicy: "Retain"
+    Properties:
+      VpcId:
+        Ref: "EC2VPC"
+      Tags:
+      - Value: "carton-case-management-rtb-public"
+        Key: "Name"
+  LogsLogStreamEcscartonapplicationb9740a739ef0477fab3e53c46010d692:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/b9740a739ef0477fab3e53c46010d692"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2SubnetNetworkAclAssociationNd:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::SubnetNetworkAclAssociation"
+    DeletionPolicy: "Retain"
+    Properties:
+      NetworkAclId:
+        Ref: "EC2NetworkAcl"
+      SubnetId:
+        Ref: "EC2SubnetQy"
+  LogsLogStreamEcscartonapplicationfd820dbf1d6e492090c6a6fd4d1ea9d7:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/fd820dbf1d6e492090c6a6fd4d1ea9d7"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2VPC:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::VPC"
+    DeletionPolicy: "Retain"
+    Properties:
+      CidrBlock: "10.32.127.0/24"
+      EnableDnsSupport: true
+      InstanceTenancy: "default"
+      EnableDnsHostnames: true
+      Tags:
+      - Value: "carton-case-management-vpc"
+        Key: "Name"
+  EC2RouteXN:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Route"
+    DeletionPolicy: "Retain"
+    Properties:
+      RouteTableId:
+        Ref: "EC2RouteTableV2"
+      DestinationCidrBlock:
+        Fn::GetAtt:
+        - "EC2VPC"
+        - "CidrBlock"
+      GatewayId: "local"
+      VpcEndpointId: "local"
+  LogsLogStreamEcscartonapplicatione3ae48c4283747d5bd99ca53715eaa52:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/e3ae48c4283747d5bd99ca53715eaa52"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2RouteTable:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::RouteTable"
+    DeletionPolicy: "Retain"
+    Properties:
+      VpcId:
+        Ref: "EC2VPC"
+      Tags:
+      - Value: "carton-case-management-rtb-private1-us-east-2a"
+        Key: "Name"
+  ECRRepositoryCartoncasemanagementapp:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::ECR::Repository"
+    DeletionPolicy: "Retain"
+    Properties:
+      ImageScanningConfiguration:
+        ScanOnPush: false
+      RepositoryName: "carton-case-management-app"
+      EncryptionConfiguration:
+        EncryptionType: "AES256"
+      Tags: []
+      ImageTagMutability: "MUTABLE"
+  LogsLogStreamEcscartonapplicatione55d090dc5314b60bc2f165af7823fc3:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/e55d090dc5314b60bc2f165af7823fc3"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2EIP318238112:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::EIP"
+    DeletionPolicy: "Retain"
+    Properties:
+      PublicIpv4Pool: "amazon"
+      Domain: "vpc"
+      Tags: []
+      NetworkBorderGroup: "us-east-2"
+  EC2EIPAssociationEC:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::EIPAssociation"
+    DeletionPolicy: "Retain"
+    Properties:
+      EIP:
+        Fn::GetAtt:
+        - "EC2EIP31419117"
+        - "PublicIp"
+      PrivateIpAddress: "3.14.19.117"
+      AllocationId:
+        Fn::GetAtt:
+        - "EC2EIP31419117"
+        - "AllocationId"
+  IAMRoleAWSServiceRoleForElasticLoadBalancing:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::IAM::Role"
+    DeletionPolicy: "Retain"
+    Properties:
+      Path: "/aws-service-role/elasticloadbalancing.amazonaws.com/"
+      ManagedPolicyArns:
+      - "arn:aws:iam::aws:policy/aws-service-role/AWSElasticLoadBalancingServiceRolePolicy"
+      MaxSessionDuration: 3600
+      RoleName: "AWSServiceRoleForElasticLoadBalancing"
+      Description: "Allows ELB to call AWS services on your behalf."
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Action: "sts:AssumeRole"
+          Effect: "Allow"
+          Principal:
+            Service: "elasticloadbalancing.amazonaws.com"
+  EC2EIP3150246145:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::EIP"
+    DeletionPolicy: "Retain"
+    Properties:
+      PublicIpv4Pool: "amazon"
+      Domain: "vpc"
+      Tags: []
+      NetworkBorderGroup: "us-east-2"
+  IAMRoleEcsTaskExecutionRole:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::IAM::Role"
+    DeletionPolicy: "Retain"
+    Properties:
+      Path: "/"
+      ManagedPolicyArns:
+      - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+      - "arn:aws:iam::aws:policy/AmazonSSMFullAccess"
+      MaxSessionDuration: 3600
+      RoleName: "ecsTaskExecutionRole"
+      AssumeRolePolicyDocument:
+        Version: "2008-10-17"
+        Statement:
+        - Action: "sts:AssumeRole"
+          Effect: "Allow"
+          Principal:
+            Service: "ecs-tasks.amazonaws.com"
+          Sid: ""
+  LogsLogStreamEcscartonapplication7800d6beaccd48ba85a6c1ddce350185:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/7800d6beaccd48ba85a6c1ddce350185"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2NetworkInterfaceXf:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::NetworkInterface"
+    DeletionPolicy: "Retain"
+    Properties:
+      SourceDestCheck: true
+      InterfaceType: "interface"
+      Description: "ELB app/carton-case-management-elb/f5985e4f077f78a5"
+      PrivateIpAddress: "10.32.127.26"
+      SecondaryPrivateIpAddressCount: 0
+      Ipv6PrefixCount: 0
+      Ipv4Prefixes: []
+      Ipv4PrefixCount: 0
+      GroupSet:
+      - "sg-0df8cac4b783cd6fc"
+      Ipv6Prefixes: []
+      SubnetId:
+        Ref: "EC2Subnet"
+      Tags: []
+  LogsLogStreamEcscartonapplication57160a8bca904136a0a32a4c1cab66ec:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/57160a8bca904136a0a32a4c1cab66ec"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  ElasticLoadBalancingV2ListenerListenerappcartoncasemanagementelbf5985e4f077f78a52fa2e9c25e8dfc1a:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::ElasticLoadBalancingV2::Listener"
+    DeletionPolicy: "Retain"
+    Properties:
+      MutualAuthentication:
+        Mode: "off"
+      ListenerAttributes:
+      - Value: ""
+        Key: "routing.http.request.x_amzn_tls_cipher_suite.header_name"
+      - Value: ""
+        Key: "routing.http.request.x_amzn_mtls_clientcert_serial_number.header_name"
+      - Value: ""
+        Key: "routing.http.response.access_control_allow_origin.header_value"
+      - Value: ""
+        Key: "routing.http.response.content_security_policy.header_value"
+      - Value: ""
+        Key: "routing.http.request.x_amzn_mtls_clientcert_leaf.header_name"
+      - Value: ""
+        Key: "routing.http.request.x_amzn_tls_version.header_name"
+      - Value: "true"
+        Key: "routing.http.response.server.enabled"
+      - Value: ""
+        Key: "routing.http.response.access_control_allow_headers.header_value"
+      - Value: ""
+        Key: "routing.http.response.x_frame_options.header_value"
+      - Value: ""
+        Key: "routing.http.response.access_control_allow_methods.header_value"
+      - Value: ""
+        Key: "routing.http.request.x_amzn_mtls_clientcert_issuer.header_name"
+      - Value: ""
+        Key: "routing.http.request.x_amzn_mtls_clientcert.header_name"
+      - Value: ""
+        Key: "routing.http.request.x_amzn_mtls_clientcert_validity.header_name"
+      - Value: ""
+        Key: "routing.http.response.access_control_allow_credentials.header_value"
+      - Value: ""
+        Key: "routing.http.request.x_amzn_mtls_clientcert_subject.header_name"
+      - Value: ""
+        Key: "routing.http.response.x_content_type_options.header_value"
+      - Value: ""
+        Key: "routing.http.response.access_control_expose_headers.header_value"
+      - Value: ""
+        Key: "routing.http.response.strict_transport_security.header_value"
+      - Value: ""
+        Key: "routing.http.response.access_control_max_age.header_value"
+      SslPolicy: "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09"
+      LoadBalancerArn:
+        Ref: "ElasticLoadBalancingV2LoadBalancerLoadbalancerappcartoncasemanagementelbf5985e4f077f78a5"
+      DefaultActions:
+      - Order: 1
+        TargetGroupArn:
+          Ref: "ElasticLoadBalancingV2TargetGroupTargetgroupcartoncasemanagementtge7b1188612047b0c"
+        Type: "forward"
+        ForwardConfig:
+          TargetGroupStickinessConfig:
+            Enabled: false
+            DurationSeconds: 3600
+          TargetGroups:
+          - TargetGroupArn:
+              Ref: "ElasticLoadBalancingV2TargetGroupTargetgroupcartoncasemanagementtge7b1188612047b0c"
+            Weight: 1
+      Port: 443
+      Certificates:
+      - CertificateArn: "arn:aws:acm:us-east-2:810329399955:certificate/6b93cae5-23ed-4846-aa6a-0668d0f1bde5"
+      Protocol: "HTTPS"
+  EC2RouteVq:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Route"
+    DeletionPolicy: "Retain"
+    Properties:
+      RouteTableId:
+        Ref: "EC2RouteTableFU"
+      DestinationPrefixListId: "pl-7ba54012"
+      GatewayId: "vpce-0b2bd631d7f16a0a7"
+      VpcEndpointId: "vpce-0b2bd631d7f16a0a7"
+  LogsLogStreamEcscartonapplicationb365572b566041dd991fb227edc441f5:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/b365572b566041dd991fb227edc441f5"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcscartonapplicationcf9d1e2e24dc421fada57ac012363b1f:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/cf9d1e2e24dc421fada57ac012363b1f"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2NatGateway:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::NatGateway"
+    DeletionPolicy: "Retain"
+    Properties:
+      ConnectivityType: "public"
+      VpcId: "vpc-03c2940272ec870fc"
+      AvailabilityZoneAddresses:
+      - AvailabilityZoneId: "use2-az2"
+        AvailabilityZone: "us-east-2b"
+        AllocationIds:
+        - "eipalloc-04fbb1838b81ca7d7"
+      - AvailabilityZoneId: "use2-az1"
+        AvailabilityZone: "us-east-2a"
+        AllocationIds:
+        - "eipalloc-04f79f3316e8dd85c"
+      AvailabilityMode: "regional"
+      Tags:
+      - Value: "carton-case-management-regional-nat"
+        Key: "Name"
+  LogsLogStreamEcscartonapplicatione72cbe4064d946008d17cdbff6462e06:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/e72cbe4064d946008d17cdbff6462e06"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcscartonapplication15a1606da90c48648d4dbdaef45eff72:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/15a1606da90c48648d4dbdaef45eff72"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcscartonapplication6ca68ac71bc14a318a0f6bbe2d14ddae:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/6ca68ac71bc14a318a0f6bbe2d14ddae"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2NetworkInterfaceAttachmentOJ:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::NetworkInterfaceAttachment"
+    DeletionPolicy: "Retain"
+    Properties:
+      NetworkInterfaceId: "eni-0fe78c709440c21b9"
+      DeviceIndex: "1"
+      DeleteOnTermination: false
+  EC2EIPAssociation:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::EIPAssociation"
+    DeletionPolicy: "Retain"
+    Properties:
+      PrivateIpAddress:
+        Fn::GetAtt:
+        - "EC2NetworkInterfaceXf"
+        - "PrimaryPrivateIpAddress"
+      NetworkInterfaceId:
+        Ref: "EC2NetworkInterfaceXf"
+      EIP:
+        Fn::GetAtt:
+        - "EC2EIP3224869"
+        - "PublicIp"
+      AllocationId:
+        Fn::GetAtt:
+        - "EC2EIP3224869"
+        - "AllocationId"
+  EC2RouteNU:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Route"
+    DeletionPolicy: "Retain"
+    Properties:
+      RouteTableId:
+        Ref: "EC2RouteTableK9"
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId:
+        Ref: "EC2InternetGateway"
+      VpcEndpointId: "igw-0a4abf58fb0af5b2c"
+  EC2DHCPOptions:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::DHCPOptions"
+    DeletionPolicy: "Retain"
+    Properties:
+      DomainName: "us-east-2.compute.internal"
+      DomainNameServers:
+      - "AmazonProvidedDNS"
+      Tags: []
+  EC2RouteUv:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Route"
+    DeletionPolicy: "Retain"
+    Properties:
+      RouteTableId:
+        Ref: "EC2RouteTableFU"
+      DestinationCidrBlock:
+        Fn::GetAtt:
+        - "EC2VPC"
+        - "CidrBlock"
+      GatewayId: "local"
+      VpcEndpointId: "local"
+  EC2SubnetNA:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Subnet"
+    DeletionPolicy: "Retain"
+    Properties:
+      MapPublicIpOnLaunch: false
+      EnableDns64: false
+      VpcId:
+        Ref: "EC2VPC"
+      AvailabilityZoneId: "use2-az2"
+      PrivateDnsNameOptionsOnLaunch:
+        EnableResourceNameDnsARecord: false
+        HostnameType: "ip-name"
+        EnableResourceNameDnsAAAARecord: false
+      CidrBlock: "10.32.127.144/28"
+      Ipv6Native: false
+      Tags:
+      - Value: "carton-case-management-subnet-private2-us-east-2b"
+        Key: "Name"
+  EC2Route:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Route"
+    DeletionPolicy: "Retain"
+    Properties:
+      NatGatewayId:
+        Ref: "EC2NatGateway"
+      RouteTableId:
+        Ref: "EC2RouteTable"
+      DestinationCidrBlock: "0.0.0.0/0"
+  LogsLogStreamEcscartonapplication106b1f4aec8b4b0e9181f42402b1842a:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/106b1f4aec8b4b0e9181f42402b1842a"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcscartonapplicationdb7e202f28e648dc81d04c1bcb5eea4e:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/db7e202f28e648dc81d04c1bcb5eea4e"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcscartonapplication156517fcfc604ee5b84efc00a30ce2a7:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/156517fcfc604ee5b84efc00a30ce2a7"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2NetworkInterfaceAttachment:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::NetworkInterfaceAttachment"
+    DeletionPolicy: "Retain"
+    Properties:
+      NetworkInterfaceId: "eni-0e82becc19c75e7c9"
+      DeviceIndex: "1"
+      DeleteOnTermination: false
+  EC2VPCDHCPOptionsAssociation:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::VPCDHCPOptionsAssociation"
+    DeletionPolicy: "Retain"
+    Properties:
+      VpcId:
+        Ref: "EC2VPC"
+      DhcpOptionsId:
+        Ref: "EC2DHCPOptions"
+  LogsLogStreamEcscartonapplication7d8307bb2e0d45e9a84b43e19884d7e3:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/7d8307bb2e0d45e9a84b43e19884d7e3"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcscartonapplication06a0cce3cbde43e59f65a859d6307d4a:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/06a0cce3cbde43e59f65a859d6307d4a"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2NetworkInterface:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::NetworkInterface"
+    DeletionPolicy: "Retain"
+    Properties:
+      SourceDestCheck: true
+      InterfaceType: "interface"
+      Description: "arn:aws:ecs:us-east-2:810329399955:attachment/394ff245-f61b-448d-ba25-0458f0e11e04"
+      PrivateIpAddress: "10.32.127.149"
+      SecondaryPrivateIpAddressCount: 0
+      Ipv6PrefixCount: 0
+      Ipv4Prefixes: []
+      Ipv4PrefixCount: 0
+      GroupSet:
+      - "sg-0df8cac4b783cd6fc"
+      Ipv6Prefixes: []
+      SubnetId:
+        Ref: "EC2SubnetNA"
+      Tags: []
+  LogsLogStreamEcscartonapplicationd67a84f5aa044799a346d7df673b681a:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/d67a84f5aa044799a346d7df673b681a"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2VolumeXc:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Volume"
+    DeletionPolicy: "Retain"
+    Properties:
+      MultiAttachEnabled: false
+      VolumeType: "gp3"
+      Encrypted: false
+      Size: 10
+      AutoEnableIO: false
+      AvailabilityZoneId: "use2-az2"
+      AvailabilityZone: "us-east-2b"
+      Throughput: 125
+      Iops: 3000
+      Tags:
+      - Value: "true"
+        Key: "AmazonECSManaged"
+      - Value: "arn:aws:ecs:us-east-2:810329399955:task/carton-case-management-cluster/835bebcfef3546d197b41ae7262343be"
+        Key: "AmazonECSCreated"
+  EC2VPCEndpoint:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::VPCEndpoint"
+    DeletionPolicy: "Retain"
+    Properties:
+      PrivateDnsEnabled: false
+      IpAddressType: "ipv4"
+      ServiceRegion: "us-east-2"
+      DnsOptions:
+        PrivateDnsOnlyForInboundResolverEndpoint: "NotSpecified"
+        PrivateDnsSpecifiedDomains:
+        - "*"
+        DnsRecordIpType: "service-defined"
+        PrivateDnsPreference: "VERIFIED_DOMAINS_ONLY"
+      ResourceConfigurationArn: ""
+      SecurityGroupIds: []
+      SubnetIds: []
+      ServiceNetworkArn: ""
+      VpcId:
+        Ref: "EC2VPC"
+      RouteTableIds:
+      - Ref: "EC2RouteTable"
+      - Ref: "EC2RouteTableFU"
+      ServiceName: "com.amazonaws.us-east-2.s3"
+      PolicyDocument:
+        Version: "2008-10-17"
+        Statement:
+        - Resource: "*"
+          Action: "*"
+          Effect: "Allow"
+          Principal: "*"
+      VpcEndpointType: "Gateway"
+      Tags:
+      - Value: "carton-case-management-vpce-s3"
+        Key: "Name"
+  LogsLogStreamEcscartonapplication72eb54f773414592be7956c19c6ab5a9:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/72eb54f773414592be7956c19c6ab5a9"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcscartonapplication6d1493e1270e459985c803cedc2d6fe7:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/6d1493e1270e459985c803cedc2d6fe7"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2NetworkInterfaceAttachmentDC:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::NetworkInterfaceAttachment"
+    DeletionPolicy: "Retain"
+    Properties:
+      NetworkInterfaceId: "eni-0509c6afc87ff6964"
+      DeviceIndex: "1"
+      DeleteOnTermination: false
+  LogsLogStreamEcscartonapplication7fc0a92f3b1249e1a54b1fc3f2b89f48:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/7fc0a92f3b1249e1a54b1fc3f2b89f48"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcscartonapplication7eb2a04217b94004aef7b0d9056730d5:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/7eb2a04217b94004aef7b0d9056730d5"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  IAMRoleAWSServiceRoleForECS:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::IAM::Role"
+    DeletionPolicy: "Retain"
+    Properties:
+      Path: "/aws-service-role/ecs.amazonaws.com/"
+      ManagedPolicyArns:
+      - "arn:aws:iam::aws:policy/aws-service-role/AmazonECSServiceRolePolicy"
+      MaxSessionDuration: 3600
+      RoleName: "AWSServiceRoleForECS"
+      Description: "Policy to enable Amazon ECS to manage your EC2 instances and related\
+        \ resources."
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Action: "sts:AssumeRole"
+          Effect: "Allow"
+          Principal:
+            Service: "ecs.amazonaws.com"
+  EC2RouteMG:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Route"
+    DeletionPolicy: "Retain"
+    Properties:
+      RouteTableId:
+        Ref: "EC2RouteTableK9"
+      DestinationCidrBlock:
+        Fn::GetAtt:
+        - "EC2VPC"
+        - "CidrBlock"
+      GatewayId: "local"
+      VpcEndpointId: "local"
+  EC2RouteTl:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Route"
+    DeletionPolicy: "Retain"
+    Properties:
+      RouteTableId:
+        Ref: "EC2RouteTable"
+      DestinationPrefixListId: "pl-7ba54012"
+      GatewayId: "vpce-0b2bd631d7f16a0a7"
+      VpcEndpointId: "vpce-0b2bd631d7f16a0a7"
+  LogsLogStreamEcscartonapplication2f7bf2ed517f46e38ec764aa853091c0:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/2f7bf2ed517f46e38ec764aa853091c0"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcscartonapplication0f84a727098c41bb9c2801c789d4a73e:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/0f84a727098c41bb9c2801c789d4a73e"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2EIPAssociationOr:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::EIPAssociation"
+    DeletionPolicy: "Retain"
+    Properties:
+      PrivateIpAddress:
+        Fn::GetAtt:
+        - "EC2NetworkInterfaceC7"
+        - "PrimaryPrivateIpAddress"
+      NetworkInterfaceId:
+        Ref: "EC2NetworkInterfaceC7"
+      EIP:
+        Fn::GetAtt:
+        - "EC2EIP3150246145"
+        - "PublicIp"
+      AllocationId:
+        Fn::GetAtt:
+        - "EC2EIP3150246145"
+        - "AllocationId"
+  LogsLogStreamEcscartonapplication7389e77d422e47eca84064e475c5e365:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/7389e77d422e47eca84064e475c5e365"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  IAMRoleCartoncasemanagementecsrole:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::IAM::Role"
+    DeletionPolicy: "Retain"
+    Properties:
+      Path: "/"
+      ManagedPolicyArns:
+      - "arn:aws:iam::aws:policy/service-role/AmazonECSInfrastructureRolePolicyForVolumes"
+      - "arn:aws:iam::aws:policy/AmazonECS_FullAccess"
+      MaxSessionDuration: 3600
+      RoleName: "carton-case-management-ecs-role"
+      Description: "Allows ECS to create and manage volumes associated with ECS workloads."
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Action: "sts:AssumeRole"
+          Effect: "Allow"
+          Principal:
+            Service: "ecs.amazonaws.com"
+          Sid: "AllowAccessToECSForInfrastructureManagement"
+  LogsLogStreamEcscartonapplication191577e9ed2d4125942751f44953dd40:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/191577e9ed2d4125942751f44953dd40"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcsexecutecommand3vyngu9u5vj9b8v8fsslfufbsi:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs-execute-command-3vyngu9u5vj9b8v8fsslfufbsi"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcscartonapplication1541e43c97b14978b9a0a848f2c51bbd:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/1541e43c97b14978b9a0a848f2c51bbd"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2RouteTableFU:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::RouteTable"
+    DeletionPolicy: "Retain"
+    Properties:
+      VpcId:
+        Ref: "EC2VPC"
+      Tags:
+      - Value: "carton-case-management-rtb-private2-us-east-2b"
+        Key: "Name"
+  EC2EIPAssociationYi:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::EIPAssociation"
+    DeletionPolicy: "Retain"
+    Properties:
+      EIP:
+        Fn::GetAtt:
+        - "EC2EIP318238112"
+        - "PublicIp"
+      PrivateIpAddress: "3.18.238.112"
+      AllocationId:
+        Fn::GetAtt:
+        - "EC2EIP318238112"
+        - "AllocationId"
+  LogsLogStreamEcscartonapplication5e90518ef0174a77a08f608139bee5f8:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/5e90518ef0174a77a08f608139bee5f8"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  ECSClusterCapacityProviderAssociationsCartoncasemanagementcluster:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::ECS::ClusterCapacityProviderAssociations"
+    DeletionPolicy: "Retain"
+    Properties:
+      CapacityProviders:
+      - "FARGATE"
+      - "FARGATE_SPOT"
+      Cluster: "carton-case-management-cluster"
+      DefaultCapacityProviderStrategy: []
+  EC2RouteCh:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Route"
+    DeletionPolicy: "Retain"
+    Properties:
+      RouteTableId: "rtb-0dfff599cad3937cb"
+      DestinationCidrBlock:
+        Fn::GetAtt:
+        - "EC2VPC"
+        - "CidrBlock"
+      GatewayId: "local"
+      VpcEndpointId: "local"
+  EC2Volume:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Volume"
+    DeletionPolicy: "Retain"
+    Properties:
+      MultiAttachEnabled: false
+      VolumeType: "gp3"
+      Encrypted: false
+      Size: 10
+      AutoEnableIO: false
+      AvailabilityZoneId: "use2-az2"
+      AvailabilityZone: "us-east-2b"
+      Throughput: 125
+      Iops: 3000
+      Tags:
+      - Value: "true"
+        Key: "AmazonECSManaged"
+      - Value: "arn:aws:ecs:us-east-2:810329399955:task/carton-case-management-cluster/15a1606da90c48648d4dbdaef45eff72"
+        Key: "AmazonECSCreated"
+  LogsLogStreamEcscartonapplication4864f57284dd4c17bf55820430b94f82:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/4864f57284dd4c17bf55820430b94f82"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcsexecutecommandssg3ps73v7vreliqgs39onpsnq:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs-execute-command-ssg3ps73v7vreliqgs39onpsnq"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  LogsLogStreamEcsexecutecommandku5bpxorhslxheitpzz2r25pgu:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs-execute-command-ku5bpxorhslxheitpzz2r25pgu"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  ElasticLoadBalancingV2TargetGroupTargetgroupcartoncasemanagementtge7b1188612047b0c:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
+    DeletionPolicy: "Retain"
+    Properties:
+      IpAddressType: "ipv4"
+      HealthCheckIntervalSeconds: 30
+      Matcher:
+        HttpCode: "200"
+      HealthCheckPath: "/"
+      Port: 80
+      Targets:
+      - AvailabilityZone: "us-east-2b"
+        Port: 5173
+        Id: "10.32.127.149"
+      HealthCheckEnabled: true
+      ProtocolVersion: "HTTP1"
+      UnhealthyThresholdCount: 10
+      HealthCheckTimeoutSeconds: 5
+      Name: "carton-case-management-tg"
+      VpcId:
+        Ref: "EC2VPC"
+      HealthyThresholdCount: 2
+      HealthCheckProtocol: "HTTP"
+      TargetGroupAttributes:
+      - Value: "lb_cookie"
+        Key: "stickiness.type"
+      - Value: "86400"
+        Key: "stickiness.app_cookie.duration_seconds"
+      - Value: "1"
+        Key: "target_group_health.dns_failover.minimum_healthy_targets.count"
+      - Value: "use_load_balancer_configuration"
+        Key: "load_balancing.cross_zone.enabled"
+      - Value: "86400"
+        Key: "stickiness.lb_cookie.duration_seconds"
+      - Value: "off"
+        Key: "target_group_health.dns_failover.minimum_healthy_targets.percentage"
+      - Value: "false"
+        Key: "stickiness.enabled"
+      - Value: "off"
+        Key: "target_group_health.unhealthy_state_routing.minimum_healthy_targets.percentage"
+      - Value: "0"
+        Key: "slow_start.duration_seconds"
+      - Value: "300"
+        Key: "deregistration_delay.timeout_seconds"
+      - Value: "1"
+        Key: "target_group_health.unhealthy_state_routing.minimum_healthy_targets.count"
+      - Value: "off"
+        Key: "load_balancing.algorithm.anomaly_mitigation"
+      - Value: ""
+        Key: "stickiness.app_cookie.cookie_name"
+      - Value: "round_robin"
+        Key: "load_balancing.algorithm.type"
+      TargetType: "ip"
+      HealthCheckPort: "5173"
+      Protocol: "HTTP"
+      Tags: []
+  LogsLogStreamEcscartonapplication6816f33309a243d9b6b3e57d971e0254:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/6816f33309a243d9b6b3e57d971e0254"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"
+  EC2SubnetU9:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Subnet"
+    DeletionPolicy: "Retain"
+    Properties:
+      MapPublicIpOnLaunch: false
+      EnableDns64: false
+      VpcId:
+        Ref: "EC2VPC"
+      AvailabilityZoneId: "use2-az1"
+      PrivateDnsNameOptionsOnLaunch:
+        EnableResourceNameDnsARecord: false
+        HostnameType: "ip-name"
+        EnableResourceNameDnsAAAARecord: false
+      CidrBlock: "10.32.127.128/28"
+      Ipv6Native: false
+      Tags:
+      - Value: "carton-case-management-subnet-private1-us-east-2a"
+        Key: "Name"
+  LogsLogStreamEcscartonapplication9acbafd457324543ad4f9c2bf72f463b:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Logs::LogStream"
+    DeletionPolicy: "Retain"
+    Properties:
+      LogStreamName: "ecs/carton-application/9acbafd457324543ad4f9c2bf72f463b"
+      LogGroupName:
+        Ref: "LogsLogGroupecscartoncasemanagementtask"

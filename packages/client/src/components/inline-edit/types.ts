@@ -79,6 +79,12 @@ export interface BaseEditableProps<T> {
    * The edit mode component is responsible for calling onCancel when appropriate.
    */
   exitOnBlur?: boolean;
+  /**
+   * If false, skip the "saving" state and go directly from edit to rest.
+   * Useful when using optimistic updates where the UI already shows the new value.
+   * Defaults to true.
+   */
+  showSavingState?: boolean;
 }
 
 /**
