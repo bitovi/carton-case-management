@@ -22,3 +22,7 @@ terraform.rc
 # Environment files
 .env
 .env.local
+
+# Virtual Environments
+.venv
+
