@@ -40,8 +40,8 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-region: ${{ env.AWS_REGION }}
-        aws-access-key-id: ${{ secrets.AWS_SECRET_ACCESS_KEY_JIRA_INTEGRATIONS }}
-        aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY_ID_JIRA_INTEGRATIONS }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_JIRA_INTEGRATIONS }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_JIRA_INTEGRATIONS }}
 
     - name: Login to Amazon ECR
       id: login-ecr
