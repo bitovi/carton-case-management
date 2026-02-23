@@ -45,6 +45,3 @@ figma.connect(
   },
 }
 );
-  { ...labelConfig }
-);
-
