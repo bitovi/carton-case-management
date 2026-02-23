@@ -10,33 +10,69 @@ figma.connect(
   SelectTrigger,
   'https://www.figma.com/design/MQUbIrlfuM8qnr9XZ7jc82/Obra-shadcn-ui--Carton-?node-id=16-1732',
   {
-    props: {
-      size: figma.enum('Size', {
-        Mini: 'mini',
-        Small: 'small',
-        Regular: 'regular',
-        Large: 'large',
-      }),
-      layout: figma.enum('Lines', {
-        '1 Line': 'single',
-        '2 Lines': 'stacked',
-      }),
-      error: figma.enum('State', {
-        Error: true,
-      }),
-      disabled: figma.enum('State', {
-        Disabled: true,
-      }),
-    },
-    example: (props) => (
-      <SelectTrigger
-        size={props.size}
-        layout={props.layout}
-        error={props.error}
-        disabled={props.disabled}
-      />
-    ),
-  }
+  props: {
+    size: figma.enum('Size', {
+      Mini: 'mini',
+      Small: 'small',
+      Regular: 'regular',
+      Large: 'large',
+    }),
+    layout: figma.enum('Lines', {
+      '1 Line': 'single',
+      '2 Lines': 'stacked',
+    }),
+    error: figma.enum('State', {
+      Error: true,
+    }),
+    disabled: figma.enum('State', {
+      Disabled: true,
+    }),
+  },
+  example: (props) => (
+    <SelectTrigger
+      size={props.size}
+      layout={props.layout}
+      error={props.error}
+      disabled={props.disabled}
+    />
+  ),
+}
+);
+
+// Riot Training version
+// NOTE: Config must be duplicated inline - Figma Code Connect requires object literals.
+// This connection will be removed once Riot training is complete.
+figma.connect(
+  SelectTrigger,
+  'https://www.figma.com/design/W2OPvGxXCtbFPP8wYxezX1/Riot-Games-Obra-shadcn-ui?node-id=16-1732',
+  {
+  props: {
+    size: figma.enum('Size', {
+      Mini: 'mini',
+      Small: 'small',
+      Regular: 'regular',
+      Large: 'large',
+    }),
+    layout: figma.enum('Lines', {
+      '1 Line': 'single',
+      '2 Lines': 'stacked',
+    }),
+    error: figma.enum('State', {
+      Error: true,
+    }),
+    disabled: figma.enum('State', {
+      Disabled: true,
+    }),
+  },
+  example: (props) => (
+    <SelectTrigger
+      size={props.size}
+      layout={props.layout}
+      error={props.error}
+      disabled={props.disabled}
+    />
+  ),
+}
 );
 
 figma.connect(
@@ -101,5 +137,4 @@ figma.connect(
     ),
   }
 );
-
 

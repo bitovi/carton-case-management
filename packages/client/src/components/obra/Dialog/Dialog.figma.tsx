@@ -8,29 +8,63 @@ figma.connect(
   Dialog,
   'https://www.figma.com/design/MQUbIrlfuM8qnr9XZ7jc82/Obra-shadcn-ui--Carton-?node-id=151-12298',
   {
-    props: {
-      type: figma.enum('Type', {
-        'Desktop': 'Desktop',
-        'Desktop Scrollable': 'Desktop Scrollable',
-        'Mobile': 'Mobile',
-        'Mobile Full Screen Scrollable': 'Mobile Full Screen Scrollable',
-      }),
-    },
-    example: (props) => (
-      <Dialog 
-        open={true}
-        onOpenChange={() => {}}
-        type={props.type}
-        header={<DialogHeader type="Header" title="Title" onClose={() => {}} />}
-        footer={
-          <DialogFooter type="2 Buttons Right">
-            <Button variant="outline">Secondary</Button>
-            <Button variant="primary">Primary</Button>
-          </DialogFooter>
-        }
-      >
-        <div>Content</div>
-      </Dialog>
-    ),
-  }
+  props: {
+    type: figma.enum('Type', {
+      'Desktop': 'Desktop',
+      'Desktop Scrollable': 'Desktop Scrollable',
+      'Mobile': 'Mobile',
+      'Mobile Full Screen Scrollable': 'Mobile Full Screen Scrollable',
+    }),
+  },
+  example: (props) => (
+    <Dialog 
+      open={true}
+      onOpenChange={() => {}}
+      type={props.type}
+      header={<DialogHeader type="Header" title="Title" onClose={() => {}} />}
+      footer={
+        <DialogFooter type="2 Buttons Right">
+          <Button variant="outline">Secondary</Button>
+          <Button variant="primary">Primary</Button>
+        </DialogFooter>
+      }
+    >
+      <div>Content</div>
+    </Dialog>
+  ),
+}
+);
+
+// Riot Training version
+// NOTE: Config must be duplicated inline - Figma Code Connect requires object literals.
+// This connection will be removed once Riot training is complete.
+figma.connect(
+  Dialog,
+  'https://www.figma.com/design/W2OPvGxXCtbFPP8wYxezX1/Riot-Games-Obra-shadcn-ui?node-id=151-12298',
+  {
+  props: {
+    type: figma.enum('Type', {
+      'Desktop': 'Desktop',
+      'Desktop Scrollable': 'Desktop Scrollable',
+      'Mobile': 'Mobile',
+      'Mobile Full Screen Scrollable': 'Mobile Full Screen Scrollable',
+    }),
+  },
+  example: (props) => (
+    <Dialog 
+      open={true}
+      onOpenChange={() => {}}
+      type={props.type}
+      header={<DialogHeader type="Header" title="Title" onClose={() => {}} />}
+      footer={
+        <DialogFooter type="2 Buttons Right">
+          <Button variant="outline">Secondary</Button>
+          <Button variant="primary">Primary</Button>
+        </DialogFooter>
+      }
+    >
+      <div>Content</div>
+    </Dialog>
+  ),
+}
 );
