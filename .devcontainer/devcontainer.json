@@ -1,6 +1,6 @@
 {
   "name": "Carton Case Management",
-  "dockerComposeFile": "../docker-compose.dev.yaml",
+  "dockerComposeFile": "../docker-compose.codespace.yaml",
   "service": "app",
   "workspaceFolder": "/workspaces/carton-case-management",
   "features": {
@@ -29,7 +29,7 @@
   },
   "containerEnv": {
     "NODE_ENV": "development",
-    "DATABASE_URL": "file:./prisma/dev.db"
+    "DATABASE_URL": "file:./db/dev.db"
   },
   "customizations": {
     "vscode": {

@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+
+    command: npm run dev
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=file:./db/dev.db
+    ports:
+      - '5173:5173'
+      - '3001:3001'
+      - '6006:6006'
+      - '9323:9323'
+
