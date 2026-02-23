@@ -1,5 +1,6 @@
 import figma from '@figma/code-connect';
 import { Alert } from './Alert';
+import { Button } from '../Button';
 
 figma.connect(Alert, 'https://www.figma.com/design/MQUbIrlfuM8qnr9XZ7jc82/Obra-shadcn-ui--Carton-?node-id=58-5416', {
   props: {
@@ -19,13 +20,9 @@ figma.connect(Alert, 'https://www.figma.com/design/MQUbIrlfuM8qnr9XZ7jc82/Obra-s
     }),
     showIcon: figma.boolean('Show Icon'),
     flipIcon: figma.boolean('Flip Icon'),
-    action: figma.boolean('Show Button', {
-      true: figma.instance('Button'),
-      false: undefined,
-    }),
     showButton: figma.boolean('Show Button'),
   },
-  example: ({ type, children, description, showLine2, icon, showIcon, flipIcon, action, showButton }) => (
+  example: ({ type, children, description, showLine2, icon, showIcon, flipIcon, showButton }) => (
     <Alert
       type={type}
       description={description}
@@ -33,8 +30,7 @@ figma.connect(Alert, 'https://www.figma.com/design/MQUbIrlfuM8qnr9XZ7jc82/Obra-s
       icon={icon}
       showIcon={showIcon}
       flipIcon={flipIcon}
-      action={action}
-      showButton={showButton}
+      action={showButton ? <Button variant="outline">Action</Button> : undefined}
     >
       {children}
     </Alert>

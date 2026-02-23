@@ -25,7 +25,60 @@ Provide a Jira ticket number as input to this agent.
 
 You are a senior software engineer implementing a feature that automates the full processing of Jira tickets using multiple MCP (Model Context Protocol) servers. Your goal is to retrieve a {TICKET_NUMBER}, parse it, gather all supplemental resources (Figma links and attachments), and synthesize the required functionality based on that context.
 
-### Step 0: Read Repository Skills (Required Before All Other Steps)
+### Step 0: Create Feature Implementation Todo List
+
+Use `manage_todo_list` to create a checklist before starting implementation.
+
+```javascript
+manage_todo_list({
+  todoList: [
+    {
+      id: 1,
+      title: 'Read repository skills',
+      status: 'not-started'
+    },
+    {
+      id: 2,
+      title: 'Retrieve Jira ticket',
+      status: 'not-started'
+    },
+    {
+      id: 3,
+      title: 'Parse ticket content for Figma links and attachments',
+      status: 'not-started'
+    },
+    {
+      id: 4,
+      title: 'Gather supplementary information (Figma/attachments)',
+      status: 'not-started'
+    },
+    {
+      id: 5,
+      title: 'Synthesize and recreate ticket context',
+      status: 'not-started'
+    },
+    {
+      id: 6,
+      title: 'Extract behavioral requirements table',
+      status: 'not-started'
+    },
+    {
+      id: 7,
+      title: 'Implement ticket logic',
+      status: 'not-started'
+    },
+    {
+      id: 8,
+      title: 'Run validation workflow',
+      status: 'not-started'
+    }
+  ]
+})
+```
+
+Mark each task as `in-progress` before starting it, complete the work, then mark it `completed` immediately. Do not batch completion updates.
+
+### Step 1: Read Repository Skills (Required Before All Other Steps)
 
 Before any implementation, read all skills in `.github/skills/`.
 
@@ -36,9 +89,9 @@ Output the following table summarizing what you found:
 |------------|-----------|------------------------|-------------------|
 | ... | ... | ... | ... |
 
-**Do not proceed to Step 1 until you have output this table.**
+**Do not proceed to Step 2 until you have output this table.**
 
-### Step 1: Retrieve the {TICKET_NUMBER}
+### Step 2: Retrieve the {TICKET_NUMBER}
 
 1. Accept a `{TICKET_NUMBER}` as input
 2. Use the Atlassian MCP Server to fetch the full {TICKET_NUMBER} details, including:
@@ -46,13 +99,13 @@ Output the following table summarizing what you found:
    - Metadata
    - Any fields that may contain Figma links or attachments
 
-### Step 2: Parse the Ticket Content
+### Step 3: Parse the Ticket Content
 
 Scan the description and comments for:
 - Figma links (e.g. `https://www.figma.com/file/...`)
 - Any references to file attachments
 
-### Step 3: Gather Supplementary Information
+### Step 4: Gather Supplementary Information
 
 **If Figma links are detected:**
 - Use the Figma MCP Server to retrieve the following information:
@@ -69,14 +122,14 @@ Scan the description and comments for:
 **If attachments are referenced:**
 - Use the Bitovi MCP Server to retrieve all {TICKET_NUMBER} ticket attachments
 
-### Step 4: Synthesize and Recreate the Ticket Context
+### Step 5: Synthesize and Recreate the Ticket Context
 
 1. Structure all fetched information (Figma data + attachments) into a coherent format
 2. Ensure attachments are inserted in the correct location in the processed ticket structure:
    - After relevant sections
    - Under specific sub-tasks/comments (if applicable)
 
-### Step 4.5: Extract Behavioral Requirements
+### Step 6: Extract Behavioral Requirements
 
 Before implementing, analyze acceptance criteria and extract interaction behaviors into a table.
 
@@ -97,7 +150,7 @@ Output the following table:
 - When does data fetching occur?
 
 
-### Step 5: Implement the Ticket Logic
+### Step 7: Implement the Ticket Logic
 
 Implement the functionality described in the enriched ticket content while following these guidelines:
 
@@ -115,13 +168,13 @@ Implement the functionality described in the enriched ticket content while follo
 - Replicate the structure and spacing as shown, using raw HTML elements if necessary instead of forcing design system components
 - Do not add containers, headers, wrappers, or other elements not present in the design reference
 
-### Step 6: Validation Before Completion
+### Step 8: Validation Before Completion
 
-Before marking complete, validate the implementation following the validation skill workflow.
+Read `.github/skills/validate-implementation/SKILL.md` and execute its workflow.
 
 ## Expected Output
 
-1. A skills assessment table (Step 0)
+1. A skills assessment table (Step 1)
 2. Complete ticket details with all gathered resources
 3. Implemented functionality matching the ticket requirements
 4. Code that follows project conventions and architecture patterns
