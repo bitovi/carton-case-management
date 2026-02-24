@@ -172,6 +172,10 @@ Implement the functionality described in the enriched ticket content while follo
 
 Read `.github/skills/validate-implementation/SKILL.md` and execute its workflow.
 
+### Step 9: Move Jira Ticket to "In Review"
+
+Move the Jira ticket's status to "In Review" using the MCP.
+
 ## Expected Output
 
 1. A skills assessment table (Step 1)
