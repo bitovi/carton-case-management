@@ -25,7 +25,7 @@ This application follows a monorepo structure using npm workspaces:
 - React 18 with TypeScript
 - Vite as build tool
 - tRPC for type-safe API calls
-- Shadcn UI components
+- KendoReact UI components
 - Tailwind CSS for styling
 - React Router for routing
 - Storybook for component development

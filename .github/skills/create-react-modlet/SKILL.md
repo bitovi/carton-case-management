@@ -14,6 +14,7 @@ A modlet is a self-contained folder that houses everything related to a specific
 ## When to Use This Skill
 
 Use this skill when:
+
 - Creating any new React component
 - Creating a custom hook
 - Creating a utility/helper function
@@ -25,7 +26,7 @@ Components are organized in `packages/client/src/components/`:
 
 ```
 packages/client/src/components/
-├── ui/              # Shadcn UI components (DO NOT modify manually)
+├── ui/              # KendoReact UI components (DO NOT modify manually)
 ├── common/          # Shared reusable components
 ├── inline-edit/     # Inline editing components (grouping folder)
 ├── Header/          # Feature component
@@ -105,11 +106,7 @@ import { cn } from '@/lib/utils';
 import type { ComponentNameProps } from './types';
 
 export function ComponentName({ className, ...props }: ComponentNameProps) {
-  return (
-    <div className={cn('component-styles', className)}>
-      {/* Implementation */}
-    </div>
-  );
+  return <div className={cn('component-styles', className)}>{/* Implementation */}</div>;
 }
 ```
 
@@ -131,7 +128,7 @@ describe('ComponentName', () => {
     const user = userEvent.setup();
     const handleClick = vi.fn();
     render(<ComponentName onClick={handleClick} />);
-    
+
     await user.click(screen.getByRole('button'));
     expect(handleClick).toHaveBeenCalled();
   });
@@ -146,7 +143,7 @@ import { ComponentName } from './ComponentName';
 
 const meta: Meta<typeof ComponentName> = {
   component: ComponentName,
-  title: 'Common/ComponentName',  // Use: Common/, InlineEdit/, Feature name, etc.
+  title: 'Common/ComponentName', // Use: Common/, InlineEdit/, Feature name, etc.
   tags: ['autodocs'],
 };
 
@@ -205,7 +202,7 @@ import { Button } from '@/components/ui/button';
 import { SomeComponent } from '@/components/common/SomeComponent';
 ```
 
-### Shadcn UI Components
+### KendoReact UI Components
 
 Reuse components from `@/components/ui/`:
 
@@ -222,7 +219,7 @@ Use Tailwind classes for styling. Use `cn()` for conditional classes:
 ```tsx
 import { cn } from '@/lib/utils';
 
-<div className={cn('base-classes', isActive && 'active-classes', className)} />
+<div className={cn('base-classes', isActive && 'active-classes', className)} />;
 ```
 
 ### Story Decorators
@@ -299,17 +296,21 @@ Before completing any modlet:
 Reference these existing modlets for patterns:
 
 **Full modlet with types:**
+
 - `components/Header/` - Has index.ts, component, test, story, types
 
 **Modlet in grouping folder:**
+
 - `components/inline-edit/EditableText/` - Inline edit component
 
 **Common component:**
+
 - `components/common/ConfirmationDialog/` - Dialog component in common folder
 
 ## Testing Notes
 
 This project uses:
+
 - **Vitest** for test runner
 - **@testing-library/react** for component testing
 - **@testing-library/user-event** for user interaction testing

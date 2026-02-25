@@ -5,9 +5,8 @@
 - **React + TypeScript** single-page application.
 - **React Router** for routing; routes are defined in `src/App.tsx`.
 - **Tailwind CSS** for all styling and layout (utility-first).
-- **shadcn/ui** as the default component library (Radix UI under the hood).
-- **Radix UI primitives** are available (used via shadcn/ui components when possible).
-- **lucide-react** for icons.
+- **KendoReact** as the default component library
+- **Kendo** for icons.
 - Source code lives in **`src/`** with a simple feature layout:
   - Pages in **`src/pages/`**
   - Reusable UI in **`src/components/`**
@@ -16,11 +15,8 @@
 ## Library usage rules (what to use for what)
 
 ### 1) UI components
-- **Use shadcn/ui first** for buttons, inputs, dialogs, dropdowns, tabs, tables, toasts, etc.
-- **Do not edit shadcn/ui files** directly. If you need different behavior or styling:
-  - wrap the component in `src/components/`, or
-  - compose primitives to build a new component.
-- Use **Radix UI primitives directly only when** shadcn/ui doesn’t provide the needed component or you need a lower-level primitive.
+- **Use KendoReact first** for buttons, inputs, dialogs, dropdowns, tabs, tables, toasts, etc. 
+- Kendo React MCP server should be used for docs, examples, and best practices
 
 ### 2) Styling
 - **Always use Tailwind CSS** for styling.
@@ -28,8 +24,9 @@
 - If you need shared styling, create a small wrapper component or use class composition (e.g., via `cn(...)` utility if present).
 
 ### 3) Icons
-- **Use `lucide-react`** for icons.
+- **Use Kendo** for icons.
 - Keep icons as React components; size and color should be controlled via Tailwind classes.
+- Kendo React MCP should be used for docs, examples, and best practices
 
 ### 4) Routing
 - Use **React Router**.

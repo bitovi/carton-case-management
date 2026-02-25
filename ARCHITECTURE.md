@@ -19,7 +19,7 @@
   - Background data refetching on window focus
   - Optimistic updates and cache invalidation
   - React Query DevTools for debugging (dev-only)
-- Shadcn UI for design system
+- KendoReact for design system
 - Storybook - components provide props override for data-fetching to simplify testing and storybook integration
 - vitest with MSW (Mock Service Worker) for API mocking in tests
 - Custom test utilities in `src/test/utils.ts` for tRPC + React Query testing
