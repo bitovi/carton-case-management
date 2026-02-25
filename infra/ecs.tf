@@ -42,11 +42,11 @@ resource "aws_ecs_task_definition" "main" {
         {
           name  = "DATABASE_URL"
           value = "file:./db/dev.db"
-        },
-        {
-          name  = "NODE_ENV"
-          value = var.environment
         }
+        #        {
+        #  name  = "NODE_ENV"
+        #  value = var.environment
+        #}
       ]
 
       mountPoints = []
