@@ -18,3 +18,5 @@ test-results
 .vscode
 .devcontainer
 README.md
+pnpm-lock.yaml
+yarn.lock
