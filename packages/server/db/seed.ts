@@ -13,123 +13,123 @@ async function main() {
   console.log('Seeding database...');
 
   // Create demo users (staff members who create and manage cases)
-  const alexMorgan = await prisma.user.create({
+  const unitAxiom = await prisma.user.create({
     data: {
-      firstName: 'Alex',
-      lastName: 'Morgan',
-      username: 'alex-morgan',
+      firstName: 'Unit',
+      lastName: 'Axiom',
+      username: 'unit-axiom',
       email: FIRST_USER_EMAIL,
       password: 'hashed_password_here', // In production, use bcrypt
       dateJoined: new Date('2024-01-15'),
     },
   });
 
-  const sarahJohnson = await prisma.user.create({
+  const veraCircuit = await prisma.user.create({
     data: {
-      firstName: 'Sarah',
-      lastName: 'Johnson',
-      username: 'sarah-johnson',
-      email: 'sarahjohnson42@gmail.com',
+      firstName: 'Vera',
+      lastName: 'Circuit',
+      username: 'vera-circuit',
+      email: 'vera.circuit42@gmail.com',
       password: 'hashed_password_here',
       dateJoined: new Date('2025-05-04'),
     },
   });
 
-  const johnSorenson = await prisma.user.create({
+  const johnServo = await prisma.user.create({
     data: {
       firstName: 'John',
-      lastName: 'Sorenson',
-      username: 'jsorenson',
-      email: 'john.sorenson@email.com',
+      lastName: 'Servo',
+      username: 'jservo',
+      email: 'john.servo@email.com',
       password: 'hashed_password_here',
       dateJoined: new Date('2024-08-15'),
     },
   });
 
-  const aliceSmith = await prisma.user.create({
+  const aliceMecha = await prisma.user.create({
     data: {
       firstName: 'Alice',
-      lastName: 'Smith',
-      username: 'asmith',
-      email: 'alice.smith@example.com',
+      lastName: 'Mecha',
+      username: 'amecha',
+      email: 'alice.mecha@example.com',
       password: 'hashed_password_here',
       dateJoined: new Date('2024-03-20'),
     },
   });
 
-  const bobWilliams = await prisma.user.create({
+  const bobChronos = await prisma.user.create({
     data: {
       firstName: 'Bob',
-      lastName: 'Williams',
-      username: 'bwilliams',
-      email: 'bob.w@test.com',
+      lastName: 'Chronos',
+      username: 'bchronos',
+      email: 'bob.c@test.com',
       password: 'hashed_password_here',
       dateJoined: new Date('2025-01-10'),
     },
   });
 
-  const emilyBrown = await prisma.user.create({
+  const emilySynth = await prisma.user.create({
     data: {
       firstName: 'Emily',
-      lastName: 'Brown',
-      username: 'ebrown',
-      email: 'emily.brown@mail.com',
+      lastName: 'Synth',
+      username: 'esynth',
+      email: 'emily.synth@mail.com',
       password: 'hashed_password_here',
       dateJoined: new Date('2024-11-05'),
     },
   });
 
   // Create demo customers (people who cases are about)
-  const customerMichaelDavis = await prisma.customer.create({
+  const customerRoboDavis = await prisma.customer.create({
     data: {
-      firstName: 'Michael',
+      firstName: 'Robo',
       lastName: 'Davis',
-      username: 'mdavis',
-      email: 'michael.davis@customer.com',
+      username: 'robodavis',
+      email: 'robo.davis@customer.com',
       satisfactionRate: 4.5,
       dateJoined: new Date('2025-05-04'),
     },
   });
 
-  const customerJessicaMiller = await prisma.customer.create({
+  const customerJexaMiller = await prisma.customer.create({
     data: {
-      firstName: 'Jessica',
+      firstName: 'Jexa',
       lastName: 'Miller',
-      username: 'jmiller',
-      email: 'jessica.miller@customer.com',
+      username: 'jexa-miller',
+      email: 'jexa.miller@customer.com',
       satisfactionRate: 4.0,
       dateJoined: new Date('2024-08-15'),
     },
   });
 
-  const customerDavidWilson = await prisma.customer.create({
+  const customerDaxWilson = await prisma.customer.create({
     data: {
-      firstName: 'David',
+      firstName: 'Dax',
       lastName: 'Wilson',
-      username: 'dwilson',
-      email: 'david.wilson@customer.com',
+      username: 'daxwilson',
+      email: 'dax.wilson@customer.com',
       satisfactionRate: 5.0,
       dateJoined: new Date('2024-03-20'),
     },
   });
 
-  const customerLisaAnderson = await prisma.customer.create({
+  const customerLiraAnderson = await prisma.customer.create({
     data: {
-      firstName: 'Lisa',
+      firstName: 'Lira',
       lastName: 'Anderson',
-      username: 'landerson',
-      email: 'lisa.anderson@customer.com',
+      username: 'lira-anderson',
+      email: 'lira.anderson@customer.com',
       satisfactionRate: 3.5,
       dateJoined: new Date('2025-01-10'),
     },
   });
 
-  const customerRobertTaylor = await prisma.customer.create({
+  const customerRexTaylor = await prisma.customer.create({
     data: {
-      firstName: 'Robert',
+      firstName: 'Rex',
       lastName: 'Taylor',
-      username: 'rtaylor',
-      email: 'robert.taylor@customer.com',
+      username: 'rextaylor',
+      email: 'rex.taylor@customer.com',
       satisfactionRate: 4.0,
       dateJoined: new Date('2024-11-05'),
     },
@@ -138,14 +138,14 @@ async function main() {
   // Create demo cases with comments
   const case1 = await prisma.case.create({
     data: {
-      title: 'Insurance Claim Dispute',
+      title: 'Holiday Rush Delay on Servo Kit',
       description:
-        'Customer seeking housing assistance after losing their apartment due to job loss. They currently have temporary housing but need permanent housing within 60 days. Income is below the threshold for the Housing First program.',
-      customerId: customerMichaelDavis.id,
+        'Customer reports late shipment of RX-9 servo kit due to holiday rush. Order placed two weeks ago; tracking shows no movement for 5 days.',
+      customerId: customerRoboDavis.id,
       status: 'TO_DO',
       priority: 'HIGH',
-      createdBy: alexMorgan.id,
-      assignedTo: alexMorgan.id,
+      createdBy: unitAxiom.id,
+      assignedTo: unitAxiom.id,
       createdAt: new Date('2025-12-28T09:30:00'),
       updatedAt: new Date('2025-12-28T09:30:00'),
     },
@@ -154,33 +154,32 @@ async function main() {
   await prisma.comment.create({
     data: {
       content:
-        'Customer is seeking housing assistance after job loss. Currently in temporary housing. Need to contact Housing First program coordinator.',
+        'Confirmed holiday surge backlog with carrier. Requested expedited handoff once scanned.',
       caseId: case1.id,
-      authorId: alexMorgan.id,
+      authorId: unitAxiom.id,
       createdAt: new Date('2025-11-29T11:55:00'),
     },
   });
 
   await prisma.comment.create({
     data: {
-      content:
-        'Following up on the housing assistance application. Will contact the Housing First program coordinator.',
+      content: 'Followed up with carrier support. Placed a trace request and notified customer.',
       caseId: case1.id,
-      authorId: sarahJohnson.id,
+      authorId: veraCircuit.id,
       createdAt: new Date('2025-11-29T14:30:00'),
     },
   });
 
   const case2 = await prisma.case.create({
     data: {
-      title: 'Policy Coverage Inquiry',
+      title: 'Lost Shipment: Optical Sensor Array',
       description:
-        'Customer inquiring about coverage details for their home insurance policy. Specifically asking about flood damage coverage and deductible amounts.',
-      customerId: customerJessicaMiller.id,
+        'Customer reports lost shipment of optical sensor array. Tracking shows delivered, but customer did not receive package.',
+      customerId: customerJexaMiller.id,
       status: 'IN_PROGRESS',
       priority: 'MEDIUM',
-      createdBy: sarahJohnson.id,
-      assignedTo: sarahJohnson.id,
+      createdBy: veraCircuit.id,
+      assignedTo: veraCircuit.id,
       createdAt: new Date('2025-12-25T14:20:00'),
       updatedAt: new Date('2025-12-25T14:20:00'),
     },
@@ -188,32 +187,32 @@ async function main() {
 
   await prisma.comment.create({
     data: {
-      content: 'Reviewed policy documents. Flood coverage is included with a $1,000 deductible.',
+      content: 'Opened carrier investigation and requested proof of delivery.',
       caseId: case2.id,
-      authorId: sarahJohnson.id,
+      authorId: veraCircuit.id,
       createdAt: new Date('2025-12-10T09:15:00'),
     },
   });
 
   await prisma.comment.create({
     data: {
-      content: 'Sent detailed coverage breakdown to customer via email.',
+      content: 'Offered replacement shipment pending carrier response.',
       caseId: case2.id,
-      authorId: emilyBrown.id,
+      authorId: emilySynth.id,
       createdAt: new Date('2025-12-10T10:45:00'),
     },
   });
 
   const case3 = await prisma.case.create({
     data: {
-      title: 'Premium Adjustment Request',
+      title: 'Missing Parts in Exo-Arm Order',
       description:
-        'Customer requesting premium adjustment after installing new security system. Eligibility for discount needs to be verified.',
-      customerId: customerDavidWilson.id,
+        'Customer received exo-arm assembly kit but missing two torque couplers and one actuator seal.',
+      customerId: customerDaxWilson.id,
       status: 'TO_DO',
       priority: 'LOW',
-      createdBy: johnSorenson.id,
-      assignedTo: johnSorenson.id,
+      createdBy: johnServo.id,
+      assignedTo: johnServo.id,
       createdAt: new Date('2025-12-22T11:15:00'),
       updatedAt: new Date('2025-12-22T11:15:00'),
     },
@@ -221,32 +220,32 @@ async function main() {
 
   await prisma.comment.create({
     data: {
-      content: 'Security system details received. Verifying with approved vendors list.',
+      content: 'Confirmed missing SKUs from packing list. Preparing replacement shipment.',
       caseId: case3.id,
-      authorId: johnSorenson.id,
+      authorId: johnServo.id,
       createdAt: new Date('2025-12-15T13:20:00'),
     },
   });
 
   await prisma.comment.create({
     data: {
-      content: 'System qualifies for 10% discount. Processing adjustment.',
+      content: 'Replacement parts allocated in inventory. Dispatch scheduled.',
       caseId: case3.id,
-      authorId: aliceSmith.id,
+      authorId: aliceMecha.id,
       createdAt: new Date('2025-12-16T11:00:00'),
     },
   });
 
   const case4 = await prisma.case.create({
     data: {
-      title: 'Vehicle Accident Report',
+      title: 'Warranty Claim: Power Core Overheating',
       description:
-        'Customer involved in minor vehicle accident. Need to process auto insurance claim and arrange vehicle assessment.',
-      customerId: customerLisaAnderson.id,
+        'Customer reports overheating on a Gen-4 power core within warranty period. Requests repair or replacement.',
+      customerId: customerLiraAnderson.id,
       status: 'IN_PROGRESS',
       priority: 'HIGH',
-      createdBy: alexMorgan.id,
-      assignedTo: alexMorgan.id,
+      createdBy: unitAxiom.id,
+      assignedTo: unitAxiom.id,
       createdAt: new Date('2025-12-30T08:45:00'),
       updatedAt: new Date('2025-12-30T08:45:00'),
     },
@@ -254,23 +253,23 @@ async function main() {
 
   await prisma.comment.create({
     data: {
-      content: 'Police report received. Scheduling vehicle inspection for tomorrow.',
+      content: 'Requested diagnostic logs and serial number. Issued RMA pending verification.',
       caseId: case4.id,
-      authorId: bobWilliams.id,
+      authorId: bobChronos.id,
       createdAt: new Date('2025-12-30T10:20:00'),
     },
   });
 
   const case5 = await prisma.case.create({
     data: {
-      title: 'Billing Discrepancy',
+      title: 'Late Shipment: Cybernetic Knee Joint',
       description:
-        'Customer reports being charged incorrect premium amount. Invoice shows $150 but policy agreement states $120.',
-      customerId: customerRobertTaylor.id,
+        'Customer reports late shipment of cybernetic knee joint. Order stuck at regional hub during holiday rush.',
+      customerId: customerRexTaylor.id,
       status: 'COMPLETED',
       priority: 'MEDIUM',
-      createdBy: aliceSmith.id,
-      assignedTo: aliceSmith.id,
+      createdBy: aliceMecha.id,
+      assignedTo: aliceMecha.id,
       createdAt: new Date('2025-12-20T13:00:00'),
       updatedAt: new Date('2025-12-20T13:00:00'),
     },
@@ -278,22 +277,21 @@ async function main() {
 
   await prisma.comment.create({
     data: {
-      content: 'Reviewed billing records. Incorrect rate was applied due to system error.',
+      content: 'Carrier confirmed delay. Upgraded to express on next available route.',
       caseId: case5.id,
-      authorId: aliceSmith.id,
+      authorId: aliceMecha.id,
       createdAt: new Date('2025-12-20T14:30:00'),
     },
   });
 
   await prisma.comment.create({
     data: {
-      content: 'Corrected billing and issued $30 credit to customer account. Case resolved.',
+      content: 'Shipment delivered. Issued goodwill credit for delay.',
       caseId: case5.id,
-      authorId: johnSorenson.id,
+      authorId: johnServo.id,
       createdAt: new Date('2025-12-20T16:15:00'),
     },
   });
-
 
   console.log('Seeding completed!');
   console.log(`Created ${await prisma.user.count()} users`);
