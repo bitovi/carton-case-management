@@ -8,6 +8,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    dedupe: ['react', 'react-dom']
   },
   server: {
     allowedHosts: ['carton.bitovi.tools', 'carton-staging.bitovi.tools'],
