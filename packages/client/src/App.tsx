@@ -1,19 +1,45 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { FolderClosed, Users, Bot } from 'lucide-react';
+import { FolderClosed, Users, Bot, MessageSquare } from 'lucide-react';
 import { Header } from './components/Header';
 import { MenuList } from './components/MenuList';
 import { CasePage } from './pages/CasePage';
 import { CustomerPage } from './pages/CustomerPage';
 import { UserPage } from './pages/UserPage';
+import { ParChatPage } from './pages/ParChatPage';
 import { trpc } from './lib/trpc';
 
 function App() {
   const location = useLocation();
-  
+
   const menuItems = [
-    { id: 'home', label: 'Cases', path: '/cases/', icon: <FolderClosed size={20} />, isActive: location.pathname === '/' || location.pathname.startsWith('/cases') },
-    { id: 'users', label: 'Users', path: '/users/', icon: <Bot size={20} />, isActive: location.pathname.startsWith('/users') },
-    { id: 'customers', label: 'Customers', path: '/customers/', icon: <Users size={20} />, isActive: location.pathname.startsWith('/customers') },
+    {
+      id: 'home',
+      label: 'Cases',
+      path: '/cases/',
+      icon: <FolderClosed size={20} />,
+      isActive: location.pathname === '/' || location.pathname.startsWith('/cases'),
+    },
+    {
+      id: 'users',
+      label: 'Users',
+      path: '/users/',
+      icon: <Bot size={20} />,
+      isActive: location.pathname.startsWith('/users'),
+    },
+    {
+      id: 'customers',
+      label: 'Customers',
+      path: '/customers/',
+      icon: <Users size={20} />,
+      isActive: location.pathname.startsWith('/customers'),
+    },
+    {
+      id: 'parchat',
+      label: 'AI Assistant',
+      path: '/parchat',
+      icon: <MessageSquare size={20} />,
+      isActive: location.pathname.startsWith('/parchat'),
+    },
   ];
   const { data: user, isLoading, error } = trpc.auth.me.useQuery();
 
@@ -59,6 +85,7 @@ function App() {
             <Route path="/users/" element={<UserPage />} />
             <Route path="/users/:id" element={<UserPage />} />
             <Route path="/customers/" element={<CustomerPage />} />
+            <Route path="/parchat" element={<ParChatPage />} />
             <Route path="/customers/:id" element={<CustomerPage />} />
           </Routes>
         </main>

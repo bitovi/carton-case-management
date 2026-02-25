@@ -1,0 +1,1 @@
+export { ParChatPage } from './ParChatPage';
