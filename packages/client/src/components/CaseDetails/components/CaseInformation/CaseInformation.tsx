@@ -42,9 +42,8 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
 
       return { previousCase };
     },
-    onSuccess: () => {
-      utils.case.getById.invalidate({ id: caseId });
-      utils.case.list.invalidate();
+    onSuccess: (data) => {
+      utils.case.getById.setData({ id: caseId }, data);
     },
     onError: (error, _variables, context) => {
       console.error('Failed to update case:', error);

@@ -83,9 +83,9 @@ model Case {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
-  customer Customer @relation(fields: [customerId], references: [id])
-  creator  User     @relation("UserCreatedBy", fields: [createdBy], references: [id])
-  assignee User?    @relation("UserAssignedTo", fields: [assignedTo], references: [id])
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  creator  User     @relation("UserCreatedBy", fields: [createdBy], references: [id], onDelete: Cascade)
+  assignee User?    @relation("UserAssignedTo", fields: [assignedTo], references: [id], onDelete: Cascade)
   comments Comment[]
 
   @@index([customerId])
@@ -102,7 +102,7 @@ model Comment {
   updatedAt DateTime @updatedAt
 
   case   Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
-  author User @relation(fields: [authorId], references: [id])
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([caseId])
   @@index([authorId])

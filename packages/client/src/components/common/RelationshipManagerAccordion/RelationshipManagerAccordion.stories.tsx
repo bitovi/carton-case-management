@@ -1,10 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { MemoryRouter } from 'react-router-dom';
 import { RelationshipManagerAccordion } from './RelationshipManagerAccordion';
 
 const meta: Meta<typeof RelationshipManagerAccordion> = {
   component: RelationshipManagerAccordion,
   title: 'Components/Common/RelationshipManagerAccordion',
   tags: ['autodocs'],
+  decorators: [
+    (Story) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
   parameters: {
     layout: 'centered',
     design: {
@@ -22,6 +30,7 @@ const mockItems = [
     id: '1',
     title: 'Policy Coverage Inquiry',
     subtitle: '#CAS-242315-2125',
+    to: '/cases/1',
   },
 ];
 
@@ -51,16 +60,19 @@ export const MultipleCases: Story = {
         id: '1',
         title: 'Policy Coverage Inquiry',
         subtitle: '#CAS-242315-2125',
+        to: '/cases/1',
       },
       {
         id: '2',
         title: 'Premium Adjustment Request',
         subtitle: '#CAS-242315-2126',
+        to: '/cases/2',
       },
       {
         id: '3',
         title: 'Claim Status Update',
         subtitle: '#CAS-242315-2127',
+        to: '/cases/3',
       },
     ],
     defaultOpen: true,

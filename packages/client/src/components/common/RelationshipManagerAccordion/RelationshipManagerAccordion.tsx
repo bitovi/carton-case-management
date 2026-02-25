@@ -1,4 +1,5 @@
-import {  Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Accordion, Button } from '@/components/obra';
 import type { RelationshipManagerAccordionProps } from './types';
@@ -34,9 +35,12 @@ export function RelationshipManagerAccordion({
                       className="flex items-center justify-between rounded-lg px-4 py-2"
                     >
                       <div className="flex flex-col text-sm leading-[21px]">
-                        <p className="font-semibold text-teal-600">
+                        <Link
+                          to={item.to}
+                          className="font-semibold text-teal-600 hover:underline"
+                        >
                           {item.title}
-                        </p>
+                        </Link>
                         <p className="text-gray-950">{item.subtitle}</p>
                       </div>
                     </div>

@@ -16,6 +16,7 @@ export function RelatedCasesAccordion({ cases }: RelatedCasesAccordionProps) {
     id: caseItem.id,
     title: caseItem.title,
     subtitle: formatCaseNumber(caseItem.id, caseItem.createdAt),
+    to: `/cases/${caseItem.id}`,
   }));
 
   return (

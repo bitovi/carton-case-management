@@ -33,9 +33,8 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
 
       return { previousCase };
     },
-    onSuccess: () => {
-      trpcUtils.case.getById.invalidate({ id: caseId });
-      trpcUtils.case.list.invalidate();
+    onSuccess: (data) => {
+      trpcUtils.case.getById.setData({ id: caseId }, data);
     },
     onError: (error, _variables, context) => {
       console.error('Failed to update case:', error);
@@ -103,7 +102,6 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
             onSave={handleCustomerChange}
             readonly={updateCaseMutation.isPending}
             placeholder="Select customer"
-            showSavingState={false}
           />
           <EditableSelect
             label="Priority"
@@ -111,7 +109,6 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
             options={[...CASE_PRIORITY_OPTIONS]}
             onSave={handlePriorityChange}
             readonly={updateCaseMutation.isPending}
-            showSavingState={false}
           />
           <EditableSelect
             label="Assigned To"
@@ -126,7 +123,6 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
             onSave={handleAssigneeChange}
             readonly={updateCaseMutation.isPending}
             placeholder="Unassigned"
-            showSavingState={false}
           />
           <div className="flex flex-col">
             <span className="text-xs text-gray-950 tracking-[0.18px] leading-4 px-1">Date Opened</span>

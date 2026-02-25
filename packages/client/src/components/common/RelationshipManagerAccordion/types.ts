@@ -2,6 +2,7 @@ export interface RelationshipItem {
   id: string;
   title: string;
   subtitle: string;
+  to: string;
 }
 
 export interface RelationshipManagerAccordionProps {
