@@ -8,22 +8,22 @@ https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-
 
 ## Accepted Design Differences
 
-| Figma | Implementation | Justification |
-|-------|---------------|---------------|
-| Fixed IconButton trigger | Flexible trigger prop | User requested support for avatar/custom triggers |
-| HoverCard component | Popover component | Obra design system provides Popover as standard overlay |
-| 200x50px fixed size | Dynamic sizing | Content-driven sizing for flexibility |
+| Figma                    | Implementation        | Justification                                           |
+| ------------------------ | --------------------- | ------------------------------------------------------- |
+| Fixed IconButton trigger | Flexible trigger prop | User requested support for avatar/custom triggers       |
+| HoverCard component      | Popover component     | Obra design system provides Popover as standard overlay |
+| 200x50px fixed size      | Dynamic sizing        | Content-driven sizing for flexibility                   |
 
 ## Figma-to-Code Mapping
 
-| Figma Element | React Implementation |
-|---------------|---------------------|
-| MoreOptions component | `MoreOptionsMenu` |
-| IconButton (trigger) | `Button` with `size="small"` and `roundness="round"` (default) |
-| State: Rest/Active | Controlled by Popover `open` state |
-| HoverCard | `PopoverContent` |
-| Slot | `children` prop |
-| Three dots icon | `MoreVertical` from lucide-react |
+| Figma Element         | React Implementation                                           |
+| --------------------- | -------------------------------------------------------------- |
+| MoreOptions component | `MoreOptionsMenu`                                              |
+| IconButton (trigger)  | `Button` with `size="small"` and `roundness="round"` (default) |
+| State: Rest/Active    | Controlled by Popover `open` state                             |
+| HoverCard             | `PopoverContent`                                               |
+| Slot                  | `children` prop                                                |
+| Three dots icon       | `moreVerticalIcon` from @progress/kendo-svg-icons              |
 
 ## Usage
 

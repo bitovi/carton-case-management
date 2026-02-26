@@ -1,14 +1,15 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Edit2 } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { pencilIcon } from '@progress/kendo-svg-icons';
 import { MoreOptionsMenu, MenuItem } from './MoreOptionsMenu';
 import { Button } from '@/components/obra/Button';
 
 describe('MoreOptionsMenu', () => {
   it('renders with default trigger and opens on click', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <MoreOptionsMenu>
         <MenuItem>Edit</MenuItem>
@@ -29,10 +30,8 @@ describe('MoreOptionsMenu', () => {
 
   it('renders with custom trigger', async () => {
     const user = userEvent.setup();
-    const customTrigger = (
-      <Button variant="outline">Custom Trigger</Button>
-    );
-    
+    const customTrigger = <Button variant="outline">Custom Trigger</Button>;
+
     render(
       <MoreOptionsMenu trigger={customTrigger}>
         <MenuItem>Option 1</MenuItem>
@@ -59,7 +58,7 @@ describe('MoreOptionsMenu', () => {
   it('calls onOpenChange when state changes', async () => {
     const user = userEvent.setup();
     const onOpenChange = vi.fn();
-    
+
     render(
       <MoreOptionsMenu onOpenChange={onOpenChange}>
         <MenuItem>Test Item</MenuItem>
@@ -74,7 +73,7 @@ describe('MoreOptionsMenu', () => {
 
   it('supports different positioning props', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <MoreOptionsMenu side="top" align="start" sideOffset={10}>
         <MenuItem>Positioned Item</MenuItem>
@@ -102,17 +101,17 @@ describe('MoreOptionsMenu', () => {
 describe('MenuItem', () => {
   it('renders with text content', () => {
     render(<MenuItem>Test MenuItem</MenuItem>);
-    
+
     expect(screen.getByRole('button', { name: 'Test MenuItem' })).toBeInTheDocument();
   });
 
   it('renders with icon', () => {
     render(
-      <MenuItem icon={<Edit2 data-testid="edit-icon" />}>
+      <MenuItem icon={<SvgIcon icon={pencilIcon} size="small" data-testid="edit-icon" />}>
         Edit Item
       </MenuItem>
     );
-    
+
     expect(screen.getByTestId('edit-icon')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Edit Item' })).toBeInTheDocument();
   });
@@ -120,12 +119,8 @@ describe('MenuItem', () => {
   it('calls onClick when clicked', async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();
-    
-    render(
-      <MenuItem onClick={onClick}>
-        Clickable Item
-      </MenuItem>
-    );
+
+    render(<MenuItem onClick={onClick}>Clickable Item</MenuItem>);
 
     const menuItem = screen.getByRole('button', { name: 'Clickable Item' });
     await user.click(menuItem);
@@ -136,7 +131,7 @@ describe('MenuItem', () => {
   it('handles disabled state', async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();
-    
+
     render(
       <MenuItem onClick={onClick} disabled>
         Disabled Item
@@ -153,15 +148,11 @@ describe('MenuItem', () => {
   it('supports keyboard navigation', async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();
-    
-    render(
-      <MenuItem onClick={onClick}>
-        Keyboard Item
-      </MenuItem>
-    );
+
+    render(<MenuItem onClick={onClick}>Keyboard Item</MenuItem>);
 
     const menuItem = screen.getByRole('button', { name: 'Keyboard Item' });
-    
+
     menuItem.focus();
     expect(menuItem).toHaveFocus();
 

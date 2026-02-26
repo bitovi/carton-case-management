@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
-import { ThumbsUp, ThumbsDown } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { thumbUpIcon, thumbDownIcon } from '@progress/kendo-svg-icons';
 import { VoterTooltip } from '../VoterTooltip';
 import type { VoteButtonProps } from './types';
 
@@ -12,13 +13,13 @@ export function VoteButton({
   onClick,
   className,
 }: VoteButtonProps) {
-  const Icon = type === 'up' ? ThumbsUp : ThumbsDown;
-  
+  const icon = type === 'up' ? thumbUpIcon : thumbDownIcon;
+
   const colorClasses = active
     ? type === 'up'
-      ? 'text-teal-500' 
-      : 'text-red-500'   
-    : 'text-slate-700';  
+      ? 'text-teal-500'
+      : 'text-red-500'
+    : 'text-slate-700';
 
   const button = (
     <button
@@ -33,11 +34,9 @@ export function VoteButton({
       aria-label={type === 'up' ? 'Upvote' : 'Downvote'}
       aria-pressed={active}
     >
-      <Icon className="h-6 w-6 shrink-0" />
+      <SvgIcon icon={icon} size="medium" className="shrink-0" />
       {showCount && count !== undefined && (
-        <span className="text-sm leading-[21px] tracking-[0.07px]">
-          {count}
-        </span>
+        <span className="text-sm leading-[21px] tracking-[0.07px]">{count}</span>
       )}
     </button>
   );
@@ -56,9 +55,7 @@ export function VoteButton({
             </span>
           ))}
           {remainingCount > 0 && (
-            <span className="text-xs font-semibold">
-              +{remainingCount} more
-            </span>
+            <span className="text-xs font-semibold">+{remainingCount} more</span>
           )}
         </div>
       </VoterTooltip>
@@ -67,4 +64,3 @@ export function VoteButton({
 
   return button;
 }
-

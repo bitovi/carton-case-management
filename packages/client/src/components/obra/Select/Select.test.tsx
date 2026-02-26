@@ -9,11 +9,10 @@ import {
   SelectSeparator,
   SelectOverflowIndicator,
 } from './Select';
-import { User } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { userIcon } from '@progress/kendo-svg-icons';
 
 describe('Select', () => {
-
-  
   describe('SelectTrigger - Size Variants', () => {
     it('renders mini size with correct classes', () => {
       render(
@@ -68,8 +67,6 @@ describe('Select', () => {
     });
   });
 
-
-
   describe('SelectTrigger - Layout Variants', () => {
     it('renders single line layout by default', () => {
       render(
@@ -111,7 +108,6 @@ describe('Select', () => {
     });
   });
 
-
   describe('SelectTrigger - Prepend Text', () => {
     it('renders prepend text in single layout', () => {
       render(
@@ -137,7 +133,6 @@ describe('Select', () => {
       expect(screen.queryByText('Status:')).not.toBeInTheDocument();
     });
   });
-
 
   describe('SelectTrigger - Error State', () => {
     it('applies error styling when error is true', () => {
@@ -167,7 +162,6 @@ describe('Select', () => {
     });
   });
 
-
   describe('SelectTrigger - Disabled State', () => {
     it('disables trigger when disabled is true', () => {
       render(
@@ -183,7 +177,6 @@ describe('Select', () => {
       expect(trigger).toHaveClass('opacity-50', 'cursor-not-allowed');
     });
   });
-
 
   describe('SelectTrigger - Placeholder and Value', () => {
     it('displays placeholder when no value', () => {
@@ -209,7 +202,7 @@ describe('Select', () => {
           </SelectContent>
         </Select>
       );
-      
+
       // Since Radix UI manages the display value internally,
       // we can check that placeholder is not visible when value is set
       const trigger = screen.getByRole('combobox');
@@ -217,13 +210,12 @@ describe('Select', () => {
     });
   });
 
-
   describe('SelectTrigger - Left Decoration', () => {
     it('renders left decoration when provided', () => {
       render(
         <Select>
           <SelectTrigger
-            leftDecoration={<User data-testid="left-icon" />}
+            leftDecoration={<SvgIcon icon={userIcon} data-testid="left-icon" />}
             placeholder="Select item"
           />
           <SelectContent>
@@ -248,7 +240,6 @@ describe('Select', () => {
     });
   });
 
-
   describe('SelectItem - Size Variants', () => {
     it('renders regular size items with correct classes', async () => {
       const user = userEvent.setup();
@@ -256,11 +247,13 @@ describe('Select', () => {
         <Select>
           <SelectTrigger placeholder="Select item" />
           <SelectContent>
-            <SelectItem size="regular" value="item1">Item 1</SelectItem>
+            <SelectItem size="regular" value="item1">
+              Item 1
+            </SelectItem>
           </SelectContent>
         </Select>
       );
-      
+
       await user.click(screen.getByRole('combobox'));
       const item = screen.getByRole('option', { name: 'Item 1' });
       expect(item).toHaveClass('h-8', 'px-2');
@@ -272,17 +265,18 @@ describe('Select', () => {
         <Select>
           <SelectTrigger placeholder="Select item" />
           <SelectContent>
-            <SelectItem size="large" value="item1">Item 1</SelectItem>
+            <SelectItem size="large" value="item1">
+              Item 1
+            </SelectItem>
           </SelectContent>
         </Select>
       );
-      
+
       await user.click(screen.getByRole('combobox'));
       const item = screen.getByRole('option', { name: 'Item 1' });
       expect(item).toHaveClass('h-9', 'px-3');
     });
   });
-
 
   describe('SelectItem - Type Variants', () => {
     it('renders default type with correct classes', async () => {
@@ -291,11 +285,13 @@ describe('Select', () => {
         <Select>
           <SelectTrigger placeholder="Select item" />
           <SelectContent>
-            <SelectItem type="default" value="item1">Item 1</SelectItem>
+            <SelectItem type="default" value="item1">
+              Item 1
+            </SelectItem>
           </SelectContent>
         </Select>
       );
-      
+
       await user.click(screen.getByRole('combobox'));
       const item = screen.getByRole('option', { name: 'Item 1' });
       expect(item).toHaveClass('text-foreground');
@@ -307,17 +303,18 @@ describe('Select', () => {
         <Select>
           <SelectTrigger placeholder="Select action" />
           <SelectContent>
-            <SelectItem type="destructive" value="delete">Delete</SelectItem>
+            <SelectItem type="destructive" value="delete">
+              Delete
+            </SelectItem>
           </SelectContent>
         </Select>
       );
-      
+
       await user.click(screen.getByRole('combobox'));
       const item = screen.getByRole('option', { name: 'Delete' });
       expect(item).toHaveClass('text-[var(--destructive-foreground)]');
     });
   });
-
 
   describe('SelectItem - Decorations and Descriptions', () => {
     it('renders left decoration in item', async () => {
@@ -326,16 +323,16 @@ describe('Select', () => {
         <Select>
           <SelectTrigger placeholder="Select item" />
           <SelectContent>
-            <SelectItem 
-              value="item1" 
-              leftDecoration={<User data-testid="item-icon" />}
+            <SelectItem
+              value="item1"
+              leftDecoration={<SvgIcon icon={userIcon} data-testid="item-icon" />}
             >
               Item 1
             </SelectItem>
           </SelectContent>
         </Select>
       );
-      
+
       await user.click(screen.getByRole('combobox'));
       expect(screen.getByTestId('item-icon')).toBeInTheDocument();
     });
@@ -352,12 +349,11 @@ describe('Select', () => {
           </SelectContent>
         </Select>
       );
-      
+
       await user.click(screen.getByRole('combobox'));
       expect(screen.getByText('This is a description')).toBeInTheDocument();
     });
   });
-
 
   describe('SelectItem - Disabled State', () => {
     it('disables item when disabled is true', async () => {
@@ -366,18 +362,18 @@ describe('Select', () => {
         <Select>
           <SelectTrigger placeholder="Select item" />
           <SelectContent>
-            <SelectItem value="item1" disabled>Item 1</SelectItem>
+            <SelectItem value="item1" disabled>
+              Item 1
+            </SelectItem>
           </SelectContent>
         </Select>
       );
-      
+
       await user.click(screen.getByRole('combobox'));
       const item = screen.getByRole('option', { name: 'Item 1' });
       expect(item).toHaveAttribute('data-disabled');
     });
   });
-
-
 
   describe('SelectSeparator', () => {
     it('renders separator', async () => {
@@ -392,7 +388,7 @@ describe('Select', () => {
           </SelectContent>
         </Select>
       );
-      
+
       await user.click(screen.getByRole('combobox'));
       // Check that items are rendered (separator presence is harder to test)
       expect(screen.getByRole('option', { name: 'Item 1' })).toBeInTheDocument();
@@ -400,24 +396,19 @@ describe('Select', () => {
     });
   });
 
-
-
   describe('SelectOverflowIndicator', () => {
     it('renders up indicator', () => {
       render(<SelectOverflowIndicator direction="up" />);
       const svg = document.querySelector('svg');
       expect(svg).toBeInTheDocument();
-      expect(svg).toHaveClass('lucide-chevron-up');
     });
 
     it('renders down indicator', () => {
       render(<SelectOverflowIndicator direction="down" />);
       const svg = document.querySelector('svg');
       expect(svg).toBeInTheDocument();
-      expect(svg).toHaveClass('lucide-chevron-down');
     });
   });
-
 
   describe('Integration', () => {
     it('opens menu when trigger is clicked', async () => {
@@ -431,10 +422,10 @@ describe('Select', () => {
           </SelectContent>
         </Select>
       );
-      
+
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
-      
+
       expect(screen.getByRole('listbox')).toBeInTheDocument();
       expect(screen.getByRole('option', { name: 'Item 1' })).toBeInTheDocument();
       expect(screen.getByRole('option', { name: 'Item 2' })).toBeInTheDocument();
@@ -443,7 +434,7 @@ describe('Select', () => {
     it('selects item when clicked', async () => {
       const user = userEvent.setup();
       const onValueChange = vi.fn();
-      
+
       render(
         <Select onValueChange={onValueChange}>
           <SelectTrigger placeholder="Select item" />
@@ -453,10 +444,10 @@ describe('Select', () => {
           </SelectContent>
         </Select>
       );
-      
+
       await user.click(screen.getByRole('combobox'));
       await user.click(screen.getByRole('option', { name: 'Item 1' }));
-      
+
       expect(onValueChange).toHaveBeenCalledWith('item1');
     });
   });

@@ -9,7 +9,8 @@
  */
 import * as React from 'react';
 import { useState, useCallback } from 'react';
-import { DollarSign } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { dollarIcon } from '@progress/kendo-svg-icons';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/obra/Input';
 import { BaseEditable } from '../BaseEditable';
@@ -53,19 +54,15 @@ export interface EditableCurrencyProps {
 /**
  * Format a number as currency for display
  */
-function formatCurrency(
-  value: number | null,
-  currencySymbol = '$',
-  decimalPlaces = 2
-): string {
+function formatCurrency(value: number | null, currencySymbol = '$', decimalPlaces = 2): string {
   if (value === null || value === undefined) return '';
-  
+
   const options: Intl.NumberFormatOptions = {
     useGrouping: true,
     minimumFractionDigits: decimalPlaces,
     maximumFractionDigits: decimalPlaces,
   };
-  
+
   const formattedNumber = new Intl.NumberFormat('en-US', options).format(value);
   return `${currencySymbol}${formattedNumber}`;
 }
@@ -121,7 +118,7 @@ function EditModeRenderer({
       <div className="relative w-full">
         {/* Dollar sign icon inside input */}
         <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-          <DollarSign className="h-5 w-5" />
+          <SvgIcon icon={dollarIcon} size="medium" />
         </div>
         <Input
           ref={inputRef as React.RefObject<HTMLInputElement>}
@@ -169,7 +166,7 @@ function EditModeRenderer({
  * - Label: 12px regular, gray-950, 0.18px letter-spacing
  * - Content: 14px regular, foreground, 0.07px letter-spacing, with $ prefix
  * - Edit: Input h-9 (36px), px-3 py-[7.5px], rounded-lg, shadow-sm
- * - Edit input has $ icon on left (DollarSign from lucide-react)
+ * - Edit input has $ icon on left (dollarIcon from @progress/kendo-svg-icons)
  * - Controls: check/x icon buttons, 36px min size, 8px padding
  *
  * @example
@@ -239,13 +236,15 @@ export function EditableCurrency({
 
   // Compute display value with placeholder support
   const computedDisplayValue =
-    displayValue !== undefined
-      ? displayValue
-      : value !== null
-        ? formatCurrency(value, currencySymbol, decimalPlaces)
-        : placeholder
-          ? <span className="text-muted-foreground italic">{placeholder}</span>
-          : <span className="text-muted-foreground italic">Not set</span>;
+    displayValue !== undefined ? (
+      displayValue
+    ) : value !== null ? (
+      formatCurrency(value, currencySymbol, decimalPlaces)
+    ) : placeholder ? (
+      <span className="text-muted-foreground italic">{placeholder}</span>
+    ) : (
+      <span className="text-muted-foreground italic">Not set</span>
+    );
 
   return (
     <BaseEditable

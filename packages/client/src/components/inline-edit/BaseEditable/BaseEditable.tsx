@@ -8,14 +8,11 @@
  */
 import * as React from 'react';
 import { useCallback, useRef, useState, useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { clockArrowRotateIcon } from '@progress/kendo-svg-icons';
 import { cn } from '@/lib/utils';
 import type { ZodSchema } from 'zod';
-import type {
-  EditableState,
-  RenderEditModeProps,
-  BaseEditableProps,
-} from '../types';
+import type { EditableState, RenderEditModeProps, BaseEditableProps } from '../types';
 
 /**
  * Validates a value using either a Zod schema or a custom validation function.
@@ -86,11 +83,7 @@ export function BaseEditable<T>({
   const isSaving = internalState === 'saving';
 
   // Derive the current state
-  const state: EditableState = isSaving
-    ? 'saving'
-    : isEditing
-      ? 'edit'
-      : internalState;
+  const state: EditableState = isSaving ? 'saving' : isEditing ? 'edit' : internalState;
 
   /**
    * Transitions to edit state
@@ -149,8 +142,7 @@ export function BaseEditable<T>({
         setError(null);
       } catch (err) {
         // Error - return to edit mode with error
-        const errorMessage =
-          err instanceof Error ? err.message : 'Save failed';
+        const errorMessage = err instanceof Error ? err.message : 'Save failed';
         setError(errorMessage);
         if (isControlled) {
           onEditingChange?.(true);
@@ -199,10 +191,7 @@ export function BaseEditable<T>({
   const handleBlur = useCallback(
     (e: React.FocusEvent) => {
       // Check if focus is moving outside the container
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.relatedTarget as Node)
-      ) {
+      if (containerRef.current && !containerRef.current.contains(e.relatedTarget as Node)) {
         if (state === 'interest') {
           setInternalState('rest');
         } else if (state === 'edit' && exitOnBlur) {
@@ -282,19 +271,11 @@ export function BaseEditable<T>({
     readonly && 'cursor-default'
   );
 
-  const editContainerClasses = cn(
-    'flex flex-col gap-1'
-  );
+  const editContainerClasses = cn('flex flex-col gap-1');
 
-  const errorClasses = cn(
-    'text-xs text-destructive mt-1'
-  );
+  const errorClasses = cn('text-xs text-destructive mt-1');
 
-  const savingClasses = cn(
-    contentClasses,
-    'flex items-center gap-2',
-    'cursor-wait'
-  );
+  const savingClasses = cn(contentClasses, 'flex items-center gap-2', 'cursor-wait');
 
   // Render content based on state
   const renderContent = () => {
@@ -317,11 +298,16 @@ export function BaseEditable<T>({
       // Always use formatValue on pendingValue (default to String if no formatter provided)
       const formatter = formatValue ?? ((v: T) => String(v));
       const savingDisplay = formatter(pendingValue as T);
-      
+
       return (
         <div className={savingClasses}>
           <span>{savingDisplay}</span>
-          <Loader2 className="h-3 w-3 animate-spin" aria-label="Saving..." />
+          <SvgIcon
+            icon={clockArrowRotateIcon}
+            size="small"
+            className="animate-spin"
+            aria-label="Saving..."
+          />
         </div>
       );
     }

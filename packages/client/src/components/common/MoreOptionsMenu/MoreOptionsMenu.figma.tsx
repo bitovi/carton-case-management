@@ -1,11 +1,12 @@
 import figma from '@figma/code-connect';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { trashIcon } from '@progress/kendo-svg-icons';
 import { MoreOptionsMenu, MenuItem } from './MoreOptionsMenu';
-import { Trash2 } from 'lucide-react';
 
 const moreOptionsMenuConfig = {
   example: () => (
     <MoreOptionsMenu>
-        <MenuItem icon={<Trash2 />}>Delete</MenuItem>
+      <MenuItem icon={<SvgIcon icon={trashIcon} size="small" />}>Delete</MenuItem>
     </MoreOptionsMenu>
   ),
 };
@@ -23,5 +24,3 @@ figma.connect(
   'https://www.figma.com/design/7W0r8XwvVXzGSOJhvV9c3o/App-Design?node-id=1179-62911',
   { ...moreOptionsMenuConfig }
 );
-
-

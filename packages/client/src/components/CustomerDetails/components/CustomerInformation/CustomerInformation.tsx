@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { MoreVertical, Trash, Star } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { moreVerticalIcon, trashIcon, starIcon } from '@progress/kendo-svg-icons';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/obra/Button';
 import { EditableTitle, EditableText } from '@/components/inline-edit';
@@ -21,10 +22,7 @@ interface CustomerInformationProps {
   };
 }
 
-export function CustomerInformation({
-  customerId,
-  customerData,
-}: CustomerInformationProps) {
+export function CustomerInformation({ customerId, customerData }: CustomerInformationProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -105,7 +103,7 @@ export function CustomerInformation({
 
   const renderStars = (rating: number | null) => {
     if (rating === null) return null;
-    
+
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 >= 0.5;
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
@@ -113,18 +111,23 @@ export function CustomerInformation({
     return (
       <div className="flex items-center gap-1">
         {[...Array(fullStars)].map((_, i) => (
-          <Star key={`full-${i}`} size={20} className="fill-orange-400 text-orange-400" />
+          <SvgIcon
+            key={`full-${i}`}
+            icon={starIcon}
+            size="medium"
+            className="fill-orange-400 text-orange-400"
+          />
         ))}
         {hasHalfStar && (
           <div className="relative">
-            <Star size={20} className="text-orange-400" />
+            <SvgIcon icon={starIcon} size="medium" className="text-orange-400" />
             <div className="absolute inset-0 overflow-hidden w-1/2">
-              <Star size={20} className="fill-orange-400 text-orange-400" />
+              <SvgIcon icon={starIcon} size="medium" className="fill-orange-400 text-orange-400" />
             </div>
           </div>
         )}
         {[...Array(emptyStars)].map((_, i) => (
-          <Star key={`empty-${i}`} size={20} className="text-orange-400" />
+          <SvgIcon key={`empty-${i}`} icon={starIcon} size="medium" className="text-orange-400" />
         ))}
       </div>
     );
@@ -189,14 +192,14 @@ export function CustomerInformation({
                 className="flex-shrink-0 px-2"
                 aria-label="More options"
               >
-                <MoreVertical size={20} />
+                <SvgIcon icon={moreVerticalIcon} size="medium" />
               </Button>
             }
             align="end"
           >
             <MenuItem
               onClick={() => setIsDeleteDialogOpen(true)}
-              icon={<Trash size={16} className="text-destructive" />}
+              icon={<SvgIcon icon={trashIcon} size="small" className="text-destructive" />}
               className="text-destructive hover:text-destructive"
             >
               Delete Customer
@@ -229,7 +232,7 @@ export function CustomerInformation({
           <MoreOptionsMenu
             trigger={
               <Button variant="outline" className="w-full">
-                <MoreVertical size={16} className="mr-2" />
+                <SvgIcon icon={moreVerticalIcon} size="small" className="mr-2" />
                 More Actions
               </Button>
             }
@@ -237,7 +240,7 @@ export function CustomerInformation({
           >
             <MenuItem
               onClick={() => setIsDeleteDialogOpen(true)}
-              icon={<Trash size={16} className="text-destructive" />}
+              icon={<SvgIcon icon={trashIcon} size="small" className="text-destructive" />}
               className="text-destructive hover:text-destructive"
             >
               Delete Customer

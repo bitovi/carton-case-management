@@ -1,4 +1,5 @@
-import { X } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { xIcon } from '@progress/kendo-svg-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/obra/Button';
 import { DialogTitle } from '../DialogTitle';
@@ -45,7 +46,7 @@ export function DialogHeader({
             className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
             aria-label="Close"
           >
-            <X className="h-4 w-4" />
+            <SvgIcon icon={xIcon} size="small" />
           </button>
         </>
       )}
@@ -56,7 +57,7 @@ export function DialogHeader({
           className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
           aria-label="Close"
         >
-          <X className="h-4 w-4" />
+          <SvgIcon icon={xIcon} size="small" />
         </button>
       )}
       {isIconButtonClose && (
@@ -67,7 +68,7 @@ export function DialogHeader({
           aria-label="Close"
           className="h-9 w-9 p-0"
         >
-          <X className="h-4 w-4" />
+          <SvgIcon icon={xIcon} size="small" />
         </Button>
       )}
     </div>

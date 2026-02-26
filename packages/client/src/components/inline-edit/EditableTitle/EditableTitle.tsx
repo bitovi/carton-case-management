@@ -1,6 +1,7 @@
 import type { FocusEvent, KeyboardEvent } from 'react';
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Check, X, Loader2 } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { checkIcon, xIcon, clockArrowRotateIcon } from '@progress/kendo-svg-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/obra/Button';
 import { Input } from '@/components/obra/Input';
@@ -78,11 +79,7 @@ export function EditableTitle({
   const isSaving = internalState === 'saving';
 
   // Determine visual state
-  const state: EditableState = isSaving
-    ? 'saving'
-    : isEditing
-      ? 'edit'
-      : internalState;
+  const state: EditableState = isSaving ? 'saving' : isEditing ? 'edit' : internalState;
 
   /**
    * Enter edit mode
@@ -146,8 +143,7 @@ export function EditableTitle({
       setError(null);
     } catch (err) {
       // Error - return to edit mode with error
-      const errorMessage =
-        err instanceof Error ? err.message : 'Save failed';
+      const errorMessage = err instanceof Error ? err.message : 'Save failed';
       setError(errorMessage);
       if (isControlled) {
         onEditingChange?.(true);
@@ -187,10 +183,7 @@ export function EditableTitle({
   const handleBlur = useCallback(
     (e: FocusEvent) => {
       // Check if focus is moving outside the container
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.relatedTarget as Node)
-      ) {
+      if (containerRef.current && !containerRef.current.contains(e.relatedTarget as Node)) {
         if (state === 'interest') {
           setInternalState('rest');
         }
@@ -263,11 +256,7 @@ export function EditableTitle({
     readonly && 'cursor-default'
   );
 
-  const savingClasses = cn(
-    titleClasses,
-    'flex items-center gap-2',
-    'cursor-wait'
-  );
+  const savingClasses = cn(titleClasses, 'flex items-center gap-2', 'cursor-wait');
 
   const errorClasses = cn('text-xs text-destructive mt-1');
 
@@ -308,9 +297,9 @@ export function EditableTitle({
               className="min-h-9 min-w-9"
             >
               {isSaving ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <SvgIcon icon={clockArrowRotateIcon} size="small" className="animate-spin" />
               ) : (
-                <Check className="h-4 w-4" />
+                <SvgIcon icon={checkIcon} size="small" />
               )}
             </Button>
             <Button
@@ -322,7 +311,7 @@ export function EditableTitle({
               aria-label="Cancel editing"
               className="min-h-9 min-w-9"
             >
-              <X className="h-4 w-4" />
+              <SvgIcon icon={xIcon} size="small" />
             </Button>
           </div>
         </div>
@@ -341,7 +330,12 @@ export function EditableTitle({
       <div ref={containerRef} className={className}>
         <div className={savingClasses}>
           <span>{editValue || placeholder}</span>
-          <Loader2 className="h-5 w-5 animate-spin" aria-label="Saving..." />
+          <SvgIcon
+            icon={clockArrowRotateIcon}
+            size="medium"
+            className="animate-spin"
+            aria-label="Saving..."
+          />
         </div>
       </div>
     );
@@ -361,9 +355,7 @@ export function EditableTitle({
         onClick={handleClick}
         onKeyDown={handleTitleKeyDown}
       >
-        {value || (
-          <span className="text-muted-foreground italic">{placeholder}</span>
-        )}
+        {value || <span className="text-muted-foreground italic">{placeholder}</span>}
       </h1>
     </div>
   );

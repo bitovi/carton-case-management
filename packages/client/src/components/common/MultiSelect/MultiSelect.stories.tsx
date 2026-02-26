@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
-import { User } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { userIcon } from '@progress/kendo-svg-icons';
 import { MultiSelect } from './MultiSelect';
 
 const meta = {
@@ -54,7 +55,7 @@ const priorityOptions = [
 
 function MultiSelectWrapper(props: React.ComponentProps<typeof MultiSelect>) {
   const [value, setValue] = useState<string[]>(props.value || []);
-  
+
   return <MultiSelect {...props} value={value} onChange={setValue} />;
 }
 
@@ -115,12 +116,7 @@ export const Interactive: Story = {
         value={[]}
         onChange={() => {}}
       />
-      <MultiSelectWrapper
-        label="Status"
-        options={statusOptions}
-        value={[]}
-        onChange={() => {}}
-      />
+      <MultiSelectWrapper label="Status" options={statusOptions} value={[]} onChange={() => {}} />
       <MultiSelectWrapper
         label="Priority"
         options={priorityOptions}
@@ -135,7 +131,7 @@ export const AllCustomersSelected: Story = {
   args: {
     label: 'Customer',
     options: customerOptions,
-    value: customerOptions.map(opt => opt.value),
+    value: customerOptions.map((opt) => opt.value),
     onChange: () => {},
   },
   render: (args) => (
@@ -231,7 +227,7 @@ export const SingleLayoutWithPrependText: Story = {
 export const WithLeftDecoration: Story = {
   args: {
     label: 'Customer',
-    leftDecoration: <User className="w-5 h-5" />,
+    leftDecoration: <SvgIcon icon={userIcon} size="small" />,
     options: customerOptions,
     value: ['sarah-johnson'],
     onChange: () => {},
@@ -254,7 +250,9 @@ export const ErrorState: Story = {
   render: (args) => (
     <div className="w-[342px]">
       <MultiSelectWrapper {...args} />
-      <p className="text-xs text-[var(--destructive-foreground)] mt-1">Please select at least one customer</p>
+      <p className="text-xs text-[var(--destructive-foreground)] mt-1">
+        Please select at least one customer
+      </p>
     </div>
   ),
 };

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Plus, Trash2, Download } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { plusIcon, trashIcon, downloadIcon } from '@progress/kendo-svg-icons';
 import { Button } from './Button';
 
 const meta: Meta<typeof Button> = {
@@ -42,12 +43,15 @@ export const WithIcons: Story = {
   render: () => (
     <div className="space-y-2">
       <div className="space-x-2">
-        <Button leftIcon={<Plus size={16} />}>Left Icon</Button>
-        <Button rightIcon={<Download size={16} />}>Right Icon</Button>
-        <Button leftIcon={<Plus size={16} />} rightIcon={<Download size={16} />}>
+        <Button leftIcon={<SvgIcon icon={plusIcon} size="small" />}>Left Icon</Button>
+        <Button rightIcon={<SvgIcon icon={downloadIcon} size="small" />}>Right Icon</Button>
+        <Button
+          leftIcon={<SvgIcon icon={plusIcon} size="small" />}
+          rightIcon={<SvgIcon icon={downloadIcon} size="small" />}
+        >
           Both Icons
         </Button>
-        <Button leftIcon={<Trash2 size={16} />} aria-label="Delete item" />
+        <Button leftIcon={<SvgIcon icon={trashIcon} size="small" />} aria-label="Delete item" />
       </div>
     </div>
   ),
@@ -158,4 +162,3 @@ export const VariantMatrix: Story = {
     </div>
   ),
 };
-

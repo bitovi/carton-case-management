@@ -9,7 +9,8 @@
  */
 import * as React from 'react';
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { clockArrowRotateIcon } from '@progress/kendo-svg-icons';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/obra';
 import { Button } from '@/components/obra/Button';
@@ -303,7 +304,7 @@ export function EditableTextarea({
           >
             {isSaving ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                <SvgIcon icon={clockArrowRotateIcon} size="small" className="animate-spin mr-2" />
                 Saving...
               </>
             ) : (
@@ -361,9 +362,8 @@ export function EditableTextarea({
 
       {/* Content */}
       <div className={contentClasses}>
-        {displayValue ?? (value || (
-          <span className="text-muted-foreground italic">{placeholder}</span>
-        ))}
+        {displayValue ??
+          (value || <span className="text-muted-foreground italic">{placeholder}</span>)}
       </div>
     </div>
   );

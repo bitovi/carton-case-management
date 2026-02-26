@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { Input } from './Input';
-import { Search, X } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { searchIcon, xIcon } from '@progress/kendo-svg-icons';
 
 describe('Input', () => {
   describe('Basic Rendering', () => {
@@ -109,7 +110,7 @@ describe('Input', () => {
     it('should render left decoration', () => {
       const { container } = render(
         <Input
-          leftDecoration={<Search data-testid="left-icon" />}
+          leftDecoration={<SvgIcon icon={searchIcon} data-testid="left-icon" />}
           placeholder="Search"
         />
       );
@@ -120,7 +121,7 @@ describe('Input', () => {
     it('should render right decoration', () => {
       const { container } = render(
         <Input
-          rightDecoration={<X data-testid="right-icon" />}
+          rightDecoration={<SvgIcon icon={xIcon} data-testid="right-icon" />}
           placeholder="Clear"
         />
       );
@@ -131,8 +132,8 @@ describe('Input', () => {
     it('should render both left and right decorations', () => {
       render(
         <Input
-          leftDecoration={<Search data-testid="left-icon" />}
-          rightDecoration={<X data-testid="right-icon" />}
+          leftDecoration={<SvgIcon icon={searchIcon} data-testid="left-icon" />}
+          rightDecoration={<SvgIcon icon={xIcon} data-testid="right-icon" />}
           placeholder="Search"
         />
       );
@@ -143,7 +144,7 @@ describe('Input', () => {
     it('should apply padding when left decoration is present', () => {
       render(
         <Input
-          leftDecoration={<Search />}
+          leftDecoration={<SvgIcon icon={searchIcon} />}
           data-testid="input"
           placeholder="Search"
         />
@@ -154,11 +155,7 @@ describe('Input', () => {
 
     it('should apply padding when right decoration is present', () => {
       render(
-        <Input
-          rightDecoration={<X />}
-          data-testid="input"
-          placeholder="Clear"
-        />
+        <Input rightDecoration={<SvgIcon icon={xIcon} />} data-testid="input" placeholder="Clear" />
       );
       const input = screen.getByTestId('input');
       expect(input).toHaveClass('pr-10');
@@ -193,7 +190,9 @@ describe('Input', () => {
     });
 
     it('should merge custom className with variant classes', () => {
-      const { container } = render(<Input size="large" className="custom-class" data-testid="input" />);
+      const { container } = render(
+        <Input size="large" className="custom-class" data-testid="input" />
+      );
       const inputContainer = container.firstChild;
       expect(inputContainer).toHaveClass('custom-class');
       const input = screen.getByTestId('input');
@@ -220,8 +219,6 @@ describe('Input', () => {
       expect(input).toHaveClass('h-8', 'rounded-full', 'border-destructive');
     });
   });
-
-
 
   describe('HTML Attributes', () => {
     it('should spread additional HTML attributes', () => {

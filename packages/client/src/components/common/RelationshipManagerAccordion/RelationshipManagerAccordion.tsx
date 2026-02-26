@@ -1,4 +1,5 @@
-import {  Plus } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { plusIcon } from '@progress/kendo-svg-icons';
 import { cn } from '@/lib/utils';
 import { Accordion, Button } from '@/components/obra';
 import type { RelationshipManagerAccordionProps } from './types';
@@ -11,7 +12,7 @@ export function RelationshipManagerAccordion({
   className,
 }: RelationshipManagerAccordionProps) {
   const accordionValue = accordionTitle.toLowerCase().replace(/\s+/g, '-');
-  
+
   return (
     <div className={cn('w-full sm:w-[200px]', className)}>
       <Accordion
@@ -34,9 +35,7 @@ export function RelationshipManagerAccordion({
                       className="flex items-center justify-between rounded-lg px-4 py-2"
                     >
                       <div className="flex flex-col text-sm leading-[21px]">
-                        <p className="font-semibold text-teal-600">
-                          {item.title}
-                        </p>
+                        <p className="font-semibold text-teal-600">{item.title}</p>
                         <p className="text-gray-950">{item.subtitle}</p>
                       </div>
                     </div>
@@ -47,7 +46,7 @@ export function RelationshipManagerAccordion({
                     variant="secondary"
                     size="regular"
                     onClick={onAddClick}
-                    leftIcon={<Plus className="h-4 w-4" />}
+                    leftIcon={<SvgIcon icon={plusIcon} size="small" />}
                   >
                     Add
                   </Button>

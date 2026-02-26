@@ -1,7 +1,8 @@
 import React from 'react';
 import * as SelectPrimitive from '@radix-ui/react-select';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Check, ChevronDown, ChevronUp } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { checkIcon, caretAltDownIcon, caretAltUpIcon } from '@progress/kendo-svg-icons';
 import { cn } from '@/lib/utils';
 import type {
   SelectProps,
@@ -13,13 +14,10 @@ import type {
   SelectOverflowIndicatorProps,
 } from './types';
 
-
 export const Select = SelectPrimitive.Root;
 
 export const SelectValue = SelectPrimitive.Value;
 
-
- 
 const selectTriggerVariants = cva(
   [
     'flex',
@@ -84,78 +82,83 @@ const selectTriggerVariants = cva(
 export const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   SelectTriggerProps & VariantProps<typeof selectTriggerVariants>
->(({
-  size = 'regular',
-  layout = 'single',
-  label,
-  prependText,
-  leftDecoration,
-  error = false,
-  disabled,
-  className,
-  children,
-  ...props
-}, ref) => {
-  return (
-    <SelectPrimitive.Trigger
-      ref={ref}
-      className={cn(
-        selectTriggerVariants({ size, layout, error }),
-        disabled && 'opacity-50 cursor-not-allowed',
-        className
-      )}
-      disabled={disabled}
-      {...props}
-    >
-      <div className={cn(
-        'flex flex-1 min-w-0',
-        layout === 'stacked' ? 'flex-col items-start gap-0' : 'flex-row items-center gap-2'
-      )}>
-        {layout === 'single' && (
-          <div className="flex flex-1 items-center gap-2 min-w-0">
-            {leftDecoration && (
-              <div className="shrink-0 w-5 h-5 flex items-center justify-center">
-                {leftDecoration}
-              </div>
-            )}
-
-            {prependText && (
-              <span className="shrink-0 text-sm text-muted-foreground">
-                {prependText}
-              </span>
-            )}
-
-            <span className="flex-1 truncate text-left">{children}</span>
-          </div>
+>(
+  (
+    {
+      size = 'regular',
+      layout = 'single',
+      label,
+      prependText,
+      leftDecoration,
+      error = false,
+      disabled,
+      className,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <SelectPrimitive.Trigger
+        ref={ref}
+        className={cn(
+          selectTriggerVariants({ size, layout, error }),
+          disabled && 'opacity-50 cursor-not-allowed',
+          className
         )}
-
-        {layout === 'stacked' && (
-          <>
-            {label && (
-              <span className="text-xs font-semibold text-muted-foreground tracking-[0.18px] leading-[16px]">
-                {label}
-              </span>
-            )}
-
-            <div className="flex items-center gap-2 w-full">
+        disabled={disabled}
+        {...props}
+      >
+        <div
+          className={cn(
+            'flex flex-1 min-w-0',
+            layout === 'stacked' ? 'flex-col items-start gap-0' : 'flex-row items-center gap-2'
+          )}
+        >
+          {layout === 'single' && (
+            <div className="flex flex-1 items-center gap-2 min-w-0">
               {leftDecoration && (
                 <div className="shrink-0 w-5 h-5 flex items-center justify-center">
                   {leftDecoration}
                 </div>
               )}
 
+              {prependText && (
+                <span className="shrink-0 text-sm text-muted-foreground">{prependText}</span>
+              )}
+
               <span className="flex-1 truncate text-left">{children}</span>
             </div>
-          </>
-        )}
-      </div>
+          )}
 
-      <SelectPrimitive.Icon className="shrink-0">
-        <ChevronDown className="w-4 h-4 text-muted-foreground" />
-      </SelectPrimitive.Icon>
-    </SelectPrimitive.Trigger>
-  );
-});
+          {layout === 'stacked' && (
+            <>
+              {label && (
+                <span className="text-xs font-semibold text-muted-foreground tracking-[0.18px] leading-[16px]">
+                  {label}
+                </span>
+              )}
+
+              <div className="flex items-center gap-2 w-full">
+                {leftDecoration && (
+                  <div className="shrink-0 w-5 h-5 flex items-center justify-center">
+                    {leftDecoration}
+                  </div>
+                )}
+
+                <span className="flex-1 truncate text-left">{children}</span>
+              </div>
+            </>
+          )}
+        </div>
+
+        <SelectPrimitive.Icon className="shrink-0">
+          <SvgIcon icon={caretAltDownIcon} size="small" className="text-muted-foreground" />
+        </SelectPrimitive.Icon>
+      </SelectPrimitive.Trigger>
+    );
+  }
+);
 
 SelectTrigger.displayName = 'SelectTrigger';
 
@@ -189,34 +192,37 @@ const selectContentVariants = cva(
 export const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
   SelectContentProps & VariantProps<typeof selectContentVariants>
->(({
-  spacing = 'none',
-  className,
-  children,
-  position = 'popper',
-  side = 'bottom',
-  align = 'start',
-  sideOffset = 4,
-  ...props
-}, ref) => {
-  return (
-    <SelectPrimitive.Portal>
-      <SelectPrimitive.Content
-        ref={ref}
-        className={cn(selectContentVariants({ spacing }), className)}
-        position={position}
-        side={side}
-        align={align}
-        sideOffset={sideOffset}
-        {...props}
-      >
-        <SelectPrimitive.Viewport className="w-full">
-          {children}
-        </SelectPrimitive.Viewport>
-      </SelectPrimitive.Content>
-    </SelectPrimitive.Portal>
-  );
-});
+>(
+  (
+    {
+      spacing = 'none',
+      className,
+      children,
+      position = 'popper',
+      side = 'bottom',
+      align = 'start',
+      sideOffset = 4,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <SelectPrimitive.Portal>
+        <SelectPrimitive.Content
+          ref={ref}
+          className={cn(selectContentVariants({ spacing }), className)}
+          position={position}
+          side={side}
+          align={align}
+          sideOffset={sideOffset}
+          {...props}
+        >
+          <SelectPrimitive.Viewport className="w-full">{children}</SelectPrimitive.Viewport>
+        </SelectPrimitive.Content>
+      </SelectPrimitive.Portal>
+    );
+  }
+);
 
 SelectContent.displayName = 'SelectContent';
 
@@ -261,90 +267,74 @@ const selectItemVariants = cva(
 export const SelectItem = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Item>,
   SelectItemProps & VariantProps<typeof selectItemVariants>
->(({
-  size = 'regular',
-  type = 'default',
-  leftDecoration,
-  rightDecoration,
-  disabled,
-  description,
-  className,
-  children,
-  ...props
-}, ref) => {
-  return (
-    <SelectPrimitive.Item
-      ref={ref}
-      className={cn(selectItemVariants({ size, type }), className)}
-      disabled={disabled}
-      {...props}
-    >
-      {leftDecoration && (
-        <div className="shrink-0 w-5 h-5 flex items-center justify-center">
-          {leftDecoration}
-        </div>
-      )}
-
-      <div className="flex flex-1 flex-col items-start min-w-0">
-        <SelectPrimitive.ItemText className="truncate">
-          {children}
-        </SelectPrimitive.ItemText>
-        {description && (
-          <span className="text-xs text-muted-foreground truncate">
-            {description}
-          </span>
+>(
+  (
+    {
+      size = 'regular',
+      type = 'default',
+      leftDecoration,
+      rightDecoration,
+      disabled,
+      description,
+      className,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <SelectPrimitive.Item
+        ref={ref}
+        className={cn(selectItemVariants({ size, type }), className)}
+        disabled={disabled}
+        {...props}
+      >
+        {leftDecoration && (
+          <div className="shrink-0 w-5 h-5 flex items-center justify-center">{leftDecoration}</div>
         )}
-      </div>
 
-      {rightDecoration && (
-        <div className="shrink-0 w-4 h-4 flex items-center justify-center">
-          {rightDecoration}
+        <div className="flex flex-1 flex-col items-start min-w-0">
+          <SelectPrimitive.ItemText className="truncate">{children}</SelectPrimitive.ItemText>
+          {description && (
+            <span className="text-xs text-muted-foreground truncate">{description}</span>
+          )}
         </div>
-      )}
 
-      <SelectPrimitive.ItemIndicator className="shrink-0 w-4 h-4 flex items-center justify-center">
-        <Check className="w-4 h-4" />
-      </SelectPrimitive.ItemIndicator>
-    </SelectPrimitive.Item>
-  );
-});
+        {rightDecoration && (
+          <div className="shrink-0 w-4 h-4 flex items-center justify-center">{rightDecoration}</div>
+        )}
+
+        <SelectPrimitive.ItemIndicator className="shrink-0 w-4 h-4 flex items-center justify-center">
+          <SvgIcon icon={checkIcon} size="small" />
+        </SelectPrimitive.ItemIndicator>
+      </SelectPrimitive.Item>
+    );
+  }
+);
 
 SelectItem.displayName = 'SelectItem';
 
-const selectLabelVariants = cva(
-  [
-    'font-semibold',
-    'text-muted-foreground',
-    'py-1.5',
-  ],
-  {
-    variants: {
-      size: {
-        small: 'text-xs px-2',
-        regular: 'text-sm px-2',
-      },
-      indented: {
-        false: '',
-        true: 'pl-8',
-      },
+const selectLabelVariants = cva(['font-semibold', 'text-muted-foreground', 'py-1.5'], {
+  variants: {
+    size: {
+      small: 'text-xs px-2',
+      regular: 'text-sm px-2',
     },
-    defaultVariants: {
-      size: 'small',
-      indented: false,
+    indented: {
+      false: '',
+      true: 'pl-8',
     },
-  }
-);
+  },
+  defaultVariants: {
+    size: 'small',
+    indented: false,
+  },
+});
 
 export const SelectLabel = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Label>,
   SelectLabelProps & VariantProps<typeof selectLabelVariants>
->(({
-  size = 'small',
-  indented = false,
-  className,
-  children,
-  ...props
-}, ref) => {
+>(({ size = 'small', indented = false, className, children, ...props }, ref) => {
   return (
     <SelectPrimitive.Label
       ref={ref}
@@ -377,11 +367,11 @@ export const SelectOverflowIndicator: React.FC<SelectOverflowIndicatorProps> = (
   direction,
   className,
 }) => {
-  const Icon = direction === 'up' ? ChevronUp : ChevronDown;
-  
+  const icon = direction === 'up' ? caretAltUpIcon : caretAltDownIcon;
+
   return (
     <div className={cn('flex items-center justify-center h-4 text-muted-foreground', className)}>
-      <Icon className="w-4 h-4" />
+      <SvgIcon icon={icon} size="small" />
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Badge } from './Badge';
-import { Check, X, AlertCircle } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { checkIcon, xIcon, exclamationCircleIcon } from '@progress/kendo-svg-icons';
 
 const meta: Meta<typeof Badge> = {
   component: Badge,
@@ -106,7 +107,7 @@ export const WithIconLeft: Story = {
   args: {
     variant: 'primary',
     children: 'Label',
-    iconLeft: <Check size={12} />,
+    iconLeft: <SvgIcon icon={checkIcon} size="small" />,
   },
 };
 
@@ -114,7 +115,7 @@ export const WithIconRight: Story = {
   args: {
     variant: 'secondary',
     children: 'Label',
-    iconRight: <X size={12} />,
+    iconRight: <SvgIcon icon={xIcon} size="small" />,
   },
 };
 
@@ -122,8 +123,8 @@ export const WithBothIcons: Story = {
   args: {
     variant: 'outline',
     children: 'Label',
-    iconLeft: <Check size={12} />,
-    iconRight: <X size={12} />,
+    iconLeft: <SvgIcon icon={checkIcon} size="small" />,
+    iconRight: <SvgIcon icon={xIcon} size="small" />,
   },
 };
 
@@ -132,7 +133,7 @@ export const DestructiveWithIcon: Story = {
     variant: 'destructive',
     roundness: 'round',
     children: 'Error',
-    iconLeft: <AlertCircle size={12} />,
+    iconLeft: <SvgIcon icon={exclamationCircleIcon} size="small" />,
   },
 };
 
@@ -164,24 +165,26 @@ export const AllVariants: Story = {
         </Badge>
       </div>
       <div className="flex flex-wrap gap-2">
-        <Badge variant="primary" iconLeft={<Check size={12} />}>
+        <Badge variant="primary" iconLeft={<SvgIcon icon={checkIcon} size="small" />}>
           With Icon
         </Badge>
-        <Badge variant="secondary" iconRight={<X size={12} />}>
+        <Badge variant="secondary" iconRight={<SvgIcon icon={xIcon} size="small" />}>
           With Icon
         </Badge>
         <Badge
           variant="outline"
-          iconLeft={<Check size={12} />}
-          iconRight={<X size={12} />}
+          iconLeft={<SvgIcon icon={checkIcon} size="small" />}
+          iconRight={<SvgIcon icon={xIcon} size="small" />}
         >
           Both Icons
         </Badge>
-        <Badge variant="destructive" iconLeft={<AlertCircle size={12} />}>
+        <Badge
+          variant="destructive"
+          iconLeft={<SvgIcon icon={exclamationCircleIcon} size="small" />}
+        >
           Error
         </Badge>
       </div>
     </div>
   ),
 };
-

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Edit2, Trash2, Share2, UserCircle } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { pencilIcon, trashIcon, shareIcon, userIcon } from '@progress/kendo-svg-icons';
 import { MoreOptionsMenu, MenuItem } from './MoreOptionsMenu';
 import { Button } from '@/components/obra/Button';
 
@@ -18,19 +19,22 @@ const meta: Meta<typeof MoreOptionsMenu> = {
 export default meta;
 type Story = StoryObj<typeof MoreOptionsMenu>;
 
-
 export const Default: Story = {
   args: {
     children: (
       <>
-        <MenuItem icon={<Edit2 className="h-4 w-4" />}>Edit</MenuItem>
-        <MenuItem icon={<Share2 className="h-4 w-4" />}>Share</MenuItem>
-        <MenuItem icon={<Trash2 className="h-4 w-4 text-destructive" />} className="text-destructive hover:text-destructive">Delete</MenuItem>
+        <MenuItem icon={<SvgIcon icon={pencilIcon} size="small" />}>Edit</MenuItem>
+        <MenuItem icon={<SvgIcon icon={shareIcon} size="small" />}>Share</MenuItem>
+        <MenuItem
+          icon={<SvgIcon icon={trashIcon} size="small" className="text-destructive" />}
+          className="text-destructive hover:text-destructive"
+        >
+          Delete
+        </MenuItem>
       </>
     ),
   },
 };
-
 
 export const Active: Story = {
   args: {
@@ -39,24 +43,22 @@ export const Active: Story = {
   },
 };
 
-
 export const WithAvatarTrigger: Story = {
   args: {
     trigger: (
       <Button variant="ghost" size="small" roundness="round">
-        <UserCircle className="h-5 w-5" />
+        <SvgIcon icon={userIcon} size="small" />
       </Button>
     ),
     children: (
       <>
-        <MenuItem icon={<UserCircle className="h-4 w-4" />}>Profile</MenuItem>
-        <MenuItem icon={<Edit2 className="h-4 w-4" />}>Settings</MenuItem>
+        <MenuItem icon={<SvgIcon icon={userIcon} size="small" />}>Profile</MenuItem>
+        <MenuItem icon={<SvgIcon icon={pencilIcon} size="small" />}>Settings</MenuItem>
         <MenuItem>Sign out</MenuItem>
       </>
     ),
   },
 };
-
 
 export const WithButtonTrigger: Story = {
   args: {
@@ -75,7 +77,6 @@ export const WithButtonTrigger: Story = {
   },
 };
 
-
 export const Positioning: Story = {
   render: () => (
     <div className="flex gap-8 p-8">
@@ -86,7 +87,7 @@ export const Positioning: Story = {
           <MenuItem>Second item</MenuItem>
         </MoreOptionsMenu>
       </div>
-      
+
       <div>
         <p className="mb-2 text-sm font-medium">Side: right</p>
         <MoreOptionsMenu side="right">
@@ -94,7 +95,7 @@ export const Positioning: Story = {
           <MenuItem>Second item</MenuItem>
         </MoreOptionsMenu>
       </div>
-      
+
       <div>
         <p className="mb-2 text-sm font-medium">Side: bottom (default)</p>
         <MoreOptionsMenu side="bottom">
@@ -102,7 +103,7 @@ export const Positioning: Story = {
           <MenuItem>Second item</MenuItem>
         </MoreOptionsMenu>
       </div>
-      
+
       <div>
         <p className="mb-2 text-sm font-medium">Side: left</p>
         <MoreOptionsMenu side="left">
@@ -114,18 +115,17 @@ export const Positioning: Story = {
   ),
 };
 
-
 export const CustomColors: Story = {
   args: {
     children: (
       <>
-        <MenuItem icon={<Edit2 className="h-4 w-4 text-blue-600" />}>
+        <MenuItem icon={<SvgIcon icon={pencilIcon} size="small" className="text-blue-600" />}>
           <span className="text-blue-600">Custom Blue</span>
         </MenuItem>
-        <MenuItem icon={<Share2 className="h-4 w-4 text-green-600" />}>
+        <MenuItem icon={<SvgIcon icon={shareIcon} size="small" className="text-green-600" />}>
           <span className="text-green-600">Custom Green</span>
         </MenuItem>
-        <MenuItem icon={<Trash2 className="h-4 w-4 text-red-600" />}>
+        <MenuItem icon={<SvgIcon icon={trashIcon} size="small" className="text-red-600" />}>
           <span className="text-red-600">Custom Red (Non-destructive)</span>
         </MenuItem>
       </>
@@ -137,33 +137,39 @@ export const ItemStates: Story = {
   args: {
     children: (
       <>
-        <MenuItem icon={<Edit2 className="h-4 w-4" />}>Normal item</MenuItem>
-        <MenuItem icon={<Share2 className="h-4 w-4" />} disabled>Disabled item</MenuItem>
-        <MenuItem icon={<Trash2 className="h-4 w-4 text-destructive" />} className="text-destructive hover:text-destructive">Destructive item</MenuItem>
+        <MenuItem icon={<SvgIcon icon={pencilIcon} size="small" />}>Normal item</MenuItem>
+        <MenuItem icon={<SvgIcon icon={shareIcon} size="small" />} disabled>
+          Disabled item
+        </MenuItem>
+        <MenuItem
+          icon={<SvgIcon icon={trashIcon} size="small" className="text-destructive" />}
+          className="text-destructive hover:text-destructive"
+        >
+          Destructive item
+        </MenuItem>
         <MenuItem>No icon item</MenuItem>
       </>
     ),
   },
 };
 
-
 export const Interactive: Story = {
   render: () => (
     <MoreOptionsMenu>
-      <MenuItem 
-        icon={<Edit2 className="h-4 w-4" />}
+      <MenuItem
+        icon={<SvgIcon icon={pencilIcon} size="small" />}
         onClick={() => alert('Edit clicked!')}
       >
         Edit
       </MenuItem>
-      <MenuItem 
-        icon={<Share2 className="h-4 w-4" />}
+      <MenuItem
+        icon={<SvgIcon icon={shareIcon} size="small" />}
         onClick={() => alert('Share clicked!')}
       >
         Share
       </MenuItem>
-      <MenuItem 
-        icon={<Trash2 className="h-4 w-4 text-destructive" />}
+      <MenuItem
+        icon={<SvgIcon icon={trashIcon} size="small" className="text-destructive" />}
         className="text-destructive hover:text-destructive"
         onClick={() => confirm('Are you sure you want to delete?')}
       >

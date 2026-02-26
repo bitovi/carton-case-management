@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { MoreVertical, Trash } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { moreVerticalIcon, trashIcon } from '@progress/kendo-svg-icons';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/obra/Button';
 import { formatCaseNumber, type CaseStatus, CASE_STATUS_OPTIONS } from '@carton/shared/client';
@@ -160,14 +161,14 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
             <MoreOptionsMenu
               trigger={
                 <Button variant="ghost" size="mini" className="h-8 w-8">
-                  <MoreVertical className="h-4 w-4" />
+                  <SvgIcon icon={moreVerticalIcon} size="small" />
                 </Button>
               }
               align="end"
             >
               <MenuItem
                 onClick={() => setIsDeleteDialogOpen(true)}
-                icon={<Trash className="h-4 w-4 text-destructive" />}
+                icon={<SvgIcon icon={trashIcon} size="small" className="text-destructive" />}
                 className="text-destructive hover:text-destructive"
               >
                 Delete Case

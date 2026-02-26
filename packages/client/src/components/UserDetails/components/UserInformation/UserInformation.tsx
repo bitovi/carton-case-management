@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { MoreVertical, Trash } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { moreVerticalIcon, trashIcon } from '@progress/kendo-svg-icons';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/obra/Button';
 import { EditableTitle, EditableText } from '@/components/inline-edit';
@@ -20,10 +21,7 @@ interface UserInformationProps {
   };
 }
 
-export function UserInformation({
-  userId,
-  userData,
-}: UserInformationProps) {
+export function UserInformation({ userId, userData }: UserInformationProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -161,14 +159,14 @@ export function UserInformation({
                 className="flex-shrink-0 px-2"
                 aria-label="More options"
               >
-                <MoreVertical size={20} />
+                <SvgIcon icon={moreVerticalIcon} size="medium" />
               </Button>
             }
             align="end"
           >
             <MenuItem
               onClick={() => setIsDeleteDialogOpen(true)}
-              icon={<Trash size={16} className="text-destructive" />}
+              icon={<SvgIcon icon={trashIcon} size="small" className="text-destructive" />}
               className="text-destructive hover:text-destructive"
             >
               Delete User
@@ -196,7 +194,7 @@ export function UserInformation({
           <MoreOptionsMenu
             trigger={
               <Button variant="outline" className="w-full">
-                <MoreVertical size={16} className="mr-2" />
+                <SvgIcon icon={moreVerticalIcon} size="small" className="mr-2" />
                 More Actions
               </Button>
             }
@@ -204,7 +202,7 @@ export function UserInformation({
           >
             <MenuItem
               onClick={() => setIsDeleteDialogOpen(true)}
-              icon={<Trash size={16} className="text-destructive" />}
+              icon={<SvgIcon icon={trashIcon} size="small" className="text-destructive" />}
               className="text-destructive hover:text-destructive"
             >
               Delete User

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { cva } from 'class-variance-authority';
-import { ChevronDown } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { caretAltDownIcon } from '@progress/kendo-svg-icons';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/obra';
 import { Checkbox } from '@/components/obra';
 import { cn } from '@/lib/utils';
@@ -81,25 +82,29 @@ export function MultiSelect({
   className,
 }: MultiSelectProps) {
   const [open, setOpen] = useState(false);
-  
+
   const handleToggle = (optionValue: string) => {
     if (disabled) return;
     const newValue = value.includes(optionValue)
-      ? value.filter(v => v !== optionValue)
+      ? value.filter((v) => v !== optionValue)
       : [...value, optionValue];
     onChange(newValue);
   };
-  
-  const displayValue = value.length === 0
-    ? placeholder
-    : value.length === 1
-    ? options.find(opt => opt.value === value[0])?.label || placeholder
-    : `${value.length} selected`;
-  
-  const displayLabel = label && layout === 'stacked'
-    ? value.length > 0 ? `${label} (${value.length})` : `${label} (0)`
-    : label;
-  
+
+  const displayValue =
+    value.length === 0
+      ? placeholder
+      : value.length === 1
+        ? options.find((opt) => opt.value === value[0])?.label || placeholder
+        : `${value.length} selected`;
+
+  const displayLabel =
+    label && layout === 'stacked'
+      ? value.length > 0
+        ? `${label} (${value.length})`
+        : `${label} (0)`
+      : label;
+
   return (
     <div className={cn('flex flex-col gap-0 w-full', className)}>
       <Popover open={open} onOpenChange={disabled ? undefined : setOpen}>
@@ -113,10 +118,12 @@ export function MultiSelect({
               !disabled && 'hover:bg-gray-50'
             )}
           >
-            <div className={cn(
-              'flex flex-1 min-w-0',
-              layout === 'stacked' ? 'flex-col items-start gap-0' : 'flex-row items-center gap-2'
-            )}>
+            <div
+              className={cn(
+                'flex flex-1 min-w-0',
+                layout === 'stacked' ? 'flex-col items-start gap-0' : 'flex-row items-center gap-2'
+              )}
+            >
               {layout === 'single' && (
                 <div className="flex flex-1 items-center gap-2 min-w-0">
                   {leftDecoration && (
@@ -126,9 +133,7 @@ export function MultiSelect({
                   )}
 
                   {prependText && (
-                    <span className="shrink-0 text-sm text-muted-foreground">
-                      {prependText}
-                    </span>
+                    <span className="shrink-0 text-sm text-muted-foreground">{prependText}</span>
                   )}
 
                   <span className="flex-1 truncate text-left">{displayValue}</span>
@@ -155,13 +160,14 @@ export function MultiSelect({
                 </>
               )}
             </div>
-            <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+            <SvgIcon
+              icon={caretAltDownIcon}
+              size="small"
+              className="text-muted-foreground shrink-0"
+            />
           </button>
         </PopoverTrigger>
-        <PopoverContent
-          className="w-[var(--radix-popover-trigger-width)] p-1"
-          align="start"
-        >
+        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-1" align="start">
           <div className="flex flex-col max-h-[300px] overflow-y-auto">
             {options.map((option) => (
               <label

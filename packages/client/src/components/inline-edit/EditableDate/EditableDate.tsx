@@ -9,14 +9,11 @@
  */
 import * as React from 'react';
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { calendarIcon } from '@progress/kendo-svg-icons';
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/obra/Calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/obra/Popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/obra/Popover';
 import { format, parse, isValid } from 'date-fns';
 import { BaseEditable } from '../BaseEditable';
 import type { ZodSchema } from 'zod';
@@ -74,7 +71,7 @@ function parseDate(value: string | Date | null): Date | undefined {
 
 /**
  * Edit mode renderer for date picker
- * 
+ *
  * Design specs from Figma (node 1252-8939):
  * - Date picker input with calendar icon on left
  * - Auto-saves on date selection (no save/cancel buttons)
@@ -102,8 +99,7 @@ function EditModeRenderer({
   // Forward ref to trigger
   useEffect(() => {
     if (inputRef && triggerRef.current) {
-      (inputRef as React.MutableRefObject<HTMLElement | null>).current =
-        triggerRef.current;
+      (inputRef as React.MutableRefObject<HTMLElement | null>).current = triggerRef.current;
     }
   }, [inputRef]);
 
@@ -113,10 +109,10 @@ function EditModeRenderer({
   const handleDateSelect = useCallback(
     (value: Date | Date[] | import('react-day-picker').DateRange | undefined) => {
       // Only handle single date selection for EditableDate
-      if (!value || value instanceof Array || typeof value === 'object' && 'from' in value) {
+      if (!value || value instanceof Array || (typeof value === 'object' && 'from' in value)) {
         return;
       }
-      
+
       const selectedDate = value as Date;
       hasSelectedRef.current = true;
       // Format date as ISO string for storage
@@ -165,20 +161,14 @@ function EditModeRenderer({
             )}
             aria-label="Select date"
           >
-            <CalendarIcon className="h-5 w-5 text-slate-500 shrink-0" />
+            <SvgIcon icon={calendarIcon} size="medium" className="text-slate-500 shrink-0" />
             <span className="flex-1 text-left">
-              {formattedValue || (
-                <span className="text-muted-foreground">{placeholder}</span>
-              )}
+              {formattedValue || <span className="text-muted-foreground">{placeholder}</span>}
             </span>
           </button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0 bg-white text-foreground" align="start">
-          <Calendar
-            mode="single"
-            selected={dateValue}
-            onSelect={handleDateSelect}
-          />
+          <Calendar mode="single" selected={dateValue} onSelect={handleDateSelect} />
         </PopoverContent>
       </Popover>
     </div>
@@ -240,13 +230,15 @@ export function EditableDate({
 
   // Compute display value with placeholder support
   const computedDisplayValue =
-    displayValue !== undefined
-      ? displayValue
-      : formattedValue
-        ? formattedValue
-        : placeholder
-          ? <span className="text-muted-foreground italic">{placeholder}</span>
-          : <span className="text-muted-foreground italic">Not set</span>;
+    displayValue !== undefined ? (
+      displayValue
+    ) : formattedValue ? (
+      formattedValue
+    ) : placeholder ? (
+      <span className="text-muted-foreground italic">{placeholder}</span>
+    ) : (
+      <span className="text-muted-foreground italic">Not set</span>
+    );
 
   // Format value for saving state display
   const formatValue = useCallback(
@@ -271,11 +263,7 @@ export function EditableDate({
       exitOnBlur={false} // Date picker uses popover, blur happens when clicking calendar
       formatValue={formatValue}
       renderEditMode={(props) => (
-        <EditModeRenderer
-          {...props}
-          placeholder={placeholder}
-          displayFormat={displayFormat}
-        />
+        <EditModeRenderer {...props} placeholder={placeholder} displayFormat={displayFormat} />
       )}
     />
   );

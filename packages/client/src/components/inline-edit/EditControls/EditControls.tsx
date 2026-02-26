@@ -1,4 +1,5 @@
-import { Check, X } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { checkIcon, xIcon } from '@progress/kendo-svg-icons';
 import { Button } from '@/components/obra/Button';
 import { cn } from '@/lib/utils';
 
@@ -54,7 +55,7 @@ export function EditControls({ onSave, onCancel, className }: EditControlsProps)
         )}
         aria-label="Save"
       >
-        <Check className="h-4 w-4" />
+        <SvgIcon icon={checkIcon} size="small" />
       </Button>
 
       {/* Cancel button (x) */}
@@ -72,7 +73,7 @@ export function EditControls({ onSave, onCancel, className }: EditControlsProps)
         )}
         aria-label="Cancel"
       >
-        <X className="h-4 w-4" />
+        <SvgIcon icon={xIcon} size="small" />
       </Button>
     </div>
   );

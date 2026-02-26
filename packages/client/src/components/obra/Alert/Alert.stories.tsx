@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Info, AlertCircle } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { infoCircleIcon, exclamationCircleIcon } from '@progress/kendo-svg-icons';
 import { Alert } from './Alert';
 
 const meta: Meta<typeof Alert> = {
@@ -26,7 +27,7 @@ export const Default: Story = {
 export const NeutralWithIcon: Story = {
   args: {
     children: 'Line 1',
-    icon: <Info className="h-4 w-4" />,
+    icon: <SvgIcon icon={infoCircleIcon} size="small" />,
     showIcon: true,
   },
 };
@@ -36,7 +37,7 @@ export const NeutralWithIconAndDescription: Story = {
     children: 'Line 1',
     description: 'Line 2',
     showLine2: true,
-    icon: <Info className="h-4 w-4" />,
+    icon: <SvgIcon icon={infoCircleIcon} size="small" />,
     showIcon: true,
   },
 };
@@ -44,7 +45,7 @@ export const NeutralWithIconAndDescription: Story = {
 export const NeutralFlippedIcon: Story = {
   args: {
     children: 'Line 1',
-    icon: <Info className="h-4 w-4" />,
+    icon: <SvgIcon icon={infoCircleIcon} size="small" />,
     showIcon: true,
     flipIcon: true,
   },
@@ -53,7 +54,7 @@ export const NeutralFlippedIcon: Story = {
 export const NeutralWithButton: Story = {
   args: {
     children: 'Line 1',
-    icon: <Info className="h-4 w-4" />,
+    icon: <SvgIcon icon={infoCircleIcon} size="small" />,
     showIcon: true,
     action: (
       <button className="rounded-lg border border-border bg-background px-4 py-2 text-sm font-semibold shadow-sm hover:bg-accent">
@@ -75,7 +76,7 @@ export const ErrorWithIcon: Story = {
   args: {
     type: 'Error',
     children: 'Line 1',
-    icon: <AlertCircle className="h-4 w-4" />,
+    icon: <SvgIcon icon={exclamationCircleIcon} size="small" />,
     showIcon: true,
     flipIcon: true,
   },
@@ -87,7 +88,7 @@ export const ErrorWithIconAndDescription: Story = {
     children: 'Line 1',
     description: 'Line 2',
     showLine2: true,
-    icon: <AlertCircle className="h-4 w-4" />,
+    icon: <SvgIcon icon={exclamationCircleIcon} size="small" />,
     showIcon: true,
     flipIcon: true,
   },
@@ -97,7 +98,7 @@ export const ErrorFlippedIcon: Story = {
   args: {
     type: 'Error',
     children: 'Line 1',
-    icon: <AlertCircle className="h-4 w-4" />,
+    icon: <SvgIcon icon={exclamationCircleIcon} size="small" />,
     showIcon: true,
     flipIcon: false,
   },
@@ -107,7 +108,7 @@ export const ErrorWithButton: Story = {
   args: {
     type: 'Error',
     children: 'Line 1',
-    icon: <AlertCircle className="h-4 w-4" />,
+    icon: <SvgIcon icon={exclamationCircleIcon} size="small" />,
     showIcon: true,
     flipIcon: true,
     action: (
@@ -124,7 +125,7 @@ export const Complete: Story = {
     children: 'Line 1',
     description: 'Line 2',
     showLine2: true,
-    icon: <Info className="h-4 w-4" />,
+    icon: <SvgIcon icon={infoCircleIcon} size="small" />,
     showIcon: true,
     action: (
       <button className="rounded-lg border border-border bg-background px-4 py-2 text-sm font-semibold shadow-sm hover:bg-accent">

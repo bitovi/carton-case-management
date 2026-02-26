@@ -2,18 +2,24 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
-import { Home, Settings } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { homeIcon, gearIcon } from '@progress/kendo-svg-icons';
 import { MenuList } from './MenuList';
 import type { MenuItem } from './types';
 
 describe('MenuList', () => {
   const mockItems: MenuItem[] = [
-    { id: 'home', label: 'Home', path: '/', icon: <Home data-testid="home-icon" /> },
+    {
+      id: 'home',
+      label: 'Home',
+      path: '/',
+      icon: <SvgIcon icon={homeIcon} size="medium" data-testid="home-icon" />,
+    },
     {
       id: 'settings',
       label: 'Settings',
       path: '/settings',
-      icon: <Settings data-testid="settings-icon" />,
+      icon: <SvgIcon icon={gearIcon} size="medium" data-testid="settings-icon" />,
     },
   ];
 

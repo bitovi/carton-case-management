@@ -5,7 +5,8 @@ import { BaseEditable } from './BaseEditable';
 import { z } from 'zod';
 import { Input } from '@/components/obra/Input';
 import { Button } from '@/components/obra/Button';
-import { Check, X } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { checkIcon, xIcon } from '@progress/kendo-svg-icons';
 import type { RenderEditModeProps } from '../types';
 
 const meta: Meta<typeof BaseEditable<string>> = {
@@ -53,12 +54,7 @@ type Story = StoryObj<typeof BaseEditable<string>>;
 /**
  * Edit mode component - proper React component that can use hooks
  */
-function EditModeInput({
-  value,
-  onSave,
-  onCancel,
-  inputRef,
-}: RenderEditModeProps<string>) {
+function EditModeInput({ value, onSave, onCancel, inputRef }: RenderEditModeProps<string>) {
   const [localValue, setLocalValue] = useState(value);
 
   return (
@@ -79,21 +75,11 @@ function EditModeInput({
         }}
         className="h-8 w-48"
       />
-      <Button
-        size="mini"
-        variant="ghost"
-        className="h-8 w-8"
-        onClick={() => onSave(localValue)}
-      >
-        <Check className="h-4 w-4" />
+      <Button size="mini" variant="ghost" className="h-8 w-8" onClick={() => onSave(localValue)}>
+        <SvgIcon icon={checkIcon} size="small" />
       </Button>
-      <Button
-        size="mini"
-        variant="ghost"
-        className="h-8 w-8"
-        onClick={onCancel}
-      >
-        <X className="h-4 w-4" />
+      <Button size="mini" variant="ghost" className="h-8 w-8" onClick={onCancel}>
+        <SvgIcon icon={xIcon} size="small" />
       </Button>
     </div>
   );
@@ -102,9 +88,7 @@ function EditModeInput({
 /**
  * Render prop function that renders EditModeInput as a proper component
  */
-const renderEditMode = (props: RenderEditModeProps<string>) => (
-  <EditModeInput {...props} />
-);
+const renderEditMode = (props: RenderEditModeProps<string>) => <EditModeInput {...props} />;
 
 /**
  * Default state - displays value with hover interaction.
@@ -146,9 +130,7 @@ export const Interactive: Story = {
           }}
           renderEditMode={renderEditMode}
         />
-        <p className="mt-4 text-sm text-muted-foreground">
-          Current value: {value}
-        </p>
+        <p className="mt-4 text-sm text-muted-foreground">Current value: {value}</p>
       </div>
     );
   },
@@ -213,9 +195,7 @@ export const WithZodValidation: Story = {
       <BaseEditable
         label="Email"
         value={value}
-        displayValue={
-          value || <span className="text-muted-foreground italic">Not set</span>
-        }
+        displayValue={value || <span className="text-muted-foreground italic">Not set</span>}
         validate={z.string().email('Please enter a valid email')}
         onSave={async (newValue) => {
           await new Promise((resolve) => setTimeout(resolve, 500));
@@ -241,8 +221,7 @@ export const WithCustomValidation: Story = {
         validate={(val) => {
           if (val.length < 3) return 'Must be at least 3 characters';
           if (val.length > 20) return 'Must be less than 20 characters';
-          if (!/^[a-zA-Z0-9_]+$/.test(val))
-            return 'Only letters, numbers, and underscores allowed';
+          if (!/^[a-zA-Z0-9_]+$/.test(val)) return 'Only letters, numbers, and underscores allowed';
           return null;
         }}
         onSave={async (newValue) => {
@@ -295,17 +274,11 @@ export const ControlledEditing: Story = {
           <Button variant="outline" size="small" onClick={() => setIsEditing(true)}>
             Start Editing
           </Button>
-          <Button
-            variant="outline"
-            size="small"
-            onClick={() => setIsEditing(false)}
-          >
+          <Button variant="outline" size="small" onClick={() => setIsEditing(false)}>
             Cancel Editing
           </Button>
         </div>
-        <p className="mt-2 text-sm text-muted-foreground">
-          isEditing: {String(isEditing)}
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">isEditing: {String(isEditing)}</p>
       </div>
     );
   },
@@ -337,11 +310,10 @@ export const MultipleFields: Story = {
       email: 'john@example.com',
     });
 
-    const handleSave =
-      (field: keyof typeof data) => async (newValue: string) => {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        setData((prev) => ({ ...prev, [field]: newValue }));
-      };
+    const handleSave = (field: keyof typeof data) => async (newValue: string) => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      setData((prev) => ({ ...prev, [field]: newValue }));
+    };
 
     return (
       <div className="flex flex-col gap-4 p-4">

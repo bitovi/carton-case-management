@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { calendarIcon } from '@progress/kendo-svg-icons';
 import { Popover, PopoverTrigger, PopoverContent } from './Popover';
 import { Button } from '@/components/obra/Button';
 
@@ -38,11 +39,15 @@ function InteractivePopover() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" className="gap-2">
-          <CalendarIcon className="h-4 w-4" />
+          <SvgIcon icon={calendarIcon} size="small" />
           Open popover
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80" headerTitle="Popover Content" headerDescription="This is a popover with some example content. It can contain any React components.">
+      <PopoverContent
+        className="w-80"
+        headerTitle="Popover Content"
+        headerDescription="This is a popover with some example content. It can contain any React components."
+      >
         <div className="space-y-3">
           <div className="flex gap-2">
             <Button size="small" onClick={() => setOpen(false)}>
@@ -68,7 +73,12 @@ export const WithCustomAlignment: Story = {
       <PopoverTrigger asChild>
         <Button variant="outline">Align Start</Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-64" headerTitle="Aligned to start" headerDescription="This popover is aligned to the start of the trigger element.">
+      <PopoverContent
+        align="start"
+        className="w-64"
+        headerTitle="Aligned to start"
+        headerDescription="This popover is aligned to the start of the trigger element."
+      >
         <div>
           <p className="text-sm">Additional content can go here.</p>
         </div>
@@ -82,7 +92,9 @@ export const DifferentSides: Story = {
     <div className="flex gap-4 items-center">
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="small">Top</Button>
+          <Button variant="outline" size="small">
+            Top
+          </Button>
         </PopoverTrigger>
         <PopoverContent side="top">
           <p className="text-sm">Top side</p>
@@ -91,7 +103,9 @@ export const DifferentSides: Story = {
 
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="small">Right</Button>
+          <Button variant="outline" size="small">
+            Right
+          </Button>
         </PopoverTrigger>
         <PopoverContent side="right">
           <p className="text-sm">Right side</p>
@@ -100,7 +114,9 @@ export const DifferentSides: Story = {
 
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="small">Bottom</Button>
+          <Button variant="outline" size="small">
+            Bottom
+          </Button>
         </PopoverTrigger>
         <PopoverContent side="bottom">
           <p className="text-sm">Bottom side</p>
@@ -109,7 +125,9 @@ export const DifferentSides: Story = {
 
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="small">Left</Button>
+          <Button variant="outline" size="small">
+            Left
+          </Button>
         </PopoverTrigger>
         <PopoverContent side="left">
           <p className="text-sm">Left side</p>
@@ -130,13 +148,25 @@ export const MenuVariant: Story = {
       </PopoverTrigger>
       <PopoverContent content="Menu" className="w-auto">
         <div className="flex flex-col gap-1">
-          <Button variant="ghost" size="small" className="w-full justify-start gap-3 px-3 py-2 text-sm font-normal">
+          <Button
+            variant="ghost"
+            size="small"
+            className="w-full justify-start gap-3 px-3 py-2 text-sm font-normal"
+          >
             Option 1
           </Button>
-          <Button variant="ghost" size="small" className="w-full justify-start gap-3 px-3 py-2 text-sm font-normal">
-            Option 2  
+          <Button
+            variant="ghost"
+            size="small"
+            className="w-full justify-start gap-3 px-3 py-2 text-sm font-normal"
+          >
+            Option 2
           </Button>
-          <Button variant="ghost" size="small" className="w-full justify-start gap-3 px-3 py-2 text-sm font-normal">
+          <Button
+            variant="ghost"
+            size="small"
+            className="w-full justify-start gap-3 px-3 py-2 text-sm font-normal"
+          >
             Option 3
           </Button>
         </div>
@@ -147,7 +177,8 @@ export const MenuVariant: Story = {
     layout: 'centered',
     docs: {
       description: {
-        story: 'The Menu variant uses 8px padding instead of the default 16px, optimized for menu-style content.',
+        story:
+          'The Menu variant uses 8px padding instead of the default 16px, optimized for menu-style content.',
       },
     },
   },
@@ -159,7 +190,7 @@ export const WithHeader: Story = {
       <PopoverTrigger asChild>
         <Button variant="outline">Settings Panel</Button>
       </PopoverTrigger>
-      <PopoverContent 
+      <PopoverContent
         className="w-80"
         headerTitle="Dimensions"
         headerDescription="Set the dimensions for the layer."
@@ -168,11 +199,17 @@ export const WithHeader: Story = {
           <div className="flex gap-2">
             <div className="flex-1">
               <label className="text-sm font-medium">Width</label>
-              <input className="w-full mt-1 px-3 py-2 border border-border rounded-md text-sm" placeholder="100%" />
+              <input
+                className="w-full mt-1 px-3 py-2 border border-border rounded-md text-sm"
+                placeholder="100%"
+              />
             </div>
             <div className="flex-1">
               <label className="text-sm font-medium">Height</label>
-              <input className="w-full mt-1 px-3 py-2 border border-border rounded-md text-sm" placeholder="25px" />
+              <input
+                className="w-full mt-1 px-3 py-2 border border-border rounded-md text-sm"
+                placeholder="25px"
+              />
             </div>
           </div>
           <div className="flex gap-2">
@@ -191,7 +228,8 @@ export const WithHeader: Story = {
     layout: 'centered',
     docs: {
       description: {
-        story: 'Popover with header containing title and description. Headers are automatically shown for non-Menu variants.',
+        story:
+          'Popover with header containing title and description. Headers are automatically shown for non-Menu variants.',
       },
     },
   },

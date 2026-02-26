@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { BrowserRouter } from 'react-router-dom';
-import { Home, Settings, Users } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { homeIcon, gearIcon, tellAFriendIcon } from '@progress/kendo-svg-icons';
 import { MenuList } from './MenuList';
 
 const meta: Meta<typeof MenuList> = {
@@ -19,9 +20,19 @@ export default meta;
 type Story = StoryObj<typeof MenuList>;
 
 const mockItems = [
-  { id: 'home', label: 'Home', path: '/', icon: <Home size={20} /> },
-  { id: 'settings', label: 'Settings', path: '/settings', icon: <Settings size={20} /> },
-  { id: 'users', label: 'Users', path: '/users', icon: <Users size={20} /> },
+  { id: 'home', label: 'Home', path: '/', icon: <SvgIcon icon={homeIcon} size="medium" /> },
+  {
+    id: 'settings',
+    label: 'Settings',
+    path: '/settings',
+    icon: <SvgIcon icon={gearIcon} size="medium" />,
+  },
+  {
+    id: 'users',
+    label: 'Users',
+    path: '/users',
+    icon: <SvgIcon icon={tellAFriendIcon} size="medium" />,
+  },
 ];
 
 export const Desktop: Story = {
@@ -48,7 +59,9 @@ export const Mobile: Story = {
 
 export const SingleItem: Story = {
   args: {
-    items: [{ id: 'home', label: 'Home', path: '/', icon: <Home size={20} /> }],
+    items: [
+      { id: 'home', label: 'Home', path: '/', icon: <SvgIcon icon={homeIcon} size="large" /> },
+    ],
   },
 };
 

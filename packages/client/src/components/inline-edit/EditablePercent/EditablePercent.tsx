@@ -9,7 +9,8 @@
  */
 import * as React from 'react';
 import { useState, useCallback } from 'react';
-import { Percent } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { percentIcon } from '@progress/kendo-svg-icons';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/obra/Input';
 import { BaseEditable } from '../BaseEditable';
@@ -51,18 +52,15 @@ export interface EditablePercentProps {
 /**
  * Format a number as percentage for display
  */
-function formatPercent(
-  value: number | null,
-  decimalPlaces = 0
-): string {
+function formatPercent(value: number | null, decimalPlaces = 0): string {
   if (value === null || value === undefined) return '';
-  
+
   const options: Intl.NumberFormatOptions = {
     useGrouping: true,
     minimumFractionDigits: decimalPlaces,
     maximumFractionDigits: decimalPlaces,
   };
-  
+
   const formattedNumber = new Intl.NumberFormat('en-US', options).format(value);
   return `${formattedNumber}%`;
 }
@@ -144,7 +142,7 @@ function EditModeRenderer({
         />
         {/* Percent sign icon inside input on right */}
         <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-          <Percent className="h-5 w-5" />
+          <SvgIcon icon={percentIcon} size="medium" />
         </div>
       </div>
 
@@ -166,7 +164,7 @@ function EditModeRenderer({
  * - Label: 12px regular, gray-950, 0.18px letter-spacing
  * - Content: 14px regular, foreground, 0.07px letter-spacing, with % suffix
  * - Edit: Input h-9 (36px), px-3 py-[7.5px], rounded-lg, shadow-sm
- * - Edit input has % icon on RIGHT (Percent from lucide-react)
+ * - Edit input has % icon on RIGHT (percentIcon from @progress/kendo-svg-icons)
  * - Controls: check/x icon buttons, 36px min size, 8px padding
  *
  * @example
@@ -235,13 +233,15 @@ export function EditablePercent({
 
   // Compute display value with placeholder support
   const computedDisplayValue =
-    displayValue !== undefined
-      ? displayValue
-      : value !== null
-        ? formatPercent(value, decimalPlaces)
-        : placeholder
-          ? <span className="text-muted-foreground italic">{placeholder}</span>
-          : <span className="text-muted-foreground italic">Not set</span>;
+    displayValue !== undefined ? (
+      displayValue
+    ) : value !== null ? (
+      formatPercent(value, decimalPlaces)
+    ) : placeholder ? (
+      <span className="text-muted-foreground italic">{placeholder}</span>
+    ) : (
+      <span className="text-muted-foreground italic">Not set</span>
+    );
 
   return (
     <BaseEditable

@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 import { Input } from './Input';
-import { Search, X, Mail } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { searchIcon, xIcon, envelopeIcon } from '@progress/kendo-svg-icons';
 
 const meta: Meta<typeof Input> = {
   component: Input,
@@ -43,23 +44,27 @@ export const Default: Story = {
 export const WithIcons: Story = {
   render: () => (
     <div className="flex flex-col gap-4">
-      <Input 
-        leftDecoration={<Search className="h-4 w-4 text-muted-foreground" />}
+      <Input
+        leftDecoration={
+          <SvgIcon icon={searchIcon} size="small" className="text-muted-foreground" />
+        }
         placeholder="Left icon (search)"
       />
-      <Input 
+      <Input
         rightDecoration={
           <button type="button" className="text-muted-foreground hover:text-foreground">
-            <X className="h-4 w-4" />
+            <SvgIcon icon={xIcon} size="small" />
           </button>
         }
         placeholder="Right icon (clear)"
       />
-      <Input 
-        leftDecoration={<Mail className="h-4 w-4 text-muted-foreground" />}
+      <Input
+        leftDecoration={
+          <SvgIcon icon={envelopeIcon} size="small" className="text-muted-foreground" />
+        }
         rightDecoration={
           <button type="button" className="text-muted-foreground hover:text-foreground">
-            <X className="h-4 w-4" />
+            <SvgIcon icon={xIcon} size="small" />
           </button>
         }
         placeholder="Both icons"

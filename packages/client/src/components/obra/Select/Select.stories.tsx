@@ -9,7 +9,8 @@ import {
   SelectLabel,
   SelectSeparator,
 } from './Select';
-import { User, Mail, Settings, Trash2 } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { userIcon, envelopeIcon, gearIcon, trashIcon } from '@progress/kendo-svg-icons';
 
 const meta = {
   title: 'Obra/Select',
@@ -30,7 +31,7 @@ interface InteractiveSelectProps {
 
 function InteractiveSelect({ value: initialValue, children }: InteractiveSelectProps) {
   const [value, setValue] = useState(initialValue || '');
-  
+
   return (
     <Select value={value} onValueChange={setValue}>
       {children}
@@ -79,17 +80,17 @@ export const WithIcons: Story = {
   args: {
     children: (
       <>
-        <SelectTrigger leftDecoration={<User className="w-4 h-4" />}>
+        <SelectTrigger leftDecoration={<SvgIcon icon={userIcon} size="small" />}>
           <SelectValue placeholder="Select a setting" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="user" leftDecoration={<User className="w-4 h-4" />}>
+          <SelectItem value="user" leftDecoration={<SvgIcon icon={userIcon} size="small" />}>
             User Settings
           </SelectItem>
-          <SelectItem value="mail" leftDecoration={<Mail className="w-4 h-4" />}>
+          <SelectItem value="mail" leftDecoration={<SvgIcon icon={envelopeIcon} size="small" />}>
             Mail Settings
           </SelectItem>
-          <SelectItem value="settings" leftDecoration={<Settings className="w-4 h-4" />}>
+          <SelectItem value="settings" leftDecoration={<SvgIcon icon={gearIcon} size="small" />}>
             System Settings
           </SelectItem>
         </SelectContent>
@@ -110,9 +111,9 @@ export const WithGroups: Story = {
           <SelectLabel size="small">Recent</SelectLabel>
           <SelectItem value="recent1">Recent Item 1</SelectItem>
           <SelectItem value="recent2">Recent Item 2</SelectItem>
-          
+
           <SelectSeparator />
-          
+
           <SelectLabel size="small">All Items</SelectLabel>
           <SelectItem value="item1">Item 1</SelectItem>
           <SelectItem value="item2">Item 2</SelectItem>
@@ -135,10 +136,14 @@ export const WithDestructiveAction: Story = {
           <SelectItem value="edit">Edit</SelectItem>
           <SelectItem value="duplicate">Duplicate</SelectItem>
           <SelectItem value="share">Share</SelectItem>
-          
+
           <SelectSeparator />
-          
-          <SelectItem value="delete" type="destructive" leftDecoration={<Trash2 className="w-4 h-4" />}>
+
+          <SelectItem
+            value="delete"
+            type="destructive"
+            leftDecoration={<SvgIcon icon={trashIcon} size="small" />}
+          >
             Delete
           </SelectItem>
         </SelectContent>
@@ -204,7 +209,7 @@ export const AllVariations: Story = {
             </SelectContent>
           </Select>
         </div>
-        
+
         <Select defaultValue="item1">
           <SelectTrigger size="regular" layout="single">
             <SelectValue placeholder="Select an item" />
@@ -268,7 +273,12 @@ export const AllVariations: Story = {
         </Select>
 
         <Select defaultValue="item1">
-          <SelectTrigger size="regular" layout="stacked" label="Text" className="ring-2 ring-[var(--ring)]">
+          <SelectTrigger
+            size="regular"
+            layout="stacked"
+            label="Text"
+            className="ring-2 ring-[var(--ring)]"
+          >
             <SelectValue placeholder="Select an item" />
           </SelectTrigger>
           <SelectContent>
@@ -372,7 +382,12 @@ export const AllVariations: Story = {
         </Select>
 
         <Select defaultValue="item1">
-          <SelectTrigger size="large" layout="stacked" label="Text" className="ring-2 ring-[var(--ring)]">
+          <SelectTrigger
+            size="large"
+            layout="stacked"
+            label="Text"
+            className="ring-2 ring-[var(--ring)]"
+          >
             <SelectValue placeholder="Select an item" />
           </SelectTrigger>
           <SelectContent>
@@ -476,7 +491,12 @@ export const AllVariations: Story = {
         </Select>
 
         <Select defaultValue="item1">
-          <SelectTrigger size="small" layout="stacked" label="Text" className="ring-2 ring-[var(--ring)]">
+          <SelectTrigger
+            size="small"
+            layout="stacked"
+            label="Text"
+            className="ring-2 ring-[var(--ring)]"
+          >
             <SelectValue placeholder="Select an item" />
           </SelectTrigger>
           <SelectContent>
@@ -580,7 +600,12 @@ export const AllVariations: Story = {
         </Select>
 
         <Select defaultValue="item1">
-          <SelectTrigger size="mini" layout="stacked" label="Text" className="ring-2 ring-[var(--ring)]">
+          <SelectTrigger
+            size="mini"
+            layout="stacked"
+            label="Text"
+            className="ring-2 ring-[var(--ring)]"
+          >
             <SelectValue placeholder="Select an item" />
           </SelectTrigger>
           <SelectContent>
