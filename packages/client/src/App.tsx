@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { FolderClosed, Users, Bot, MessageSquare } from 'lucide-react';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { folderIcon, tellAFriendIcon, userIcon, commentIcon } from '@progress/kendo-svg-icons';
 import { Header } from './components/Header';
 import { MenuList } from './components/MenuList';
 import { CasePage } from './pages/CasePage';
@@ -16,28 +17,28 @@ function App() {
       id: 'home',
       label: 'Cases',
       path: '/cases/',
-      icon: <FolderClosed size={20} />,
+      icon: <SvgIcon icon={folderIcon} size="medium" />,
       isActive: location.pathname === '/' || location.pathname.startsWith('/cases'),
     },
     {
       id: 'users',
       label: 'Users',
       path: '/users/',
-      icon: <Bot size={20} />,
+      icon: <SvgIcon icon={userIcon} size="medium" />,
       isActive: location.pathname.startsWith('/users'),
     },
     {
       id: 'customers',
       label: 'Customers',
       path: '/customers/',
-      icon: <Users size={20} />,
+      icon: <SvgIcon icon={tellAFriendIcon} size="medium" />,
       isActive: location.pathname.startsWith('/customers'),
     },
     {
       id: 'parchat',
       label: 'AI Assistant',
       path: '/parchat',
-      icon: <MessageSquare size={20} />,
+      icon: <SvgIcon icon={commentIcon} size="medium" />,
       isActive: location.pathname.startsWith('/parchat'),
     },
   ];

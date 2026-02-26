@@ -46,6 +46,7 @@ packages/client/
 - **lowercase** for standard folders: `components/`, `common/`, `lib/`, `pages/`
 
 Example structure with grouping folder:
+
 ```
 components/
   common/
@@ -72,21 +73,20 @@ ComponentName/
 ## Import Rules
 
 ### From @carton/shared/client (Browser-Safe)
+
 ```typescript
-import { 
-  formatCaseNumber, 
-  CASE_STATUS_OPTIONS,
-  type CaseStatus 
-} from '@carton/shared/client';
+import { formatCaseNumber, CASE_STATUS_OPTIONS, type CaseStatus } from '@carton/shared/client';
 ```
 
 ### From @carton/server (Type-Only)
+
 ```typescript
 import type { AppRouter } from '@carton/server';
 import type { inferRouterOutputs } from '@trpc/server';
 ```
 
 ### ❌ NEVER Import
+
 ```typescript
 // WRONG - breaks browser builds
 import { prisma } from '@carton/shared';
@@ -120,18 +120,20 @@ This ensures types always match what the API returns (including Date → string 
 ## tRPC Usage
 
 ### Query
+
 ```typescript
 import { trpc } from '@/lib/trpc';
 
 function CaseList() {
   const { data: cases, isLoading } = trpc.case.list.useQuery();
-  
+
   if (isLoading) return <Spinner />;
   return <ul>{cases?.map(c => <li key={c.id}>{c.title}</li>)}</ul>;
 }
 ```
 
 ### Mutation
+
 ```typescript
 function CreateCase() {
   const utils = trpc.useUtils();
@@ -140,13 +142,12 @@ function CreateCase() {
       utils.case.list.invalidate();
     },
   });
-  
+
   const handleSubmit = (data: CreateCaseInput) => {
     createCase.mutate(data);
   };
 }
 ```
-
 
 ## Styling
 
@@ -158,6 +159,97 @@ Use Tailwind CSS classes. Put custom styles in external CSS files, not inline.
 
 // ❌ Bad - inline styles
 <div style={{ display: 'flex', alignItems: 'center' }}>
+```
+
+## Icons
+
+This project uses **Kendo SVG Icons** exclusively (via `@progress/kendo-svg-icons` and `@progress/kendo-react-common`).
+
+### Basic Usage
+
+```tsx
+import { SvgIcon } from '@progress/kendo-react-common';
+import { checkIcon, xIcon, caretAltDownIcon } from '@progress/kendo-svg-icons';
+
+function MyComponent() {
+  return (
+    <>
+      <SvgIcon icon={checkIcon} size="small" />
+      <SvgIcon icon={xIcon} size="medium" />
+      <SvgIcon icon={caretAltDownIcon} size="large" />
+    </>
+  );
+}
+```
+
+### Icon Sizes
+
+Kendo provides standardized size values:
+
+- `xsmall`: 12px
+- `small`: 14px
+- `medium`: 16px (default)
+- `large`: 20px
+- `xlarge`: 24px
+- `xxlarge`: 32px
+- `xxxlarge`: 48px
+
+```tsx
+// ✅ Good - Use named sizes
+<SvgIcon icon={pencilIcon} size="small" />
+
+// ❌ Bad - Don't use custom sizes
+<SvgIcon icon={pencilIcon} style={{ width: '15px' }} />
+```
+
+### Common Icon Mappings
+
+See [specs/006-replace-icons/icon-mapping.md](../../../specs/006-replace-icons/icon-mapping.md) for the full list. Common icons:
+
+| Use Case | Icon | Import                 |
+| -------- | ---- | ---------------------- |
+| Confirm  | ✓    | `checkIcon`            |
+| Cancel   | ×    | `xIcon`                |
+| Dropdown | ▼    | `caretAltDownIcon`     |
+| Edit     | ✎    | `pencilIcon`           |
+| Delete   | 🗑   | `trashIcon`            |
+| Loading  | ↻    | `clockArrowRotateIcon` |
+| Menu     | ⋮    | `moreVerticalIcon`     |
+| Filter   | ⌕    | `filterIcon`           |
+| Star     | ★    | `starIcon`             |
+| Calendar | 📅   | `calendarIcon`         |
+
+### Styling Requirements
+
+Kendo icons require special CSS to render correctly. The project includes `src/kendo-icons.css`:
+
+```css
+/* Ensure Kendo SVG icons render with proper display properties */
+.k-icon,
+.k-svg-icon {
+  display: inline-flex;
+}
+
+.k-svg-icon svg {
+  display: block;
+}
+```
+
+This is imported in `src/main.tsx` - do not remove this import.
+
+### ❌ Deprecated: Lucide React
+
+Do not use `lucide-react` - it has been removed from the project. All icons should use Kendo SVG icons.
+
+```tsx
+// ❌ WRONG - Lucide is deprecated
+import { Check, X } from 'lucide-react';
+<Check className="w-4 h-4" />;
+
+// ✅ CORRECT - Use Kendo
+import { SvgIcon } from '@progress/kendo-react-common';
+import { checkIcon, xIcon } from '@progress/kendo-svg-icons';
+<SvgIcon icon={checkIcon} size="small" />;
 ```
 
 ## Testing
