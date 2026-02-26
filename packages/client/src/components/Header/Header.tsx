@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import { MoreOptionsMenu, MenuItem } from '@/components/common/MoreOptionsMenu';
 import { Button } from '@/components/obra/Button';
-import CartonLogoSvg from '@/assets/carton-logo.svg';
+import EggbertImage from './eggbert.png';
 import type { HeaderProps } from './types';
 
 function CartonLogo({ size = 34 }: { size?: number }) {
-  return <img src={CartonLogoSvg} alt="Carton Case Management" width={size} height={size} />;
+  return <img src={EggbertImage} alt="Eggbert's Automaton Outlet" width={size} height={size} />;
 }
 
 export function Header({ className, userInitials = 'AM', onAvatarClick }: HeaderProps) {
@@ -21,7 +21,7 @@ export function Header({ className, userInitials = 'AM', onAvatarClick }: Header
       >
         <CartonLogo />
         <span className="text-white text-xl font-semibold">
-          Carton<span className="hidden lg:inline"> Case Management</span>
+          Eggbert's<span className="hidden lg:inline"> Automaton Outlet</span>
         </span>
       </Link>
 
