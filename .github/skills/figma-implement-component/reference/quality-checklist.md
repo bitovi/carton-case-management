@@ -15,7 +15,6 @@ Before marking complete, verify all items:
 ## Stories & Variants
 - [ ] All Figma variants have corresponding stories
 - [ ] Responsive behaviors documented and have stories
-- [ ] Code Connect mapping created
 
 ## Unit Tests
 - [ ] Tests pass (`npm run test`)

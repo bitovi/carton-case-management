@@ -20,9 +20,7 @@ runSubagent({
   - {ComponentName}.stories.tsx (default story)
   - types.ts (props interface placeholder)
   
-  Also create these additional files for Figma integration:
-  - {ComponentName}.figma.tsx (Code Connect mapping placeholder)
-  - README.md (empty, will be filled with Figma context)
+  Also create README.md (empty, will be filled with Figma context later)
   
   Return the list of files created.`
 })
@@ -45,7 +43,6 @@ packages/client/src/components/common/{ComponentName}/
 ├── {ComponentName}.tsx           # Component implementation
 ├── {ComponentName}.test.tsx      # Tests
 ├── {ComponentName}.stories.tsx   # Storybook stories
-├── {ComponentName}.figma.tsx     # Code Connect mapping
 ├── types.ts                      # TypeScript interfaces
 └── README.md                     # Figma source & mapping docs
 ```

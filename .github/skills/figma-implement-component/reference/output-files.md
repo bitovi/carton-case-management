@@ -8,7 +8,6 @@ packages/client/src/components/common/{ComponentName}/
 ├── {ComponentName}.tsx           # Component
 ├── {ComponentName}.test.tsx      # Tests
 ├── {ComponentName}.stories.tsx   # Stories for each variant
-├── {ComponentName}.figma.tsx     # Code Connect
 ├── types.ts                      # TypeScript types
 └── README.md                     # Figma source & mapping
 ```

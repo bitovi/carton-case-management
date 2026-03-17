@@ -1,11 +1,11 @@
 ---
 name: figma-implement-component
-description: Implement React components from Figma designs. Use after figma-design-react has analyzed the design. Delegates to create-react-modlet for folder structure, then adds Figma-specific implementation, stories for each variant, Code Connect mapping, and README with design context.
+description: Implement React components from Figma designs. Use after figma-design-react has analyzed the design. Delegates to create-react-modlet for folder structure, then adds Figma-specific implementation, stories for each variant, and README with design context.
 ---
 
 # Skill: Implement Component from Figma Design
 
-This skill implements React components from analyzed Figma designs. It creates complete modlets with stories matching Figma variants and establishes the foundation for Code Connect and future design syncing.
+This skill implements React components from analyzed Figma designs. It creates complete modlets with stories matching Figma variants for visual verification.
 
 ## When to Use
 
@@ -20,8 +20,7 @@ This skill implements React components from analyzed Figma designs. It creates c
 3. Writes README with Figma source and mapping context
 4. Implements the component matching Figma design precisely
 5. Creates Storybook stories for each Figma variant/state
-6. Creates Code Connect mapping for Figma integration
-7. Verifies tests pass and Storybook renders
+6. Verifies tests pass and Storybook renders
 
 ## Prerequisites
 
@@ -53,15 +52,13 @@ If design analysis files don't exist, this skill will automatically invoke `figm
 ├─────────────────────────────────────────────────────────────────┤
 │ 6. CREATE STORIES - Story for each Figma variant/state         │
 ├─────────────────────────────────────────────────────────────────┤
-│ 7. CODE CONNECT - Create .figma.tsx mapping file               │
+│ 7. CREATE TESTS - Unit tests for all variants and behaviors    │
 ├─────────────────────────────────────────────────────────────────┤
-│ 8. CREATE TESTS - Unit tests for all variants and behaviors    │
+│ 8. UPDATE EXPORTS - Add to index.ts                             │
 ├─────────────────────────────────────────────────────────────────┤
-│ 9. UPDATE EXPORTS - Add to index.ts                             │
+│ 9. VERIFY - Run tests, check types, confirm Storybook renders  │
 ├─────────────────────────────────────────────────────────────────┤
-│ 10. VERIFY - Run tests, check types, confirm Storybook renders │
-├─────────────────────────────────────────────────────────────────┤
-│ 11. PLAYWRIGHT - Visual test Storybook against Figma design    │
+│ 10. PLAYWRIGHT - Visual test Storybook against Figma design    │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -77,11 +74,10 @@ Each step contains detailed instructions and templates:
 - [Step 4: Create Types](steps/04-types.md) - Define TypeScript props interface
 - [Step 5: Implement Component](steps/05-implementation.md) - Build component matching Figma exactly
 - [Step 6: Create Stories for Each Variant](steps/06-stories.md) - Storybook stories for all Figma variants
-- [Step 7: Create Code Connect Mapping](steps/07-code-connect.md) - Link component to Figma
-- [Step 8: Create Tests](steps/08-tests.md) - Unit tests for variants and behaviors
-- [Step 9: Create index.ts](steps/09-exports.md) - Export component and types
-- [Step 10: Verify Tests and Storybook](steps/10-verification.md) - Run tests and check visual rendering
-- [Step 11: Playwright Visual Testing](steps/11-playwright.md) - Test Storybook against Figma design
+- [Step 7: Create Tests](steps/08-tests.md) - Unit tests for variants and behaviors
+- [Step 8: Create index.ts](steps/09-exports.md) - Export component and types
+- [Step 9: Verify Tests and Storybook](steps/10-verification.md) - Run tests and check visual rendering
+- [Step 10: Playwright Visual Testing](steps/11-playwright.md) - Test Storybook against Figma design
 
 ### Reference Materials
 - [Output Files Summary](reference/output-files.md) - Expected folder structure after completion
@@ -91,16 +87,15 @@ Each step contains detailed instructions and templates:
 
 1. Start by reading [Step 0: Create Todo List](steps/00-todo-setup.md)
 2. Create a todo list using `manage_todo_list` before implementation
-3. Follow steps 1-11 in order, marking each as in-progress → completed
+3. Follow steps 1-10 in order, marking each as in-progress → completed
 4. Use [Quality Checklist](reference/quality-checklist.md) to verify completion
 5. Only provide final summary after all todos are marked completed
 
-This prevents common failures like skipping file creation steps, forgetting Code Connect mapping, or missing verification steps.
+This prevents common failures like skipping file creation steps or missing verification steps.
 
 ## Related Skills
 
 - **figma-design-react**: Run first to analyze Figma and generate proposed API
 - **create-react-modlet**: Defines the modlet folder structure
-- **figma-connect-component**: Detailed Code Connect mapping guidance
 - **figma-component-sync**: Use later to check implementation against Figma changes
 

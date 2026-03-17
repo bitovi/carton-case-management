@@ -46,30 +46,24 @@ manage_todo_list({
     },
     {
       id: 7,
-      title: 'Create Code Connect mapping',
-      description: 'Write {ComponentName}.figma.tsx with figma.connect()',
-      status: 'not-started'
-    },
-    {
-      id: 8,
       title: 'Create/update tests',
       description: 'Add tests for all props, variants, and interactions',
       status: 'not-started'
     },
     {
-      id: 9,
+      id: 8,
       title: 'Update index.ts exports',
       description: 'Export component and types',
       status: 'not-started'
     },
     {
-      id: 10,
+      id: 9,
       title: 'Run verification',
       description: 'Run npm test and verify Storybook renders',
       status: 'not-started'
     },
     {
-      id: 11,
+      id: 10,
       title: 'Playwright visual testing',
       description: 'Use Playwright MCP to test Storybook stories against Figma design and verify interactions',
       status: 'not-started'
@@ -122,18 +116,12 @@ manage_todo_list({
     },
     {
       id: 7,
-      title: '[Button] Create Code Connect mapping',
-      description: 'Write Button.figma.tsx',
-      status: 'not-started'
-    },
-    {
-      id: 8,
       title: '[LinkButton] Create modlet via subagent',
       description: 'Create LinkButton/ folder structure',
       status: 'not-started'
     },
     {
-      id: 9,
+      id: 8,
       title: '[LinkButton] Write README with Figma source',
       description: 'Document LinkButton-specific Figma mapping',
       status: 'not-started'
@@ -152,24 +140,18 @@ manage_todo_list({
     },
     {
       id: 12,
-      title: '[LinkButton] Create Code Connect mapping',
-      description: 'Write LinkButton.figma.tsx',
-      status: 'not-started'
-    },
-    {
-      id: 13,
       title: 'Run tests for all components',
       description: 'Verify npm test passes',
       status: 'not-started'
     },
     {
-      id: 14,
+      id: 13,
       title: 'Verify all Storybooks',
       description: 'Check Button and LinkButton stories render correctly',
       status: 'not-started'
     }
     {
-      id: 15,
+      id: 14,
       title: 'Playwright visual testing',
       description: 'Use Playwright MCP to test all stories against Figma design and verify interactions',
       status: 'not-started'
