@@ -1,5 +1,4 @@
 import { ListFilter } from 'lucide-react';
-import { Badge } from '@/components/obra';
 import { cn } from '@/lib/utils';
 import type { FiltersTriggerProps } from './types';
 
@@ -26,13 +25,11 @@ export function FiltersTrigger({
       <div className="flex items-center gap-2">
         <span className="text-sm font-normal text-black">Filters</span>
         {hasActiveFilters && (
-          <Badge 
-            variant="primary" 
-            roundness="round"
+          <div 
             className="bg-teal-500 text-white"
           >
             {activeCount}
-          </Badge>
+          </div>
         )}
       </div>
       <ListFilter className="size-6 text-black" />
