@@ -89,7 +89,6 @@ packages/client/src/components/common/button/
 │   ├── Button.tsx
 │   ├── Button.test.tsx
 │   ├── Button.stories.tsx
-│   ├── Button.figma.tsx
 │   ├── types.ts
 │   └── README.md
 └── LinkButton/
@@ -97,7 +96,6 @@ packages/client/src/components/common/button/
     ├── LinkButton.tsx
     ├── LinkButton.test.tsx
     ├── LinkButton.stories.tsx
-    ├── LinkButton.figma.tsx
     ├── types.ts
     └── README.md
 ```
