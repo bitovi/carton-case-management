@@ -179,6 +179,34 @@ describe('ComponentName', () => {
 
 Run tests: `npm run test:client`
 
+### ❌ Testing Pitfalls with Radix UI / Shadcn Dialogs
+
+**Do not use `screen.getByRole('dialog')` to assert dialog open/closed state.** Radix UI portals and `jsdom` do not reliably expose a `dialog` ARIA role on open/close animations. This causes flaky or always-failing tests.
+
+**Do not use ambiguous text matchers when the same text appears in multiple places.** For example, a trigger button labelled "Filters" and a dialog title "Filters" both render the same string — `screen.getByText('Filters')` will throw due to multiple matches.
+
+**✅ Instead:**
+- Confirm a dialog is **open** by asserting for a unique element *inside* it, such as an action button: `screen.getByRole('button', { name: 'Apply' })`
+- Confirm a dialog is **closed** by asserting absence of that same element: `screen.queryByRole('button', { name: 'Apply' })`
+- Target trigger buttons with `screen.getByRole('button', { name: /label/i })` rather than `screen.getByText('label')` to avoid ambiguity
+
+```typescript
+// ✅ Good
+await user.click(screen.getByRole('button', { name: /filters/i }));
+await waitFor(() => {
+  expect(screen.getByRole('button', { name: 'Apply' })).toBeInTheDocument();
+});
+await user.click(screen.getByRole('button', { name: 'Apply' }));
+await waitFor(() => {
+  expect(screen.queryByRole('button', { name: 'Apply' })).not.toBeInTheDocument();
+});
+
+// ❌ Bad - unreliable with Radix UI
+expect(screen.getByRole('dialog')).toBeInTheDocument();
+// ❌ Bad - ambiguous when trigger and dialog share the same label text
+await user.click(screen.getByText('Filters'));
+```
+
 ## Storybook
 
 Each component should have stories:
