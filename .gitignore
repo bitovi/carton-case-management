@@ -20,7 +20,6 @@ build/
 .next/
 out/
 storybook-static/
-.temp/
 
 # Environment files
 .env
@@ -66,6 +65,5 @@ Thumbs.db
 
 # Misc
 .cache/
-.temp/
 .tmp/
 .vite/
