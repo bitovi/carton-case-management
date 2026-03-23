@@ -4,7 +4,7 @@ import { Skeleton } from './Skeleton';
 const meta: Meta<typeof Skeleton> = {
   component: Skeleton,
   title: 'Obra/Skeleton',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
   parameters: {
     design: {
       type: 'figma',

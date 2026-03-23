@@ -4,7 +4,7 @@ import { Checkbox } from './Checkbox';
 const meta: Meta<typeof Checkbox> = {
   component: Checkbox,
   title: 'Obra/Checkbox',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
   parameters: {
     design: {
       type: 'figma',

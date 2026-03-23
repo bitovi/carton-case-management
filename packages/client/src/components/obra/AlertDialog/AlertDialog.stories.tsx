@@ -6,7 +6,7 @@ import { Button } from '@/components/obra/Button';
 const meta: Meta<typeof AlertDialog> = {
   component: AlertDialog,
   title: 'Obra/AlertDialog',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
   parameters: {
     layout: 'centered',
   },

@@ -5,7 +5,7 @@ import { Alert } from './Alert';
 const meta: Meta<typeof Alert> = {
   component: Alert,
   title: 'Obra/Alert',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
   parameters: {
     design: {
       type: 'figma',

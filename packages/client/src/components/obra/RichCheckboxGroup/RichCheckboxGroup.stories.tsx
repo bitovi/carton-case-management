@@ -4,7 +4,7 @@ import { RichCheckboxGroup } from './RichCheckboxGroup';
 const meta: Meta<typeof RichCheckboxGroup> = {
   component: RichCheckboxGroup,
   title: 'Obra/RichCheckboxGroup',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
 };
 
 export default meta;

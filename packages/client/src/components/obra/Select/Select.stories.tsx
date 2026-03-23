@@ -17,7 +17,7 @@ const meta = {
   parameters: {
     layout: 'centered',
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
 } satisfies Meta<typeof Select>;
 
 export default meta;
