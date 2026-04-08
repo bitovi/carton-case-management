@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { formatCaseNumber } from '@carton/shared/client';
 import { trpc } from '@/lib/trpc';
 import { RelationshipManagerAccordion } from '@/components/common/RelationshipManagerAccordion';
@@ -52,8 +52,8 @@ export function CaseRelatedCases({ caseId }: CaseRelatedCasesProps) {
     setDialogOpen(open);
   };
 
-  const selectedSet = new Set(selectedIds);
-  const initialSet = new Set(initialIds);
+  const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
+  const initialSet = useMemo(() => new Set(initialIds), [initialIds]);
   const hasChanges =
     selectedSet.size !== initialSet.size || [...selectedSet].some((id) => !initialSet.has(id));
 

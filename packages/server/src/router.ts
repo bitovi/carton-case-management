@@ -429,22 +429,22 @@ export const appRouter = router({
           ]);
 
           const seen = new Set<string>();
-          const cases = [];
+          const relatedCases = [];
 
           for (const rel of fromRelations) {
             if (!seen.has(rel.caseTo.id)) {
               seen.add(rel.caseTo.id);
-              cases.push(rel.caseTo);
+              relatedCases.push(rel.caseTo);
             }
           }
           for (const rel of toRelations) {
             if (!seen.has(rel.caseFrom.id)) {
               seen.add(rel.caseFrom.id);
-              cases.push(rel.caseFrom);
+              relatedCases.push(rel.caseFrom);
             }
           }
 
-          return cases;
+          return relatedCases;
         }),
 
       update: publicProcedure
