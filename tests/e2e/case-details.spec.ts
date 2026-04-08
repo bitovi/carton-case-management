@@ -41,11 +41,10 @@ test.describe('Case Details', () => {
 
     test('should save edited title on Enter key', async ({ page }) => {
       const heading = page.getByRole('heading', { level: 1 });
-      const originalTitle = await heading.textContent();
 
       await heading.click();
 
-      const titleInput = page.locator(`input[value="${originalTitle?.trim() || ''}"]`).first();
+      const titleInput = page.locator('input:visible').first();
       await titleInput.fill('Updated Title E2E');
       await titleInput.press('Enter');
 
@@ -58,7 +57,7 @@ test.describe('Case Details', () => {
 
       await heading.click();
 
-      const titleInput = page.locator(`input[value="${originalTitle}"]`).first();
+      const titleInput = page.locator('input:visible').first();
       await titleInput.fill('This should be discarded');
       await titleInput.press('Escape');
 
