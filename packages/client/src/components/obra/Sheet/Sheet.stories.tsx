@@ -10,7 +10,7 @@ import { Label } from '../Label';
 const meta: Meta<typeof Sheet> = {
   component: Sheet,
   title: 'Obra/Sheet',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
   parameters: {
     design: {
       type: 'figma',

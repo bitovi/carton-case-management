@@ -4,7 +4,7 @@ import { HoverCard } from './HoverCard';
 const meta: Meta<typeof HoverCard> = {
   component: HoverCard,
   title: 'Obra/HoverCard',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
   parameters: {
     design: {
       type: 'figma',

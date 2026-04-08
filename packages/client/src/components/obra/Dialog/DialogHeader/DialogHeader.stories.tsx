@@ -1,11 +1,21 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
+import * as RadixDialog from '@radix-ui/react-dialog';
 import { DialogHeader } from './DialogHeader';
 
 const meta: Meta<typeof DialogHeader> = {
   component: DialogHeader,
   title: 'Obra/DialogHeader',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
+  decorators: [
+    (Story) => (
+      <RadixDialog.Root open>
+        <RadixDialog.Portal>
+          <Story />
+        </RadixDialog.Portal>
+      </RadixDialog.Root>
+    ),
+  ],
   parameters: {
     design: {
       type: 'figma',

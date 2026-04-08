@@ -5,7 +5,7 @@ import { Check, X, AlertCircle } from 'lucide-react';
 const meta: Meta<typeof Badge> = {
   component: Badge,
   title: 'Obra/Badge',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
   argTypes: {
     variant: {
       control: 'select',

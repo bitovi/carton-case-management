@@ -40,7 +40,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
         <Button
           onClick={() => navigate('/cases/new')}
           variant="secondary"
-          className="w-full mb-2"
+          className="w-full mb-8"
         >
           Create Case
         </Button>
@@ -61,7 +61,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
         <Button
           onClick={() => navigate('/cases/new')}
           variant="secondary"
-          className="w-full mb-2"
+          className="w-full mb-8"
         >
           Create Case
         </Button>
@@ -77,7 +77,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
       <Button
         onClick={() => navigate('/cases/new')}
         variant="secondary"
-        className="w-full mb-2"
+        className="w-full mb-8"
       >
         Create Case
       </Button>
