@@ -404,6 +404,97 @@ export const appRouter = router({
         where: { id: input.id },
       });
     }),
+
+    relatedCases: router({
+      list: publicProcedure
+        .input(z.object({ caseId: z.string() }))
+        .query(async ({ ctx, input }) => {
+          const [fromRelations, toRelations] = await Promise.all([
+            ctx.prisma.caseRelation.findMany({
+              where: { caseFromId: input.caseId },
+              include: {
+                caseTo: {
+                  select: { id: true, title: true, status: true, priority: true, createdAt: true },
+                },
+              },
+            }),
+            ctx.prisma.caseRelation.findMany({
+              where: { caseToId: input.caseId },
+              include: {
+                caseFrom: {
+                  select: { id: true, title: true, status: true, priority: true, createdAt: true },
+                },
+              },
+            }),
+          ]);
+
+          const seen = new Set<string>();
+          const cases = [];
+
+          for (const rel of fromRelations) {
+            if (!seen.has(rel.caseTo.id)) {
+              seen.add(rel.caseTo.id);
+              cases.push(rel.caseTo);
+            }
+          }
+          for (const rel of toRelations) {
+            if (!seen.has(rel.caseFrom.id)) {
+              seen.add(rel.caseFrom.id);
+              cases.push(rel.caseFrom);
+            }
+          }
+
+          return cases;
+        }),
+
+      update: publicProcedure
+        .input(
+          z.object({
+            caseId: z.string(),
+            relatedCaseIds: z.array(z.string()),
+          })
+        )
+        .mutation(async ({ ctx, input }) => {
+          const { caseId, relatedCaseIds } = input;
+
+          const [fromRelations, toRelations] = await Promise.all([
+            ctx.prisma.caseRelation.findMany({ where: { caseFromId: caseId } }),
+            ctx.prisma.caseRelation.findMany({ where: { caseToId: caseId } }),
+          ]);
+
+          const existingIds = new Set([
+            ...fromRelations.map((r) => r.caseToId),
+            ...toRelations.map((r) => r.caseFromId),
+          ]);
+
+          const targetIds = new Set(relatedCaseIds.filter((id) => id !== caseId));
+
+          const toAdd = [...targetIds].filter((id) => !existingIds.has(id));
+          const toRemove = [...existingIds].filter((id) => !targetIds.has(id));
+
+          await ctx.prisma.$transaction([
+            ...toAdd.map((relatedId) =>
+              ctx.prisma.caseRelation.upsert({
+                where: { caseFromId_caseToId: { caseFromId: caseId, caseToId: relatedId } },
+                create: { caseFromId: caseId, caseToId: relatedId },
+                update: {},
+              })
+            ),
+            ...toRemove.map((relatedId) =>
+              ctx.prisma.caseRelation.deleteMany({
+                where: {
+                  OR: [
+                    { caseFromId: caseId, caseToId: relatedId },
+                    { caseFromId: relatedId, caseToId: caseId },
+                  ],
+                },
+              })
+            ),
+          ]);
+
+          return { success: true };
+        }),
+    }),
   }),
 
   // Comment routes

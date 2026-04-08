@@ -40,4 +40,10 @@ export interface RelationshipManagerDialogProps {
 
   /** Additional CSS classes */
   className?: string;
+
+  /**
+   * Whether the add button should be disabled
+   * @default undefined (falls back to selectedItems.length === 0)
+   */
+  isAddDisabled?: boolean;
 }
