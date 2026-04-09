@@ -14,6 +14,7 @@ export function RelationshipManagerDialog({
   onSelectionChange,
   onAdd,
   className,
+  isAddDisabled,
 }: RelationshipManagerDialogProps) {
   const listItems: RelationshipManagerListItem[] = items.map((item) => ({
     ...item,
@@ -45,7 +46,7 @@ export function RelationshipManagerDialog({
         <DialogFooter>
           <Button
             onClick={() => onAdd(selectedItems)}
-            disabled={selectedItems.length === 0}
+            disabled={isAddDisabled !== undefined ? isAddDisabled : selectedItems.length === 0}
             className="bg-gray-950 text-white hover:bg-gray-800"
           >
             Add
