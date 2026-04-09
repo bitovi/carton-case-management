@@ -1,6 +1,7 @@
 ---
 name: Review Jira Ticket Agent
 description: Analyze a Jira ticket's requirements against the existing codebase, identify ambiguities or conflicts, and post clarifying questions back to the Jira ticket before any implementation begins.
+tools: ["read", "search"]
 ---
 
 # Review Jira Ticket Agent
