@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { trpc } from '@/lib/trpc';
 import { formatCaseNumber } from '@carton/shared/client';
 import { RelationshipManagerAccordion } from '@/components/common/RelationshipManagerAccordion';
@@ -54,11 +54,14 @@ export function CaseRelatedCasesAccordion({ caseId }: CaseRelatedCasesAccordionP
       subtitle: formatCaseNumber(c.id, c.createdAt),
     }));
 
-  const initialSet = new Set(initialRelatedIds);
-  const selectedSet = new Set(selectedIds);
-  const hasChanges =
-    selectedIds.some((id) => !initialSet.has(id)) ||
-    initialRelatedIds.some((id) => !selectedSet.has(id));
+  const hasChanges = useMemo(() => {
+    const initialSet = new Set(initialRelatedIds);
+    const selectedSet = new Set(selectedIds);
+    return (
+      selectedIds.some((id) => !initialSet.has(id)) ||
+      initialRelatedIds.some((id) => !selectedSet.has(id))
+    );
+  }, [initialRelatedIds, selectedIds]);
 
   return (
     <>
