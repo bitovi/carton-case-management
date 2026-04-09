@@ -1,7 +1,6 @@
 ---
 name: Review Jira Ticket Agent
 description: Read a Jira ticket and the codebase, then post clarifying questions as a Jira comment. This agent produces one output only — a Jira comment — and nothing else.
-tools: ["read", "search", "editFiles", "Jira/*", "github/*"]
 ---
 
 # Review Jira Ticket Agent
