@@ -463,13 +463,10 @@ export const appRouter = router({
         const toAdd = input.relatedCaseIds.filter((id) => !currentRelatedIds.includes(id));
         const toRemove = currentRelatedIds.filter((id) => !input.relatedCaseIds.includes(id));
 
-        for (const relatedCaseId of toAdd) {
-          await ctx.prisma.caseRelation.upsert({
-            where: {
-              caseId_relatedCaseId: { caseId: input.caseId, relatedCaseId },
-            },
-            create: { caseId: input.caseId, relatedCaseId },
-            update: {},
+        if (toAdd.length > 0) {
+          await ctx.prisma.caseRelation.createMany({
+            data: toAdd.map((relatedCaseId) => ({ caseId: input.caseId, relatedCaseId })),
+            skipDuplicates: true,
           });
         }
 

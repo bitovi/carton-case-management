@@ -54,10 +54,11 @@ export function CaseRelatedCasesAccordion({ caseId }: CaseRelatedCasesAccordionP
       subtitle: formatCaseNumber(c.id, c.createdAt),
     }));
 
+  const initialSet = new Set(initialRelatedIds);
+  const selectedSet = new Set(selectedIds);
   const hasChanges =
-    selectedIds.length !== initialRelatedIds.length ||
-    selectedIds.some((id) => !initialRelatedIds.includes(id)) ||
-    initialRelatedIds.some((id) => !selectedIds.includes(id));
+    selectedIds.some((id) => !initialSet.has(id)) ||
+    initialRelatedIds.some((id) => !selectedSet.has(id));
 
   return (
     <>
