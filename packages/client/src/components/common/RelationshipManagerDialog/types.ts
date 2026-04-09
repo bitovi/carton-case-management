@@ -38,6 +38,12 @@ export interface RelationshipManagerDialogProps {
    */
   onAdd: (selectedIds: string[]) => void;
 
+  /**
+   * Override for disabling the Add button.
+   * When provided, takes precedence over the default disabled logic (selectedItems.length === 0).
+   */
+  isAddDisabled?: boolean;
+
   /** Additional CSS classes */
   className?: string;
 }

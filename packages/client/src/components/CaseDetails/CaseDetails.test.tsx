@@ -52,6 +52,18 @@ const setupMockHandlers = (caseData: typeof mockCaseData | null = mockCaseData, 
       }
       return HttpResponse.json({ result: { data: caseData } });
     }),
+    http.get('/trpc/case.getRelatedCases*', () => {
+      return HttpResponse.json({ result: { data: [] } });
+    }),
+    http.get('/trpc/case.getRelatedCases,case.list*', () => {
+      return HttpResponse.json([
+        { result: { data: [] } },
+        { result: { data: [] } },
+      ]);
+    }),
+    http.get('/trpc/case.list*', () => {
+      return HttpResponse.json({ result: { data: [] } });
+    }),
     http.get('/trpc/customer.list,user.list*', () => {
       return HttpResponse.json([
         {
@@ -184,6 +196,18 @@ describe('CaseDetails', () => {
           },
           { status: 500 }
         );
+      }),
+      http.get('/trpc/case.getRelatedCases*', () => {
+        return HttpResponse.json({ result: { data: [] } });
+      }),
+      http.get('/trpc/case.getRelatedCases,case.list*', () => {
+        return HttpResponse.json([
+          { result: { data: [] } },
+          { result: { data: [] } },
+        ]);
+      }),
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: [] } });
       }),
       http.get('/trpc/customer.list,user.list*', () => {
         return HttpResponse.json([{ result: { data: [] } }, { result: { data: [] } }]);

@@ -404,6 +404,88 @@ export const appRouter = router({
         where: { id: input.id },
       });
     }),
+    getRelatedCases: publicProcedure
+      .input(z.object({ id: z.string() }))
+      .query(async ({ ctx, input }) => {
+        const relations = await ctx.prisma.caseRelation.findMany({
+          where: {
+            OR: [{ caseId: input.id }, { relatedCaseId: input.id }],
+          },
+          include: {
+            case: {
+              select: {
+                id: true,
+                title: true,
+                status: true,
+                priority: true,
+                createdAt: true,
+                updatedAt: true,
+              },
+            },
+            relatedCase: {
+              select: {
+                id: true,
+                title: true,
+                status: true,
+                priority: true,
+                createdAt: true,
+                updatedAt: true,
+              },
+            },
+          },
+        });
+
+        return relations.map((relation) => {
+          if (relation.caseId === input.id) {
+            return relation.relatedCase;
+          }
+          return relation.case;
+        });
+      }),
+    addRelatedCases: publicProcedure
+      .input(
+        z.object({
+          caseId: z.string(),
+          relatedCaseIds: z.array(z.string()),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const currentRelations = await ctx.prisma.caseRelation.findMany({
+          where: {
+            OR: [{ caseId: input.caseId }, { relatedCaseId: input.caseId }],
+          },
+        });
+
+        const currentRelatedIds = currentRelations.map((r) =>
+          r.caseId === input.caseId ? r.relatedCaseId : r.caseId
+        );
+
+        const toAdd = input.relatedCaseIds.filter((id) => !currentRelatedIds.includes(id));
+        const toRemove = currentRelatedIds.filter((id) => !input.relatedCaseIds.includes(id));
+
+        for (const relatedCaseId of toAdd) {
+          await ctx.prisma.caseRelation.upsert({
+            where: {
+              caseId_relatedCaseId: { caseId: input.caseId, relatedCaseId },
+            },
+            create: { caseId: input.caseId, relatedCaseId },
+            update: {},
+          });
+        }
+
+        if (toRemove.length > 0) {
+          await ctx.prisma.caseRelation.deleteMany({
+            where: {
+              OR: toRemove.flatMap((relatedCaseId) => [
+                { caseId: input.caseId, relatedCaseId },
+                { caseId: relatedCaseId, relatedCaseId: input.caseId },
+              ]),
+            },
+          });
+        }
+
+        return { success: true };
+      }),
   }),
 
   // Comment routes
