@@ -1,0 +1,141 @@
+# carton-case-management Development Guidelines
+
+## Skills
+
+Before implementing any feature:
+1. Review the skills table below and read relevant documentation in `.claude/skills/`
+2. Apply skills that match your task (e.g., component-reuse before creating UI)
+3. Follow skill workflows to prevent common mistakes
+
+This project uses Agent Skills for specialized workflows. See `.claude/skills/`:
+
+| Skill | Purpose | When to Use |
+|-------|---------|-------------|
+| `component-reuse` | Ensure existing UI components are reused before creating new ones | Before implementing any UI from Figma, tickets, or mockups |
+| `validate-implementation` | Validate implementations for runtime errors, accessibility, and API compliance | Before marking any feature complete or committing code |
+| `figma-implement-component` | Implement React components from Figma designs | After component-reuse confirms no existing component, use to build new components from Figma |
+| `figma-design-react` | Design React components from Figma files | When analyzing Figma designs to propose component architecture and props API |
+| `figma-component-sync` | Check React components against Figma design source | When reviewing implementations, syncing designs, or auditing visual accuracy |
+| `figma-connect-component` | Generate Figma Code Connect mapping for components | When linking React components to their Figma counterparts |
+| `figma-connect-shadcn` | Connect shadcn/ui components to Figma | After adding shadcn components via `npx shadcn@latest add` |
+| `figma-explore` | Explore Figma files to discover pages and components | When you need to list components in a Figma file or find component node IDs |
+| `create-react-modlet` | Create React components following the modlet pattern | When creating any component in `packages/client/src/components/` |
+| `cross-package-types` | Type flow between shared, server, and client packages | When working with types across package boundaries |
+| `create-skill` | How to create new Agent Skills for this project | When asked to document a workflow or teach Claude a new capability |
+
+## Package-Specific Instructions
+
+Each package has detailed instructions in its own `CLAUDE.md` file:
+
+| Package | CLAUDE.md Location | Purpose |
+|---------|-------------------|---------|
+| `@carton/shared` | `packages/shared/CLAUDE.md` | Prisma schema, generated types, browser-safe utilities |
+| `@carton/server` | `packages/server/CLAUDE.md` | tRPC router, API definitions, database operations |
+| `@carton/client` | `packages/client/CLAUDE.md` | React components, UI, tRPC client usage |
+
+## Active Technologies
+- TypeScript 5.x, React 18.3.x + Shadcn UI components (Input, Select, Button), Radix UI primitives, Lucide icons, Tailwind CSS, Zod (validation)
+- TypeScript 5.x / Node.js 22+ + React 18, tRPC 11, @tanstack/react-query 5, Vite 6, Prisma (ORM)
+
+## Project Structure
+
+```text
+packages/
+  client/   # React frontend
+  server/   # Express/tRPC backend
+  shared/   # Shared types, Prisma schema, utilities
+```
+
+## Commands
+
+### Running Tests
+- **Unit Tests**: `npm test` - Runs all unit tests across workspaces (client, server, shared)
+- **E2E Tests**: `npm run test:e2e` - Runs Playwright end-to-end tests
+- **E2E Tests (UI mode)**: `npm run test:e2e:watch` - Opens Playwright UI for interactive test debugging
+- **Linting**: `npm run lint` - Runs ESLint across all packages
+- **Type Checking**: `npm run typecheck` - Runs TypeScript type checking
+
+### Before Submitting Code
+Always ensure all tests pass before committing:
+```bash
+npm test && npm run test:e2e && npm run lint
+```
+
+## Code Style
+
+TypeScript 5.x / Node.js 22+: Follow standard conventions
+
+## Coding Standards
+
+- When creating new React files ensure to follow the modlet pattern in `packages/client/CLAUDE.md`.
+- No tsx or ts files should have inline comments.
+- All styling should be done using Tailwind CSS classes in an external CSS file.
+- Responsive designing should be implemented using Tailwind CSS utilities.
+- Extract complex logic into custom hooks when it can be reused or when it bloats the component file.
+
+### Component Architecture
+
+- **Component Structure**: Follow the recursive modlet pattern (as demonstrated by CaseDetails component)
+- **Component Testing & Documentation**:
+  - Every component must have accompanying tests (`.test.tsx` files)
+  - Every component should have Storybook stories (`.stories.tsx` files) for documentation and visual testing
+  - Tests should cover main functionality, edge cases, and user interactions
+- **Custom Hooks - when**:
+  - Component has >3 pieces of related state
+  - Logic involves complex calculations/transformations
+  - Logic could be reused elsewhere
+  - Component file exceeds ~100 lines
+  - Examples: `useCaseFilters`, `useFormValidation`, `useDebounce`
+- **Shadcn UI Components**:
+  - Always prioritize using Shadcn UI components over native HTML elements (e.g., use Shadcn Select instead of `<select>`, Shadcn Input instead of `<input>`, etc.)
+  - If a needed component is not available, install the Shadcn equivalent using `npx shadcn@latest add [component-name]`
+  - Shadcn components should be installed to `packages/client/src/components/ui/` directory and exported via `packages/client/src/components/ui/index.ts`
+- **Custom Components**: If a custom component must be built on top of underlying Shadcn components (e.g., EditableSelect, ConfirmationDialog), it should go in `packages/client/src/components/common/`
+- **Domain Wrapper Components**: When using generic/common components in a specific domain context:
+  - Create a domain-specific wrapper component in the domain's `components/` folder
+  - The wrapper encapsulates domain logic (hooks, state management, data fetching)
+  - The wrapper passes domain data to the generic component
+  - Example structure:
+    ```
+    components/common/GenericComponent/        # Generic, reusable
+    components/FeatureName/
+      components/FeatureGenericComponent/      # Domain wrapper
+    ```
+  - Example implementation:
+    ```tsx
+    // Domain wrapper
+    export function FeatureGenericComponent({ open, onOpenChange }) {
+      const { data, handleAction, handleClear } = useFeatureData();
+      return (
+        <GenericComponent
+          open={open}
+          onOpenChange={onOpenChange}
+          data={data}
+          onAction={handleAction}
+          onClear={handleClear}
+        />
+      );
+    }
+    ```
+  - Benefits: Generic components stay reusable, domain logic stays in domain folders, easier testing, clear separation of concerns
+
+### UX Patterns
+
+- **Creating**: Use dedicated create pages (not modals) for creating new entities
+- **Editing**: Implement "click to edit" functionality on view pages with inline editing
+- **Deleting**: Always use a confirmation modal (ConfirmationDialog) before deleting entities
+
+### Data Layer
+
+- **Prisma Schema in Shared**: Prisma schema lives in `packages/shared/prisma/schema.prisma` - the data model is a shared concern
+- **Database Operations in Server**: Database file (`dev.db`), seed script, and constants live in `packages/server/db/`
+- **Prisma Client Import**: Server imports Prisma Client from `@carton/shared`, e.g., `import { prisma } from '@carton/shared'`
+- **Zod Schemas from Prisma**: Use auto-generated Zod schemas from `@carton/shared` for validation - do not manually duplicate Prisma enums
+- **Database Commands** (all run from project root):
+  - `npm run db:generate` - Generate Prisma Client and Zod types
+  - `npm run db:push` - Push schema changes to the database
+  - `npm run db:seed` - Seed the database with test data
+  - `npm run db:setup` - Combined push + seed (use for initial setup or reset)
+  - `npm run db:studio` - Open Prisma Studio to browse data
+- **Environment Config**: Single `.env` file at project root with `DATABASE_URL` pointing to `packages/server/db/dev.db`
+- **Cascading Deletes**: Always configure cascading deletes (`onDelete: Cascade`) in Prisma schema when an entity has related data that should be removed when the parent is deleted
