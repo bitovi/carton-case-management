@@ -1,7 +1,7 @@
 ---
 name: Review Jira Ticket Agent
 description: Read a Jira ticket and the codebase, then post clarifying questions as a Jira comment, close the GitHub issue, and close the pull request.
-tools: ["read", "search", "Jira/*", "github/*"]
+tools: ["read", "search", "Jira/*", "github-mcp-server/*"]
 ---
 
 # Review Jira Ticket Agent
