@@ -13,9 +13,39 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 const mockCustomers = [
-  { id: '1', firstName: 'Alice', lastName: 'Smith', username: 'asmith', email: 'alice@example.com', dateJoined: null, satisfactionRate: null, createdAt: '2024-01-01T00:00:00.000Z', updatedAt: '2024-01-01T00:00:00.000Z' },
-  { id: '2', firstName: 'Bob', lastName: 'Jones', username: 'bjones', email: 'bob@example.com', dateJoined: null, satisfactionRate: null, createdAt: '2024-01-02T00:00:00.000Z', updatedAt: '2024-01-02T00:00:00.000Z' },
-  { id: '3', firstName: 'Carol', lastName: 'White', username: 'cwhite', email: 'carol@example.com', dateJoined: null, satisfactionRate: null, createdAt: '2024-01-03T00:00:00.000Z', updatedAt: '2024-01-03T00:00:00.000Z' },
+  {
+    id: '1',
+    firstName: 'Alice',
+    lastName: 'Smith',
+    username: 'asmith',
+    email: 'alice@example.com',
+    dateJoined: null,
+    satisfactionRate: null,
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+  },
+  {
+    id: '2',
+    firstName: 'Bob',
+    lastName: 'Jones',
+    username: 'bjones',
+    email: 'bob@example.com',
+    dateJoined: null,
+    satisfactionRate: null,
+    createdAt: '2024-01-02T00:00:00.000Z',
+    updatedAt: '2024-01-02T00:00:00.000Z',
+  },
+  {
+    id: '3',
+    firstName: 'Carol',
+    lastName: 'White',
+    username: 'cwhite',
+    email: 'carol@example.com',
+    dateJoined: null,
+    satisfactionRate: null,
+    createdAt: '2024-01-03T00:00:00.000Z',
+    updatedAt: '2024-01-03T00:00:00.000Z',
+  },
 ];
 
 describe('CustomerListDialog', () => {
