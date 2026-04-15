@@ -99,8 +99,8 @@ Format the comment as follows. Only include categories where you found something
 ## Scope Analysis
 
 ### In Scope (as understood)
-- ☐ [Concrete thing the ticket covers]
-- ☐ [Another concrete thing]
+- ☐ [Concrete thing the ticket covers that needs to be built]
+- ✅ [Concrete thing the ticket covers that is already solved by an existing implementation]
 
 ### Out of Scope (as understood)
 - ☐ [Thing explicitly excluded or implied to be out]
