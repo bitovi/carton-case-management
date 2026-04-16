@@ -12,7 +12,7 @@ describe('Header', () => {
       </BrowserRouter>
     );
     expect(screen.getByLabelText(/navigate to home/i)).toBeInTheDocument();
-    expect(screen.getByText(/carton/i)).toBeInTheDocument();
+    expect(screen.getByText('Chasen’s Case Management')).toBeInTheDocument();
   });
 
   it('renders user initials in avatar', () => {

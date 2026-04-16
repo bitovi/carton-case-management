@@ -21,7 +21,7 @@ export function Header({ className, userInitials = 'AM', onAvatarClick }: Header
       >
         <CartonLogo />
         <span className="text-white text-xl font-semibold">
-          Carton<span className="hidden lg:inline"> Case Management</span>
+          Chasen’s Case Management
         </span>
       </Link>
 
