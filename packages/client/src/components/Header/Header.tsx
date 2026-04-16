@@ -8,7 +8,7 @@ function CartonLogo({ size = 34 }: { size?: number }) {
   return <img src={CartonLogoSvg} alt="Carton Case Management" width={size} height={size} />;
 }
 
-export function Header({ className, userInitials = 'AM', onAvatarClick }: HeaderProps) {
+export function Header({ className, userInitials = 'AM', userId, onAvatarClick }: HeaderProps) {
   return (
     <header
       className={`w-full bg-[#002a2d] flex items-center justify-between px-6 py-4 ${className || ''}`}
@@ -31,11 +31,19 @@ export function Header({ className, userInitials = 'AM', onAvatarClick }: Header
             variant="ghost"
             size="mini"
             roundness="round"
-            className="w-10 h-10 bg-white text-gray-900 hover:bg-gray-100 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--header-bg))]"
+            className="w-10 h-10 overflow-hidden rounded-full p-0 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--header-bg))]"
             aria-label="User menu"
             onClick={onAvatarClick}
           >
-            {userInitials}
+            {userId ? (
+              <img
+                src={`https://i.pravatar.cc/40?u=${userId}`}
+                alt={userInitials}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <span className="text-gray-900 text-sm font-semibold">{userInitials}</span>
+            )}
           </Button>
         }
         align="end"

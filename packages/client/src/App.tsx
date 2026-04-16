@@ -48,7 +48,7 @@ function App() {
 
   return (
     <div className="h-screen bg-[#dfe2e2] flex flex-col">
-      <Header userInitials={userInitials} />
+      <Header userInitials={userInitials} userId={user.id} />
       <MenuList items={menuItems} />
       <div className="flex flex-1 overflow-hidden lg:pl-[68px]">
         <main className="flex-1 lg:p-6 overflow-auto">
