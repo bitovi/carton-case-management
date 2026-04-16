@@ -97,9 +97,11 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
           caseData.comments.map((comment) => (
             <div key={comment.id} className="flex flex-col gap-2 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
               <div className="flex gap-3 items-center">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700">
-                  {comment.author.firstName[0]}{comment.author.lastName[0]}
-                </div>
+                <img
+                  src={`https://i.pravatar.cc/32?u=${comment.author.id}`}
+                  alt={`${comment.author.firstName} ${comment.author.lastName}`}
+                  className="h-8 w-8 shrink-0 rounded-full object-cover"
+                />
                 <div className="flex flex-col">
                   <p className="text-sm font-medium">{comment.author.firstName} {comment.author.lastName}</p>
                   <p className="text-xs text-gray-500">
