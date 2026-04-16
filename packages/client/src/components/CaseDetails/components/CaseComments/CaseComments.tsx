@@ -95,9 +95,9 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
       <div className="flex flex-col gap-4">
         {caseData.comments && caseData.comments.length > 0 ? (
           caseData.comments.map((comment) => (
-            <div key={comment.id} className="flex flex-col gap-2 py-2">
-              <div className="flex gap-2 items-center">
-                <div className="w-10 flex items-center justify-center text-sm font-semibold text-gray-900">
+            <div key={comment.id} className="flex flex-col gap-2 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+              <div className="flex gap-3 items-center">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700">
                   {comment.author.firstName[0]}{comment.author.lastName[0]}
                 </div>
                 <div className="flex flex-col">
