@@ -4,350 +4,358 @@ commands:
 - cmd+shift+p -> Dev Containers: Reopen in Container
 - npm install -> npm run setup -> npm run dev
 
-<!-- TODO: udpdate this readme, project has some changes since initial copilot spinup -->
+# CARTON — NAZG-MAHTIE
+### *Ash nazg durbatulûk* — One App to Rule the Cases
 
-# Carton Case Management
+LISTEN UP, SNAGA. This is the war-machine. You break it, Uglúk finds you.
 
-A modern case management application built with React, Node.js, tRPC, and Prisma.
+---
 
-## Architecture
+## STRUCTURE OF THE WAR CAMP
 
-This application follows a monorepo structure using npm workspaces:
+Three battalions. Don't mix them up or the Warchief skins you:
 
-- **packages/client** - React frontend with Vite, Tailwind CSS, and Shadcn UI
-- **packages/server** - Node.js backend with tRPC, Prisma, and SQLite
-- **packages/shared** - Shared types and utilities used by both client and server
+- **packages/client** — *THE FRONT LINE*: React smashes the screen. Vite, Tailwind, Shadcn do the dirty work.
+- **packages/server** — *THE WAR TENT*: Node.js, tRPC, Prisma, SQLite. Hidden. Don't poke it.
+- **packages/shared** — *THE SUPPLY CHAIN*: Types and lore. Both sides eat from this pile.
 
-## Tech Stack
+---
 
-### Frontend
+## WEAPONS
 
-- React 18 with TypeScript
-- Vite as build tool
-- tRPC for type-safe API calls
-- Shadcn UI components
-- Tailwind CSS for styling
-- React Router for routing
-- Storybook for component development
-- Jest for unit testing
-- Playwright for E2E testing
+### FRONT LINE WEAPONS
 
-### Backend
+- React 18, written in TypeScript runes
+- Vite — fast as a warg
+- tRPC — so types don't lie (types always lie, tRPC stops that)
+- Shadcn UI — pretty shields, don't ask why
+- Tailwind CSS — wrap everything in ugly string-names
+- React Router — for wandering snaga who get lost
+- Storybook — look at components without breaking things
+- Jest — stab the code, see if it bleeds
+- Playwright — spy on the whole battlefield end-to-end
 
-- Node.js with TypeScript
-- tRPC (JSON-RPC 2.0) for API endpoints
-- Prisma as ORM
-- SQLite as database
-- Express for HTTP server
+### WAR TENT WEAPONS
 
-## Getting Started
+- Node.js, TypeScript runes
+- tRPC (JSON-RPC 2.0) — the messenger between realms
+- Prisma — the Orc who talks to the database so you don't have to
+- SQLite — small rock, holds a lot
+- Express — stands at the gate, lets requests through
 
-### Prerequisites
+---
 
-- Node.js 22+ (or use the devcontainer)
+## HOW TO START THE SIEGE
+
+### YOU NEED THESE FIRST
+
+- Node.js 22+ (or crawl into the devcontainer like a cave-troll)
 - npm 10+
 
-### Development with Devcontainer (Recommended)
+### DEVCONTAINER (EASIEST, EVEN FOR YOU)
 
-The easiest way to get started is using the devcontainer:
-
-1. Open this folder in VS Code
-2. When prompted, click "Reopen in Container"
-3. Wait for the container to build and dependencies to install
-4. The application will automatically start at:
+1. Open folder in VS Code
+2. Click "Reopen in Container" when VS Code whines at you
+3. Wait. Don't touch anything. GO SIT DOWN.
+4. When it wakes up, find it at:
    - Client: http://localhost:5173
    - Server: http://localhost:3001
 
-### Local Development
+### LOCAL SIEGE (IF YOU HATE CONTAINERS)
 
-If not using devcontainer:
-
-1. **Install dependencies**
+1. **Get the weapons**
 
    ```bash
    npm install
    ```
 
-2. **Setup environment**
+2. **Set up the camp**
 
    ```bash
    cp .env.example .env
    ```
 
-3. **Setup database**
+3. **Dig the foundation**
 
    ```bash
    npm run setup
    ```
 
-4. **Start development servers**
+4. **CHARGE**
 
    ```bash
    npm run dev
    ```
 
-   Or run them separately:
+   Or split the army:
 
    ```bash
-   npm run dev:client  # Client on port 3000
-   npm run dev:server  # Server on port 3001
+   npm run dev:client  # Front line, port 3000
+   npm run dev:server  # War tent, port 3001
    ```
 
-## Authentication
+---
 
-This application uses a simplified authentication system for development purposes. There is no real backend authentication - instead, it automatically logs you in as a mock user.
+## THE GATE — AUTHENTICATION
 
-**Default User**: Alex Morgan (alex.morgan@carton.com)
+*No real guards. We painted a troll on the door.* The app logs you in automatically as a fake user. Don't get comfortable.
 
-**Testing as Different Users**: To test the application as a different user, set the `MOCK_USER_EMAIL` environment variable in `packages/server/.env`:
+**Default Snaga**: Alex Morgan (alex.morgan@carton.com)
+
+**Want to be someone else?** Set `MOCK_USER_EMAIL` in `packages/server/.env` and become another wretched soul:
 
 ```env
 MOCK_USER_EMAIL=jordan.doe@carton.com
 ```
 
-The available users are seeded in the database. You can view them by running `npm run db:studio` in the server package or checking the [seed.ts](packages/server/db/seed.ts) file.
+Users live in the database. Spy on them with `npm run db:studio` or grovel at the [seed.ts](packages/server/db/seed.ts) scroll.
 
-### How It Works
+### HOW THE TRICK WORKS
 
-The server uses an Express middleware ([autoLogin.ts](packages/server/src/middleware/autoLogin.ts)) that runs on every request:
+The [autoLogin.ts](packages/server/src/middleware/autoLogin.ts) middleware runs on every request like a paranoid gate-guard:
 
-1. Checks for a `userId` cookie in the request
-2. If no cookie exists or the cookie's user email doesn't match `MOCK_USER_EMAIL`, it looks up the user by email in the database
-3. Sets a new `userId` cookie (HttpOnly, 7-day expiration)
-4. The cookie is automatically included in subsequent requests
+1. Sniffs for a `userId` cookie
+2. If cookie's gone or smells wrong, goes and finds the user by email
+3. Stamps a new `userId` cookie — HttpOnly, 7 days before it rots
+4. Cookie rides along on every request after that
 
-When you change `MOCK_USER_EMAIL` and restart the server, the middleware detects the mismatch and issues a new cookie for the new user on the next request. The client doesn't need to do anything - it just sends the cookie automatically.
+Change `MOCK_USER_EMAIL`, restart the server, and the guard issues a new stamp. The client does nothing — it just carries the cookie like a dumb messenger.
 
-## Available Scripts
+---
 
-### Root Level
+## BATTLE COMMANDS
 
-- `npm run dev` - Start both client and server in development mode
-- `npm run dev:client` - Start only the client
-- `npm run dev:server` - Start only the server
-- `npm run build` - Build all packages
-- `npm run test` - Run tests in all packages
-- `npm run lint` - Lint all packages
-- `npm run format` - Format code with Prettier
-- `npm run setup` - Install dependencies and setup database
-- `npm run storybook` - Start Storybook
+### FROM THE WAR CHIEF'S TENT (Root)
 
-### Client Package
+- `npm run dev` — Wake both armies
+- `npm run dev:client` — Wake only the front line
+- `npm run dev:server` — Wake only the war tent
+- `npm run build` — Forge everything
+- `npm run test` — Set the bloodhounds loose on all packages
+- `npm run lint` — Make the scrolls presentable
+- `npm run format` — Tidy up or face consequences
+- `npm run setup` — First-time setup, read the instructions snaga
+- `npm run storybook` — Open the armoury display
+
+### FRONT LINE ORDERS
 
 ```bash
 cd packages/client
-npm run dev           # Start Vite dev server
-npm run build         # Build for production
-npm run test          # Run Jest tests
-npm run test:e2e      # Run Playwright tests
-npm run storybook     # Start Storybook
+npm run dev           # Wake Vite
+npm run build         # Forge for battle
+npm run test          # Jest hunts bugs
+npm run test:e2e      # Playwright watches everything
+npm run storybook     # Open the display cases
 ```
 
-### Server Package
+### WAR TENT ORDERS
 
 ```bash
 cd packages/server
-npm run dev           # Start dev server with hot reload
-npm run build         # Build TypeScript
-npm run start         # Start production server
-npm run db:studio     # Open Prisma Studio
-npm run db:push       # Push schema changes to database
-npm run db:seed       # Seed database with demo data
+npm run dev           # Wake with hot reload, like a phoenix but angrier
+npm run build         # Translate TypeScript runes
+npm run start         # Deploy to the front
+npm run db:studio     # Open Prisma Studio (the stone-eye)
+npm run db:push       # Hammer schema into the database
+npm run db:seed       # Feed the database
 ```
 
-### Shared Package
+### SUPPLY CHAIN ORDERS
 
 ```bash
 cd packages/shared
-npm run test          # Run Jest tests
-npm run lint          # Lint code
+npm run test          # Bloodhounds
+npm run lint          # Scrolls
 ```
 
-## Project Structure
+---
+
+## MAP OF THE CAMP
 
 ```
 carton-case-management/
-├── .devcontainer/          # Devcontainer configuration
+├── .devcontainer/          # The cave entrance
 │   ├── devcontainer.json
 │   └── Dockerfile
 ├── packages/
-│   ├── client/             # React frontend
+│   ├── client/             # Front line (React)
 │   │   ├── src/
-│   │   │   ├── components/ # React components
-│   │   │   ├── lib/        # Utilities and tRPC setup
-│   │   │   ├── pages/      # Page components
-│   │   │   └── main.tsx    # Entry point
-│   │   ├── tests/          # Tests
-│   │   │   ├── unit/       # Jest unit tests
-│   │   │   └── e2e/        # Playwright E2E tests
-│   │   ├── .storybook/     # Storybook config
+│   │   │   ├── components/ # Weapons rack
+│   │   │   ├── lib/        # Supply crates (tRPC setup)
+│   │   │   ├── pages/      # Battlefields
+│   │   │   └── main.tsx    # The war-horn
+│   │   ├── tests/
+│   │   │   ├── unit/       # Jest stabs
+│   │   │   └── e2e/        # Playwright eyes
+│   │   ├── .storybook/     # Armoury display
 │   │   └── package.json
-│   ├── server/             # Node.js backend
+│   ├── server/             # War tent (Node.js)
 │   │   ├── src/
-│   │   │   ├── index.ts    # Server entry point
-│   │   │   ├── router.ts   # tRPC router
-│   │   │   ├── context.ts  # tRPC context
-│   │   │   └── trpc.ts     # tRPC setup
+│   │   │   ├── index.ts    # Camp entrance
+│   │   │   ├── router.ts   # Road network
+│   │   │   ├── context.ts  # The Knowing
+│   │   │   └── trpc.ts     # The bridge
 │   │   ├── db/
-│   │   │   ├── dev.db      # SQLite database
-│   │   │   └── seed.ts     # Database seeding
+│   │   │   ├── dev.db      # The stone-book
+│   │   │   └── seed.ts     # The feeding-scroll
 │   │   └── package.json
-│   └── shared/             # Shared code
+│   └── shared/             # Supply chain
 │       ├── prisma/
-│       │   └── schema.prisma # Prisma schema (single source of truth)
+│       │   └── schema.prisma # THE ONE SCHEMA (touch it and die)
 │       ├── src/
-│       │   ├── types.ts    # Shared types
-│       │   ├── generated/  # Auto-generated Zod schemas from Prisma
-│       │   └── utils.ts    # Shared utilities
+│       │   ├── types.ts    # The runes
+│       │   ├── generated/  # Auto-forged Zod from Prisma
+│       │   └── utils.ts    # Little tricks
 │       └── package.json
 ├── docker-compose.dev.yaml
 ├── .gitignore
 ├── .prettierrc
 ├── eslint.config.mjs
-├── package.json            # Root package.json
-├── tsconfig.json           # Root TypeScript config
-└── README.md
+├── package.json            # The war-chief's manifest
+├── tsconfig.json           # TypeScript oath
+└── README.md               # THIS CURSED DOCUMENT
 ```
 
-## Database
+---
 
-The application uses SQLite for simplicity. The database file is located at `packages/server/db/dev.db`. The Prisma schema is in `packages/shared/prisma/schema.prisma`.
+## THE STONE-BOOK — Database
 
-### Prisma Commands
+SQLite. Small. Doesn't complain. Lives at `packages/server/db/dev.db`. Schema is carved in `packages/shared/prisma/schema.prisma`. *Touch the schema without thinking and the whole army collapses.*
+
+### PRISMA COMMANDS
 
 ```bash
 cd packages/server
 
-# Open Prisma Studio (database GUI)
+# Open Prisma Studio — the stone-eye that sees all data
 npm run db:studio
 
-# Push schema changes to database
+# Hammer schema changes into stone
 npm run db:push
 
-# Generate Prisma Client
+# Summon the Prisma Client from the forge
 npm run db:generate
 
-# Seed database with demo data
+# Feed the database with demo flesh
 npm run db:seed
 
-# Reset database (clear + seed)
+# Burn it all and start over
 npm run db:setup
 ```
 
-## Testing
+---
 
-### Unit Tests (Jest)
+## SENDING THE BLOODHOUNDS — Testing
+
+### UNIT BLOODHOUNDS (Jest)
 
 ```bash
-npm run test                 # Run all tests
-npm run test:watch          # Run tests in watch mode
+npm run test                 # Loose them all
+npm run test:watch           # Keep them running forever
 ```
 
-### E2E Tests (Playwright)
+### FULL BATTLEFIELD EYES (Playwright)
 
 ```bash
 cd packages/client
-npm run test:e2e            # Run E2E tests
-npm run test:e2e:watch      # Run E2E tests in watch mode
+npm run test:e2e             # Watch everything
+npm run test:e2e:watch       # Watch. Everything. Always.
 ```
 
-## Storybook
+---
 
-Storybook is configured for developing and testing UI components in isolation:
+## THE ARMOURY DISPLAY — Storybook
+
+Look at components without breaking things. Rare luxury:
 
 ```bash
-npm run storybook           # Start Storybook on port 6006
-npm run build-storybook     # Build static Storybook
+npm run storybook           # Open on port 6006
+npm run build-storybook     # Seal it in stone
 ```
 
-## Code Quality
+---
 
-### Linting
+## SCROLL QUALITY
+
+### LINTING
 
 ```bash
-npm run lint                # Lint all packages
+npm run lint                # Make scrolls worthy of the Warchief
 ```
 
-### Formatting
+### FORMATTING
 
 ```bash
-npm run format              # Format all code
-npm run format:check        # Check formatting
+npm run format              # Clean them up
+npm run format:check        # Check if they're clean
 ```
 
-## API Documentation
+---
 
-The tRPC API provides type-safe endpoints. Key routes:
+## THE MESSENGER NETWORK — API
 
-### Data Caching with tRPC + React Query
+tRPC. Type-safe. No excuses for bad data. Get it wrong and Jest finds you.
 
-This application uses **tRPC with React Query** for automatic request caching and optimistic updates. All API calls through tRPC are automatically cached, reducing redundant network requests and improving performance.
+### DATA HOARD — Caching with tRPC + React Query
 
-#### Cache Configuration
+The hoard remembers. Automatic caching means the server rests between raids.
 
-The default cache settings (configured in [packages/client/src/lib/trpc.tsx](packages/client/src/lib/trpc.tsx)):
+#### HOARD SETTINGS
 
-- **Stale Time**: 5 minutes - Data is considered fresh for 5 minutes after fetching
-- **Garbage Collection Time**: 10 minutes - Unused data is removed from cache after 10 minutes
-- **Retry**: 3 attempts - Failed requests retry up to 3 times before showing an error
-- **Refetch on Window Focus**: Enabled - Data refetches in the background when you return to the tab
+Configured in [packages/client/src/lib/trpc.tsx](packages/client/src/lib/trpc.tsx):
 
-#### Cache Behavior Example
+- **Stale Time**: 5 minutes — *Fresh meat lasts this long*
+- **Garbage Collection Time**: 10 minutes — *Then it gets thrown to the wargs*
+- **Retry**: 3 attempts — *Three tries before we give up on a messenger*
+- **Refetch on Window Focus**: Enabled — *Guard snaps to attention when you return*
+
+#### HOW THE HOARD WORKS
 
 ```tsx
-// First render: Fetches from API (shows loading state)
+// First raid: Goes to the server (loading state)
 const { data, isLoading } = trpc.case.list.useQuery();
 
-// Navigate away and back within 5 minutes:
-// - Returns cached data instantly (no loading state)
-// - Displays data in <100ms
+// Come back within 5 minutes:
+// - Hoard gives data instantly, no loading
+// - Under 100ms — fast as a thrown axe
 
 // After 5 minutes:
-// - Returns cached data instantly (stale data)
-// - Refetches in background to get fresh data
+// - Still gives hoard data instantly
+// - Sends a scout to fetch fresh data in the background
 ```
 
-#### Using React Query DevTools
+#### WATCHING THE HOARD
 
-In development mode, React Query DevTools appear in the bottom-right corner:
+React Query DevTools sit in the bottom-right corner in dev mode. Click to see what's cached, what's stale, what's dead. Not in production — too much to explain to the enemy.
 
-1. Click the devtools icon to open
-2. View all cached queries and their status
-3. Inspect query data, fetch status, and cache timings
-4. Manually invalidate or refetch queries for testing
+#### CLEARING THE HOARD
 
-**Note**: DevTools only appear in development mode (`npm run dev`), not in production builds.
-
-#### Cache Invalidation
-
-When you mutate data (create, update, delete), the cache automatically updates:
+When you mutate data, the hoard purges itself:
 
 ```tsx
 const utils = trpc.useUtils();
 
-// After creating a case, invalidate the list query
 const createCase = trpc.case.create.useMutation({
   onSuccess: () => {
-    // This refetches the case list
-    utils.case.list.invalidate();
+    utils.case.list.invalidate(); // Burn the old list, fetch fresh
   },
 });
 ```
 
-#### Performance Benefits
+#### WHY BOTHER
 
-- **Instant navigation**: Cached data appears in <100ms when navigating back to a page
-- **Reduced server load**: Queries within stale time (5 min) don't hit the server
-- **Background updates**: Stale data is updated transparently without loading states
-- **Automatic deduplication**: Multiple components using the same query share one network request
+- **Fast navigation**: Hoard data under 100ms — no waiting
+- **Server rests**: No pointless raids within stale time
+- **Background raids**: Fresh data arrives without interrupting the user
+- **No duplicate raids**: Multiple components share one request
 
 ---
 
-### Data Fetching with tRPC + React Query
+### MESSENGER ROUTES
 
-All examples below use the tRPC client configured with React Query for automatic caching and state management.
+#### ALL EXAMPLES USE TRPC + REACT QUERY. DON'T FORGET.
 
-#### Basic Query Example
+#### BASIC QUERY
 
 ```tsx
 import { trpc } from '../lib/trpc';
@@ -368,16 +376,15 @@ function CaseList() {
 }
 ```
 
-#### Query with Parameters
+#### QUERY WITH FILTERS
 
 ```tsx
 function CaseListByStatus({ status }: { status: string }) {
   const { data } = trpc.case.list.useQuery(
     { status },
     {
-      // Custom options for this query
-      staleTime: 1000 * 60, // Fresh for 1 minute
-      enabled: !!status, // Only run if status is provided
+      staleTime: 1000 * 60,
+      enabled: !!status,
     }
   );
 
@@ -385,7 +392,7 @@ function CaseListByStatus({ status }: { status: string }) {
 }
 ```
 
-#### Mutation Example with Cache Invalidation
+#### MUTATION WITH HOARD PURGE
 
 ```tsx
 function CreateCaseForm() {
@@ -393,7 +400,6 @@ function CreateCaseForm() {
 
   const createCase = trpc.case.create.useMutation({
     onSuccess: () => {
-      // Refetch the case list to show new case
       utils.case.list.invalidate();
     },
     onError: (error) => {
@@ -420,7 +426,7 @@ function CreateCaseForm() {
 }
 ```
 
-#### Optimistic Updates
+#### OPTIMISTIC STRIKES
 
 ```tsx
 function UpdateCaseStatus({ caseId }: { caseId: string }) {
@@ -428,25 +434,17 @@ function UpdateCaseStatus({ caseId }: { caseId: string }) {
 
   const updateStatus = trpc.case.update.useMutation({
     onMutate: async (newData) => {
-      // Cancel outgoing refetches
       await utils.case.getById.cancel({ id: caseId });
-
-      // Snapshot previous value
       const previousCase = utils.case.getById.getData({ id: caseId });
-
-      // Optimistically update to the new value
       utils.case.getById.setData({ id: caseId }, (old) =>
         old ? { ...old, status: newData.status } : old
       );
-
       return { previousCase };
     },
     onError: (err, newData, context) => {
-      // Rollback on error
       utils.case.getById.setData({ id: caseId }, context?.previousCase);
     },
     onSettled: () => {
-      // Always refetch after error or success
       utils.case.getById.invalidate({ id: caseId });
     },
   });
@@ -459,9 +457,7 @@ function UpdateCaseStatus({ caseId }: { caseId: string }) {
 }
 ```
 
-#### Testing Patterns
-
-When testing components that use tRPC queries, use the test utilities from `src/test/utils.ts`:
+#### TESTING IN THE PIT
 
 ```tsx
 import { renderWithTrpc } from '../test/utils';
@@ -469,7 +465,6 @@ import { server } from '../vitest.setup';
 import { http, HttpResponse } from 'msw';
 
 test('displays cases from API', async () => {
-  // Mock the API response
   server.use(
     http.post('http://localhost:3000/trpc/case.list', () => {
       return HttpResponse.json({
@@ -480,49 +475,55 @@ test('displays cases from API', async () => {
     })
   );
 
-  // Render component with tRPC provider
   const { getByText } = renderWithTrpc(<CaseList />);
 
-  // Wait for data to load
   await waitFor(() => {
     expect(getByText('Test Case')).toBeInTheDocument();
   });
 });
 ```
 
-For more examples, see:
+More examples in these scrolls (read them or suffer):
 
 - [Query Patterns](specs/001-trpc-react-query/contracts/query-example.tsx)
 - [Mutation Patterns](specs/001-trpc-react-query/contracts/mutation-example.tsx)
 - [Test Patterns](specs/001-trpc-react-query/contracts/test-example.test.tsx)
 - [Quickstart Guide](specs/001-trpc-react-query/quickstart.md)
 
-### Health
+---
 
-- `health.query()` - Check API health
+### MESSENGER ROUTES (THE SHORT LIST)
 
-### Users
+#### HEALTH
 
-- `user.list.query()` - Get all users
-- `user.getById.query({ id })` - Get user by ID
+- `health.query()` — Is anything alive in there?
 
-### Cases
+#### SOLDIERS
 
-- `case.list.query({ status?, assignedTo? })` - Get cases with filters
-- `case.getById.query({ id })` - Get case by ID
-- `case.create.mutation({ title, description, createdBy, assignedTo? })` - Create case
-- `case.update.mutation({ id, ...updates })` - Update case
-- `case.delete.mutation({ id })` - Delete case
+- `user.list.query()` — Show all soldiers
+- `user.getById.query({ id })` — Find one by mark
 
-## Contributing
+#### CASES
 
-1. Create a feature branch
+- `case.list.query({ status?, assignedTo? })` — Show cases, filtered if you're picky
+- `case.getById.query({ id })` — One case by ID
+- `case.create.mutation({ title, description, createdBy, assignedTo? })` — Make a new case
+- `case.update.mutation({ id, ...updates })` — Change a case
+- `case.delete.mutation({ id })` — Destroy a case
+
+---
+
+## JOINING THE HORDE — Contributing
+
+1. Carve a feature branch
 2. Make your changes
-3. Run tests: `npm run test`
-4. Run linting: `npm run lint`
-5. Format code: `npm run format`
-6. Submit a pull request
+3. Run the bloodhounds: `npm run test`
+4. Check the scrolls: `npm run lint`
+5. Tidy up: `npm run format`
+6. Send the pull request — Uglúk will review it
 
-## License
+---
 
-MIT
+## THE OATH — License
+
+MIT. Take it. Use it. Don't blame us when it breaks.
