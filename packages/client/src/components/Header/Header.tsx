@@ -5,13 +5,13 @@ import CartonLogoSvg from '@/assets/carton-logo.svg';
 import type { HeaderProps } from './types';
 
 function CartonLogo({ size = 34 }: { size?: number }) {
-  return <img src={CartonLogoSvg} alt="Carton Case Management" width={size} height={size} />;
+  return <img src={CartonLogoSvg} alt="Manuel Pages!" width={size} height={size} />;
 }
 
 export function Header({ className, userInitials = 'AM', onAvatarClick }: HeaderProps) {
   return (
     <header
-      className={`w-full bg-[#002a2d] flex items-center justify-between px-6 py-4 ${className || ''}`}
+      className={`w-full bg-[hsl(var(--header-bg))] flex items-center justify-between px-6 py-4 ${className || ''}`}
       aria-label="Main navigation"
     >
       <Link
@@ -20,9 +20,7 @@ export function Header({ className, userInitials = 'AM', onAvatarClick }: Header
         aria-label="Navigate to home"
       >
         <CartonLogo />
-        <span className="text-white text-xl font-semibold">
-          Carton<span className="hidden lg:inline"> Case Management</span>
-        </span>
+        <span className="text-white text-xl font-semibold">Manuel Pages!</span>
       </Link>
 
       <MoreOptionsMenu
@@ -31,7 +29,7 @@ export function Header({ className, userInitials = 'AM', onAvatarClick }: Header
             variant="ghost"
             size="mini"
             roundness="round"
-            className="w-10 h-10 bg-white text-gray-900 hover:bg-gray-100 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--header-bg))]"
+            className="w-10 h-10 bg-accent text-accent-foreground hover:bg-accent-2 focus-visible:ring-accent-0 focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--header-bg))]"
             aria-label="User menu"
             onClick={onAvatarClick}
           >

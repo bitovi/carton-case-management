@@ -20,10 +20,10 @@ function App() {
   // Show loading state while fetching user
   if (isLoading) {
     return (
-      <div className="h-screen bg-[#dfe2e2] flex items-center justify-center">
+      <div className="h-screen bg-body-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
@@ -32,10 +32,10 @@ function App() {
   // Show error state if authentication fails
   if (error || !user) {
     return (
-      <div className="h-screen bg-[#dfe2e2] flex items-center justify-center">
+      <div className="h-screen bg-body-background flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 mb-2">Unauthorized</p>
-          <p className="text-gray-600 text-sm">
+          <p className="text-destructive mb-2">Unauthorized</p>
+          <p className="text-muted-foreground text-sm">
             Make sure your server is running and your database is seeded
           </p>
         </div>
@@ -47,7 +47,7 @@ function App() {
   const userInitials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
 
   return (
-    <div className="h-screen bg-[#dfe2e2] flex flex-col">
+    <div className="h-screen bg-body-background flex flex-col">
       <Header userInitials={userInitials} />
       <MenuList items={menuItems} />
       <div className="flex flex-1 overflow-hidden lg:pl-[68px]">

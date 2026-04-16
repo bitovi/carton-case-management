@@ -8,45 +8,45 @@
        Bitovi Design System
        ======================================== */
     
-    /* Secondary Neutral Gray */
-    --gray-950: #192627;
-    --gray-900: #233132;
-    --gray-800: #334041;
-    --gray-700: #4c5b5c;
-    --gray-600: #687879;
-    --gray-500: #869597;
-    --gray-400: #a3adad;
-    --gray-300: #bfc5c6;
-    --gray-200: #dfe2e2;
-    --gray-100: #f4f5f5;
-    --gray-50: #fbfcfc;
+    /* Secondary Neutral Slate */
+    --gray-950: #0d1321;
+    --gray-900: #182235;
+    --gray-800: #24344c;
+    --gray-700: #35516f;
+    --gray-600: #4d6c8f;
+    --gray-500: #6f89ab;
+    --gray-400: #93a7c1;
+    --gray-300: #b8c4d5;
+    --gray-200: #d9e1ec;
+    --gray-100: #eef3f8;
+    --gray-50: #f8fbff;
     --white: #ffffff;
     
-    /* Primary Brand Teal */
-    --teal-950: #002a2d;
-    --teal-900: #023538;
-    --teal-800: #00464a;
-    --teal-700: #04646a;
-    --teal-600: #00848b;
-    --teal-500: #01a6ae;
-    --teal-400: #4cbec5;
-    --teal-300: #87d3d9;
-    --teal-200: #bcecef;
-    --teal-100: #e8feff;
-    --teal-50: #f3feff;
+    /* Primary Brand Cyan */
+    --teal-950: #032031;
+    --teal-900: #07314a;
+    --teal-800: #0f486a;
+    --teal-700: #17628e;
+    --teal-600: #1f7db3;
+    --teal-500: #2f9fd8;
+    --teal-400: #58bae8;
+    --teal-300: #8ed1f1;
+    --teal-200: #c5e9fb;
+    --teal-100: #e8f7ff;
+    --teal-50: #f5fcff;
     
-    /* Primary Brand BitOrange */
-    --orange-950: #3e1510;
-    --orange-900: #4f1b14;
-    --orange-800: #6a2017;
-    --orange-700: #972e1d;
-    --orange-600: #c73d26;
-    --orange-500: #f5532d;
-    --orange-400: #ff805f;
-    --orange-300: #ffad93;
-    --orange-200: #ffd7ca;
-    --orange-100: #fff2ed;
-    --orange-50: #fffbf9;
+    /* Primary Brand Coral */
+    --orange-950: #35140f;
+    --orange-900: #4a1c14;
+    --orange-800: #65281b;
+    --orange-700: #883525;
+    --orange-600: #b2462f;
+    --orange-500: #de5b3f;
+    --orange-400: #f08266;
+    --orange-300: #f8ac97;
+    --orange-200: #fcd6cb;
+    --orange-100: #fff0eb;
+    --orange-50: #fff9f7;
     
     /* Tertiary Green */
     --green-950: #142a12;
@@ -118,66 +118,66 @@
        ======================================== */
     
     /* General colors */
-    --background: #ffffff; /* general/background */
-    --foreground: #020617; /* general/foreground */
-    --primary: #0f172a; /* general/primary */
-    --primary-foreground: #f8fafc; /* general/primary foreground */
-    --secondary: #f1f5f9; /* general/secondary */
-    --secondary-foreground: #0f172a; /* general/secondary foreground */
-    --muted: #f1f5f9; /* general/muted */
-    --muted-foreground: #64748b; /* general/muted foreground */
-    --accent: #f1f5f9; /* general/accent */
-    --accent-foreground: #0f172a; /* general/accent foreground */
-    --destructive: #dc2626; /* general/destructive */
-    --border: #e2e8f0; /* general/border */
+    --background: #f8fbff; /* general/background */
+    --foreground: #0f172a; /* general/foreground */
+    --primary: #13233b; /* general/primary */
+    --primary-foreground: #f8fbff; /* general/primary foreground */
+    --secondary: #e7eef8; /* general/secondary */
+    --secondary-foreground: #13233b; /* general/secondary foreground */
+    --muted: #eaf1fa; /* general/muted */
+    --muted-foreground: #4d6383; /* general/muted foreground */
+    --accent: #d9efff; /* general/accent */
+    --accent-foreground: #102846; /* general/accent foreground */
+    --destructive: #be2f3c; /* general/destructive */
+    --border: #ccdaec; /* general/border */
     --input: #ffffff; /* general/input */
     
     /* Popover colors */
-    --popover: #000000; /* popover/popover */
-    --popover-foreground: #ffffff; /* popover/popover foreground */
+    --popover: #13233b; /* popover/popover */
+    --popover-foreground: #f8fbff; /* popover/popover foreground */
 
     /* Card colors */
     --card: #ffffff; /* card/card */
-    --card-foreground: #020617; /* card/card foreground */
+    --card-foreground: #0f172a; /* card/card foreground */
 
     /* Focus states */
-    --ring: #cbd5e1; /* focus/ring */
+    --ring: #8ab6e8; /* focus/ring */
     --ring-error: #fca5a5; /* focus/ring error */
 
     /* Sidebar colors */
-    --sidebar: #f1f5f9; /* sidebar/sidebar */
-    --sidebar-foreground: #334155; /* sidebar/sidebar foreground */
-    --sidebar-accent: #e2e8f0; /* sidebar/sidebar accent */
-    --sidebar-accent-foreground: #334155; /* sidebar/sidebar accent foreground */
-    --sidebar-primary: #0f172a; /* sidebar/sidebar primary */
-    --sidebar-primary-foreground: #f8fafc; /* sidebar/sidebar primary foreground */
-    --sidebar-border: #e2e8f0; /* sidebar/sidebar border */
-    --sidebar-ring: #cbd5e1; /* sidebar/sidebar ring */
+    --sidebar: #eaf1fa; /* sidebar/sidebar */
+    --sidebar-foreground: #24344c; /* sidebar/sidebar foreground */
+    --sidebar-accent: #d7e6f7; /* sidebar/sidebar accent */
+    --sidebar-accent-foreground: #1c2b42; /* sidebar/sidebar accent foreground */
+    --sidebar-primary: #13233b; /* sidebar/sidebar primary */
+    --sidebar-primary-foreground: #f8fbff; /* sidebar/sidebar primary foreground */
+    --sidebar-border: #ccdaec; /* sidebar/sidebar border */
+    --sidebar-ring: #8ab6e8; /* sidebar/sidebar ring */
 
     /* Unofficial/Extended colors */
-    --border-0: #f8fafc; /* unofficial/border 0 */
-    --border-1: #f1f5f9; /* unofficial/border 1 */
-    --border-3: #cbd5e1; /* unofficial/border 3 */
-    --border-4: #94a3b8; /* unofficial/border 4 */
-    --border-5: #64748b; /* unofficial/border 5 */
-    --accent-0: #f8fafc; /* unofficial/accent 0 */
-    --accent-2: #e2e8f0; /* unofficial/accent 2 */
-    --accent-3: #cbd5e1; /* unofficial/accent 3 */
-    --primary-hover: #334155; /* unofficial/primary hover */
-    --secondary-hover: #f8fafc; /* unofficial/secondary hover */
+    --border-0: #f8fbff; /* unofficial/border 0 */
+    --border-1: #eef3f9; /* unofficial/border 1 */
+    --border-3: #c2d2e6; /* unofficial/border 3 */
+    --border-4: #8ea8c7; /* unofficial/border 4 */
+    --border-5: #5f799a; /* unofficial/border 5 */
+    --accent-0: #f2f8ff; /* unofficial/accent 0 */
+    --accent-2: #dce9f8; /* unofficial/accent 2 */
+    --accent-3: #c2d7f0; /* unofficial/accent 3 */
+    --primary-hover: #1f3554; /* unofficial/primary hover */
+    --secondary-hover: #f4f8fd; /* unofficial/secondary hover */
     --ghost: #ffffff00; /* unofficial/ghost - transparent white */
-    --ghost-hover: #0000000d; /* unofficial/ghost hover - very subtle overlay */
-    --ghost-foreground: #334155; /* unofficial/ghost foreground */
-    --destructive-foreground: #dc2626; /* unofficial/destructive foreground */
-    --destructive-subtle: #fef2f2; /* unofficial/destructive subtle */
-    --destructive-border: #ef4444; /* unofficial/destructive border */
-    --outline: #ffffff1a; /* unofficial/outline - semi-transparent */
-    --outline-hover: #33415508; /* unofficial/outline hover */
-    --outline-active: #3341550d; /* unofficial/outline active */
-    --backdrop: #33415599; /* unofficial/backdrop - 60% opacity */
-    --mid-alt: #475569; /* unofficial/mid alt */
-    --foreground-alt: #334155; /* unofficial/foreground alt */
-    --body-background: #ffffff; /* unofficial/body background */
+    --ghost-hover: #1c2b4212; /* unofficial/ghost hover - very subtle overlay */
+    --ghost-foreground: #24344c; /* unofficial/ghost foreground */
+    --destructive-foreground: #be2f3c; /* unofficial/destructive foreground */
+    --destructive-subtle: #fff0f2; /* unofficial/destructive subtle */
+    --destructive-border: #d64b58; /* unofficial/destructive border */
+    --outline: #13233b1f; /* unofficial/outline - semi-transparent */
+    --outline-hover: #1c2b4208; /* unofficial/outline hover */
+    --outline-active: #1c2b4214; /* unofficial/outline active */
+    --backdrop: #13233b99; /* unofficial/backdrop - 60% opacity */
+    --mid-alt: #365172; /* unofficial/mid alt */
+    --foreground-alt: #24344c; /* unofficial/foreground alt */
+    --body-background: #edf3fb; /* unofficial/body background */
 
     /* Additional border radius values */
     --radius-none: 0;
@@ -191,10 +191,10 @@
     --radius-full: 9999px;
 
     /* Header and menu colors (app-specific) */
-    --header-bg: 180 38% 16%; /* Dark teal #1a3a3a */
-    --menu-bg: 240 20% 96%; /* Light gray sidebar */
-    --menu-item-bg: 185 45% 80%; /* Light blue/teal #B8DFE6 */
-    --menu-item-hover: 185 45% 70%; /* Darker on hover */
+    --header-bg: 215 53% 14%; /* Deep navy */
+    --menu-bg: 210 45% 97%; /* Pale blue sidebar */
+    --menu-item-bg: 199 83% 86%; /* Light cyan */
+    --menu-item-hover: 199 78% 76%; /* Darker cyan on hover */
     
     /* Chart colors */
     --chart-1: 12 76% 61%;
