@@ -32,7 +32,7 @@ This application follows a monorepo structure using npm workspaces:
 - Jest for unit testing
 - Playwright for E2E testing
 
-### Backend
+### Backend updated
 
 - Node.js with TypeScript
 - tRPC (JSON-RPC 2.0) for API endpoints
