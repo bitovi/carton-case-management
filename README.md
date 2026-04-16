@@ -1,528 +1,528 @@
-commands:
+COMMANDS:
 
-- docker-compose -f docker-compose.local.yaml up --build
-- cmd+shift+p -> Dev Containers: Reopen in Container
-- npm install -> npm run setup -> npm run dev
+- DOCKER-COMPOSE -F DOCKER-COMPOSE.LOCAL.YAML UP --BUILD
+- CMD+SHIFT+P -> DEV CONTAINERS: REOPEN IN CONTAINER
+- NPM INSTALL -> NPM RUN SETUP -> NPM RUN DEV
 
-<!-- TODO: udpdate this readme, project has some changes since initial copilot spinup -->
+<!-- TODO: UDPDATE THIS README, PROJECT HAS SOME CHANGES SINCE INITIAL COPILOT SPINUP -->
 
-# Carton Case Management
+# CARTON CASE MANAGEMENT
 
-A modern case management application built with React, Node.js, tRPC, and Prisma.
+A MODERN CASE MANAGEMENT APPLICATION BUILT WITH REACT, NODE.JS, TRPC, AND PRISMA.
 
-## Architecture
+## ARCHITECTURE
 
-This application follows a monorepo structure using npm workspaces:
+THIS APPLICATION FOLLOWS A MONOREPO STRUCTURE USING NPM WORKSPACES:
 
-- **packages/client** - React frontend with Vite, Tailwind CSS, and Shadcn UI
-- **packages/server** - Node.js backend with tRPC, Prisma, and SQLite
-- **packages/shared** - Shared types and utilities used by both client and server
+- **PACKAGES/CLIENT** - REACT FRONTEND WITH VITE, TAILWIND CSS, AND SHADCN UI
+- **PACKAGES/SERVER** - NODE.JS BACKEND WITH TRPC, PRISMA, AND SQLITE
+- **PACKAGES/SHARED** - SHARED TYPES AND UTILITIES USED BY BOTH CLIENT AND SERVER
 
-## Tech Stack
+## TECH STACK
 
-### Frontend
+### FRONTEND
 
-- React 18 with TypeScript
-- Vite as build tool
-- tRPC for type-safe API calls
-- Shadcn UI components
-- Tailwind CSS for styling
-- React Router for routing
-- Storybook for component development
-- Jest for unit testing
-- Playwright for E2E testing
+- REACT 18 WITH TYPESCRIPT
+- VITE AS BUILD TOOL
+- TRPC FOR TYPE-SAFE API CALLS
+- SHADCN UI COMPONENTS
+- TAILWIND CSS FOR STYLING
+- REACT ROUTER FOR ROUTING
+- STORYBOOK FOR COMPONENT DEVELOPMENT
+- JEST FOR UNIT TESTING
+- PLAYWRIGHT FOR E2E TESTING
 
-### Backend
+### BACKEND
 
-- Node.js with TypeScript
-- tRPC (JSON-RPC 2.0) for API endpoints
-- Prisma as ORM
-- SQLite as database
-- Express for HTTP server
+- NODE.JS WITH TYPESCRIPT
+- TRPC (JSON-RPC 2.0) FOR API ENDPOINTS
+- PRISMA AS ORM
+- SQLITE AS DATABASE
+- EXPRESS FOR HTTP SERVER
 
-## Getting Started
+## GETTING STARTED
 
-### Prerequisites
+### PREREQUISITES
 
-- Node.js 22+ (or use the devcontainer)
-- npm 10+
+- NODE.JS 22+ (OR USE THE DEVCONTAINER)
+- NPM 10+
 
-### Development with Devcontainer (Recommended)
+### DEVELOPMENT WITH DEVCONTAINER (RECOMMENDED)
 
-The easiest way to get started is using the devcontainer:
+THE EASIEST WAY TO GET STARTED IS USING THE DEVCONTAINER:
 
-1. Open this folder in VS Code
-2. When prompted, click "Reopen in Container"
-3. Wait for the container to build and dependencies to install
-4. The application will automatically start at:
-   - Client: http://localhost:5173
-   - Server: http://localhost:3001
+1. OPEN THIS FOLDER IN VS CODE
+2. WHEN PROMPTED, CLICK "REOPEN IN CONTAINER"
+3. WAIT FOR THE CONTAINER TO BUILD AND DEPENDENCIES TO INSTALL
+4. THE APPLICATION WILL AUTOMATICALLY START AT:
+   - CLIENT: HTTP://LOCALHOST:5173
+   - SERVER: HTTP://LOCALHOST:3001
 
-### Local Development
+### LOCAL DEVELOPMENT
 
-If not using devcontainer:
+IF NOT USING DEVCONTAINER:
 
-1. **Install dependencies**
+1. **INSTALL DEPENDENCIES**
 
-   ```bash
-   npm install
+   ```BASH
+   NPM INSTALL
    ```
 
-2. **Setup environment**
+2. **SETUP ENVIRONMENT**
 
-   ```bash
-   cp .env.example .env
+   ```BASH
+   CP .ENV.EXAMPLE .ENV
    ```
 
-3. **Setup database**
+3. **SETUP DATABASE**
 
-   ```bash
-   npm run setup
+   ```BASH
+   NPM RUN SETUP
    ```
 
-4. **Start development servers**
+4. **START DEVELOPMENT SERVERS**
 
-   ```bash
-   npm run dev
+   ```BASH
+   NPM RUN DEV
    ```
 
-   Or run them separately:
+   OR RUN THEM SEPARATELY:
 
-   ```bash
-   npm run dev:client  # Client on port 3000
-   npm run dev:server  # Server on port 3001
+   ```BASH
+   NPM RUN DEV:CLIENT  # CLIENT ON PORT 3000
+   NPM RUN DEV:SERVER  # SERVER ON PORT 3001
    ```
 
-## Authentication
+## AUTHENTICATION
 
-This application uses a simplified authentication system for development purposes. There is no real backend authentication - instead, it automatically logs you in as a mock user.
+THIS APPLICATION USES A SIMPLIFIED AUTHENTICATION SYSTEM FOR DEVELOPMENT PURPOSES. THERE IS NO REAL BACKEND AUTHENTICATION - INSTEAD, IT AUTOMATICALLY LOGS YOU IN AS A MOCK USER.
 
-**Default User**: Alex Morgan (alex.morgan@carton.com)
+**DEFAULT USER**: ALEX MORGAN (ALEX.MORGAN@CARTON.COM)
 
-**Testing as Different Users**: To test the application as a different user, set the `MOCK_USER_EMAIL` environment variable in `packages/server/.env`:
+**TESTING AS DIFFERENT USERS**: TO TEST THE APPLICATION AS A DIFFERENT USER, SET THE `MOCK_USER_EMAIL` ENVIRONMENT VARIABLE IN `PACKAGES/SERVER/.ENV`:
 
-```env
-MOCK_USER_EMAIL=jordan.doe@carton.com
+```ENV
+MOCK_USER_EMAIL=JORDAN.DOE@CARTON.COM
 ```
 
-The available users are seeded in the database. You can view them by running `npm run db:studio` in the server package or checking the [seed.ts](packages/server/db/seed.ts) file.
+THE AVAILABLE USERS ARE SEEDED IN THE DATABASE. YOU CAN VIEW THEM BY RUNNING `NPM RUN DB:STUDIO` IN THE SERVER PACKAGE OR CHECKING THE [SEED.TS](PACKAGES/SERVER/DB/SEED.TS) FILE.
 
-### How It Works
+### HOW IT WORKS
 
-The server uses an Express middleware ([autoLogin.ts](packages/server/src/middleware/autoLogin.ts)) that runs on every request:
+THE SERVER USES AN EXPRESS MIDDLEWARE ([AUTOLOGIN.TS](PACKAGES/SERVER/SRC/MIDDLEWARE/AUTOLOGIN.TS)) THAT RUNS ON EVERY REQUEST:
 
-1. Checks for a `userId` cookie in the request
-2. If no cookie exists or the cookie's user email doesn't match `MOCK_USER_EMAIL`, it looks up the user by email in the database
-3. Sets a new `userId` cookie (HttpOnly, 7-day expiration)
-4. The cookie is automatically included in subsequent requests
+1. CHECKS FOR A `USERID` COOKIE IN THE REQUEST
+2. IF NO COOKIE EXISTS OR THE COOKIE'S USER EMAIL DOESN'T MATCH `MOCK_USER_EMAIL`, IT LOOKS UP THE USER BY EMAIL IN THE DATABASE
+3. SETS A NEW `USERID` COOKIE (HTTPONLY, 7-DAY EXPIRATION)
+4. THE COOKIE IS AUTOMATICALLY INCLUDED IN SUBSEQUENT REQUESTS
 
-When you change `MOCK_USER_EMAIL` and restart the server, the middleware detects the mismatch and issues a new cookie for the new user on the next request. The client doesn't need to do anything - it just sends the cookie automatically.
+WHEN YOU CHANGE `MOCK_USER_EMAIL` AND RESTART THE SERVER, THE MIDDLEWARE DETECTS THE MISMATCH AND ISSUES A NEW COOKIE FOR THE NEW USER ON THE NEXT REQUEST. THE CLIENT DOESN'T NEED TO DO ANYTHING - IT JUST SENDS THE COOKIE AUTOMATICALLY.
 
-## Available Scripts
+## AVAILABLE SCRIPTS
 
-### Root Level
+### ROOT LEVEL
 
-- `npm run dev` - Start both client and server in development mode
-- `npm run dev:client` - Start only the client
-- `npm run dev:server` - Start only the server
-- `npm run build` - Build all packages
-- `npm run test` - Run tests in all packages
-- `npm run lint` - Lint all packages
-- `npm run format` - Format code with Prettier
-- `npm run setup` - Install dependencies and setup database
-- `npm run storybook` - Start Storybook
+- `NPM RUN DEV` - START BOTH CLIENT AND SERVER IN DEVELOPMENT MODE
+- `NPM RUN DEV:CLIENT` - START ONLY THE CLIENT
+- `NPM RUN DEV:SERVER` - START ONLY THE SERVER
+- `NPM RUN BUILD` - BUILD ALL PACKAGES
+- `NPM RUN TEST` - RUN TESTS IN ALL PACKAGES
+- `NPM RUN LINT` - LINT ALL PACKAGES
+- `NPM RUN FORMAT` - FORMAT CODE WITH PRETTIER
+- `NPM RUN SETUP` - INSTALL DEPENDENCIES AND SETUP DATABASE
+- `NPM RUN STORYBOOK` - START STORYBOOK
 
-### Client Package
+### CLIENT PACKAGE
 
-```bash
-cd packages/client
-npm run dev           # Start Vite dev server
-npm run build         # Build for production
-npm run test          # Run Jest tests
-npm run test:e2e      # Run Playwright tests
-npm run storybook     # Start Storybook
+```BASH
+CD PACKAGES/CLIENT
+NPM RUN DEV           # START VITE DEV SERVER
+NPM RUN BUILD         # BUILD FOR PRODUCTION
+NPM RUN TEST          # RUN JEST TESTS
+NPM RUN TEST:E2E      # RUN PLAYWRIGHT TESTS
+NPM RUN STORYBOOK     # START STORYBOOK
 ```
 
-### Server Package
+### SERVER PACKAGE
 
-```bash
-cd packages/server
-npm run dev           # Start dev server with hot reload
-npm run build         # Build TypeScript
-npm run start         # Start production server
-npm run db:studio     # Open Prisma Studio
-npm run db:push       # Push schema changes to database
-npm run db:seed       # Seed database with demo data
+```BASH
+CD PACKAGES/SERVER
+NPM RUN DEV           # START DEV SERVER WITH HOT RELOAD
+NPM RUN BUILD         # BUILD TYPESCRIPT
+NPM RUN START         # START PRODUCTION SERVER
+NPM RUN DB:STUDIO     # OPEN PRISMA STUDIO
+NPM RUN DB:PUSH       # PUSH SCHEMA CHANGES TO DATABASE
+NPM RUN DB:SEED       # SEED DATABASE WITH DEMO DATA
 ```
 
-### Shared Package
+### SHARED PACKAGE
 
-```bash
-cd packages/shared
-npm run test          # Run Jest tests
-npm run lint          # Lint code
+```BASH
+CD PACKAGES/SHARED
+NPM RUN TEST          # RUN JEST TESTS
+NPM RUN LINT          # LINT CODE
 ```
 
-## Project Structure
+## PROJECT STRUCTURE
 
 ```
-carton-case-management/
-├── .devcontainer/          # Devcontainer configuration
-│   ├── devcontainer.json
-│   └── Dockerfile
-├── packages/
-│   ├── client/             # React frontend
-│   │   ├── src/
-│   │   │   ├── components/ # React components
-│   │   │   ├── lib/        # Utilities and tRPC setup
-│   │   │   ├── pages/      # Page components
-│   │   │   └── main.tsx    # Entry point
-│   │   ├── tests/          # Tests
-│   │   │   ├── unit/       # Jest unit tests
-│   │   │   └── e2e/        # Playwright E2E tests
-│   │   ├── .storybook/     # Storybook config
-│   │   └── package.json
-│   ├── server/             # Node.js backend
-│   │   ├── src/
-│   │   │   ├── index.ts    # Server entry point
-│   │   │   ├── router.ts   # tRPC router
-│   │   │   ├── context.ts  # tRPC context
-│   │   │   └── trpc.ts     # tRPC setup
-│   │   ├── db/
-│   │   │   ├── dev.db      # SQLite database
-│   │   │   └── seed.ts     # Database seeding
-│   │   └── package.json
-│   └── shared/             # Shared code
-│       ├── prisma/
-│       │   └── schema.prisma # Prisma schema (single source of truth)
-│       ├── src/
-│       │   ├── types.ts    # Shared types
-│       │   ├── generated/  # Auto-generated Zod schemas from Prisma
-│       │   └── utils.ts    # Shared utilities
-│       └── package.json
-├── docker-compose.dev.yaml
-├── .gitignore
-├── .prettierrc
-├── eslint.config.mjs
-├── package.json            # Root package.json
-├── tsconfig.json           # Root TypeScript config
-└── README.md
+CARTON-CASE-MANAGEMENT/
+├── .DEVCONTAINER/          # DEVCONTAINER CONFIGURATION
+│   ├── DEVCONTAINER.JSON
+│   └── DOCKERFILE
+├── PACKAGES/
+│   ├── CLIENT/             # REACT FRONTEND
+│   │   ├── SRC/
+│   │   │   ├── COMPONENTS/ # REACT COMPONENTS
+│   │   │   ├── LIB/        # UTILITIES AND TRPC SETUP
+│   │   │   ├── PAGES/      # PAGE COMPONENTS
+│   │   │   └── MAIN.TSX    # ENTRY POINT
+│   │   ├── TESTS/          # TESTS
+│   │   │   ├── UNIT/       # JEST UNIT TESTS
+│   │   │   └── E2E/        # PLAYWRIGHT E2E TESTS
+│   │   ├── .STORYBOOK/     # STORYBOOK CONFIG
+│   │   └── PACKAGE.JSON
+│   ├── SERVER/             # NODE.JS BACKEND
+│   │   ├── SRC/
+│   │   │   ├── INDEX.TS    # SERVER ENTRY POINT
+│   │   │   ├── ROUTER.TS   # TRPC ROUTER
+│   │   │   ├── CONTEXT.TS  # TRPC CONTEXT
+│   │   │   └── TRPC.TS     # TRPC SETUP
+│   │   ├── DB/
+│   │   │   ├── DEV.DB      # SQLITE DATABASE
+│   │   │   └── SEED.TS     # DATABASE SEEDING
+│   │   └── PACKAGE.JSON
+│   └── SHARED/             # SHARED CODE
+│       ├── PRISMA/
+│       │   └── SCHEMA.PRISMA # PRISMA SCHEMA (SINGLE SOURCE OF TRUTH)
+│       ├── SRC/
+│       │   ├── TYPES.TS    # SHARED TYPES
+│       │   ├── GENERATED/  # AUTO-GENERATED ZOD SCHEMAS FROM PRISMA
+│       │   └── UTILS.TS    # SHARED UTILITIES
+│       └── PACKAGE.JSON
+├── DOCKER-COMPOSE.DEV.YAML
+├── .GITIGNORE
+├── .PRETTIERRC
+├── ESLINT.CONFIG.MJS
+├── PACKAGE.JSON            # ROOT PACKAGE.JSON
+├── TSCONFIG.JSON           # ROOT TYPESCRIPT CONFIG
+└── README.MD
 ```
 
-## Database
+## DATABASE
 
-The application uses SQLite for simplicity. The database file is located at `packages/server/db/dev.db`. The Prisma schema is in `packages/shared/prisma/schema.prisma`.
+THE APPLICATION USES SQLITE FOR SIMPLICITY. THE DATABASE FILE IS LOCATED AT `PACKAGES/SERVER/DB/DEV.DB`. THE PRISMA SCHEMA IS IN `PACKAGES/SHARED/PRISMA/SCHEMA.PRISMA`.
 
-### Prisma Commands
+### PRISMA COMMANDS
 
-```bash
-cd packages/server
+```BASH
+CD PACKAGES/SERVER
 
-# Open Prisma Studio (database GUI)
-npm run db:studio
+# OPEN PRISMA STUDIO (DATABASE GUI)
+NPM RUN DB:STUDIO
 
-# Push schema changes to database
-npm run db:push
+# PUSH SCHEMA CHANGES TO DATABASE
+NPM RUN DB:PUSH
 
-# Generate Prisma Client
-npm run db:generate
+# GENERATE PRISMA CLIENT
+NPM RUN DB:GENERATE
 
-# Seed database with demo data
-npm run db:seed
+# SEED DATABASE WITH DEMO DATA
+NPM RUN DB:SEED
 
-# Reset database (clear + seed)
-npm run db:setup
+# RESET DATABASE (CLEAR + SEED)
+NPM RUN DB:SETUP
 ```
 
-## Testing
+## TESTING
 
-### Unit Tests (Jest)
+### UNIT TESTS (JEST)
 
-```bash
-npm run test                 # Run all tests
-npm run test:watch          # Run tests in watch mode
+```BASH
+NPM RUN TEST                 # RUN ALL TESTS
+NPM RUN TEST:WATCH          # RUN TESTS IN WATCH MODE
 ```
 
-### E2E Tests (Playwright)
+### E2E TESTS (PLAYWRIGHT)
 
-```bash
-cd packages/client
-npm run test:e2e            # Run E2E tests
-npm run test:e2e:watch      # Run E2E tests in watch mode
+```BASH
+CD PACKAGES/CLIENT
+NPM RUN TEST:E2E            # RUN E2E TESTS
+NPM RUN TEST:E2E:WATCH      # RUN E2E TESTS IN WATCH MODE
 ```
 
-## Storybook
+## STORYBOOK
 
-Storybook is configured for developing and testing UI components in isolation:
+STORYBOOK IS CONFIGURED FOR DEVELOPING AND TESTING UI COMPONENTS IN ISOLATION:
 
-```bash
-npm run storybook           # Start Storybook on port 6006
-npm run build-storybook     # Build static Storybook
+```BASH
+NPM RUN STORYBOOK           # START STORYBOOK ON PORT 6006
+NPM RUN BUILD-STORYBOOK     # BUILD STATIC STORYBOOK
 ```
 
-## Code Quality
+## CODE QUALITY
 
-### Linting
+### LINTING
 
-```bash
-npm run lint                # Lint all packages
+```BASH
+NPM RUN LINT                # LINT ALL PACKAGES
 ```
 
-### Formatting
+### FORMATTING
 
-```bash
-npm run format              # Format all code
-npm run format:check        # Check formatting
+```BASH
+NPM RUN FORMAT              # FORMAT ALL CODE
+NPM RUN FORMAT:CHECK        # CHECK FORMATTING
 ```
 
-## API Documentation
+## API DOCUMENTATION
 
-The tRPC API provides type-safe endpoints. Key routes:
+THE TRPC API PROVIDES TYPE-SAFE ENDPOINTS. KEY ROUTES:
 
-### Data Caching with tRPC + React Query
+### DATA CACHING WITH TRPC + REACT QUERY
 
-This application uses **tRPC with React Query** for automatic request caching and optimistic updates. All API calls through tRPC are automatically cached, reducing redundant network requests and improving performance.
+THIS APPLICATION USES **TRPC WITH REACT QUERY** FOR AUTOMATIC REQUEST CACHING AND OPTIMISTIC UPDATES. ALL API CALLS THROUGH TRPC ARE AUTOMATICALLY CACHED, REDUCING REDUNDANT NETWORK REQUESTS AND IMPROVING PERFORMANCE.
 
-#### Cache Configuration
+#### CACHE CONFIGURATION
 
-The default cache settings (configured in [packages/client/src/lib/trpc.tsx](packages/client/src/lib/trpc.tsx)):
+THE DEFAULT CACHE SETTINGS (CONFIGURED IN [PACKAGES/CLIENT/SRC/LIB/TRPC.TSX](PACKAGES/CLIENT/SRC/LIB/TRPC.TSX)):
 
-- **Stale Time**: 5 minutes - Data is considered fresh for 5 minutes after fetching
-- **Garbage Collection Time**: 10 minutes - Unused data is removed from cache after 10 minutes
-- **Retry**: 3 attempts - Failed requests retry up to 3 times before showing an error
-- **Refetch on Window Focus**: Enabled - Data refetches in the background when you return to the tab
+- **STALE TIME**: 5 MINUTES - DATA IS CONSIDERED FRESH FOR 5 MINUTES AFTER FETCHING
+- **GARBAGE COLLECTION TIME**: 10 MINUTES - UNUSED DATA IS REMOVED FROM CACHE AFTER 10 MINUTES
+- **RETRY**: 3 ATTEMPTS - FAILED REQUESTS RETRY UP TO 3 TIMES BEFORE SHOWING AN ERROR
+- **REFETCH ON WINDOW FOCUS**: ENABLED - DATA REFETCHES IN THE BACKGROUND WHEN YOU RETURN TO THE TAB
 
-#### Cache Behavior Example
+#### CACHE BEHAVIOR EXAMPLE
 
-```tsx
-// First render: Fetches from API (shows loading state)
-const { data, isLoading } = trpc.case.list.useQuery();
+```TSX
+// FIRST RENDER: FETCHES FROM API (SHOWS LOADING STATE)
+CONST { DATA, ISLOADING } = TRPC.CASE.LIST.USEQUERY();
 
-// Navigate away and back within 5 minutes:
-// - Returns cached data instantly (no loading state)
-// - Displays data in <100ms
+// NAVIGATE AWAY AND BACK WITHIN 5 MINUTES:
+// - RETURNS CACHED DATA INSTANTLY (NO LOADING STATE)
+// - DISPLAYS DATA IN <100MS
 
-// After 5 minutes:
-// - Returns cached data instantly (stale data)
-// - Refetches in background to get fresh data
+// AFTER 5 MINUTES:
+// - RETURNS CACHED DATA INSTANTLY (STALE DATA)
+// - REFETCHES IN BACKGROUND TO GET FRESH DATA
 ```
 
-#### Using React Query DevTools
+#### USING REACT QUERY DEVTOOLS
 
-In development mode, React Query DevTools appear in the bottom-right corner:
+IN DEVELOPMENT MODE, REACT QUERY DEVTOOLS APPEAR IN THE BOTTOM-RIGHT CORNER:
 
-1. Click the devtools icon to open
-2. View all cached queries and their status
-3. Inspect query data, fetch status, and cache timings
-4. Manually invalidate or refetch queries for testing
+1. CLICK THE DEVTOOLS ICON TO OPEN
+2. VIEW ALL CACHED QUERIES AND THEIR STATUS
+3. INSPECT QUERY DATA, FETCH STATUS, AND CACHE TIMINGS
+4. MANUALLY INVALIDATE OR REFETCH QUERIES FOR TESTING
 
-**Note**: DevTools only appear in development mode (`npm run dev`), not in production builds.
+**NOTE**: DEVTOOLS ONLY APPEAR IN DEVELOPMENT MODE (`NPM RUN DEV`), NOT IN PRODUCTION BUILDS.
 
-#### Cache Invalidation
+#### CACHE INVALIDATION
 
-When you mutate data (create, update, delete), the cache automatically updates:
+WHEN YOU MUTATE DATA (CREATE, UPDATE, DELETE), THE CACHE AUTOMATICALLY UPDATES:
 
-```tsx
-const utils = trpc.useUtils();
+```TSX
+CONST UTILS = TRPC.USEUTILS();
 
-// After creating a case, invalidate the list query
-const createCase = trpc.case.create.useMutation({
-  onSuccess: () => {
-    // This refetches the case list
-    utils.case.list.invalidate();
+// AFTER CREATING A CASE, INVALIDATE THE LIST QUERY
+CONST CREATECASE = TRPC.CASE.CREATE.USEMUTATION({
+  ONSUCCESS: () => {
+    // THIS REFETCHES THE CASE LIST
+    UTILS.CASE.LIST.INVALIDATE();
   },
 });
 ```
 
-#### Performance Benefits
+#### PERFORMANCE BENEFITS
 
-- **Instant navigation**: Cached data appears in <100ms when navigating back to a page
-- **Reduced server load**: Queries within stale time (5 min) don't hit the server
-- **Background updates**: Stale data is updated transparently without loading states
-- **Automatic deduplication**: Multiple components using the same query share one network request
+- **INSTANT NAVIGATION**: CACHED DATA APPEARS IN <100MS WHEN NAVIGATING BACK TO A PAGE
+- **REDUCED SERVER LOAD**: QUERIES WITHIN STALE TIME (5 MIN) DON'T HIT THE SERVER
+- **BACKGROUND UPDATES**: STALE DATA IS UPDATED TRANSPARENTLY WITHOUT LOADING STATES
+- **AUTOMATIC DEDUPLICATION**: MULTIPLE COMPONENTS USING THE SAME QUERY SHARE ONE NETWORK REQUEST
 
 ---
 
-### Data Fetching with tRPC + React Query
+### DATA FETCHING WITH TRPC + REACT QUERY
 
-All examples below use the tRPC client configured with React Query for automatic caching and state management.
+ALL EXAMPLES BELOW USE THE TRPC CLIENT CONFIGURED WITH REACT QUERY FOR AUTOMATIC CACHING AND STATE MANAGEMENT.
 
-#### Basic Query Example
+#### BASIC QUERY EXAMPLE
 
-```tsx
-import { trpc } from '../lib/trpc';
+```TSX
+IMPORT { TRPC } FROM '../LIB/TRPC';
 
-function CaseList() {
-  const { data, isLoading, error } = trpc.case.list.useQuery();
+FUNCTION CASELIST() {
+  CONST { DATA, ISLOADING, ERROR } = TRPC.CASE.LIST.USEQUERY();
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  IF (ISLOADING) RETURN <DIV>LOADING...</DIV>;
+  IF (ERROR) RETURN <DIV>ERROR: {ERROR.MESSAGE}</DIV>;
 
-  return (
-    <ul>
-      {data.map((c) => (
-        <li key={c.id}>{c.title}</li>
+  RETURN (
+    <UL>
+      {DATA.MAP((C) => (
+        <LI KEY={C.ID}>{C.TITLE}</LI>
       ))}
-    </ul>
+    </UL>
   );
 }
 ```
 
-#### Query with Parameters
+#### QUERY WITH PARAMETERS
 
-```tsx
-function CaseListByStatus({ status }: { status: string }) {
-  const { data } = trpc.case.list.useQuery(
-    { status },
+```TSX
+FUNCTION CASELISTBYSTATUS({ STATUS }: { STATUS: STRING }) {
+  CONST { DATA } = TRPC.CASE.LIST.USEQUERY(
+    { STATUS },
     {
-      // Custom options for this query
-      staleTime: 1000 * 60, // Fresh for 1 minute
-      enabled: !!status, // Only run if status is provided
+      // CUSTOM OPTIONS FOR THIS QUERY
+      STALETIME: 1000 * 60, // FRESH FOR 1 MINUTE
+      ENABLED: !!STATUS, // ONLY RUN IF STATUS IS PROVIDED
     }
   );
 
-  return <div>{/* ... */}</div>;
+  RETURN <DIV>{/* ... */}</DIV>;
 }
 ```
 
-#### Mutation Example with Cache Invalidation
+#### MUTATION EXAMPLE WITH CACHE INVALIDATION
 
-```tsx
-function CreateCaseForm() {
-  const utils = trpc.useUtils();
+```TSX
+FUNCTION CREATECASEFORM() {
+  CONST UTILS = TRPC.USEUTILS();
 
-  const createCase = trpc.case.create.useMutation({
-    onSuccess: () => {
-      // Refetch the case list to show new case
-      utils.case.list.invalidate();
+  CONST CREATECASE = TRPC.CASE.CREATE.USEMUTATION({
+    ONSUCCESS: () => {
+      // REFETCH THE CASE LIST TO SHOW NEW CASE
+      UTILS.CASE.LIST.INVALIDATE();
     },
-    onError: (error) => {
-      alert(`Failed to create case: ${error.message}`);
+    ONERROR: (ERROR) => {
+      ALERT(`FAILED TO CREATE CASE: ${ERROR.MESSAGE}`);
     },
   });
 
-  const handleSubmit = (data: { title: string; description: string }) => {
-    createCase.mutate({
-      title: data.title,
-      description: data.description,
-      createdBy: currentUserId,
+  CONST HANDLESUBMIT = (DATA: { TITLE: STRING; DESCRIPTION: STRING }) => {
+    CREATECASE.MUTATE({
+      TITLE: DATA.TITLE,
+      DESCRIPTION: DATA.DESCRIPTION,
+      CREATEDBY: CURRENTUSERID,
     });
   };
 
-  return (
-    <form onSubmit={handleSubmit}>
-      {/* form fields */}
-      <button type="submit" disabled={createCase.isLoading}>
-        {createCase.isLoading ? 'Creating...' : 'Create Case'}
-      </button>
-    </form>
+  RETURN (
+    <FORM ONSUBMIT={HANDLESUBMIT}>
+      {/* FORM FIELDS */}
+      <BUTTON TYPE="SUBMIT" DISABLED={CREATECASE.ISLOADING}>
+        {CREATECASE.ISLOADING ? 'CREATING...' : 'CREATE CASE'}
+      </BUTTON>
+    </FORM>
   );
 }
 ```
 
-#### Optimistic Updates
+#### OPTIMISTIC UPDATES
 
-```tsx
-function UpdateCaseStatus({ caseId }: { caseId: string }) {
-  const utils = trpc.useUtils();
+```TSX
+FUNCTION UPDATECASESTATUS({ CASEID }: { CASEID: STRING }) {
+  CONST UTILS = TRPC.USEUTILS();
 
-  const updateStatus = trpc.case.update.useMutation({
-    onMutate: async (newData) => {
-      // Cancel outgoing refetches
-      await utils.case.getById.cancel({ id: caseId });
+  CONST UPDATESTATUS = TRPC.CASE.UPDATE.USEMUTATION({
+    ONMUTATE: ASYNC (NEWDATA) => {
+      // CANCEL OUTGOING REFETCHES
+      AWAIT UTILS.CASE.GETBYID.CANCEL({ ID: CASEID });
 
-      // Snapshot previous value
-      const previousCase = utils.case.getById.getData({ id: caseId });
+      // SNAPSHOT PREVIOUS VALUE
+      CONST PREVIOUSCASE = UTILS.CASE.GETBYID.GETDATA({ ID: CASEID });
 
-      // Optimistically update to the new value
-      utils.case.getById.setData({ id: caseId }, (old) =>
-        old ? { ...old, status: newData.status } : old
+      // OPTIMISTICALLY UPDATE TO THE NEW VALUE
+      UTILS.CASE.GETBYID.SETDATA({ ID: CASEID }, (OLD) =>
+        OLD ? { ...OLD, STATUS: NEWDATA.STATUS } : OLD
       );
 
-      return { previousCase };
+      RETURN { PREVIOUSCASE };
     },
-    onError: (err, newData, context) => {
-      // Rollback on error
-      utils.case.getById.setData({ id: caseId }, context?.previousCase);
+    ONERROR: (ERR, NEWDATA, CONTEXT) => {
+      // ROLLBACK ON ERROR
+      UTILS.CASE.GETBYID.SETDATA({ ID: CASEID }, CONTEXT?.PREVIOUSCASE);
     },
-    onSettled: () => {
-      // Always refetch after error or success
-      utils.case.getById.invalidate({ id: caseId });
+    ONSETTLED: () => {
+      // ALWAYS REFETCH AFTER ERROR OR SUCCESS
+      UTILS.CASE.GETBYID.INVALIDATE({ ID: CASEID });
     },
   });
 
-  return (
-    <button onClick={() => updateStatus.mutate({ id: caseId, status: 'CLOSED' })}>
-      Close Case
-    </button>
+  RETURN (
+    <BUTTON ONCLICK={() => UPDATESTATUS.MUTATE({ ID: CASEID, STATUS: 'CLOSED' })}>
+      CLOSE CASE
+    </BUTTON>
   );
 }
 ```
 
-#### Testing Patterns
+#### TESTING PATTERNS
 
-When testing components that use tRPC queries, use the test utilities from `src/test/utils.ts`:
+WHEN TESTING COMPONENTS THAT USE TRPC QUERIES, USE THE TEST UTILITIES FROM `SRC/TEST/UTILS.TS`:
 
-```tsx
-import { renderWithTrpc } from '../test/utils';
-import { server } from '../vitest.setup';
-import { http, HttpResponse } from 'msw';
+```TSX
+IMPORT { RENDERWITHTRPC } FROM '../TEST/UTILS';
+IMPORT { SERVER } FROM '../VITEST.SETUP';
+IMPORT { HTTP, HTTPRESPONSE } FROM 'MSW';
 
-test('displays cases from API', async () => {
-  // Mock the API response
-  server.use(
-    http.post('http://localhost:3000/trpc/case.list', () => {
-      return HttpResponse.json({
-        result: {
-          data: [{ id: '1', title: 'Test Case', description: 'Test', status: 'OPEN' }],
+TEST('DISPLAYS CASES FROM API', ASYNC () => {
+  // MOCK THE API RESPONSE
+  SERVER.USE(
+    HTTP.POST('HTTP://LOCALHOST:3000/TRPC/CASE.LIST', () => {
+      RETURN HTTPRESPONSE.JSON({
+        RESULT: {
+          DATA: [{ ID: '1', TITLE: 'TEST CASE', DESCRIPTION: 'TEST', STATUS: 'OPEN' }],
         },
       });
     })
   );
 
-  // Render component with tRPC provider
-  const { getByText } = renderWithTrpc(<CaseList />);
+  // RENDER COMPONENT WITH TRPC PROVIDER
+  CONST { GETBYTEXT } = RENDERWITHTRPC(<CASELIST />);
 
-  // Wait for data to load
-  await waitFor(() => {
-    expect(getByText('Test Case')).toBeInTheDocument();
+  // WAIT FOR DATA TO LOAD
+  AWAIT WAITFOR(() => {
+    EXPECT(GETBYTEXT('TEST CASE')).TOBEINTHEDOCUMENT();
   });
 });
 ```
 
-For more examples, see:
+FOR MORE EXAMPLES, SEE:
 
-- [Query Patterns](specs/001-trpc-react-query/contracts/query-example.tsx)
-- [Mutation Patterns](specs/001-trpc-react-query/contracts/mutation-example.tsx)
-- [Test Patterns](specs/001-trpc-react-query/contracts/test-example.test.tsx)
-- [Quickstart Guide](specs/001-trpc-react-query/quickstart.md)
+- [QUERY PATTERNS](SPECS/001-TRPC-REACT-QUERY/CONTRACTS/QUERY-EXAMPLE.TSX)
+- [MUTATION PATTERNS](SPECS/001-TRPC-REACT-QUERY/CONTRACTS/MUTATION-EXAMPLE.TSX)
+- [TEST PATTERNS](SPECS/001-TRPC-REACT-QUERY/CONTRACTS/TEST-EXAMPLE.TEST.TSX)
+- [QUICKSTART GUIDE](SPECS/001-TRPC-REACT-QUERY/QUICKSTART.MD)
 
-### Health
+### HEALTH
 
-- `health.query()` - Check API health
+- `HEALTH.QUERY()` - CHECK API HEALTH
 
-### Users
+### USERS
 
-- `user.list.query()` - Get all users
-- `user.getById.query({ id })` - Get user by ID
+- `USER.LIST.QUERY()` - GET ALL USERS
+- `USER.GETBYID.QUERY({ ID })` - GET USER BY ID
 
-### Cases
+### CASES
 
-- `case.list.query({ status?, assignedTo? })` - Get cases with filters
-- `case.getById.query({ id })` - Get case by ID
-- `case.create.mutation({ title, description, createdBy, assignedTo? })` - Create case
-- `case.update.mutation({ id, ...updates })` - Update case
-- `case.delete.mutation({ id })` - Delete case
+- `CASE.LIST.QUERY({ STATUS?, ASSIGNEDTO? })` - GET CASES WITH FILTERS
+- `CASE.GETBYID.QUERY({ ID })` - GET CASE BY ID
+- `CASE.CREATE.MUTATION({ TITLE, DESCRIPTION, CREATEDBY, ASSIGNEDTO? })` - CREATE CASE
+- `CASE.UPDATE.MUTATION({ ID, ...UPDATES })` - UPDATE CASE
+- `CASE.DELETE.MUTATION({ ID })` - DELETE CASE
 
-## Contributing
+## CONTRIBUTING
 
-1. Create a feature branch
-2. Make your changes
-3. Run tests: `npm run test`
-4. Run linting: `npm run lint`
-5. Format code: `npm run format`
-6. Submit a pull request
+1. CREATE A FEATURE BRANCH
+2. MAKE YOUR CHANGES
+3. RUN TESTS: `NPM RUN TEST`
+4. RUN LINTING: `NPM RUN LINT`
+5. FORMAT CODE: `NPM RUN FORMAT`
+6. SUBMIT A PULL REQUEST
 
-## License
+## LICENSE
 
 MIT
