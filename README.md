@@ -1,3 +1,22 @@
+## Sonnet of the Clouds
+
+When silver clouds do drift across the sky,
+And cast their shadows on the verdant earth,
+The sun behind their veil doth softly lie,
+And gentle rain shall give the flowers birth.
+These drifting forms that mortal eye doth see,
+Take shapes of beasts and castles, bold and grand,
+Yet shift and fade as nothing long shall be,
+Like empires built upon the shifting sand.
+O cloud, thou art the painter of the air,
+Thy canvas stretched from east to western shore,
+Thy fleeting art beyond compare so rare,
+That fades and vanishes forevermore.
+  Thus clouds, like youth and beauty, pass away,
+  And leave but memory of their brief display.
+
+---
+
 commandsway:
 
 - ockerdway-composeay -fway ocker-compose.local.yamlday upway --uildbay
