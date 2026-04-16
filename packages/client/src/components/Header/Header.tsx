@@ -20,7 +20,7 @@ export function Header({ className, userInitials = 'AM', onAvatarClick }: Header
         aria-label="Navigate to home"
       >
         <CartonLogo />
-        <span className="text-white text-xl font-semibold">
+        <span className="text-white text-xl font-semibold uppercase">
           Carton<span className="hidden lg:inline"> Case Management</span>
         </span>
       </Link>
