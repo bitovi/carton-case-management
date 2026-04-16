@@ -4,295 +4,316 @@ commands:
 - cmd+shift+p -> Dev Containers: Reopen in Container
 - npm install -> npm run setup -> npm run dev
 
-<!-- TODO: udpdate this readme, project has some changes since initial copilot spinup -->
+# Carton Heru-Mahtie
+### *i·Quenta Mahtaron* — The Tale of Case-Bearers
 
-# Carton Case Management
+*Mae govannen, mellon. Sí i·tengwesta ná mára ar i·nosta ná vanwa.* A craft of great wonder, wrought in the fires of React, Node.js, tRPC, and Prisma — forged for those who would bear cases through the ages.
 
-A modern case management application built with React, Node.js, tRPC, and Prisma.
+---
 
-## Architecture
+## I·Óre·Coa — The Architecture of the Hall
 
-This application follows a monorepo structure using npm workspaces:
+This dwelling follows the ancient monorepo pattern, as the Elves of old arranged their libraries beneath one roof:
 
-- **packages/client** - React frontend with Vite, Tailwind CSS, and Shadcn UI
-- **packages/server** - Node.js backend with tRPC, Prisma, and SQLite
-- **packages/shared** - Shared types and utilities used by both client and server
+- **packages/client** — *I·Calaquendi* — The Outer Light: React, forged with Vite, Tailwind, and the Shadcn runes
+- **packages/server** — *I·Cuivienen* — The Waters Within: Node.js, tRPC, Prisma, and SQLite, hidden from mortal eyes
+- **packages/shared** — *I·Tengwar Yúlma* — The Cup of Shared Letters: types and lore used by both light and shadow
 
-## Tech Stack
+---
 
-### Frontend
+## I·Mahtaron Tengwë — The Runes of Craft
 
-- React 18 with TypeScript
-- Vite as build tool
-- tRPC for type-safe API calls
-- Shadcn UI components
-- Tailwind CSS for styling
-- React Router for routing
-- Storybook for component development
-- Jest for unit testing
-- Playwright for E2E testing
+### *Calaquendi* — The Light-Elves (Frontend)
 
-### Backend
+- React 18, written in the tongue of TypeScript
+- Vite, swift as Nahar the horse of Oromë
+- tRPC, for type-safe communion between worlds
+- Shadcn UI, fashioned by the smiths of Celebrimbor
+- Tailwind CSS, the woven raiment of styling
+- React Router, to guide wanderers between pages
+- Storybook, the great library of component lore
+- Jest, the vigilant warden of unit tests
+- Playwright, the far-seeing eye of E2E tests
 
-- Node.js with TypeScript
-- tRPC (JSON-RPC 2.0) for API endpoints
-- Prisma as ORM
-- SQLite as database
-- Express for HTTP server
+### *Moriquendi* — The Dark-Elves (Backend)
 
-## Getting Started
+- Node.js, inscribed in TypeScript
+- tRPC (JSON-RPC 2.0), the bridge between realms
+- Prisma, the ORM of ancient power
+- SQLite, a modest but faithful stone-keep
+- Express, the herald of HTTP
 
-### Prerequisites
+---
 
-- Node.js 22+ (or use the devcontainer)
+## I·Cala Nosta — Getting Started
+
+### *I·Seldë Nanwa* — Prerequisites
+
+- Node.js 22+ (*or enter the devcontainer, as the Elves enter Valinor*)
 - npm 10+
 
-### Development with Devcontainer (Recommended)
+### *I·Nosta Meldë* — Development with Devcontainer (Recommended)
 
-The easiest way to get started is using the devcontainer:
+The swiftest path through Mirkwood:
 
 1. Open this folder in VS Code
-2. When prompted, click "Reopen in Container"
-3. Wait for the container to build and dependencies to install
-4. The application will automatically start at:
+2. When the Valar prompt thee, click *"Reopen in Container"*
+3. Wait for the container to build, as the trees of Lothlórien grew tall
+4. The application shall awaken at:
    - Client: http://localhost:5173
    - Server: http://localhost:3001
 
-### Local Development
+### *I·Nosta Parmë* — Local Development
 
-If not using devcontainer:
+If thou dost not take the devcontainer road:
 
-1. **Install dependencies**
+1. **Install dependencies** — *Mára sí, hríve lá tulis*
 
    ```bash
    npm install
    ```
 
-2. **Setup environment**
+2. **Setup environment** — *Cen i·tarma*
 
    ```bash
    cp .env.example .env
    ```
 
-3. **Setup database**
+3. **Setup database** — *Orta i·ondo*
 
    ```bash
    npm run setup
    ```
 
-4. **Start development servers**
+4. **Start development servers** — *Tul, mellon, ar pedo!*
 
    ```bash
    npm run dev
    ```
 
-   Or run them separately:
+   Or rend them asunder:
 
    ```bash
    npm run dev:client  # Client on port 3000
    npm run dev:server  # Server on port 3001
    ```
 
-## Authentication
+---
 
-This application uses a simplified authentication system for development purposes. There is no real backend authentication - instead, it automatically logs you in as a mock user.
+## I·Nwalca Anto — Authentication
+
+*Sí i·nwalca anto ná pitya, ar i·ohtari lá cenitar tur-vanda.* This application employs a simplified authentication rite for the days of development. There is no true backend authentication — instead thou art admitted as a mock user, as one might enter Rivendell in disguise.
 
 **Default User**: Alex Morgan (alex.morgan@carton.com)
 
-**Testing as Different Users**: To test the application as a different user, set the `MOCK_USER_EMAIL` environment variable in `packages/server/.env`:
+**Testing as Different Users**: To walk in another's shoes across the fields of Rohan, set `MOCK_USER_EMAIL` in `packages/server/.env`:
 
 ```env
 MOCK_USER_EMAIL=jordan.doe@carton.com
 ```
 
-The available users are seeded in the database. You can view them by running `npm run db:studio` in the server package or checking the [seed.ts](packages/server/db/seed.ts) file.
+The available users are seeded in the database. Peer into their faces with `npm run db:studio` or consult the [seed.ts](packages/server/db/seed.ts) scroll.
 
-### How It Works
+### *Manen Carë?* — How It Works
 
-The server uses an Express middleware ([autoLogin.ts](packages/server/src/middleware/autoLogin.ts)) that runs on every request:
+The server employs an Express middleware ([autoLogin.ts](packages/server/src/middleware/autoLogin.ts)) that rides upon every request like a courier of Gondor:
 
-1. Checks for a `userId` cookie in the request
-2. If no cookie exists or the cookie's user email doesn't match `MOCK_USER_EMAIL`, it looks up the user by email in the database
-3. Sets a new `userId` cookie (HttpOnly, 7-day expiration)
-4. The cookie is automatically included in subsequent requests
+1. Seeks a `userId` cookie in the request, as a hound seeks a scent
+2. If no cookie walks the halls, it consults the database by email
+3. Sets a new `userId` cookie — HttpOnly, seven days' grace, like the lights of the Two Trees
+4. The cookie rides forth in all subsequent requests unaided
 
-When you change `MOCK_USER_EMAIL` and restart the server, the middleware detects the mismatch and issues a new cookie for the new user on the next request. The client doesn't need to do anything - it just sends the cookie automatically.
+When thou dost change `MOCK_USER_EMAIL` and restart, the middleware detects the mismatch and issues a new cookie for the new user. The client need do nothing — it merely bears the token as Frodo bore the Ring.
 
-## Available Scripts
+---
 
-### Root Level
+## I·Mátamë Rúnar — Available Scripts
 
-- `npm run dev` - Start both client and server in development mode
-- `npm run dev:client` - Start only the client
-- `npm run dev:server` - Start only the server
-- `npm run build` - Build all packages
-- `npm run test` - Run tests in all packages
-- `npm run lint` - Lint all packages
-- `npm run format` - Format code with Prettier
-- `npm run setup` - Install dependencies and setup database
-- `npm run storybook` - Start Storybook
+### *Andustar* — Root Level
 
-### Client Package
+- `npm run dev` — Kindle both client and server
+- `npm run dev:client` — Kindle only the client
+- `npm run dev:server` — Kindle only the server
+- `npm run build` — Forge all packages
+- `npm run test` — Set the wardens to watch
+- `npm run lint` — Speak the words of linting
+- `npm run format` — Make the scrolls beautiful
+- `npm run setup` — Install and prepare the foundations
+- `npm run storybook` — Open the great library
+
+### *I·Calaquendi Parmë* — Client Package
 
 ```bash
 cd packages/client
-npm run dev           # Start Vite dev server
-npm run build         # Build for production
-npm run test          # Run Jest tests
-npm run test:e2e      # Run Playwright tests
-npm run storybook     # Start Storybook
+npm run dev           # Kindle the Vite dev server
+npm run build         # Forge for the undying lands (production)
+npm run test          # Set Jest as warden
+npm run test:e2e      # Send forth the Playwright eye
+npm run storybook     # Open Storybook's halls
 ```
 
-### Server Package
+### *I·Moriquendi Parmë* — Server Package
 
 ```bash
 cd packages/server
-npm run dev           # Start dev server with hot reload
-npm run build         # Build TypeScript
-npm run start         # Start production server
-npm run db:studio     # Open Prisma Studio
-npm run db:push       # Push schema changes to database
-npm run db:seed       # Seed database with demo data
+npm run dev           # Kindle with hot reload, swift as thought
+npm run build         # Translate TypeScript into the common tongue
+npm run start         # Awaken in production
+npm run db:studio     # Open the gates of Prisma Studio
+npm run db:push       # Press the schema into stone
+npm run db:seed       # Sow the database with life
 ```
 
-### Shared Package
+### *I·Yúlma Parmë* — Shared Package
 
 ```bash
 cd packages/shared
-npm run test          # Run Jest tests
-npm run lint          # Lint code
+npm run test          # Run Jest through the shared halls
+npm run lint          # Speak linting over shared scrolls
 ```
 
-## Project Structure
+---
+
+## I·Coa Tárë — Project Structure
 
 ```
 carton-case-management/
-├── .devcontainer/          # Devcontainer configuration
+├── .devcontainer/          # The Gate of Moria (devcontainer config)
 │   ├── devcontainer.json
 │   └── Dockerfile
 ├── packages/
-│   ├── client/             # React frontend
+│   ├── client/             # The Realm of Light (React frontend)
 │   │   ├── src/
-│   │   │   ├── components/ # React components
-│   │   │   ├── lib/        # Utilities and tRPC setup
-│   │   │   ├── pages/      # Page components
-│   │   │   └── main.tsx    # Entry point
-│   │   ├── tests/          # Tests
-│   │   │   ├── unit/       # Jest unit tests
-│   │   │   └── e2e/        # Playwright E2E tests
-│   │   ├── .storybook/     # Storybook config
+│   │   │   ├── components/ # The Pillars of the Hall
+│   │   │   ├── lib/        # The Hidden Vaults (utilities, tRPC)
+│   │   │   ├── pages/      # The Many Chambers
+│   │   │   └── main.tsx    # The Flame of Udûn (entry point)
+│   │   ├── tests/
+│   │   │   ├── unit/       # Jest's Vigil
+│   │   │   └── e2e/        # Playwright's Far Sight
+│   │   ├── .storybook/     # The Lore-Keeper's Archive
 │   │   └── package.json
-│   ├── server/             # Node.js backend
+│   ├── server/             # The Deep Keep (Node.js backend)
 │   │   ├── src/
-│   │   │   ├── index.ts    # Server entry point
-│   │   │   ├── router.ts   # tRPC router
-│   │   │   ├── context.ts  # tRPC context
-│   │   │   └── trpc.ts     # tRPC setup
+│   │   │   ├── index.ts    # The First Stone
+│   │   │   ├── router.ts   # The Crossroads
+│   │   │   ├── context.ts  # The Web of Knowing
+│   │   │   └── trpc.ts     # The Bridge of Khazad-dûm
 │   │   ├── db/
-│   │   │   ├── dev.db      # SQLite database
-│   │   │   └── seed.ts     # Database seeding
+│   │   │   ├── dev.db      # The Stone-Book
+│   │   │   └── seed.ts     # The Sowing-Song
 │   │   └── package.json
-│   └── shared/             # Shared code
+│   └── shared/             # The Common Tongue
 │       ├── prisma/
-│       │   └── schema.prisma # Prisma schema (single source of truth)
+│       │   └── schema.prisma # The One Schema (single source of truth)
 │       ├── src/
-│       │   ├── types.ts    # Shared types
-│       │   ├── generated/  # Auto-generated Zod schemas from Prisma
-│       │   └── utils.ts    # Shared utilities
+│       │   ├── types.ts    # Shared Runes
+│       │   ├── generated/  # Auto-woven Zod scrolls from Prisma
+│       │   └── utils.ts    # Useful Cantrips
 │       └── package.json
 ├── docker-compose.dev.yaml
 ├── .gitignore
 ├── .prettierrc
 ├── eslint.config.mjs
-├── package.json            # Root package.json
-├── tsconfig.json           # Root TypeScript config
-└── README.md
+├── package.json            # The Root of Roots
+├── tsconfig.json           # The TypeScript Covenant
+└── README.md               # This very scroll
 ```
 
-## Database
+---
 
-The application uses SQLite for simplicity. The database file is located at `packages/server/db/dev.db`. The Prisma schema is in `packages/shared/prisma/schema.prisma`.
+## I·Ondo·Parmë — Database
 
-### Prisma Commands
+*Sí i·ondo ná pitya, mal tur.* SQLite is used for its simplicity — small as a hobbit's door, strong as mithril. The database file dwells at `packages/server/db/dev.db`. The Prisma schema is inscribed at `packages/shared/prisma/schema.prisma`.
+
+### *Prisma Rúnar* — Prisma Commands
 
 ```bash
 cd packages/server
 
-# Open Prisma Studio (database GUI)
+# Open Prisma Studio (the Palantír of databases)
 npm run db:studio
 
-# Push schema changes to database
+# Push schema changes — press the runes into stone
 npm run db:push
 
-# Generate Prisma Client
+# Generate Prisma Client — call forth the client from the forge
 npm run db:generate
 
-# Seed database with demo data
+# Seed database — sow life into the empty earth
 npm run db:seed
 
-# Reset database (clear + seed)
+# Reset database — clear the slate and begin anew
 npm run db:setup
 ```
 
-## Testing
+---
 
-### Unit Tests (Jest)
+## I·Cen Mahtaron — Testing
+
+### *Mahtaron Nossë* — Unit Tests (Jest)
 
 ```bash
-npm run test                 # Run all tests
-npm run test:watch          # Run tests in watch mode
+npm run test                 # Loose the wardens
+npm run test:watch           # Set the wardens to endless vigil
 ```
 
-### E2E Tests (Playwright)
+### *Cen·Mir Palantír* — E2E Tests (Playwright)
 
 ```bash
 cd packages/client
-npm run test:e2e            # Run E2E tests
-npm run test:e2e:watch      # Run E2E tests in watch mode
+npm run test:e2e             # Open the Palantír
+npm run test:e2e:watch       # Gaze unblinking
 ```
 
-## Storybook
+---
 
-Storybook is configured for developing and testing UI components in isolation:
+## I·Quenta·Coa — Storybook
+
+*Storybook* stands as the great archive where components are displayed in isolation, as jewels on a velvet cloth in the halls of Fëanor:
 
 ```bash
-npm run storybook           # Start Storybook on port 6006
-npm run build-storybook     # Build static Storybook
+npm run storybook           # Open the archive on port 6006
+npm run build-storybook     # Bind the archive in stone
 ```
 
-## Code Quality
+---
 
-### Linting
+## I·Parmë Vanwa — Code Quality
+
+### *Tengwar Nauta* — Linting
 
 ```bash
-npm run lint                # Lint all packages
+npm run lint                # Send the linting-wardens through all halls
 ```
 
-### Formatting
+### *Tengwar Vanya* — Formatting
 
 ```bash
-npm run format              # Format all code
-npm run format:check        # Check formatting
+npm run format              # Make the scrolls fair to behold
+npm run format:check        # Examine their beauty
 ```
 
-## API Documentation
+---
 
-The tRPC API provides type-safe endpoints. Key routes:
+## I·Tengwar·Lauca — API Documentation
 
-### Data Caching with tRPC + React Query
+*I·tRPC ohtacárë ná mahtë ar tulca.* The tRPC API provides type-safe endpoints, as the Elves' language was precise and without ambiguity.
 
-This application uses **tRPC with React Query** for automatic request caching and optimistic updates. All API calls through tRPC are automatically cached, reducing redundant network requests and improving performance.
+### *I·Harma·Nosta* — Data Caching with tRPC + React Query
 
-#### Cache Configuration
+This application bears **tRPC with React Query** for automatic caching and optimistic updates. All API calls are cached, as the Elves remembered all things they had seen.
 
-The default cache settings (configured in [packages/client/src/lib/trpc.tsx](packages/client/src/lib/trpc.tsx)):
+#### *I·Harma Tengwë* — Cache Configuration
 
-- **Stale Time**: 5 minutes - Data is considered fresh for 5 minutes after fetching
-- **Garbage Collection Time**: 10 minutes - Unused data is removed from cache after 10 minutes
-- **Retry**: 3 attempts - Failed requests retry up to 3 times before showing an error
-- **Refetch on Window Focus**: Enabled - Data refetches in the background when you return to the tab
+Configured in [packages/client/src/lib/trpc.tsx](packages/client/src/lib/trpc.tsx):
 
-#### Cache Behavior Example
+- **Stale Time**: 5 minutes — *Fresh as morning in Rivendell*
+- **Garbage Collection Time**: 10 minutes — *The forgotten are swept from the halls*
+- **Retry**: 3 attempts — *Three times the Elf-lord knocked upon the door*
+- **Refetch on Window Focus**: Enabled — *The sentinel stirs when thou returnest*
+
+#### *I·Harma Seron* — Cache Behavior Example
 
 ```tsx
 // First render: Fetches from API (shows loading state)
@@ -307,47 +328,45 @@ const { data, isLoading } = trpc.case.list.useQuery();
 // - Refetches in background to get fresh data
 ```
 
-#### Using React Query DevTools
+#### *I·Harma Cen* — Using React Query DevTools
 
-In development mode, React Query DevTools appear in the bottom-right corner:
+In development, the DevTools appear in the bottom-right corner, like a palantír set in the floor:
 
-1. Click the devtools icon to open
+1. Click the devtools icon to open the vision
 2. View all cached queries and their status
 3. Inspect query data, fetch status, and cache timings
 4. Manually invalidate or refetch queries for testing
 
-**Note**: DevTools only appear in development mode (`npm run dev`), not in production builds.
+**Note**: DevTools only appear in development mode. In the undying lands of production, they are hidden.
 
-#### Cache Invalidation
+#### *I·Harma Namna* — Cache Invalidation
 
-When you mutate data (create, update, delete), the cache automatically updates:
+When thou dost mutate data, the cache updates itself, as the Mirror of Galadriel shifts to show new truths:
 
 ```tsx
 const utils = trpc.useUtils();
 
-// After creating a case, invalidate the list query
 const createCase = trpc.case.create.useMutation({
   onSuccess: () => {
-    // This refetches the case list
     utils.case.list.invalidate();
   },
 });
 ```
 
-#### Performance Benefits
+#### *I·Harma Mírë* — Performance Benefits
 
-- **Instant navigation**: Cached data appears in <100ms when navigating back to a page
-- **Reduced server load**: Queries within stale time (5 min) don't hit the server
-- **Background updates**: Stale data is updated transparently without loading states
-- **Automatic deduplication**: Multiple components using the same query share one network request
+- **Instant navigation**: Cached data appears in <100ms, swift as an Elf-arrow
+- **Reduced server load**: Queries within stale time spare the server's breath
+- **Background updates**: Stale data refreshes without disturbing mortal users
+- **Automatic deduplication**: Multiple components share one network request, as Elves share one song
 
 ---
 
-### Data Fetching with tRPC + React Query
+### *I·Tengwar Quenta* — Data Fetching with tRPC + React Query
 
-All examples below use the tRPC client configured with React Query for automatic caching and state management.
+*I·nossë rúnar ná ná mára ar mahtë.* All examples use the tRPC client configured with React Query.
 
-#### Basic Query Example
+#### *Quenta Parmë* — Basic Query Example
 
 ```tsx
 import { trpc } from '../lib/trpc';
@@ -368,16 +387,15 @@ function CaseList() {
 }
 ```
 
-#### Query with Parameters
+#### *Quenta Tengwë* — Query with Parameters
 
 ```tsx
 function CaseListByStatus({ status }: { status: string }) {
   const { data } = trpc.case.list.useQuery(
     { status },
     {
-      // Custom options for this query
-      staleTime: 1000 * 60, // Fresh for 1 minute
-      enabled: !!status, // Only run if status is provided
+      staleTime: 1000 * 60,
+      enabled: !!status,
     }
   );
 
@@ -385,7 +403,7 @@ function CaseListByStatus({ status }: { status: string }) {
 }
 ```
 
-#### Mutation Example with Cache Invalidation
+#### *Mahtë Namna* — Mutation Example with Cache Invalidation
 
 ```tsx
 function CreateCaseForm() {
@@ -393,7 +411,6 @@ function CreateCaseForm() {
 
   const createCase = trpc.case.create.useMutation({
     onSuccess: () => {
-      // Refetch the case list to show new case
       utils.case.list.invalidate();
     },
     onError: (error) => {
@@ -420,7 +437,7 @@ function CreateCaseForm() {
 }
 ```
 
-#### Optimistic Updates
+#### *Mírë Nosta* — Optimistic Updates
 
 ```tsx
 function UpdateCaseStatus({ caseId }: { caseId: string }) {
@@ -428,13 +445,10 @@ function UpdateCaseStatus({ caseId }: { caseId: string }) {
 
   const updateStatus = trpc.case.update.useMutation({
     onMutate: async (newData) => {
-      // Cancel outgoing refetches
       await utils.case.getById.cancel({ id: caseId });
 
-      // Snapshot previous value
       const previousCase = utils.case.getById.getData({ id: caseId });
 
-      // Optimistically update to the new value
       utils.case.getById.setData({ id: caseId }, (old) =>
         old ? { ...old, status: newData.status } : old
       );
@@ -442,11 +456,9 @@ function UpdateCaseStatus({ caseId }: { caseId: string }) {
       return { previousCase };
     },
     onError: (err, newData, context) => {
-      // Rollback on error
       utils.case.getById.setData({ id: caseId }, context?.previousCase);
     },
     onSettled: () => {
-      // Always refetch after error or success
       utils.case.getById.invalidate({ id: caseId });
     },
   });
@@ -459,9 +471,7 @@ function UpdateCaseStatus({ caseId }: { caseId: string }) {
 }
 ```
 
-#### Testing Patterns
-
-When testing components that use tRPC queries, use the test utilities from `src/test/utils.ts`:
+#### *I·Cen Nossë* — Testing Patterns
 
 ```tsx
 import { renderWithTrpc } from '../test/utils';
@@ -469,7 +479,6 @@ import { server } from '../vitest.setup';
 import { http, HttpResponse } from 'msw';
 
 test('displays cases from API', async () => {
-  // Mock the API response
   server.use(
     http.post('http://localhost:3000/trpc/case.list', () => {
       return HttpResponse.json({
@@ -480,49 +489,57 @@ test('displays cases from API', async () => {
     })
   );
 
-  // Render component with tRPC provider
   const { getByText } = renderWithTrpc(<CaseList />);
 
-  // Wait for data to load
   await waitFor(() => {
     expect(getByText('Test Case')).toBeInTheDocument();
   });
 });
 ```
 
-For more examples, see:
+*For deeper lore, consult the ancient scrolls:*
 
 - [Query Patterns](specs/001-trpc-react-query/contracts/query-example.tsx)
 - [Mutation Patterns](specs/001-trpc-react-query/contracts/mutation-example.tsx)
 - [Test Patterns](specs/001-trpc-react-query/contracts/test-example.test.tsx)
 - [Quickstart Guide](specs/001-trpc-react-query/quickstart.md)
 
-### Health
+---
 
-- `health.query()` - Check API health
+### *I·Tengwar Rúnar* — API Routes
 
-### Users
+#### *I·Falas* — Health
 
-- `user.list.query()` - Get all users
-- `user.getById.query({ id })` - Get user by ID
+- `health.query()` — *Cen i·fëa* — Check the breath of the API
 
-### Cases
+#### *I·Nossë* — Users
 
-- `case.list.query({ status?, assignedTo? })` - Get cases with filters
-- `case.getById.query({ id })` - Get case by ID
-- `case.create.mutation({ title, description, createdBy, assignedTo? })` - Create case
-- `case.update.mutation({ id, ...updates })` - Update case
-- `case.delete.mutation({ id })` - Delete case
+- `user.list.query()` — *Cen i·nossë ilya* — Behold all who walk these halls
+- `user.getById.query({ id })` — *Cen i·nér* — Seek one by their mark
 
-## Contributing
+#### *I·Mahtaron* — Cases
 
-1. Create a feature branch
-2. Make your changes
-3. Run tests: `npm run test`
-4. Run linting: `npm run lint`
-5. Format code: `npm run format`
-6. Submit a pull request
+- `case.list.query({ status?, assignedTo? })` — *Cen i·mahtaron* — Behold the cases with their filters
+- `case.getById.query({ id })` — *Cen er·mahtaro* — Seek one case by name
+- `case.create.mutation({ title, description, createdBy, assignedTo? })` — *Carë er·mahtar* — Forge a new case
+- `case.update.mutation({ id, ...updates })` — *Auta i·mahtar* — Change a case's nature
+- `case.delete.mutation({ id })` — *Aha i·mahtar* — Send a case to the void
 
-## License
+---
 
-MIT
+## I·Nosta Mellon — Contributing
+
+*Mae govannen! Tula, ar carë mára.*
+
+1. Create a feature branch — *Make thy own path through the forest*
+2. Make thy changes — *Write thy name upon the stone*
+3. Run tests: `npm run test` — *Let the wardens judge thy work*
+4. Run linting: `npm run lint` — *Let the scribes examine thy scrolls*
+5. Format code: `npm run format` — *Make thy letters fair*
+6. Submit a pull request — *Bring thy gift to the council*
+
+---
+
+## I·Vanda — License
+
+*MIT — as free as the wind upon the sea of Belegaer.*
