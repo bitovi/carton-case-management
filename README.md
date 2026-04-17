@@ -1,103 +1,79 @@
-commands:
 
-- docker-compose -f docker-compose.local.yaml up --build
-- cmd+shift+p -> Dev Containers: Reopen in Container
-- npm install -> npm run setup -> npm run dev
+    /           \
+    /  DRAGON!   \
+   /    /\_/\     \
+  /    ( o.o )    \
+  /      > ^ <      \
+ /___________________\
 
-<!-- TODO: udpdate this readme, project has some changes since initial copilot spinup -->
+  ~~~ CARTON CASE MANAGEMENT ~~~
 
-# Carton Case Management
+Me write README. Me use big words. Me make simple. Me draw dragon. RAWR!
 
-A modern case management application built with React, Node.js, tRPC, and Prisma.
+---
 
-## Architecture
+HOW TO START
 
-This application follows a monorepo structure using npm workspaces:
+1. Human need magic box (Node.js 22+), magic stick (npm 10+)
+2. Human want easy? Use Devcontainer!
+  - Open cave (folder) in VS Code
+  - Click "Reopen in Container" when magic box ask
+  - Wait. Wait more. Fire build, food (dependencies) cook
+  - App wake up!
+    - Client: http://localhost:5173
+    - Server: http://localhost:3001
+3. Human no want Devcontainer? Do this:
+  - npm install
+  - cp .env.example .env
+  - npm run setup
+  - npm run dev
+  - Or run: npm run dev:client (client), npm run dev:server (server)
 
-- **packages/client** - React frontend with Vite, Tailwind CSS, and Shadcn UI
-- **packages/server** - Node.js backend with tRPC, Prisma, and SQLite
-- **packages/shared** - Shared types and utilities used by both client and server
+WHAT INSIDE?
 
-## Tech Stack
+Big folder have many small folder:
 
-### Frontend
+carton-case-management/
+  .devcontainer/      # Magic container stuff
+  packages/
+   client/           # Human see, click, React magic
+   server/           # Human not see, Node magic, tRPC, Prisma, SQLite
+   shared/           # Both use, share tools
 
-- React 18 with TypeScript
-- Vite as build tool
-- tRPC for type-safe API calls
-- Shadcn UI components
-- Tailwind CSS for styling
-- React Router for routing
-- Storybook for component development
-- Jest for unit testing
-- Playwright for E2E testing
+App use:
+- React (make pretty)
+- Node (make smart)
+- tRPC (talk safe)
+- Prisma (keep memory)
+- SQLite (memory rock)
+- Tailwind (make pretty fast)
+- Jest, Playwright (test, test, test!)
 
-### Backend
+HOW LOGIN?
 
-- Node.js with TypeScript
-- tRPC (JSON-RPC 2.0) for API endpoints
-- Prisma as ORM
-- SQLite as database
-- Express for HTTP server
+No real lock. Fake lock. Human always Alex Morgan (alex.morgan@carton.com)
+Want be other human? Change MOCK_USER_EMAIL in packages/server/.env
 
-## Getting Started
+HOW RUN TEST?
 
-### Prerequisites
+- npm run test (hit with club)
+- npm run lint (make code not ugly)
+- npm run format (make code pretty)
 
-- Node.js 22+ (or use the devcontainer)
-- npm 10+
+HOW CONTRIBUTE?
 
-### Development with Devcontainer (Recommended)
+1. Make branch
+2. Change stuff
+3. npm run test
+4. npm run lint
+5. npm run format
+6. Make pull request
 
-The easiest way to get started is using the devcontainer:
+LICENSE
 
-1. Open this folder in VS Code
-2. When prompted, click "Reopen in Container"
-3. Wait for the container to build and dependencies to install
-4. The application will automatically start at:
-   - Client: http://localhost:5173
-   - Server: http://localhost:3001
+MIT. Do what want. Dragon not care.
 
-### Local Development
-
-If not using devcontainer:
-
-1. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-2. **Setup environment**
-
-   ```bash
-   cp .env.example .env
-   ```
-
-3. **Setup database**
-
-   ```bash
-   npm run setup
-   ```
-
-4. **Start development servers**
-
-   ```bash
-   npm run dev
-   ```
-
-   Or run them separately:
-
-   ```bash
-   npm run dev:client  # Client on port 3000
-   npm run dev:server  # Server on port 3001
-   ```
-
-## Authentication
-
-This application uses a simplified authentication system for development purposes. There is no real backend authentication - instead, it automatically logs you in as a mock user.
-
-**Default User**: Alex Morgan (alex.morgan@carton.com)
+RAWR! END README.
 
 **Testing as Different Users**: To test the application as a different user, set the `MOCK_USER_EMAIL` environment variable in `packages/server/.env`:
 
