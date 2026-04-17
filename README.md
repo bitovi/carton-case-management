@@ -1,122 +1,120 @@
-commands:
+magic words for make app go:
 
 - docker-compose -f docker-compose.local.yaml up --build
 - cmd+shift+p -> Dev Containers: Reopen in Container
 - npm install -> npm run setup -> npm run dev
 
-<!-- TODO: udpdate this readme, project has some changes since initial copilot spinup -->
+# CARTON CASE MANAGEMENT. UGH.
 
-# Carton Case Management
+Me make app. App manage case. Case important. App use React, Node.js, tRPC, and Prisma. Many big word. App work good.
 
-A modern case management application built with React, Node.js, tRPC, and Prisma.
+## HOW CAVE ORGANIZED
 
-## Architecture
+App live in one big rock (monorepo). Rock have three smaller rock inside:
 
-This application follows a monorepo structure using npm workspaces:
+- **packages/client** - Pretty face part. Use React, Vite, Tailwind, Shadcn. User see this. Ooh shiny.
+- **packages/server** - Brain part. Think hard. Use tRPC, Prisma, SQLite. Hide in back of cave.
+- **packages/shared** - Stuff both rock need. Type. Utility. Share good. Share like tribe.
 
-- **packages/client** - React frontend with Vite, Tailwind CSS, and Shadcn UI
-- **packages/server** - Node.js backend with tRPC, Prisma, and SQLite
-- **packages/shared** - Shared types and utilities used by both client and server
+## WHAT TOOL CAVEMAN USE
 
-## Tech Stack
+### Front of Cave (Frontend)
 
-### Frontend
+- React 18 with TypeScript - make pretty wall painting
+- Vite - fast fire. Build thing quick quick
+- tRPC - talk to brain part. No lie. Type safe.
+- Shadcn UI - pre-carved stone button and thing
+- Tailwind CSS - make pretty with class name
+- React Router - help caveman find way around cave
+- Storybook - look at rock painting alone, no need whole cave
+- Jest - poke thing, see if break
+- Playwright - pretend be caveman user, click everything
 
-- React 18 with TypeScript
-- Vite as build tool
-- tRPC for type-safe API calls
-- Shadcn UI components
-- Tailwind CSS for styling
-- React Router for routing
-- Storybook for component development
-- Jest for unit testing
-- Playwright for E2E testing
+### Back of Cave (Backend)
 
-### Backend
+- Node.js with TypeScript - brain think in type
+- tRPC (JSON-RPC 2.0) - tunnel between front cave and back cave
+- Prisma - talk to flat rock database nice
+- SQLite - flat rock where data carved
+- Express - door to cave. HTTP door.
 
-- Node.js with TypeScript
-- tRPC (JSON-RPC 2.0) for API endpoints
-- Prisma as ORM
-- SQLite as database
-- Express for HTTP server
+## HOW CAVEMAN START
 
-## Getting Started
+### What Caveman Need First
 
-### Prerequisites
+- Node.js 22+ (or use magic container box)
+- npm 10+ (carry rock tool)
 
-- Node.js 22+ (or use the devcontainer)
-- npm 10+
+### Use Magic Container Box (Caveman Recommend This)
 
-### Development with Devcontainer (Recommended)
+Easiest way. Even baby caveman can do:
 
-The easiest way to get started is using the devcontainer:
+1. Open folder in VS Code. VS Code = fancy rock editor.
+2. Big box say "Reopen in Container". CLICK IT.
+3. Wait. Container build. Dependency install. Caveman patient.
+4. App wake up at:
+   - Pretty face: http://localhost:5173
+   - Brain part: http://localhost:3001
 
-1. Open this folder in VS Code
-2. When prompted, click "Reopen in Container"
-3. Wait for the container to build and dependencies to install
-4. The application will automatically start at:
-   - Client: http://localhost:5173
-   - Server: http://localhost:3001
+### Do It Yourself (Hard Way)
 
-### Local Development
+No magic box? Fine. Caveman do manual labor:
 
-If not using devcontainer:
-
-1. **Install dependencies**
+1. **Get all rock dependency**
 
    ```bash
    npm install
    ```
 
-2. **Setup environment**
+2. **Make environment file**
 
    ```bash
    cp .env.example .env
    ```
 
-3. **Setup database**
+3. **Set up flat rock database**
 
    ```bash
    npm run setup
    ```
 
-4. **Start development servers**
+4. **MAKE FIRE. START APP.**
 
    ```bash
    npm run dev
    ```
 
-   Or run them separately:
+   Or start each part alone like lonely caveman:
 
    ```bash
-   npm run dev:client  # Client on port 3000
-   npm run dev:server  # Server on port 3001
+   npm run dev:client  # Pretty face on port 3000
+   npm run dev:server  # Brain part on port 3001
    ```
 
-## Authentication
+## WHO YOU? (Authentication)
 
-This application uses a simplified authentication system for development purposes. There is no real backend authentication - instead, it automatically logs you in as a mock user.
+App not have real guard at cave door. This development cave. App just pretend you someone and let you in. Simple. No bonk on head required.
 
-**Default User**: Alex Morgan (alex.morgan@carton.com)
+**Default Caveman**: Alex Morgan (alex.morgan@carton.com)
 
-**Testing as Different Users**: To test the application as a different user, set the `MOCK_USER_EMAIL` environment variable in `packages/server/.env`:
+**Want Be Different Caveman?** Change `MOCK_USER_EMAIL` in `packages/server/.env`:
 
 ```env
 MOCK_USER_EMAIL=jordan.doe@carton.com
 ```
 
-The available users are seeded in the database. You can view them by running `npm run db:studio` in the server package or checking the [seed.ts](packages/server/db/seed.ts) file.
+Many caveman already carved in database. Look at them with `npm run db:studio` or peek at [seed.ts](packages/server/db/seed.ts) scroll.
 
-### How It Works
+### How Magic Identity Work
 
-The server uses an Express middleware ([autoLogin.ts](packages/server/src/middleware/autoLogin.ts)) that runs on every request:
+Server have middleware guard ([autoLogin.ts](packages/server/src/middleware/autoLogin.ts)). Guard check every caveman who walk in:
 
-1. Checks for a `userId` cookie in the request
-2. If no cookie exists or the cookie's user email doesn't match `MOCK_USER_EMAIL`, it looks up the user by email in the database
-3. Sets a new `userId` cookie (HttpOnly, 7-day expiration)
-4. The cookie is automatically included in subsequent requests
+1. Guard look for `userId` cookie in caveman pocket
+2. No cookie? Cookie smell wrong? Guard look up caveman by email in flat rock database
+3. Guard give new cookie. Cookie last 7 sun cycles. HttpOnly so no steal.
+4. Caveman carry cookie everywhere now. Automatic.
 
-When you change `MOCK_USER_EMAIL` and restart the server, the middleware detects the mismatch and issues a new cookie for the new user on the next request. The client doesn't need to do anything - it just sends the cookie automatically.
+When you change `MOCK_USER_EMAIL` and restart brain part, guard sniff cookie, say "this not right caveman", make new cookie for new caveman. Pretty face part no need do anything. Cookie just go. Magic.
 
 ## Available Scripts
 
