@@ -1,103 +1,103 @@
-commands:
+MAGIC WORDS TO MAKE FIRE BURN HOT:
 
 - docker-compose -f docker-compose.local.yaml up --build
 - cmd+shift+p -> Dev Containers: Reopen in Container
 - npm install -> npm run setup -> npm run dev
 
-<!-- TODO: udpdate this readme, project has some changes since initial copilot spinup -->
+<!-- TODO: SOMEONE SMARTER NEED FIX THIS LATER -->
 
-# Carton Case Management
+# BOX KEEPER CLUB
 
-A modern case management application built with React, Node.js, tRPC, and Prisma.
+App make you keep track of box case. Built with React rock, Node stick, tRPC bone, and Prisma rock.
 
-## Architecture
+## HOW THING BUILD
 
-This application follows a monorepo structure using npm workspaces:
+App organized like cave with many tunnel - npm workspace:
 
-- **packages/client** - React frontend with Vite, Tailwind CSS, and Shadcn UI
-- **packages/server** - Node.js backend with tRPC, Prisma, and SQLite
-- **packages/shared** - Shared types and utilities used by both client and server
+- **packages/client** - Pretty picture part. Use Vite flame, Tailwind skin, and Shadcn drawn on wall
+- **packages/server** - Dark cave part. Use tRPC talk, Prisma memory, and SQLite rock store
+- **packages/shared** - Shared rock and stick use everywhere
 
-## Tech Stack
+## WHAT THING MADE OF
 
-### Frontend
+### Pretty Picture Part
 
-- React 18 with TypeScript
-- Vite as build tool
-- tRPC for type-safe API calls
-- Shadcn UI components
-- Tailwind CSS for styling
-- React Router for routing
-- Storybook for component development
-- Jest for unit testing
-- Playwright for E2E testing
+- React 18 with TypeScript magic word
+- Vite make fire burn fast
+- tRPC make rock talk to other rock
+- Shadcn draw pretty on wall
+- Tailwind CSS make picture look good
+- React Router help you walk around
+- Storybook show all pretty pictures
+- Jest make sure picture work good
+- Playwright watch picture do thing
 
-### Backend
+### Dark Cave Part
 
-- Node.js with TypeScript
-- tRPC (JSON-RPC 2.0) for API endpoints
-- Prisma as ORM
-- SQLite as database
-- Express for HTTP server
+- Node rock with TypeScript magic
+- tRPC make rock talk back and forth
+- Prisma remember where thing go
+- SQLite rock hole for keep memory
+- Express help rock listen
 
-## Getting Started
+## START USING THING
 
-### Prerequisites
+### You Need This First
 
-- Node.js 22+ (or use the devcontainer)
+- Node rock 22+ (or use magic container)
 - npm 10+
 
-### Development with Devcontainer (Recommended)
+### Easy Way Make Thing Work (BEST WAY)
 
-The easiest way to get started is using the devcontainer:
+Magic container easier than hit rock with stick:
 
-1. Open this folder in VS Code
-2. When prompted, click "Reopen in Container"
-3. Wait for the container to build and dependencies to install
-4. The application will automatically start at:
-   - Client: http://localhost:5173
-   - Server: http://localhost:3001
+1. Put folder in VS Code
+2. When magic ask, say yes "Reopen in Container"
+3. Wait for magic make thing. Sit. Wait.
+4. Thing start at place:
+   - Pretty: http://localhost:5173
+   - Dark: http://localhost:3001
 
-### Local Development
+### If You Hit Rock With Stick Way
 
-If not using devcontainer:
+If you not want magic container:
 
-1. **Install dependencies**
+1. **Get all rock and stick**
 
    ```bash
    npm install
    ```
 
-2. **Setup environment**
+2. **Put magic letter in right place**
 
    ```bash
    cp .env.example .env
    ```
 
-3. **Setup database**
+3. **Make memory rock ready**
 
    ```bash
    npm run setup
    ```
 
-4. **Start development servers**
+4. **Wake up fire**
 
    ```bash
    npm run dev
    ```
 
-   Or run them separately:
+   Or wake each fire separate:
 
    ```bash
-   npm run dev:client  # Client on port 3000
-   npm run dev:server  # Server on port 3001
+   npm run dev:client  # Pretty fire on port 3000
+   npm run dev:server  # Dark fire on port 3001
    ```
 
-## Authentication
+## PROVE YOU ARE WHO YOU SAY
 
-This application uses a simplified authentication system for development purposes. There is no real backend authentication - instead, it automatically logs you in as a mock user.
+App use easy way prove who you are. Not real prove - just pretend. Pretend you always YOU.
 
-**Default User**: Alex Morgan (alex.morgan@carton.com)
+**Default You**: Alex Morgan (alex.morgan@carton.com)
 
 **Testing as Different Users**: To test the application as a different user, set the `MOCK_USER_EMAIL` environment variable in `packages/server/.env`:
 
