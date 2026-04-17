@@ -1,42 +1,36 @@
-commands:
-
-- docker-compose -f docker-compose.local.yaml up --build
-- cmd+shift+p -> Dev Containers: Reopen in Container
-- npm install -> npm run setup -> npm run dev
-
-<!-- TODO: udpdate this readme, project has some changes since initial copilot spinup -->
-
 # Carton Case Management
 
-A modern case management application built with React, Node.js, tRPC, and Prisma.
+A modern, full-stack case management application built with React, Node.js, tRPC, and Prisma in a TypeScript monorepo.
 
 ## Architecture
 
-This application follows a monorepo structure using npm workspaces:
+The project is organized as a monorepo using npm workspaces with three packages:
 
-- **packages/client** - React frontend with Vite, Tailwind CSS, and Shadcn UI
-- **packages/server** - Node.js backend with tRPC, Prisma, and SQLite
-- **packages/shared** - Shared types and utilities used by both client and server
+| Package | Description |
+|---------|-------------|
+| `packages/client` | React frontend — Vite, Tailwind CSS, Shadcn UI, React Router |
+| `packages/server` | Node.js backend — Express, tRPC, Prisma, SQLite |
+| `packages/shared` | Shared Prisma schema, generated Zod validators, and utilities |
 
 ## Tech Stack
 
 ### Frontend
 
-- React 18 with TypeScript
-- Vite as build tool
-- tRPC for type-safe API calls
-- Shadcn UI components
+- React 18 with TypeScript 5.x
+- Vite 6 for dev server and bundling
+- tRPC 11 + React Query 5 for type-safe, cached API calls
+- Shadcn UI + Radix UI primitives
 - Tailwind CSS for styling
 - React Router for routing
 - Storybook for component development
-- Jest for unit testing
+- Vitest for unit testing
 - Playwright for E2E testing
 
 ### Backend
 
-- Node.js with TypeScript
-- tRPC (JSON-RPC 2.0) for API endpoints
-- Prisma as ORM
+- Node.js 22+ with TypeScript 5.x
+- tRPC 11 for type-safe API endpoints
+- Prisma as ORM with auto-generated Zod schemas
 - SQLite as database
 - Express for HTTP server
 
@@ -44,54 +38,34 @@ This application follows a monorepo structure using npm workspaces:
 
 ### Prerequisites
 
-- Node.js 22+ (or use the devcontainer)
+- Node.js 22+
 - npm 10+
 
-### Development with Devcontainer (Recommended)
-
-The easiest way to get started is using the devcontainer:
+### Quick Start (Devcontainer)
 
 1. Open this folder in VS Code
-2. When prompted, click "Reopen in Container"
-3. Wait for the container to build and dependencies to install
-4. The application will automatically start at:
+2. When prompted, click **Reopen in Container** (or run `Cmd+Shift+P` → _Dev Containers: Reopen in Container_)
+3. The container installs dependencies and starts the app automatically
    - Client: http://localhost:5173
    - Server: http://localhost:3001
 
-### Local Development
+### Quick Start (Local)
 
-If not using devcontainer:
+```bash
+npm install
+cp .env.example .env
+npm run db:setup        # Push schema + seed database
+npm run dev             # Start client and server
+```
 
-1. **Install dependencies**
+The client runs on http://localhost:5173 and the server on http://localhost:3001.
 
-   ```bash
-   npm install
-   ```
+You can also start them independently:
 
-2. **Setup environment**
-
-   ```bash
-   cp .env.example .env
-   ```
-
-3. **Setup database**
-
-   ```bash
-   npm run setup
-   ```
-
-4. **Start development servers**
-
-   ```bash
-   npm run dev
-   ```
-
-   Or run them separately:
-
-   ```bash
-   npm run dev:client  # Client on port 3000
-   npm run dev:server  # Server on port 3001
-   ```
+```bash
+npm run dev:client      # Client only
+npm run dev:server      # Server only
+```
 
 ## Authentication
 
@@ -122,15 +96,20 @@ When you change `MOCK_USER_EMAIL` and restart the server, the middleware detects
 
 ### Root Level
 
-- `npm run dev` - Start both client and server in development mode
-- `npm run dev:client` - Start only the client
-- `npm run dev:server` - Start only the server
-- `npm run build` - Build all packages
-- `npm run test` - Run tests in all packages
-- `npm run lint` - Lint all packages
-- `npm run format` - Format code with Prettier
-- `npm run setup` - Install dependencies and setup database
-- `npm run storybook` - Start Storybook
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start both client and server |
+| `npm run dev:client` | Start client only |
+| `npm run dev:server` | Start server only |
+| `npm run build` | Build all packages |
+| `npm test` | Run unit tests across all packages |
+| `npm run test:e2e` | Run Playwright E2E tests |
+| `npm run lint` | Lint all packages |
+| `npm run typecheck` | TypeScript type checking |
+| `npm run format` | Format code with Prettier |
+| `npm run db:setup` | Push schema + seed database |
+| `npm run db:studio` | Open Prisma Studio |
+| `npm run storybook` | Start Storybook |
 
 ### Client Package
 
@@ -211,28 +190,17 @@ carton-case-management/
 
 ## Database
 
-The application uses SQLite for simplicity. The database file is located at `packages/server/db/dev.db`. The Prisma schema is in `packages/shared/prisma/schema.prisma`.
+The application uses SQLite for local development. The Prisma schema lives in `packages/shared/prisma/schema.prisma` (single source of truth), and the database file is at `packages/server/db/dev.db`.
 
-### Prisma Commands
+All database commands run from the project root:
 
-```bash
-cd packages/server
-
-# Open Prisma Studio (database GUI)
-npm run db:studio
-
-# Push schema changes to database
-npm run db:push
-
-# Generate Prisma Client
-npm run db:generate
-
-# Seed database with demo data
-npm run db:seed
-
-# Reset database (clear + seed)
-npm run db:setup
-```
+| Command | Description |
+|---------|-------------|
+| `npm run db:generate` | Generate Prisma Client and Zod types |
+| `npm run db:push` | Push schema changes to the database |
+| `npm run db:seed` | Seed with demo data |
+| `npm run db:setup` | Combined push + seed |
+| `npm run db:studio` | Open Prisma Studio GUI |
 
 ## Testing
 
