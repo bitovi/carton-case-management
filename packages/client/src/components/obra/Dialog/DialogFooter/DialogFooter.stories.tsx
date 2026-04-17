@@ -5,7 +5,7 @@ import { Button } from '../../Button';
 const meta: Meta<typeof DialogFooter> = {
   component: DialogFooter,
   title: 'Obra/DialogFooter',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
   parameters: {
     design: {
       type: 'figma',

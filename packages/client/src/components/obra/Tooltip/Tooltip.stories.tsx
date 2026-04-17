@@ -10,7 +10,7 @@ import { Button } from '../Button';
 const meta: Meta<typeof Tooltip> = {
   component: Tooltip,
   title: 'Obra/Tooltip',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
   parameters: {
     design: {
       type: 'figma',

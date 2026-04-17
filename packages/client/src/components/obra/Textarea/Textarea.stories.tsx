@@ -4,7 +4,7 @@ import { Textarea } from './Textarea';
 const meta: Meta<typeof Textarea> = {
   component: Textarea,
   title: 'Obra/Textarea',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
   parameters: {
     design: {
       type: 'figma',

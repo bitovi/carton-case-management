@@ -16,7 +16,7 @@ const meta = {
       url: 'https://www.figma.com/design/MQUbIrlfuM8qnr9XZ7jc82/Obra-shadcn-ui--Carton-?node-id=288-119954&m=dev',
     },
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
 } satisfies Meta<typeof Calendar>;
 
 export default meta;

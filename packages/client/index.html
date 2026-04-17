@@ -6,6 +6,13 @@
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Carton Case Management</title>
+  <script>
+    if (location.hostname === 'localhost') {
+      const s = document.createElement('script');
+      s.src = 'http://localhost:3333/overlay.js';
+      document.head.appendChild(s);
+    }
+  </script>
 </head>
 
 <body>

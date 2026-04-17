@@ -4,7 +4,7 @@
   "type": "module",
   "main": "./src/index.ts",
   "scripts": {
-    "dev": "tsx watch src",
+    "dev": "dotenv -e ../../.env -- tsx watch src",
     "build": "tsc --build",
     "start": "tsx src/index.ts",
     "start:prod": "tsx src/index.ts",

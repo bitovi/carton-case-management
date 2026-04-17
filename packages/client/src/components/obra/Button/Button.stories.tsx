@@ -5,7 +5,7 @@ import { Button } from './Button';
 const meta: Meta<typeof Button> = {
   component: Button,
   title: 'Obra/Button',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
   parameters: {
     design: {
       type: 'figma',

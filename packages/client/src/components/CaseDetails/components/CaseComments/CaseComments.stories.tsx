@@ -26,7 +26,9 @@ const mockCaseData = {
       createdAt: new Date('2024-01-15T10:00:00Z').toISOString(),
       author: {
         id: '1',
-        name: 'Alex Morgan',
+        firstName: 'Alex',
+        lastName: 'Morgan',
+        email: 'alex@example.com',
       },
     },
     {
@@ -35,7 +37,9 @@ const mockCaseData = {
       createdAt: new Date('2024-01-16T14:30:00Z').toISOString(),
       author: {
         id: '2',
-        name: 'Jane Smith',
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane@example.com',
       },
     },
   ],

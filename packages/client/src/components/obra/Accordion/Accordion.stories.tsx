@@ -4,7 +4,7 @@ import { Accordion } from './Accordion';
 const meta: Meta<typeof Accordion> = {
   component: Accordion,
   title: 'Obra/Accordion',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
   parameters: {
     design: {
       type: 'figma',

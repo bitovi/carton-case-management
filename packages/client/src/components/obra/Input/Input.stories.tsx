@@ -6,7 +6,7 @@ import { Search, X, Mail } from 'lucide-react';
 const meta: Meta<typeof Input> = {
   component: Input,
   title: 'Obra/Input',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
   parameters: {
     design: {
       type: 'figma',

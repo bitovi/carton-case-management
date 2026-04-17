@@ -4,7 +4,7 @@ import { Label } from './Label';
 const meta: Meta<typeof Label> = {
   component: Label,
   title: 'Obra/Label',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
   parameters: {
     design: {
       type: 'figma',

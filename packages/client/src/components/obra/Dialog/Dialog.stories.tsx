@@ -8,7 +8,7 @@ import { Button } from '@/components/obra/Button';
 const meta: Meta<typeof Dialog> = {
   component: Dialog,
   title: 'Obra/Dialog',
-  tags: ['autodocs'],
+  tags: ['autodocs', 'design-system'],
   parameters: {
     design: {
       type: 'figma',

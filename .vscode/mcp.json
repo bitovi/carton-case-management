@@ -1,0 +1,11 @@
+{
+	"servers": {
+		"vybit": {
+			"type": "stdio",
+			"command": "npx",
+			"args": ["@bitovi/vybit@0.9.0"],
+			"cwd": "${workspaceFolder}/packages/client"
+		}
+	},
+	"inputs": []
+}
