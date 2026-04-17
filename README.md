@@ -8,25 +8,25 @@ commands:
 
 # Carton Case Management
 
-A modern case management application built with React, Node.js, tRPC, and Prisma.
+no cap this is a lowkey fire case management app built with React, Node.js, tRPC, and Prisma. it's giving enterprise but make it slay.
 
 ## Architecture
 
-This application follows a monorepo structure using npm workspaces:
+this app is literally a monorepo era using npm workspaces bestie:
 
-- **packages/client** - React frontend with Vite, Tailwind CSS, and Shadcn UI
-- **packages/server** - Node.js backend with tRPC, Prisma, and SQLite
-- **packages/shared** - Shared types and utilities used by both client and server
+- **packages/client** - React frontend with Vite, Tailwind CSS, and Shadcn UI (the aesthetic one)
+- **packages/server** - Node.js backend with tRPC, Prisma, and SQLite (the brain)
+- **packages/shared** - Shared types and utilities (the glue holding it all together fr fr)
 
 ## Tech Stack
 
 ### Frontend
 
-- React 18 with TypeScript
-- Vite as build tool
-- tRPC for type-safe API calls
-- Shadcn UI components
-- Tailwind CSS for styling
+- React 18 with TypeScript (the GOAT combo)
+- Vite as build tool (so fast it's unreal)
+- tRPC for type-safe API calls (type errors? we don't know her)
+- Shadcn UI components (gorgeous, period)
+- Tailwind CSS for styling (utility classes only, we're not writing CSS from scratch in this economy)
 - React Router for routing
 - Storybook for component development
 - Jest for unit testing
@@ -35,32 +35,32 @@ This application follows a monorepo structure using npm workspaces:
 ### Backend
 
 - Node.js with TypeScript
-- tRPC (JSON-RPC 2.0) for API endpoints
-- Prisma as ORM
-- SQLite as database
+- tRPC (JSON-RPC 2.0) for API endpoints (type safety goes brrr)
+- Prisma as ORM (database interactions but make them readable)
+- SQLite as database (simple and it works, don't @ me)
 - Express for HTTP server
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 22+ (or use the devcontainer)
+- Node.js 22+ (or use the devcontainer, that's literally the move)
 - npm 10+
 
-### Development with Devcontainer (Recommended)
+### Development with Devcontainer (Recommended, bestie trust)
 
-The easiest way to get started is using the devcontainer:
+the devcontainer is the main character here ngl:
 
 1. Open this folder in VS Code
-2. When prompted, click "Reopen in Container"
-3. Wait for the container to build and dependencies to install
-4. The application will automatically start at:
+2. When prompted, click "Reopen in Container" (do NOT ghost this popup)
+3. Sit back and let it cook while the container builds
+4. App auto-starts, no cap:
    - Client: http://localhost:5173
    - Server: http://localhost:3001
 
 ### Local Development
 
-If not using devcontainer:
+ok so if you're not using devcontainer (why tho):
 
 1. **Install dependencies**
 
@@ -86,7 +86,7 @@ If not using devcontainer:
    npm run dev
    ```
 
-   Or run them separately:
+   Or run them separately if you're feeling chaotic:
 
    ```bash
    npm run dev:client  # Client on port 3000
@@ -95,40 +95,40 @@ If not using devcontainer:
 
 ## Authentication
 
-This application uses a simplified authentication system for development purposes. There is no real backend authentication - instead, it automatically logs you in as a mock user.
+lowkey the auth system here is built different - it's simplified for dev purposes and there's no real backend auth. it just auto-logs you in as a mock user. slay.
 
-**Default User**: Alex Morgan (alex.morgan@carton.com)
+**Default User**: Alex Morgan (alex.morgan@carton.com) - she's the main character
 
-**Testing as Different Users**: To test the application as a different user, set the `MOCK_USER_EMAIL` environment variable in `packages/server/.env`:
+**Testing as Different Users**: to switch your vibe, set `MOCK_USER_EMAIL` in `packages/server/.env`:
 
 ```env
 MOCK_USER_EMAIL=jordan.doe@carton.com
 ```
 
-The available users are seeded in the database. You can view them by running `npm run db:studio` in the server package or checking the [seed.ts](packages/server/db/seed.ts) file.
+The available users are seeded in the database. check them out via `npm run db:studio` in the server package or peep the [seed.ts](packages/server/db/seed.ts) file.
 
 ### How It Works
 
-The server uses an Express middleware ([autoLogin.ts](packages/server/src/middleware/autoLogin.ts)) that runs on every request:
+the server uses an Express middleware ([autoLogin.ts](packages/server/src/middleware/autoLogin.ts)) that runs on every request, no slacking:
 
 1. Checks for a `userId` cookie in the request
 2. If no cookie exists or the cookie's user email doesn't match `MOCK_USER_EMAIL`, it looks up the user by email in the database
-3. Sets a new `userId` cookie (HttpOnly, 7-day expiration)
+3. Sets a new `userId` cookie (HttpOnly, 7-day expiration, very secure era)
 4. The cookie is automatically included in subsequent requests
 
-When you change `MOCK_USER_EMAIL` and restart the server, the middleware detects the mismatch and issues a new cookie for the new user on the next request. The client doesn't need to do anything - it just sends the cookie automatically.
+When you change `MOCK_USER_EMAIL` and restart the server, the middleware detects the mismatch and issues a new cookie for the new user on the next request. the client doesn't need to do anything - it's giving seamless transition.
 
 ## Available Scripts
 
 ### Root Level
 
-- `npm run dev` - Start both client and server in development mode
-- `npm run dev:client` - Start only the client
-- `npm run dev:server` - Start only the server
-- `npm run build` - Build all packages
-- `npm run test` - Run tests in all packages
-- `npm run lint` - Lint all packages
-- `npm run format` - Format code with Prettier
+- `npm run dev` - Start both client and server (the classic)
+- `npm run dev:client` - Frontend only if you're vibing solo
+- `npm run dev:server` - Backend only
+- `npm run build` - Build all packages (time to ship)
+- `npm run test` - Run tests, don't skip this bestie
+- `npm run lint` - Lint all packages (keep the code clean, period)
+- `npm run format` - Format code with Prettier (aesthetic matters)
 - `npm run setup` - Install dependencies and setup database
 - `npm run storybook` - Start Storybook
 
@@ -150,7 +150,7 @@ cd packages/server
 npm run dev           # Start dev server with hot reload
 npm run build         # Build TypeScript
 npm run start         # Start production server
-npm run db:studio     # Open Prisma Studio
+npm run db:studio     # Open Prisma Studio (lowkey so useful)
 npm run db:push       # Push schema changes to database
 npm run db:seed       # Seed database with demo data
 ```
@@ -167,22 +167,22 @@ npm run lint          # Lint code
 
 ```
 carton-case-management/
-├── .devcontainer/          # Devcontainer configuration
+├── .devcontainer/          # Devcontainer configuration (the real MVP)
 │   ├── devcontainer.json
 │   └── Dockerfile
 ├── packages/
-│   ├── client/             # React frontend
+│   ├── client/             # React frontend (the face of the operation)
 │   │   ├── src/
 │   │   │   ├── components/ # React components
 │   │   │   ├── lib/        # Utilities and tRPC setup
 │   │   │   ├── pages/      # Page components
 │   │   │   └── main.tsx    # Entry point
-│   │   ├── tests/          # Tests
+│   │   ├── tests/          # Tests (please write them)
 │   │   │   ├── unit/       # Jest unit tests
 │   │   │   └── e2e/        # Playwright E2E tests
 │   │   ├── .storybook/     # Storybook config
 │   │   └── package.json
-│   ├── server/             # Node.js backend
+│   ├── server/             # Node.js backend (the behind the scenes girlie)
 │   │   ├── src/
 │   │   │   ├── index.ts    # Server entry point
 │   │   │   ├── router.ts   # tRPC router
@@ -192,9 +192,9 @@ carton-case-management/
 │   │   │   ├── dev.db      # SQLite database
 │   │   │   └── seed.ts     # Database seeding
 │   │   └── package.json
-│   └── shared/             # Shared code
+│   └── shared/             # Shared code (bestie to both client and server)
 │       ├── prisma/
-│       │   └── schema.prisma # Prisma schema (single source of truth)
+│       │   └── schema.prisma # Prisma schema (single source of truth, respect it)
 │       ├── src/
 │       │   ├── types.ts    # Shared types
 │       │   ├── generated/  # Auto-generated Zod schemas from Prisma
@@ -211,14 +211,14 @@ carton-case-management/
 
 ## Database
 
-The application uses SQLite for simplicity. The database file is located at `packages/server/db/dev.db`. The Prisma schema is in `packages/shared/prisma/schema.prisma`.
+SQLite for simplicity - we're not overcomplicating things in this economy. the database file lives at `packages/server/db/dev.db`. Prisma schema is in `packages/shared/prisma/schema.prisma`.
 
 ### Prisma Commands
 
 ```bash
 cd packages/server
 
-# Open Prisma Studio (database GUI)
+# Open Prisma Studio (database GUI, lowkey addicting)
 npm run db:studio
 
 # Push schema changes to database
@@ -230,11 +230,13 @@ npm run db:generate
 # Seed database with demo data
 npm run db:seed
 
-# Reset database (clear + seed)
+# Reset database (nuclear option but sometimes necessary fr)
 npm run db:setup
 ```
 
 ## Testing
+
+testing is not optional bestie, run these:
 
 ### Unit Tests (Jest)
 
@@ -253,7 +255,7 @@ npm run test:e2e:watch      # Run E2E tests in watch mode
 
 ## Storybook
 
-Storybook is configured for developing and testing UI components in isolation:
+Storybook is giving component playground era - develop and test UI components in isolation:
 
 ```bash
 npm run storybook           # Start Storybook on port 6006
@@ -261,6 +263,8 @@ npm run build-storybook     # Build static Storybook
 ```
 
 ## Code Quality
+
+don't be that person who ships unformatted code:
 
 ### Linting
 
@@ -277,20 +281,20 @@ npm run format:check        # Check formatting
 
 ## API Documentation
 
-The tRPC API provides type-safe endpoints. Key routes:
+the tRPC API is type-safe and it's giving chef's kiss. key routes below:
 
 ### Data Caching with tRPC + React Query
 
-This application uses **tRPC with React Query** for automatic request caching and optimistic updates. All API calls through tRPC are automatically cached, reducing redundant network requests and improving performance.
+this app uses **tRPC with React Query** for automatic request caching and optimistic updates. all API calls through tRPC are automatically cached - fewer network requests, better performance, we love to see it.
 
 #### Cache Configuration
 
-The default cache settings (configured in [packages/client/src/lib/trpc.tsx](packages/client/src/lib/trpc.tsx)):
+default cache settings (configured in [packages/client/src/lib/trpc.tsx](packages/client/src/lib/trpc.tsx)):
 
-- **Stale Time**: 5 minutes - Data is considered fresh for 5 minutes after fetching
-- **Garbage Collection Time**: 10 minutes - Unused data is removed from cache after 10 minutes
-- **Retry**: 3 attempts - Failed requests retry up to 3 times before showing an error
-- **Refetch on Window Focus**: Enabled - Data refetches in the background when you return to the tab
+- **Stale Time**: 5 minutes - data stays fresh for 5 min, no unnecessary refetching
+- **Garbage Collection Time**: 10 minutes - unused data gets cleaned up, tidy
+- **Retry**: 3 attempts - failed requests retry 3 times before throwing a fit
+- **Refetch on Window Focus**: Enabled - data refreshes when you tab back in
 
 #### Cache Behavior Example
 
@@ -309,18 +313,18 @@ const { data, isLoading } = trpc.case.list.useQuery();
 
 #### Using React Query DevTools
 
-In development mode, React Query DevTools appear in the bottom-right corner:
+in dev mode, React Query DevTools show up in the bottom-right corner (it's giving debug era):
 
 1. Click the devtools icon to open
 2. View all cached queries and their status
 3. Inspect query data, fetch status, and cache timings
 4. Manually invalidate or refetch queries for testing
 
-**Note**: DevTools only appear in development mode (`npm run dev`), not in production builds.
+**Note**: DevTools only appear in development mode (`npm run dev`), not in production builds. obviously.
 
 #### Cache Invalidation
 
-When you mutate data (create, update, delete), the cache automatically updates:
+when you mutate data (create, update, delete), the cache auto-updates - it's giving reactive programming:
 
 ```tsx
 const utils = trpc.useUtils();
@@ -336,16 +340,16 @@ const createCase = trpc.case.create.useMutation({
 
 #### Performance Benefits
 
-- **Instant navigation**: Cached data appears in <100ms when navigating back to a page
+- **Instant navigation**: Cached data appears in <100ms when navigating back - we're not waiting
 - **Reduced server load**: Queries within stale time (5 min) don't hit the server
-- **Background updates**: Stale data is updated transparently without loading states
+- **Background updates**: Stale data updates transparently, no jarring loading states
 - **Automatic deduplication**: Multiple components using the same query share one network request
 
 ---
 
 ### Data Fetching with tRPC + React Query
 
-All examples below use the tRPC client configured with React Query for automatic caching and state management.
+all examples below use the tRPC client configured with React Query. automatic caching included, no extra steps needed.
 
 #### Basic Query Example
 
@@ -461,7 +465,7 @@ function UpdateCaseStatus({ caseId }: { caseId: string }) {
 
 #### Testing Patterns
 
-When testing components that use tRPC queries, use the test utilities from `src/test/utils.ts`:
+when testing components that use tRPC queries, use the test utilities from `src/test/utils.ts` - testing is a vibe:
 
 ```tsx
 import { renderWithTrpc } from '../test/utils';
@@ -499,7 +503,7 @@ For more examples, see:
 
 ### Health
 
-- `health.query()` - Check API health
+- `health.query()` - Check API health (is it giving or is it not)
 
 ### Users
 
@@ -516,9 +520,11 @@ For more examples, see:
 
 ## Contributing
 
+don't just push to main bestie, we have a process:
+
 1. Create a feature branch
 2. Make your changes
-3. Run tests: `npm run test`
+3. Run tests: `npm run test` (no skipping)
 4. Run linting: `npm run lint`
 5. Format code: `npm run format`
 6. Submit a pull request
