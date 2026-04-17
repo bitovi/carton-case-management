@@ -17,9 +17,9 @@ export function VoteButton({
   
   const colorClasses = active
     ? type === 'up'
-      ? 'text-teal-500' 
-      : 'text-red-500'   
-    : 'text-slate-700';  
+      ? 'text-teal-500'
+      : 'text-red-500'
+    : 'text-slate-700';
 
   const button = (
     <button
@@ -43,8 +43,6 @@ export function VoteButton({
     </button>
   );
 
-  // If voters are provided and there's a count, wrap with tooltip
-  // Skip tooltip if mutation is pending to avoid showing stale data
   if (voters && voters.length > 0 && count !== undefined && count > 0 && !isPending) {
     const displayVoters = voters.slice(0, 3);
     const remainingCount = voters.length - 3;

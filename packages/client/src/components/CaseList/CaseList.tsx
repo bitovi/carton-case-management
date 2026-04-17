@@ -20,7 +20,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
         >
           Create Case
         </Button>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2" role="status" aria-label="Loading cases">
           {[...Array(5)].map((_, index) => (
             <div key={index} className="flex items-center justify-between px-4 py-2 rounded-lg">
               <div className="flex flex-col gap-2 w-full">

@@ -15,6 +15,8 @@ export function FiltersTrigger({
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={selected}
+      aria-label={hasActiveFilters ? `Filters, ${activeCount} active` : 'Filters'}
       className={cn(
         'flex items-center justify-between px-4 py-2 rounded-lg transition-colors w-[200px]',
         selected

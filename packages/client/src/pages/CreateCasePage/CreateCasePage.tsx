@@ -34,7 +34,6 @@ export function CreateCasePage() {
   const { data: customers } = trpc.customer.list.useQuery();
   const { data: users } = trpc.user.list.useQuery();
   
-  // For now use Alex Morgan as the default user
   const defaultUser = users?.find(
     (user) => user.firstName === 'Alex' && user.lastName === 'Morgan'
   );
@@ -113,9 +112,10 @@ export function CreateCasePage() {
             onBlur={() => handleBlur('title')}
             placeholder="Enter case title"
             error={touched.has('title') && !!validationErrors.title}
+            aria-describedby={touched.has('title') && validationErrors.title ? 'title-error' : undefined}
           />
           {touched.has('title') && validationErrors.title && (
-            <p className="text-sm text-red-600">{validationErrors.title}</p>
+            <p id="title-error" className="text-sm text-red-600" role="alert">{validationErrors.title}</p>
           )}
         </div>
 
@@ -136,9 +136,10 @@ export function CreateCasePage() {
             className={
               touched.has('description') && validationErrors.description ? 'border-red-500' : ''
             }
+            aria-describedby={touched.has('description') && validationErrors.description ? 'description-error' : undefined}
           />
           {touched.has('description') && validationErrors.description && (
-            <p className="text-sm text-red-600">{validationErrors.description}</p>
+            <p id="description-error" className="text-sm text-red-600" role="alert">{validationErrors.description}</p>
           )}
         </div>
 
@@ -151,7 +152,6 @@ export function CreateCasePage() {
             onValueChange={(value) => {
               setCustomerId(value);
               setTouched((prev) => new Set(prev).add('customerId'));
-              // Clear the error immediately when a value is selected
               if (value) {
                 setValidationErrors((prev) => {
                   const newErrors = { ...prev };
@@ -163,6 +163,7 @@ export function CreateCasePage() {
           >
             <SelectTrigger
               className={`w-full ${touched.has('customerId') && validationErrors.customerId ? 'border-red-500' : ''}`}
+              aria-describedby={touched.has('customerId') && validationErrors.customerId ? 'customer-error' : undefined}
             >
               <SelectValue placeholder="Select a customer" />
             </SelectTrigger>
@@ -175,7 +176,7 @@ export function CreateCasePage() {
             </SelectContent>
           </Select>
           {touched.has('customerId') && validationErrors.customerId && (
-            <p className="text-sm text-red-600">{validationErrors.customerId}</p>
+            <p id="customer-error" className="text-sm text-red-600" role="alert">{validationErrors.customerId}</p>
           )}
         </div>
 
@@ -202,9 +203,9 @@ export function CreateCasePage() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="assignedTo" className="text-sm font-medium">
+          <Label htmlFor="assignedTo" className="text-sm font-medium">
             Assign To (Optional)
-          </label>
+          </Label>
           <Select
             value={assignedTo || '__EMPTY__'}
             onValueChange={(value) => setAssignedTo(value === '__EMPTY__' ? '' : value)}
@@ -237,7 +238,7 @@ export function CreateCasePage() {
         </div>
 
         {createCase.isError && (
-          <div className="text-red-600 text-sm p-3 bg-red-50 rounded border border-red-200">
+          <div className="text-red-600 text-sm p-3 bg-red-50 rounded border border-red-200" role="alert">
             Failed to create case. Please ensure all required fields are filled correctly.
           </div>
         )}

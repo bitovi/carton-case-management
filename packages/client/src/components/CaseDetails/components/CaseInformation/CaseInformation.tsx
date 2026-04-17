@@ -23,13 +23,10 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
   const utils = trpc.useUtils();
   const updateCase = trpc.case.update.useMutation({
     onMutate: async (variables) => {
-      // Cancel any outgoing refetches
       await utils.case.getById.cancel({ id: caseId });
 
-      // Snapshot the previous value
       const previousCase = utils.case.getById.getData({ id: caseId });
 
-      // Optimistically update the cache
       if (previousCase) {
         utils.case.getById.setData(
           { id: caseId },
@@ -47,7 +44,6 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
     },
     onError: (error, _variables, context) => {
       console.error('Failed to update case:', error);
-      // Roll back to previous value on error
       if (context?.previousCase) {
         utils.case.getById.setData({ id: caseId }, context.previousCase);
       }
@@ -93,7 +89,6 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
   return (
     <>
       <div className="flex flex-col gap-4">
-        {/* Mobile: Title */}
         <div className="flex flex-col gap-1 lg:hidden w-full">
           <EditableTitle
             value={caseData.title}
@@ -106,7 +101,6 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
           </p>
         </div>
 
-        {/* Mobile: Status Badge */}
         <div className="lg:hidden self-start">
           <Select
             value={caseData.status}
@@ -126,7 +120,6 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
           </Select>
         </div>
 
-        {/* Desktop: Title + Status on same line */}
         <div className="hidden lg:flex items-start justify-between gap-4">
           <div className="flex flex-col gap-2 flex-1 min-w-0">
             <EditableTitle
@@ -158,8 +151,8 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
             </Select>
             <MoreOptionsMenu
               trigger={
-                <Button variant="ghost" size="mini" className="h-8 w-8">
-                  <MoreVertical className="h-4 w-4" />
+                <Button variant="ghost" size="mini" className="h-8 w-8" aria-label="Case actions">
+                  <MoreVertical className="h-4 w-4" aria-hidden="true" />
                 </Button>
               }
               align="end"
@@ -175,7 +168,6 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
           </div>
         </div>
 
-        {/* Description */}
         <EditableTextarea
           label="Case Description"
           value={caseData.description}
