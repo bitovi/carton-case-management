@@ -1,528 +1,319 @@
-commands:
+commands-cay:
 
-- docker-compose -f docker-compose.local.yaml up --build
-- cmd+shift+p -> Dev Containers: Reopen in Container
+- ockerday-omposecay -f docker-compose.local.yaml up --build
+- mdcay+shiftsay+pay -> Evday Ontainerscay: Eopenray inay Ontainercay
 - npm install -> npm run setup -> npm run dev
 
-<!-- TODO: udpdate this readme, project has some changes since initial copilot spinup -->
+<!-- ODOTAY: updateyay isthay eadmeray, ojectpray ashay omesay anges-chay incesay initialyay opilot-cay inupspay -->
 
-# Carton Case Management
+# Arton-cay Ase-cay Anagement-may
 
-A modern case management application built with React, Node.js, tRPC, and Prisma.
+A odern-may asecay anagementmay applicationyay uiltbay ithway Eact-Ray, Odenay.js, tRPC, andyay Ismapray.
 
-## Architecture
+## Architectureyay
 
-This application follows a monorepo structure using npm workspaces:
+Isthay applicationyay ollowsfay ayay onorepomay ucturestray usingyay npm orkspacesway:
 
-- **packages/client** - React frontend with Vite, Tailwind CSS, and Shadcn UI
-- **packages/server** - Node.js backend with tRPC, Prisma, and SQLite
-- **packages/shared** - Shared types and utilities used by both client and server
+- **ackagespay/client** - Eactray ontendfray ithway Ite-Vay, Ailtayind-Tay SSCAY, andyay Adshcn-Shay UI
+- **ackagespay/server** - Odenay.js ackendbay ithway tRPC, Ismapray, andyay QLite-Say
+- **ackagespay/shared** - Aredshay ypes-tay andyay tilitiesuay usedyay ybay othbay ientclay andyay erversay
 
-## Tech Stack
+## Echtech-Stay Ackstay
 
-### Frontend
+### Ontendfray
 
-- React 18 with TypeScript
-- Vite as build tool
-- tRPC for type-safe API calls
-- Shadcn UI components
-- Tailwind CSS for styling
-- React Router for routing
-- Storybook for component development
-- Jest for unit testing
-- Playwright for E2E testing
+- Eactray 18 ithway Ypescript-Tay
+- Ite-Vay asyay uildbay ooltay
+- tRPC orfay ypetay-afesay API allscay
+- Adshcn-Shay UI omponentscay
+- Ailtayind-Tay SSCAY orfay ylingstay
+- Eactray OuterRay orfay outingray
+- Orybookstay orfay omponentcay evelopmentday
+- Estjay orfay unitay estingtay
+- Aywrightplay orfay E2E estingtay
 
-### Backend
+### Ackendbay
 
-- Node.js with TypeScript
-- tRPC (JSON-RPC 2.0) for API endpoints
-- Prisma as ORM
-- SQLite as database
-- Express for HTTP server
+- Odenay.js ithway Ypescript-Tay
+- tRPC (JSON-RPC 2.0) orfay API endpointsyay
+- Ismapray asyay ORM
+- QLite-Say asyay atabaseday
+- Expressyay orfay HTTP erversay
 
-## Getting Started
+## Ettinggay Artedstay
 
-### Prerequisites
+### Erequisitespray
 
-- Node.js 22+ (or use the devcontainer)
+- Odenay.js 22+ (oryay useyay ethay evcontainerday)
 - npm 10+
 
-### Development with Devcontainer (Recommended)
+### Evelopmentday ithway Evcontainerday (Ecommendedray)
 
-The easiest way to get started is using the devcontainer:
+Ethay easiestyay ayway otay etgay artedstay isyay usingyay ethay evcontainerday:
 
-1. Open this folder in VS Code
-2. When prompted, click "Reopen in Container"
-3. Wait for the container to build and dependencies to install
-4. The application will automatically start at:
-   - Client: http://localhost:5173
-   - Server: http://localhost:3001
+1. Openyay isthay olderfay inay VS OdeCay
+2. Enwhay romptedpay, ickclay "Eopenray inay Ontainercay"
+3. Aitway orfay ethay ontainercay otay uildbay andyay ependenciesday otay installyay
+4. Ethay applicationyay illway automaticallyyay artstay atyay:
+   - Ientclay: http://localhost:5173
+   - Erversay: http://localhost:3001
 
-### Local Development
+### Ocallay Evelopmentday
 
-If not using devcontainer:
+Ifyay otnay usingyay evcontainerday:
 
-1. **Install dependencies**
+1. **Installyay ependenciesday**
 
    ```bash
    npm install
    ```
 
-2. **Setup environment**
+2. **EtupSay environmentyay**
 
    ```bash
    cp .env.example .env
    ```
 
-3. **Setup database**
+3. **EtupSay atabaseday**
 
    ```bash
    npm run setup
    ```
 
-4. **Start development servers**
+4. **ArtStay evelopmentday erverssay**
 
    ```bash
    npm run dev
    ```
 
-   Or run them separately:
+   Oryay unray emthay eparatelysay:
 
    ```bash
-   npm run dev:client  # Client on port 3000
-   npm run dev:server  # Server on port 3001
+   npm run dev:client  # Ientclay onyay ortpay 3000
+   npm run dev:server  # Erversay onyay ortpay 3001
    ```
 
-## Authentication
+## Authenticationyay
 
-This application uses a simplified authentication system for development purposes. There is no real backend authentication - instead, it automatically logs you in as a mock user.
+Isthay applicationyay usesyay ayay implifiedsay authenticationyay ystemsay orfay evelopmentday urposespay. Ere'sthay onay ealray ackendbay authenticationyay - insteadyay, ityay automaticallyyay ogslay ouyay inyay asyay ayay ockmay useryay.
 
-**Default User**: Alex Morgan (alex.morgan@carton.com)
+**Efaultday Useryay**: Alexyay Organmay (alex.morgan@carton.com)
 
-**Testing as Different Users**: To test the application as a different user, set the `MOCK_USER_EMAIL` environment variable in `packages/server/.env`:
+**Estingtay asyay Ifferentday Usersyay**: Otay esttay ethay applicationyay asyay ayay ifferentday useryay, etsay ethay `MOCK_USER_EMAIL` environmentyay ariablevay inay `packages/server/.env`:
 
 ```env
 MOCK_USER_EMAIL=jordan.doe@carton.com
 ```
 
-The available users are seeded in the database. You can view them by running `npm run db:studio` in the server package or checking the [seed.ts](packages/server/db/seed.ts) file.
+Ethay availableyay usersyay areyay eeded-say inay ethay atabaseday. Ouyay ancay iewvay emthay ybay unningray `npm run db:studio` inay ethay erversay ackagepay oryay eckingchay ethay [seed.ts](packages/server/db/seed.ts) ilefay.
 
-### How It Works
+### Owhay Ityay Orksway
 
-The server uses an Express middleware ([autoLogin.ts](packages/server/src/middleware/autoLogin.ts)) that runs on every request:
+Ethay erversay usesyay anyay Expressyay iddlewaremay ([autoLogin.ts](packages/server/src/middleware/autoLogin.ts)) atthay unsray onyay everyyay equestray:
 
-1. Checks for a `userId` cookie in the request
-2. If no cookie exists or the cookie's user email doesn't match `MOCK_USER_EMAIL`, it looks up the user by email in the database
-3. Sets a new `userId` cookie (HttpOnly, 7-day expiration)
-4. The cookie is automatically included in subsequent requests
+1. EcksChay orfay ayay `userId` ookiecay inay ethay equestray
+2. Ifyay onay ookiecay existsyay oryay ethay ookiecay's useryay emailyay oesn'tday atchmay `MOCK_USER_EMAIL`, ityay ookslay upyay ethay useryay ybay emailyay inay ethay atabaseday
+3. EtsSay ayay ewnay `userId` ookiecay (HttpOnly, 7-ayday expirationyay)
+4. Ethay ookiecay isyay automaticallyyay includedyay inay ubsequentsay equestsray
 
-When you change `MOCK_USER_EMAIL` and restart the server, the middleware detects the mismatch and issues a new cookie for the new user on the next request. The client doesn't need to do anything - it just sends the cookie automatically.
+Enwhay ouyay angechay `MOCK_USER_EMAIL` andyay estartray ethay erversay, ethay iddlewaremay etectsday ethay ismatchmay andyay issuesyay ayay ewnay ookiecay orfay ethay ewnay useryay onyay ethay extnay equestray. Ethay ientclay oesn'tday eednay otay oday anythingyay - ityay ustjay endssay ethay ookiecay automaticallyyay.
 
-## Available Scripts
+## Availableyay Criptssay
 
-### Root Level
+### OotRay Evellay
 
-- `npm run dev` - Start both client and server in development mode
-- `npm run dev:client` - Start only the client
-- `npm run dev:server` - Start only the server
-- `npm run build` - Build all packages
-- `npm run test` - Run tests in all packages
-- `npm run lint` - Lint all packages
-- `npm run format` - Format code with Prettier
-- `npm run setup` - Install dependencies and setup database
-- `npm run storybook` - Start Storybook
+- `npm run dev` - ArtStay othbay ientclay andyay erversay inay evelopmentday odemay
+- `npm run dev:client` - ArtStay onlyyay ethay ientclay
+- `npm run dev:server` - ArtStay onlyyay ethay erversay
+- `npm run build` - UildBay allyay ackagespay
+- `npm run test` - UnRay eststay inay allyay ackagespay
+- `npm run lint` - IntLay allyay ackagespay
+- `npm run format` - OrmatFay odecay ithway EttierPray
+- `npm run setup` - Installyay ependenciesday andyay etupsay atabaseday
+- `npm run storybook` - ArtStay Orybookstay
 
-### Client Package
+### Ientclay Ackagepay
 
 ```bash
 cd packages/client
-npm run dev           # Start Vite dev server
-npm run build         # Build for production
-npm run test          # Run Jest tests
-npm run test:e2e      # Run Playwright tests
-npm run storybook     # Start Storybook
+npm run dev           # ArtStay Ite-Vay evday erversay
+npm run build         # UildBay orfay oductionpray
+npm run test          # UnRay Estjay eststay
+npm run test:e2e      # UnRay Aywrightplay eststay
+npm run storybook     # ArtStay Orybookstay
 ```
 
-### Server Package
+### Erversay Ackagepay
 
 ```bash
 cd packages/server
-npm run dev           # Start dev server with hot reload
-npm run build         # Build TypeScript
-npm run start         # Start production server
-npm run db:studio     # Open Prisma Studio
-npm run db:push       # Push schema changes to database
-npm run db:seed       # Seed database with demo data
+npm run dev           # ArtStay evday erversay ithway othay eloadray
+npm run build         # UildBay Ypescript-Tay
+npm run start         # ArtStay oductionpray erversay
+npm run db:studio     # Openyay Ismapray UdioStay
+npm run db:push       # UshPay chemasay anges-chay otay atabaseday
+npm run db:seed       # Eedsay atabaseday ithway emoday ataday
 ```
 
-### Shared Package
+### Aredshay Ackagepay
 
 ```bash
 cd packages/shared
-npm run test          # Run Jest tests
-npm run lint          # Lint code
+npm run test          # UnRay Estjay eststay
+npm run lint          # IntLay odecay
 ```
 
-## Project Structure
+## OjectPray Ucturestray
 
 ```
 carton-case-management/
-├── .devcontainer/          # Devcontainer configuration
+├── .devcontainer/          # Evcontainerday onfigurationcay
 │   ├── devcontainer.json
 │   └── Dockerfile
 ├── packages/
-│   ├── client/             # React frontend
+│   ├── client/             # Eactray ontendfray
 │   │   ├── src/
-│   │   │   ├── components/ # React components
-│   │   │   ├── lib/        # Utilities and tRPC setup
-│   │   │   ├── pages/      # Page components
-│   │   │   └── main.tsx    # Entry point
-│   │   ├── tests/          # Tests
-│   │   │   ├── unit/       # Jest unit tests
-│   │   │   └── e2e/        # Playwright E2E tests
-│   │   ├── .storybook/     # Storybook config
+│   │   │   ├── components/ # Eactray omponentscay
+│   │   │   ├── lib/        # Tilitiesuay andyay tRPC etup-say
+│   │   │   ├── pages/      # Agepay omponentscay
+│   │   │   └── main.tsx    # Entryyay ointpay
+│   │   ├── tests/          # Eststay
+│   │   │   ├── unit/       # Estjay unitay eststay
+│   │   │   └── e2e/        # Aywrightplay E2E eststay
+│   │   ├── .storybook/     # Orybookstay onfigcay
 │   │   └── package.json
-│   ├── server/             # Node.js backend
+│   ├── server/             # Odenay.js ackendbay
 │   │   ├── src/
-│   │   │   ├── index.ts    # Server entry point
-│   │   │   ├── router.ts   # tRPC router
-│   │   │   ├── context.ts  # tRPC context
-│   │   │   └── trpc.ts     # tRPC setup
+│   │   │   ├── index.ts    # Erversay entryyay ointpay
+│   │   │   ├── router.ts   # tRPC outerray
+│   │   │   ├── context.ts  # tRPC ontextcay
+│   │   │   └── trpc.ts     # tRPC etupsay
 │   │   ├── db/
-│   │   │   ├── dev.db      # SQLite database
-│   │   │   └── seed.ts     # Database seeding
+│   │   │   ├── dev.db      # QLite-Say atabaseday
+│   │   │   └── seed.ts     # Atabaseday eeding-say
 │   │   └── package.json
-│   └── shared/             # Shared code
+│   └── shared/             # Aredshay odecay
 │       ├── prisma/
-│       │   └── schema.prisma # Prisma schema (single source of truth)
+│       │   └── schema.prisma # Ismapray chemasay (inglesay ourcesay ofyay uthtray)
 │       ├── src/
-│       │   ├── types.ts    # Shared types
-│       │   ├── generated/  # Auto-generated Zod schemas from Prisma
-│       │   └── utils.ts    # Shared utilities
+│       │   ├── types.ts    # Aredshay ypes-tay
+│       │   ├── generated/  # Uto-generateday Odzay chemasay omfray Ismapray
+│       │   └── utils.ts    # Aredshay tilitiesuay
 │       └── package.json
 ├── docker-compose.dev.yaml
 ├── .gitignore
 ├── .prettierrc
 ├── eslint.config.mjs
-├── package.json            # Root package.json
-├── tsconfig.json           # Root TypeScript config
+├── package.json            # OotRay ackagepay.json
+├── tsconfig.json           # OotRay Ypescript-Tay onfigcay
 └── README.md
 ```
 
-## Database
+## Atabaseday
 
-The application uses SQLite for simplicity. The database file is located at `packages/server/db/dev.db`. The Prisma schema is in `packages/shared/prisma/schema.prisma`.
+Ethay applicationyay usesyay QLite-Say orfay implicitysway. Ethay atabaseday ilefay isyay ocatedlay atyay `packages/server/db/dev.db`. Ethay Ismapray chemasay isyay inay `packages/shared/prisma/schema.prisma`.
 
-### Prisma Commands
+### Ismapray Ommandscay
 
 ```bash
 cd packages/server
 
-# Open Prisma Studio (database GUI)
+# Openyay Ismapray UdioStay (atabaseday IGUAY)
 npm run db:studio
 
-# Push schema changes to database
+# UshPay chemasay anges-chay otay atabaseday
 npm run db:push
 
-# Generate Prisma Client
+# Enerategay Ismapray Ientclay
 npm run db:generate
 
-# Seed database with demo data
+# Eedsay atabaseday ithway emoday ataday
 npm run db:seed
 
-# Reset database (clear + seed)
+# EsetRay atabaseday (earclay + eedsay)
 npm run db:setup
 ```
 
-## Testing
+## Estingtay
 
-### Unit Tests (Jest)
+### Unitay Eststay (Estjay)
 
 ```bash
-npm run test                 # Run all tests
-npm run test:watch          # Run tests in watch mode
+npm run test                 # UnRay allyay eststay
+npm run test:watch          # UnRay eststay inay atchway odemay
 ```
 
-### E2E Tests (Playwright)
+### E2E Eststay (Aywrightplay)
 
 ```bash
 cd packages/client
-npm run test:e2e            # Run E2E tests
-npm run test:e2e:watch      # Run E2E tests in watch mode
+npm run test:e2e            # UnRay E2E eststay
+npm run test:e2e:watch      # UnRay E2E eststay inay atchway odemay
 ```
 
-## Storybook
+## Orybookstay
 
-Storybook is configured for developing and testing UI components in isolation:
+Orybookstay isyay onfiguredcay orfay evelopingday andyay estingtay UI omponentscay inay isolationyay:
 
 ```bash
-npm run storybook           # Start Storybook on port 6006
-npm run build-storybook     # Build static Storybook
+npm run storybook           # ArtStay Orybookstay onyay ortpay 6006
+npm run build-storybook     # UildBay aticstay Orybookstay
 ```
 
-## Code Quality
+## Odecay Alityquay
 
-### Linting
+### IntingLay
 
 ```bash
-npm run lint                # Lint all packages
+npm run lint                # IntLay allyay ackagespay
 ```
 
-### Formatting
+### OrmattingFay
 
 ```bash
-npm run format              # Format all code
-npm run format:check        # Check formatting
+npm run format              # OrmatFay allyay odecay
+npm run format:check        # EckChay ormattingfay
 ```
 
-## API Documentation
+## API Ocumentationday
 
-The tRPC API provides type-safe endpoints. Key routes:
+Ethay tRPC API ovidespray ypetay-afesay endpointsyay. Eykay outesray:
 
-### Data Caching with tRPC + React Query
+### Ataday Achingcay ithway tRPC + EactRay UeryQay
 
-This application uses **tRPC with React Query** for automatic request caching and optimistic updates. All API calls through tRPC are automatically cached, reducing redundant network requests and improving performance.
+Isthay applicationyay usesyay **tRPC ithway EactRay UeryQay** orfay automaticyay equestray achingcay andyay optimisticyay updatesyay. Allyay API allscay oughthray tRPC areyay automaticallyyay achedcay, educingray edundantray etworknay equestsray andyay improvingyay erformancepay.
 
-#### Cache Configuration
+#### AcheCay Onfigurationcay
 
-The default cache settings (configured in [packages/client/src/lib/trpc.tsx](packages/client/src/lib/trpc.tsx)):
+Ethay efaultday achecay ettingssay (onfiguredcay inay [packages/client/src/lib/trpc.tsx](packages/client/src/lib/trpc.tsx)):
 
-- **Stale Time**: 5 minutes - Data is considered fresh for 5 minutes after fetching
-- **Garbage Collection Time**: 10 minutes - Unused data is removed from cache after 10 minutes
-- **Retry**: 3 attempts - Failed requests retry up to 3 times before showing an error
-- **Refetch on Window Focus**: Enabled - Data refetches in the background when you return to the tab
+- **Aletay Imetay**: 5 inutesmay - Ataday isyay onsideredcay eshfray orfay 5 inutesmay afteryay etchingfay
+- **ArbageGay Ollectioncay Imetay**: 10 inutesmay - Unusedyay ataday isyay emovedray omfray achecay afteryay 10 inutesmay
+- **EtryRay**: 3 attempts - AiledFay equestsray etryray upyay otay 3 imestay eforebay owingshay anyay error
+- **Efetcharay onyay IndowWay OcusFay**: Enabledyay - Ataday efetchesray inay ethay ackgroundbay enwhay ouyay eturnray otay ethay abtay
 
-#### Cache Behavior Example
+#### AcheCay EhaviorBay Exampleyay
 
 ```tsx
-// First render: Fetches from API (shows loading state)
+// IrstFay enderray: EtchesFay omfray API (owsshay oadinglay atestay)
 const { data, isLoading } = trpc.case.list.useQuery();
-
-// Navigate away and back within 5 minutes:
-// - Returns cached data instantly (no loading state)
-// - Displays data in <100ms
-
-// After 5 minutes:
-// - Returns cached data instantly (stale data)
-// - Refetches in background to get fresh data
+// Avigatenay awayyay andyay ackbay ithinway 5 inutesmay:
+// - EturnsRay achedcay ataday instantlyyay (onay oadinglay atestay)
+// - IsplaysDay ataday inay <100ms
+// Afteryay 5 inutesmay:
+// - EturnsRay achedcay ataday instantlyyay (alestay ataday)
+// - Efetcharay inay ackgroundbay otay etgay eshfray ataday
 ```
 
-#### Using React Query DevTools
+## OntributingCay
 
-In development mode, React Query DevTools appear in the bottom-right corner:
+1. EateCray ayay eaturefay anchbray
+2. Akemay ouryay anges-chay
+3. UnRay eststay: `npm run test`
+4. UnRay intinglay: `npm run lint`
+5. OrmatFay odecay: `npm run format`
+6. UbmitSay ayay ullpay equestray
 
-1. Click the devtools icon to open
-2. View all cached queries and their status
-3. Inspect query data, fetch status, and cache timings
-4. Manually invalidate or refetch queries for testing
-
-**Note**: DevTools only appear in development mode (`npm run dev`), not in production builds.
-
-#### Cache Invalidation
-
-When you mutate data (create, update, delete), the cache automatically updates:
-
-```tsx
-const utils = trpc.useUtils();
-
-// After creating a case, invalidate the list query
-const createCase = trpc.case.create.useMutation({
-  onSuccess: () => {
-    // This refetches the case list
-    utils.case.list.invalidate();
-  },
-});
-```
-
-#### Performance Benefits
-
-- **Instant navigation**: Cached data appears in <100ms when navigating back to a page
-- **Reduced server load**: Queries within stale time (5 min) don't hit the server
-- **Background updates**: Stale data is updated transparently without loading states
-- **Automatic deduplication**: Multiple components using the same query share one network request
-
----
-
-### Data Fetching with tRPC + React Query
-
-All examples below use the tRPC client configured with React Query for automatic caching and state management.
-
-#### Basic Query Example
-
-```tsx
-import { trpc } from '../lib/trpc';
-
-function CaseList() {
-  const { data, isLoading, error } = trpc.case.list.useQuery();
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-
-  return (
-    <ul>
-      {data.map((c) => (
-        <li key={c.id}>{c.title}</li>
-      ))}
-    </ul>
-  );
-}
-```
-
-#### Query with Parameters
-
-```tsx
-function CaseListByStatus({ status }: { status: string }) {
-  const { data } = trpc.case.list.useQuery(
-    { status },
-    {
-      // Custom options for this query
-      staleTime: 1000 * 60, // Fresh for 1 minute
-      enabled: !!status, // Only run if status is provided
-    }
-  );
-
-  return <div>{/* ... */}</div>;
-}
-```
-
-#### Mutation Example with Cache Invalidation
-
-```tsx
-function CreateCaseForm() {
-  const utils = trpc.useUtils();
-
-  const createCase = trpc.case.create.useMutation({
-    onSuccess: () => {
-      // Refetch the case list to show new case
-      utils.case.list.invalidate();
-    },
-    onError: (error) => {
-      alert(`Failed to create case: ${error.message}`);
-    },
-  });
-
-  const handleSubmit = (data: { title: string; description: string }) => {
-    createCase.mutate({
-      title: data.title,
-      description: data.description,
-      createdBy: currentUserId,
-    });
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      {/* form fields */}
-      <button type="submit" disabled={createCase.isLoading}>
-        {createCase.isLoading ? 'Creating...' : 'Create Case'}
-      </button>
-    </form>
-  );
-}
-```
-
-#### Optimistic Updates
-
-```tsx
-function UpdateCaseStatus({ caseId }: { caseId: string }) {
-  const utils = trpc.useUtils();
-
-  const updateStatus = trpc.case.update.useMutation({
-    onMutate: async (newData) => {
-      // Cancel outgoing refetches
-      await utils.case.getById.cancel({ id: caseId });
-
-      // Snapshot previous value
-      const previousCase = utils.case.getById.getData({ id: caseId });
-
-      // Optimistically update to the new value
-      utils.case.getById.setData({ id: caseId }, (old) =>
-        old ? { ...old, status: newData.status } : old
-      );
-
-      return { previousCase };
-    },
-    onError: (err, newData, context) => {
-      // Rollback on error
-      utils.case.getById.setData({ id: caseId }, context?.previousCase);
-    },
-    onSettled: () => {
-      // Always refetch after error or success
-      utils.case.getById.invalidate({ id: caseId });
-    },
-  });
-
-  return (
-    <button onClick={() => updateStatus.mutate({ id: caseId, status: 'CLOSED' })}>
-      Close Case
-    </button>
-  );
-}
-```
-
-#### Testing Patterns
-
-When testing components that use tRPC queries, use the test utilities from `src/test/utils.ts`:
-
-```tsx
-import { renderWithTrpc } from '../test/utils';
-import { server } from '../vitest.setup';
-import { http, HttpResponse } from 'msw';
-
-test('displays cases from API', async () => {
-  // Mock the API response
-  server.use(
-    http.post('http://localhost:3000/trpc/case.list', () => {
-      return HttpResponse.json({
-        result: {
-          data: [{ id: '1', title: 'Test Case', description: 'Test', status: 'OPEN' }],
-        },
-      });
-    })
-  );
-
-  // Render component with tRPC provider
-  const { getByText } = renderWithTrpc(<CaseList />);
-
-  // Wait for data to load
-  await waitFor(() => {
-    expect(getByText('Test Case')).toBeInTheDocument();
-  });
-});
-```
-
-For more examples, see:
-
-- [Query Patterns](specs/001-trpc-react-query/contracts/query-example.tsx)
-- [Mutation Patterns](specs/001-trpc-react-query/contracts/mutation-example.tsx)
-- [Test Patterns](specs/001-trpc-react-query/contracts/test-example.test.tsx)
-- [Quickstart Guide](specs/001-trpc-react-query/quickstart.md)
-
-### Health
-
-- `health.query()` - Check API health
-
-### Users
-
-- `user.list.query()` - Get all users
-- `user.getById.query({ id })` - Get user by ID
-
-### Cases
-
-- `case.list.query({ status?, assignedTo? })` - Get cases with filters
-- `case.getById.query({ id })` - Get case by ID
-- `case.create.mutation({ title, description, createdBy, assignedTo? })` - Create case
-- `case.update.mutation({ id, ...updates })` - Update case
-- `case.delete.mutation({ id })` - Delete case
-
-## Contributing
-
-1. Create a feature branch
-2. Make your changes
-3. Run tests: `npm run test`
-4. Run linting: `npm run lint`
-5. Format code: `npm run format`
-6. Submit a pull request
-
-## License
+## Icenselay
 
 MIT
