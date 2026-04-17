@@ -1,253 +1,253 @@
-commands:
+hello
+
+UGH. COMMANDS FIRST. ME SHOW:
 
 - docker-compose -f docker-compose.local.yaml up --build
 - cmd+shift+p -> Dev Containers: Reopen in Container
 - npm install -> npm run setup -> npm run dev
 
-<!-- TODO: udpdate this readme, project has some changes since initial copilot spinup -->
+# CARTON CASE MANAGE THING
 
-# Carton Case Management
+UGH. ME BUILD BIG APP. APP FOR MANAGE CASE. USE REACT. USE NODE. USE tRPC. USE PRISMA. APP GOOD. APP STRONG LIKE MAMMOTH.
 
-A modern case management application built with React, Node.js, tRPC, and Prisma.
+## HOW APP MADE (ARCH-I-TECK-TURE)
 
-## Architecture
+APP LIVE IN ONE BIG CAVE. CAVE CALLED MONOREPO. CAVE HAVE THREE ROOMS:
 
-This application follows a monorepo structure using npm workspaces:
+- **packages/client** - PRETTY FRONT CAVE. HUMAN SEE THIS. REACT LIVE HERE WITH VITE AND TAILWIND AND SHADCN
+- **packages/server** - DARK BACK CAVE. BRAIN LIVE HERE. NODE DO WORK WITH tRPC AND PRISMA AND SQLITE
+- **packages/shared** - MIDDLE CAVE. BOTH CAVE SHARE STUFF HERE. TYPES. UTILS. IMPORTANT ROCKS.
 
-- **packages/client** - React frontend with Vite, Tailwind CSS, and Shadcn UI
-- **packages/server** - Node.js backend with tRPC, Prisma, and SQLite
-- **packages/shared** - Shared types and utilities used by both client and server
+## TOOLS ME USE (TECH STACK)
 
-## Tech Stack
+### FRONT CAVE TOOLS
 
-### Frontend
+- React 18 WITH TYPESCRIPT. REACT GOOD.
+- Vite. BUILD FAST. VITE MEAN FAST IN FRENCH TONGUE.
+- tRPC. TYPE SAFE. NO MISTAKE. UGH.
+- Shadcn UI. PRETTY ROCKS FOR SCREEN.
+- Tailwind CSS. MAKE THING LOOK NICE WITHOUT CRY.
+- React Router. GO FROM CAVE TO CAVE.
+- Storybook. SHOW COMPONENT. LIKE CAVE PAINTING.
+- Jest. TEST IF THING WORK. IMPORTANT.
+- Playwright. TEST WHOLE APP. VERY IMPORTANT.
 
-- React 18 with TypeScript
-- Vite as build tool
-- tRPC for type-safe API calls
-- Shadcn UI components
-- Tailwind CSS for styling
-- React Router for routing
-- Storybook for component development
-- Jest for unit testing
-- Playwright for E2E testing
+### BACK CAVE TOOLS
 
-### Backend
+- Node.js WITH TYPESCRIPT. DO WORK.
+- tRPC (JSON-RPC 2.0). TALK BETWEEN CAVES.
+- Prisma. TALK TO ROCK (DATABASE).
+- SQLite. SMALL ROCK. HOLD DATA.
+- Express. HTTP CAVE DOOR.
 
-- Node.js with TypeScript
-- tRPC (JSON-RPC 2.0) for API endpoints
-- Prisma as ORM
-- SQLite as database
-- Express for HTTP server
+## HOW START APP
 
-## Getting Started
+### NEED FIRST
 
-### Prerequisites
-
-- Node.js 22+ (or use the devcontainer)
+- Node.js 22+ (OR USE DEVCONTAINER. DEVCONTAINER EASIER. UGH.)
 - npm 10+
 
-### Development with Devcontainer (Recommended)
+### START WITH DEVCONTAINER (BEST WAY. ME RECOMMEND.)
 
-The easiest way to get started is using the devcontainer:
+DEVCONTAINER EASIEST. EVEN SMALL BRAIN CAN DO:
 
-1. Open this folder in VS Code
-2. When prompted, click "Reopen in Container"
-3. Wait for the container to build and dependencies to install
-4. The application will automatically start at:
+1. OPEN FOLDER IN VS CODE
+2. VS CODE ASK "REOPEN IN CONTAINER?" - CLICK YES. OBVIOUSLY.
+3. WAIT. CONTAINER BUILD. DEPENDENCY INSTALL. UGH. PATIENCE.
+4. APP START BY SELF:
    - Client: http://localhost:5173
    - Server: http://localhost:3001
 
-### Local Development
+### START WITHOUT DEVCONTAINER (HARD WAY)
 
-If not using devcontainer:
+IF NOT USE DEVCONTAINER, DO THIS:
 
-1. **Install dependencies**
+1. **PUT IN DEPENDENCY**
 
    ```bash
    npm install
    ```
 
-2. **Setup environment**
+2. **PREPARE ENVIRONMENT**
 
    ```bash
    cp .env.example .env
    ```
 
-3. **Setup database**
+3. **PREPARE ROCK (DATABASE)**
 
    ```bash
    npm run setup
    ```
 
-4. **Start development servers**
+4. **START APP GO NOW**
 
    ```bash
    npm run dev
    ```
 
-   Or run them separately:
+   OR START SEPARATELY LIKE TWO DIFFERENT MAMMOTH:
 
    ```bash
-   npm run dev:client  # Client on port 3000
-   npm run dev:server  # Server on port 3001
+   npm run dev:client  # FRONT CAVE ON PORT 3000
+   npm run dev:server  # BACK CAVE ON PORT 3001
    ```
 
-## Authentication
+## WHO YOU ARE (AUTHENTICATION)
 
-This application uses a simplified authentication system for development purposes. There is no real backend authentication - instead, it automatically logs you in as a mock user.
+APP USE SIMPLE LOGIN THING FOR DEVELOPMENT. NO REAL LOGIN. APP PRETEND YOU ARE MOCK USER. EASY.
 
-**Default User**: Alex Morgan (alex.morgan@carton.com)
+**DEFAULT HUMAN**: Alex Morgan (alex.morgan@carton.com). ALEX GOOD HUMAN.
 
-**Testing as Different Users**: To test the application as a different user, set the `MOCK_USER_EMAIL` environment variable in `packages/server/.env`:
+**WANT BE DIFFERENT HUMAN?**: SET `MOCK_USER_EMAIL` IN `packages/server/.env`:
 
 ```env
 MOCK_USER_EMAIL=jordan.doe@carton.com
 ```
 
-The available users are seeded in the database. You can view them by running `npm run db:studio` in the server package or checking the [seed.ts](packages/server/db/seed.ts) file.
+SEE ALL HUMAN BY RUN `npm run db:studio` OR LOOK AT [seed.ts](packages/server/db/seed.ts) FILE.
 
-### How It Works
+### HOW MAGIC WORK
 
-The server uses an Express middleware ([autoLogin.ts](packages/server/src/middleware/autoLogin.ts)) that runs on every request:
+SERVER USE MIDDLEWARE ([autoLogin.ts](packages/server/src/middleware/autoLogin.ts)). MIDDLEWARE RUN ON EVERY REQUEST. UGH:
 
-1. Checks for a `userId` cookie in the request
-2. If no cookie exists or the cookie's user email doesn't match `MOCK_USER_EMAIL`, it looks up the user by email in the database
-3. Sets a new `userId` cookie (HttpOnly, 7-day expiration)
-4. The cookie is automatically included in subsequent requests
+1. LOOK FOR `userId` COOKIE IN REQUEST
+2. IF NO COOKIE OR COOKIE NOT MATCH `MOCK_USER_EMAIL`, FIND HUMAN IN ROCK (DATABASE)
+3. PUT NEW `userId` COOKIE (HTTPONLY, LAST 7 DAYS)
+4. COOKIE GO WITH ALL FUTURE REQUESTS. AUTOMATIC. NO THINK NEEDED.
 
-When you change `MOCK_USER_EMAIL` and restart the server, the middleware detects the mismatch and issues a new cookie for the new user on the next request. The client doesn't need to do anything - it just sends the cookie automatically.
+CHANGE `MOCK_USER_EMAIL` AND RESTART SERVER. MIDDLEWARE NOTICE. GIVE NEW COOKIE NEXT REQUEST. CLIENT DO NOTHING. CLIENT LAZY. COOKIE DO WORK.
 
-## Available Scripts
+## COMMANDS ME CAN USE
 
-### Root Level
+### BIG ROOT CAVE COMMANDS
 
-- `npm run dev` - Start both client and server in development mode
-- `npm run dev:client` - Start only the client
-- `npm run dev:server` - Start only the server
-- `npm run build` - Build all packages
-- `npm run test` - Run tests in all packages
-- `npm run lint` - Lint all packages
-- `npm run format` - Format code with Prettier
-- `npm run setup` - Install dependencies and setup database
-- `npm run storybook` - Start Storybook
+- `npm run dev` - START BOTH CAVES AT SAME TIME
+- `npm run dev:client` - START ONLY FRONT CAVE
+- `npm run dev:server` - START ONLY BACK CAVE
+- `npm run build` - BUILD ALL PACKAGE
+- `npm run test` - TEST ALL PACKAGE
+- `npm run lint` - CHECK CODE. LINT FIND BAD SMELL.
+- `npm run format` - MAKE CODE PRETTY WITH PRETTIER
+- `npm run setup` - INSTALL DEPENDENCY AND SETUP ROCK
+- `npm run storybook` - START STORYBOOK CAVE PAINTING
 
-### Client Package
+### FRONT CAVE COMMANDS
 
 ```bash
 cd packages/client
-npm run dev           # Start Vite dev server
-npm run build         # Build for production
-npm run test          # Run Jest tests
-npm run test:e2e      # Run Playwright tests
-npm run storybook     # Start Storybook
+npm run dev           # START VITE DEV SERVER
+npm run build         # BUILD FOR PRODUCTION. SERIOUS BUSINESS.
+npm run test          # RUN JEST TEST
+npm run test:e2e      # RUN PLAYWRIGHT TEST
+npm run storybook     # START STORYBOOK
 ```
 
-### Server Package
+### BACK CAVE COMMANDS
 
 ```bash
 cd packages/server
-npm run dev           # Start dev server with hot reload
-npm run build         # Build TypeScript
-npm run start         # Start production server
-npm run db:studio     # Open Prisma Studio
-npm run db:push       # Push schema changes to database
-npm run db:seed       # Seed database with demo data
+npm run dev           # START DEV SERVER WITH HOT RELOAD. HOT GOOD.
+npm run build         # BUILD TYPESCRIPT
+npm run start         # START PRODUCTION SERVER
+npm run db:studio     # OPEN PRISMA STUDIO. SEE ROCK DATA.
+npm run db:push       # PUSH SCHEMA CHANGE TO ROCK
+npm run db:seed       # PLANT SEED DATA IN ROCK
 ```
 
-### Shared Package
+### MIDDLE CAVE COMMANDS
 
 ```bash
 cd packages/shared
-npm run test          # Run Jest tests
-npm run lint          # Lint code
+npm run test          # RUN JEST TEST
+npm run lint          # LINT CODE
 ```
 
-## Project Structure
+## WHERE THING LIVE (PROJECT STRUCTURE)
 
 ```
 carton-case-management/
-├── .devcontainer/          # Devcontainer configuration
+├── .devcontainer/          # CONTAINER CAVE CONFIG
 │   ├── devcontainer.json
 │   └── Dockerfile
 ├── packages/
-│   ├── client/             # React frontend
+│   ├── client/             # FRONT CAVE (REACT)
 │   │   ├── src/
-│   │   │   ├── components/ # React components
-│   │   │   ├── lib/        # Utilities and tRPC setup
-│   │   │   ├── pages/      # Page components
-│   │   │   └── main.tsx    # Entry point
-│   │   ├── tests/          # Tests
-│   │   │   ├── unit/       # Jest unit tests
-│   │   │   └── e2e/        # Playwright E2E tests
-│   │   ├── .storybook/     # Storybook config
+│   │   │   ├── components/ # REACT COMPONENT
+│   │   │   ├── lib/        # UTIL AND tRPC SETUP
+│   │   │   ├── pages/      # PAGE COMPONENT
+│   │   │   └── main.tsx    # START HERE
+│   │   ├── tests/          # TEST LIVE HERE
+│   │   │   ├── unit/       # JEST UNIT TEST
+│   │   │   └── e2e/        # PLAYWRIGHT BIG TEST
+│   │   ├── .storybook/     # STORYBOOK CONFIG
 │   │   └── package.json
-│   ├── server/             # Node.js backend
+│   ├── server/             # BACK CAVE (NODE)
 │   │   ├── src/
-│   │   │   ├── index.ts    # Server entry point
-│   │   │   ├── router.ts   # tRPC router
-│   │   │   ├── context.ts  # tRPC context
-│   │   │   └── trpc.ts     # tRPC setup
+│   │   │   ├── index.ts    # SERVER START HERE
+│   │   │   ├── router.ts   # tRPC ROUTER
+│   │   │   ├── context.ts  # tRPC CONTEXT
+│   │   │   └── trpc.ts     # tRPC SETUP
 │   │   ├── db/
-│   │   │   ├── dev.db      # SQLite database
-│   │   │   └── seed.ts     # Database seeding
+│   │   │   ├── dev.db      # SQLITE ROCK
+│   │   │   └── seed.ts     # PLANT DATA IN ROCK
 │   │   └── package.json
-│   └── shared/             # Shared code
+│   └── shared/             # MIDDLE CAVE (SHARED STUFF)
 │       ├── prisma/
-│       │   └── schema.prisma # Prisma schema (single source of truth)
+│       │   └── schema.prisma # PRISMA SCHEMA. IMPORTANT ROCK MAP.
 │       ├── src/
-│       │   ├── types.ts    # Shared types
-│       │   ├── generated/  # Auto-generated Zod schemas from Prisma
-│       │   └── utils.ts    # Shared utilities
+│       │   ├── types.ts    # SHARED TYPE
+│       │   ├── generated/  # AUTO-MADE ZOD SCHEMA FROM PRISMA
+│       │   └── utils.ts    # SHARED UTIL
 │       └── package.json
 ├── docker-compose.dev.yaml
 ├── .gitignore
 ├── .prettierrc
 ├── eslint.config.mjs
-├── package.json            # Root package.json
-├── tsconfig.json           # Root TypeScript config
+├── package.json            # ROOT PACKAGE
+├── tsconfig.json           # TYPESCRIPT CONFIG
 └── README.md
 ```
 
-## Database
+## THE ROCK (DATABASE)
 
-The application uses SQLite for simplicity. The database file is located at `packages/server/db/dev.db`. The Prisma schema is in `packages/shared/prisma/schema.prisma`.
+APP USE SQLITE. SQLITE SMALL ROCK. SIMPLE. GOOD FOR DEVELOPMENT. ROCK LIVE AT `packages/server/db/dev.db`. ROCK MAP LIVE AT `packages/shared/prisma/schema.prisma`.
 
-### Prisma Commands
+### ROCK COMMANDS (PRISMA)
 
 ```bash
 cd packages/server
 
-# Open Prisma Studio (database GUI)
+# OPEN PRISMA STUDIO. SEE WHAT INSIDE ROCK.
 npm run db:studio
 
-# Push schema changes to database
+# PUSH SCHEMA CHANGE TO ROCK
 npm run db:push
 
-# Generate Prisma Client
+# MAKE PRISMA CLIENT
 npm run db:generate
 
-# Seed database with demo data
+# PLANT SEED DATA IN ROCK
 npm run db:seed
 
-# Reset database (clear + seed)
+# RESET ROCK. CLEAR AND RESEED. CAREFUL.
 npm run db:setup
 ```
 
-## Testing
+## TESTING (MAKE SURE APP NOT BREAK)
 
-### Unit Tests (Jest)
+### SMALL TEST (JEST)
 
 ```bash
-npm run test                 # Run all tests
-npm run test:watch          # Run tests in watch mode
+npm run test                 # RUN ALL TEST
+npm run test:watch          # WATCH AND RUN TEST
 ```
 
-### E2E Tests (Playwright)
+### BIG TEST (PLAYWRIGHT)
 
 ```bash
 cd packages/client
-npm run test:e2e            # Run E2E tests
+npm run test:e2e            # RUN E2E TEST
 npm run test:e2e:watch      # Run E2E tests in watch mode
 ```
 
