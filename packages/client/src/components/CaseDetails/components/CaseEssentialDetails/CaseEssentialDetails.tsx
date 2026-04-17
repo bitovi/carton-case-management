@@ -14,13 +14,10 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
 
   const updateCaseMutation = trpc.case.update.useMutation({
     onMutate: async (variables) => {
-      // Cancel any outgoing refetches
       await trpcUtils.case.getById.cancel({ id: caseId });
 
-      // Snapshot the previous value
       const previousCase = trpcUtils.case.getById.getData({ id: caseId });
 
-      // Optimistically update the cache
       if (previousCase) {
         trpcUtils.case.getById.setData(
           { id: caseId },
@@ -38,7 +35,6 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
     },
     onError: (error, _variables, context) => {
       console.error('Failed to update case:', error);
-      // Roll back to previous value on error
       if (context?.previousCase) {
         trpcUtils.case.getById.setData({ id: caseId }, context.previousCase);
       }
@@ -59,7 +55,6 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
     });
   };
 
-  // Special value to represent "unassigned" since Radix Select doesn't allow empty strings
   const UNASSIGNED_VALUE = '__unassigned__';
 
   const handleAssigneeChange = async (newAssigneeId: string) => {
@@ -75,6 +70,7 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
         onClick={() => setIsExpanded(!isExpanded)}
         variant="ghost"
         className="flex items-center justify-between py-4 w-full h-auto"
+        aria-expanded={isExpanded}
       >
         <h3 className="text-sm font-semibold">Essential Details</h3>
         <svg
@@ -83,6 +79,7 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
           viewBox="0 0 16 16"
           fill="none"
           className={`transition-transform text-gray-600 ${!isExpanded ? 'rotate-180' : ''}`}
+          aria-hidden="true"
         >
           <path
             d="M4 6L8 10L12 6"

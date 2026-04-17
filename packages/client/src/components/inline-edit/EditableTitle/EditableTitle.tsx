@@ -61,32 +61,24 @@ export function EditableTitle({
   isEditing: controlledIsEditing,
   onEditingChange,
 }: EditableTitleProps) {
-  // Determine if we're in controlled mode
   const isControlled = controlledIsEditing !== undefined;
 
-  // Internal state management
   const [internalState, setInternalState] = useState<EditableState>('rest');
   const [editValue, setEditValue] = useState(value);
   const [error, setError] = useState<string | null>(null);
 
-  // Refs for focus management
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Compute the current editing state
   const isEditing = isControlled ? controlledIsEditing : internalState === 'edit';
   const isSaving = internalState === 'saving';
 
-  // Determine visual state
   const state: EditableState = isSaving
     ? 'saving'
     : isEditing
       ? 'edit'
       : internalState;
 
-  /**
-   * Enter edit mode
-   */
   const enterEditMode = useCallback(() => {
     if (readonly) return;
 
@@ -100,9 +92,6 @@ export function EditableTitle({
     }
   }, [readonly, value, isControlled, onEditingChange]);
 
-  /**
-   * Exit edit mode without saving
-   */
   const exitEditMode = useCallback(() => {
     setEditValue(value);
     setError(null);
@@ -114,11 +103,7 @@ export function EditableTitle({
     }
   }, [value, isControlled, onEditingChange]);
 
-  /**
-   * Handle save action
-   */
   const handleSave = useCallback(async () => {
-    // Validate if validator provided
     if (validate) {
       const validationError = validate(editValue);
       if (validationError) {
@@ -127,25 +112,21 @@ export function EditableTitle({
       }
     }
 
-    // Skip save if value hasn't changed
     if (editValue === value) {
       exitEditMode();
       return;
     }
 
-    // Transition to saving state
     setInternalState('saving');
 
     try {
       await onSave(editValue);
-      // Success - exit edit mode
       if (isControlled) {
         onEditingChange?.(false);
       }
       setInternalState('rest');
       setError(null);
     } catch (err) {
-      // Error - return to edit mode with error
       const errorMessage =
         err instanceof Error ? err.message : 'Save failed';
       setError(errorMessage);
@@ -157,14 +138,10 @@ export function EditableTitle({
     }
   }, [editValue, value, validate, onSave, exitEditMode, isControlled, onEditingChange]);
 
-  /**
-   * Handle cancel action
-   */
   const handleCancel = useCallback(() => {
     exitEditMode();
   }, [exitEditMode]);
 
-  // Mouse event handlers for interest state
   const handleMouseEnter = useCallback(() => {
     if (!readonly && state === 'rest') {
       setInternalState('interest');
@@ -177,7 +154,6 @@ export function EditableTitle({
     }
   }, [state]);
 
-  // Focus event handlers
   const handleFocus = useCallback(() => {
     if (!readonly && state === 'rest') {
       setInternalState('interest');
@@ -186,7 +162,6 @@ export function EditableTitle({
 
   const handleBlur = useCallback(
     (e: FocusEvent) => {
-      // Check if focus is moving outside the container
       if (
         containerRef.current &&
         !containerRef.current.contains(e.relatedTarget as Node)
@@ -194,21 +169,17 @@ export function EditableTitle({
         if (state === 'interest') {
           setInternalState('rest');
         }
-        // Note: Don't auto-cancel on blur for title editing
-        // User must explicitly save or cancel
       }
     },
     [state]
   );
 
-  // Click handler for entering edit mode
   const handleClick = useCallback(() => {
     if (!readonly && (state === 'rest' || state === 'interest')) {
       enterEditMode();
     }
   }, [readonly, state, enterEditMode]);
 
-  // Keyboard event handlers
   const handleTitleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if ((state === 'rest' || state === 'interest') && (e.key === 'Enter' || e.key === ' ')) {
@@ -232,7 +203,6 @@ export function EditableTitle({
     [handleSave, handleCancel]
   );
 
-  // Auto-focus input when entering edit mode
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
@@ -240,26 +210,24 @@ export function EditableTitle({
     }
   }, [isEditing]);
 
-  // Sync edit value when external value changes
   useEffect(() => {
     if (!isEditing) {
       setEditValue(value);
     }
   }, [value, isEditing]);
 
-  // Title classes (heading-2 from Figma)
   const titleClasses = cn(
     'font-semibold',
     'text-[30px]',
     'leading-[30px]',
     'tracking-[-1px]',
-    'text-gray-950', // #192627
+    'text-gray-950',
     'rounded',
     'px-1 py-0.5',
     'transition-colors duration-150',
     'cursor-pointer',
     !readonly && 'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1',
-    state === 'interest' && 'bg-gray-200', // #dfe2e2 hover background
+    state === 'interest' && 'bg-gray-200',
     readonly && 'cursor-default'
   );
 
@@ -271,7 +239,6 @@ export function EditableTitle({
 
   const errorClasses = cn('text-xs text-destructive mt-1');
 
-  // Render edit mode
   if (isEditing) {
     return (
       <div ref={containerRef} className={cn('flex flex-col gap-1', className)}>
@@ -286,10 +253,10 @@ export function EditableTitle({
             onKeyDown={handleInputKeyDown}
             placeholder={placeholder}
             className={cn(
-              'min-h-9', // 36px
-              'w-80', // 320px
-              'rounded-lg', // 8px border-radius
-              'px-3 py-[7.5px]', // 12px horizontal, 7.5px vertical
+              'min-h-9',
+              'w-80',
+              'rounded-lg',
+              'px-3 py-[7.5px]',
               'text-sm tracking-[0.07px] leading-[21px]',
               'shadow-sm',
               'border-slate-300'
@@ -335,7 +302,6 @@ export function EditableTitle({
     );
   }
 
-  // Render saving state
   if (isSaving) {
     return (
       <div ref={containerRef} className={className}>
@@ -347,7 +313,6 @@ export function EditableTitle({
     );
   }
 
-  // Render rest/interest state (display mode)
   return (
     <div ref={containerRef} className={className} onBlur={handleBlur}>
       <h1

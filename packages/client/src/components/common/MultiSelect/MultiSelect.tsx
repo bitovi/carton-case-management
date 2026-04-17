@@ -107,6 +107,8 @@ export function MultiSelect({
           <button
             type="button"
             disabled={disabled}
+            aria-expanded={open}
+            aria-haspopup="listbox"
             className={cn(
               multiSelectTriggerVariants({ size, layout, error }),
               disabled && 'opacity-50 cursor-not-allowed',

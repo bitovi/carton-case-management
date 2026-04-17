@@ -55,7 +55,6 @@ function validateValue(
     return validate(value);
   }
 
-  // Zod schema
   const result = validate.safeParse(value);
   if (!result.success) {
     return result.error.errors[0]?.message ?? 'Validation failed';
@@ -106,25 +105,18 @@ export function EditableTextarea({
   onSave,
   validate,
 }: EditableTextareaProps) {
-  // Determine if we're in controlled mode
   const isControlled = controlledIsEditing !== undefined;
 
-  // Internal state management
   const [internalIsEditing, setInternalIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [editValue, setEditValue] = useState(value);
   const [error, setError] = useState<string | null>(null);
 
-  // Refs for focus management
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Compute the current editing state
   const isEditing = isControlled ? controlledIsEditing : internalIsEditing;
 
-  /**
-   * Enter edit mode
-   */
   const enterEditMode = useCallback(() => {
     if (readonly) return;
 
@@ -138,9 +130,6 @@ export function EditableTextarea({
     }
   }, [readonly, value, isControlled, onEditingChange]);
 
-  /**
-   * Exit edit mode
-   */
   const exitEditMode = useCallback(() => {
     if (isControlled) {
       onEditingChange?.(false);
@@ -150,11 +139,7 @@ export function EditableTextarea({
     setError(null);
   }, [isControlled, onEditingChange]);
 
-  /**
-   * Handle save
-   */
   const handleSave = useCallback(async () => {
-    // Validate before saving
     const validationError = validateValue(editValue, validate);
     if (validationError) {
       setError(validationError);
@@ -174,25 +159,17 @@ export function EditableTextarea({
     }
   }, [editValue, validate, onSave, exitEditMode]);
 
-  /**
-   * Handle cancel
-   */
   const handleCancel = useCallback(() => {
     setEditValue(value);
     exitEditMode();
   }, [value, exitEditMode]);
 
-  /**
-   * Handle keyboard events
-   */
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      // Escape to cancel
       if (e.key === 'Escape') {
         e.preventDefault();
         handleCancel();
       }
-      // Ctrl/Cmd + Enter to save
       if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
         handleSave();
@@ -201,55 +178,46 @@ export function EditableTextarea({
     [handleCancel, handleSave]
   );
 
-  // Auto-focus textarea when entering edit mode
   useEffect(() => {
     if (isEditing && textareaRef.current) {
       textareaRef.current.focus();
-      // Move cursor to end
       const length = textareaRef.current.value.length;
       textareaRef.current.setSelectionRange(length, length);
     }
   }, [isEditing]);
 
-  // Sync edit value when external value changes
   useEffect(() => {
     if (!isEditing) {
       setEditValue(value);
     }
   }, [value, isEditing]);
 
-  // Label classes (from Figma: 16px semibold)
   const labelClasses = cn(
     'font-semibold',
-    'text-base', // 16px
-    'leading-6', // 24px
-    'tracking-normal', // 0px
-    'text-gray-950' // #192627
+    'text-base',
+    'leading-6',
+    'tracking-normal',
+    'text-gray-950'
   );
 
-  // Content classes for rest state (from Figma: 14px regular)
   const contentClasses = cn(
-    'text-sm', // 14px
-    'text-foreground', // #020617
+    'text-sm',
+    'text-foreground',
     'tracking-[0.07px]',
     'leading-[21px]',
     'whitespace-pre-wrap'
   );
 
-  // Error message classes
   const errorClasses = cn('text-xs text-destructive mt-1');
 
-  // Render edit mode
   if (isEditing) {
     return (
       <div
         ref={containerRef}
-        className={cn('flex flex-col gap-4', className)} // 16px gap in edit mode
+        className={cn('flex flex-col gap-4', className)}
       >
-        {/* Label */}
         <span className={labelClasses}>{label}</span>
 
-        {/* Textarea container */}
         <div className="flex flex-col w-full">
           <Textarea
             ref={textareaRef}
@@ -265,13 +233,13 @@ export function EditableTextarea({
             style={{ minHeight: `${minHeight}px` }}
             className={cn(
               'w-full',
-              'p-[5px]', // 5px padding from Figma
-              'rounded-lg', // 8px border-radius
+              'p-[5px]',
+              'rounded-lg',
               'bg-white',
-              'border-gray-100', // #f4f5f5
-              'shadow-sm', // xs shadow
+              'border-gray-100',
+              'shadow-sm',
               'text-sm tracking-[0.07px] leading-[21px]',
-              'text-gray-950', // #192627
+              'text-gray-950',
               'resize-y'
             )}
             aria-label={label}
@@ -284,18 +252,16 @@ export function EditableTextarea({
           )}
         </div>
 
-        {/* Buttons container - 8px gap between buttons */}
         <div className="flex items-start gap-2">
-          {/* Save button - teal-600 bg, white text */}
           <Button
             type="button"
             onClick={handleSave}
             disabled={isSaving}
             className={cn(
-              'min-h-9', // 36px
-              'px-4 py-[7.5px]', // 16px horizontal, 7.5px vertical
-              'rounded-lg', // 8px border-radius
-              'bg-teal-600 hover:bg-teal-700', // #00848b
+              'min-h-9',
+              'px-4 py-[7.5px]',
+              'rounded-lg',
+              'bg-teal-600 hover:bg-teal-700',
               'text-white',
               'text-sm font-semibold',
               'tracking-[0.07px] leading-[21px]'
@@ -311,18 +277,17 @@ export function EditableTextarea({
             )}
           </Button>
 
-          {/* Cancel button - white bg, gray-700 text */}
           <Button
             type="button"
             variant="outline"
             onClick={handleCancel}
             disabled={isSaving}
             className={cn(
-              'min-h-9', // 36px
-              'px-4 py-[7.5px]', // 16px horizontal, 7.5px vertical
-              'rounded-lg', // 8px border-radius
+              'min-h-9',
+              'px-4 py-[7.5px]',
+              'rounded-lg',
               'bg-white',
-              'text-gray-700', // #4c5b5c
+              'text-gray-700',
               'text-sm font-semibold',
               'tracking-[0.07px] leading-[21px]',
               'border-0'
@@ -335,11 +300,10 @@ export function EditableTextarea({
     );
   }
 
-  // Render rest state (NO hover state for textarea)
   return (
     <div
       ref={containerRef}
-      className={cn('flex flex-col gap-2', className)} // 8px gap in rest mode
+      className={cn('flex flex-col gap-2', className)}
       onClick={!readonly ? enterEditMode : undefined}
       role={readonly ? undefined : 'button'}
       tabIndex={readonly ? -1 : 0}
@@ -356,10 +320,8 @@ export function EditableTextarea({
       aria-label={readonly ? undefined : `Edit ${label}`}
       style={{ cursor: readonly ? 'default' : 'pointer' }}
     >
-      {/* Label */}
       <span className={labelClasses}>{label}</span>
 
-      {/* Content */}
       <div className={contentClasses}>
         {displayValue ?? (value || (
           <span className="text-muted-foreground italic">{placeholder}</span>
