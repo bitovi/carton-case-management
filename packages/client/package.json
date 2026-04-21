@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3.2.2",
-    "@figma/code-connect": "^1.4.1",
+    "@figma/code-connect": "^1.4.3",
     "@storybook/addon-essentials": "^8.5.0",
     "@storybook/addon-interactions": "^8.5.0",
     "@storybook/addon-links": "^8.5.0",
