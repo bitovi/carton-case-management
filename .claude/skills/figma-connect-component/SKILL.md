@@ -1,6 +1,8 @@
 ---
 name: figma-connect-component
-description: User provides a Figma component URL and wants to generate the Code Connect mapping for it.
+description: Generate Figma Code Connect mappings that link React components to their Figma counterparts. Use when a component exists in code and needs a Code Connect file so Figma shows real code snippets in Dev Mode. Also triggers on phrases like "connect this component to Figma", "generate Code Connect", "publish to Figma", "add figma.connect for this component", "link this to Figma Dev Mode".
+argument-hint: "<figma-url> [<component-file-path>]"
+user-invocable: true
 ---
 # Generate Figma Code Connect for React Components
 
@@ -63,17 +65,19 @@ If no URL or evidence file provided, search for it:
 3. Check `.temp/figma-explore/figma-components-index.json` or `.temp/figma-connect-shadcn/figma-components-index.json` for matching component names
 4. Check prior conversation context for file key
 
-### 3. Read Code Component
-- Read the specified component file
-- Identify: exports, props interface, component name
+### 3. Read Code Component and Inline the Mapping Contract
+
+1. Read the specified component file — identify exports, props interface, component name
+2. **If `.temp/design-components/{component-name}/proposed-api.md` exists, read it and inline the prop-to-Figma mapping table into your working context.** Do not reference this file by path during generation — the full mapping must be in active context so no property is guessed or missed.
+3. Cross-check: every prop in the React interface should have a corresponding Figma source in the table. Props with no Figma source (e.g., `className`, `id`) are omitted from Code Connect.
 
 ### 4. Generate Mapping
-- Map Figma properties to code props using `figma.*` helpers
-- Build example JSX template
+- Declare each prop as a top-level `const` using `figma.selectedInstance.*` methods
+- Build the example using the `figma.code` tagged template literal
 - Add appropriate imports
 
 ### 5. Write Code Connect File
-- Output to: `{ComponentFolder}/{ComponentName}.figma.tsx`
+- Output to: `{ComponentFolder}/{ComponentName}.figma.ts`
 - Raw file content only—no markdown fences
 
 ### 6. Update README with Mapping Diagram
@@ -130,7 +134,7 @@ flowchart LR
 ```
 
 **Rules for the diagram:**
-- Include all mapped variant properties (from `figma.enum()` calls)
+- Include all mapped variant properties (from `getEnum()` calls)
 - Include boolean properties that map to React props
 - Show value transformations on the arrows (e.g., `"Small → 'sm'"`)
 - Use `<br>` for multiple value mappings on one arrow
@@ -142,9 +146,9 @@ flowchart LR
 ### Use Exact Figma Property Names
 **Critical:** Code Connect requires the EXACT property names as they appear in Figma.
 
-- Get exact names from evidence files (`.figma-components/*.json`) or `get_metadata` output
+- Get exact names from evidence files or `get_metadata` output
 - Property names like `ButtonType`, `Type`, `Size` must match EXACTLY (case-sensitive)
-- The `get_design_context` MCP tool normalizes to camelCase - **do NOT use those names**
+- The `get_design_context` MCP tool normalizes to camelCase — **do NOT use those names**
 - Property names are case-sensitive: `Size` ≠ `size`
 
 Example from metadata:
@@ -152,21 +156,20 @@ Example from metadata:
 name="ButtonType=Responsive, Type=Primary, Size=Small"
 ```
 Use in Code Connect:
-```tsx
-variant: { ButtonType: 'Responsive' },  // ✅ Exact match
-props: {
-  size: figma.enum('Size', { ... }),    // ✅ Exact match
-  variant: figma.enum('Type', { ... }), // ✅ Exact match
-}
+```ts
+const size = instance.getEnum('Size', { ... })    // ✅ Exact match
+const variant = instance.getEnum('Type', { ... }) // ✅ Exact match
 ```
 
 ### Only Use Real Figma Properties
 Map based on what exists in Figma:
-- **Component properties** → `figma.boolean()`, `figma.string()`, `figma.instance()`
-- **Variant properties** → `figma.enum()`
-- **Text layers** → `figma.textContent('LayerName')`
-- **Nested instances** → `figma.children('LayerName')` or `figma.children('*')`
-- **Child component props** → `figma.nestedProps('LayerName', { ... })`
+- **Variant/enum properties** → `instance.getEnum()`
+- **Boolean properties** → `instance.getBoolean()`
+- **Text/string properties** → `instance.getString()`
+- **Instance swap properties** → `instance.getInstanceSwap()`
+- **Slot properties** → `instance.getSlot()`
+- **Nested layer by name** → `instance.findInstance()`, `instance.findText()`
+- **Nested by Code Connect ID** → `instance.findConnectedInstance()`, `instance.findConnectedInstances()`
 
 **Never invent properties that don't exist in Figma.**
 
@@ -175,211 +178,287 @@ Map based on what exists in Figma:
 - Map Figma Title Case to code: `Primary` → `'primary'`, `Small` → `'sm'`
 - Normalize boolean variants: "Yes"/"No", "True"/"False", "On"/"Off" → `true`/`false`
 
-### Critical Constraint: No JavaScript Expressions
-Code Connect snippets are **strings, NOT executed code**.
+### Prop Rendering in the Template
 
-**NEVER use:**
-```tsx
-{hasIcon && <Icon />}
-{disabled ? 'disabled' : ''}
-{icon || <Fallback />}
+The `figma.code` tag does **not** auto-format values — you control the output syntax:
+
+| Prop type | Template syntax | Output |
+|---|---|---|
+| String enum | `size="${size}"` | `size="small"` |
+| Boolean | `disabled={${disabled}}` | `disabled={false}` or omit via `renderProp` |
+| Instance/JSX | `icon={${icon}}` | `icon={<Icon />}` |
+| String children | `>${label}<` | `>Click me<` |
+| Unknown/mixed type | `${figma.helpers.react.renderProp('size', size)}` | handles all types correctly |
+
+**Never use `{${varName}}` for string enum values** — it outputs `size={small}` (looks like an undefined JS variable). Use `"${size}"` for known strings.
+
+When the prop type could be a string, boolean, instance, or undefined, use `figma.helpers.react.renderProp` instead of hardcoding the syntax.
+
+### Critical Constraint: No JavaScript Expressions in Templates
+`figma.code` snippets are **not executed** — they are rendered as static display strings.
+
+**Never use:**
+```ts
+figma.code`${hasIcon ? iconSnippet : null}`  // ✓ OK — ternary on snippet values is fine
+figma.code`${'<Icon />' + iconSnippet}`       // ✗ string concatenation — breaks rendering
 ```
 
-**Instead, use mapping objects:**
-```tsx
-figma.boolean('Has Icon', {
-  true: <Icon />,
-  false: undefined
-})
-```
+Ternary conditionals on snippet values (`ResultSection[]`) are fine. String concatenation is not.
 
 ## API Reference
 
-### Basic Helpers
+### Instance Access
 
-```tsx
+```ts
+import figma from 'figma'
+
+const instance = figma.selectedInstance  // new API (recommended)
+// or
+const instance = figma.currentLayer      // legacy API
+```
+
+### Property Methods
+
+```ts
 // String property
-figma.string('Label')
+const label = instance.getString('Label')
 
 // Boolean property (simple)
-figma.boolean('Disabled')
+const disabled = instance.getBoolean('Disabled')
 
-// Boolean with mapping
-figma.boolean('Has Icon', {
-  true: <Icon />,
-  false: undefined
-})
-
-// Conditional string based on boolean
-figma.boolean('Has label', {
-  true: figma.string('Label'),
-  false: undefined
+// Boolean with value mapping
+const icon = instance.getBoolean('Has Icon', {
+  true: instance.getInstanceSwap('Icon')?.executeTemplate().example,
+  false: undefined,
 })
 
 // Enum/Variant property
-figma.enum('Size', {
-  'Small': 'sm',
-  'Medium': 'md',
-  'Large': 'lg'
+const size = instance.getEnum('Size', {
+  Small: 'sm',
+  Medium: 'md',
+  Large: 'lg',
 })
-
-// Text content from a layer
-figma.textContent('Button Label')
 
 // Instance swap property (nested component)
-figma.instance('Icon')
+const iconInstance = instance.getInstanceSwap('Icon')
+const iconSnippet = iconInstance?.executeTemplate().example
 
-// Child instances by layer name
-figma.children('Tab')
-figma.children(['Tab 1', 'Tab 2'])
-figma.children('Icon*')  // wildcard
-figma.children('*')      // all children
+// Slot property (open beta)
+const slotContent = instance.getSlot('Slot Name')
+
+// Raw property value (no mapping)
+const raw = instance.getPropertyValue('Prop Name')
 ```
 
-### Advanced Helpers
+### Finding Nested Layers
 
-```tsx
-// Nested props - access child component's properties on parent
-figma.nestedProps('Button Shape', {
-  size: figma.enum('Size', { ... })
+```ts
+// Find child instance by Figma layer name
+const icon = instance.findInstance('Icon Layer Name')
+const iconSnippet = icon.executeTemplate().example
+
+// Find child by Code Connect ID (preferred over layer name — stable across renames)
+const btn = instance.findConnectedInstance('button')
+const btnSnippet = btn.executeTemplate().example
+
+// Find all children matching a selector
+const items = instance.findConnectedInstances(node => node.codeConnectId() === 'list-item')
+const itemSnippets = items.map(i => i.executeTemplate().example)
+
+// Find all layers matching a predicate
+const layers = instance.findLayers(node => node instanceof TextHandle)
+
+// Find text layer by name
+const text = instance.findText('Label Layer')
+const textContent = text.textContent
+
+// SelectorOptions (optional second arg on all find* methods)
+const nested = instance.findInstance('Icon', {
+  path: ['Parent Layer'],   // restrict to specific parent hierarchy
+  traverseInstances: true,  // search through nested instances
 })
-
-// className builder
-figma.className([
-  'btn-base',
-  figma.enum('Size', { 'Large': 'btn-large' }),
-  figma.boolean('Disabled', { true: 'btn-disabled', false: '' })
-])
-
-// Instance with type inference
-figma.instance<React.FunctionComponent>('Icon')  // Returns component type
-figma.instance<string>('Icon')                    // Returns string ID
-
-// Access nested instance props in parent
-figma.instance('Icon').getProps<{ iconId: string, size: 'sm' | 'lg' }>()
-
-// Custom render for nested instance
-figma.instance('Icon').render<{ id: string }>(props => <CustomIcon id={props.id} />)
 ```
 
-### Variant Restrictions
-Use when one Figma component maps to multiple code components:
+### figma.code Template
 
-```tsx
-figma.connect(PrimaryButton, 'https://...', {
-  variant: { Type: 'Primary' },
-  example: () => <PrimaryButton />
-})
+Use `figma.code` as a tagged template literal. Interpolate property values and nested snippets:
 
-figma.connect(SecondaryButton, 'https://...', {
-  variant: { Type: 'Secondary' },
-  example: () => <SecondaryButton />
-})
+```ts
+export default {
+  example: figma.code`
+    <Button size="${size}" disabled={${disabled}}>
+      ${label}
+    </Button>
+  `,
+}
+```
 
-// Boolean variant restriction
-figma.connect(IconButton, 'https://...', {
-  variant: { 'Has Icon': true },
-  example: () => <IconButton />
-})
+You can compose nested `figma.code` blocks:
 
-// Multiple variant combination
-figma.connect(DangerButton, 'https://...', {
-  variant: { Type: 'Danger', Disabled: true },
-  example: () => <DangerButton />
-})
+```ts
+const label = figma.code`<label>${labelContent}</label>`
+export default {
+  example: figma.code`
+    <Button>
+      ${iconSnippet}
+      ${label}
+    </Button>
+  `,
+}
+```
+
+### figma.helpers.react
+
+Use these when prop type is dynamic or you want automatic correct formatting:
+
+```ts
+// renderProp — handles all types correctly, use when type is unknown
+figma.helpers.react.renderProp('disabled', true)      // → " disabled"
+figma.helpers.react.renderProp('disabled', false)     // → ""
+figma.helpers.react.renderProp('label', 'Click me')   // → ' label="Click me"'
+figma.helpers.react.renderProp('count', 42)           // → " count={42}"
+figma.helpers.react.renderProp('icon', iconSnippet)   // → " icon={<Icon />}"
+
+// renderChildren — renders children based on type
+figma.helpers.react.renderChildren('Hello')           // → "Hello"
+figma.helpers.react.renderChildren(snippets)          // → ResultSections
+
+// Value type wrappers (used with renderProp)
+figma.helpers.react.jsxElement('<CustomIcon />')      // → icon={<CustomIcon />}
+figma.helpers.react.identifier('myVariable')          // → value={myVariable}
+figma.helpers.react.function('() => alert("hi")')     // → onClick={() => alert("hi")}
+figma.helpers.react.object({ color: 'red' })          // → sx={{ color: "red" }}
+figma.helpers.react.templateString('Hello ${name}')   // → message={`Hello ${name}`}
+figma.helpers.react.reactComponent('MyComponent')     // → <MyComponent /> as children
+figma.helpers.react.array([1, 2, 3])                  // → items={[1,2,3]}
+figma.helpers.react.stringifyObject({ a: 1 })         // → "{ a: 1 }"
+```
+
+### Export Format
+
+```ts
+export default {
+  example: figma.code`...`,   // required — the rendered snippet
+  imports: string[],          // required — shown at top of snippet
+  id: string,                 // required — unique identifier for this template
+  metadata?: {
+    nestable?: boolean,       // true = inline in parent; false = expandable pill
+    props?: Record<string, any>, // data available to parents via executeTemplate().metadata.props
+  },
+}
+```
+
+### Metadata Comments (top of file)
+
+```ts
+// url=https://www.figma.com/design/{fileKey}/File?node-id=1:2   (required)
+// source=src/components/Button/Button.tsx                        (optional — shown in Figma)
+// component=Button                                               (optional — shown in Figma)
 ```
 
 ## Complete Example
 
-```tsx
-import figma from '@figma/code-connect'
-import { Button } from './Button'
+```ts
+// url=https://www.figma.com/design/abc123/File?node-id=1:2
+// source=src/components/Button/Button.ts
+// component=Button
 
-figma.connect(Button, 'https://figma.com/design/abc123/File?node-id=1:2', {
-  props: {
-    variant: figma.enum('Variant', {
-      Primary: 'primary',
-      Secondary: 'secondary'
-    }),
-    size: figma.enum('Size', {
-      Small: 'sm',
-      Medium: 'md',
-      Large: 'lg'
-    }),
-    disabled: figma.boolean('Disabled'),
-    label: figma.textContent('Label'),
-    icon: figma.boolean('Has Icon', {
-      true: figma.instance('Icon'),
-      false: undefined
-    })
-  },
-  example: ({ variant, size, disabled, label, icon }) => (
-    <Button variant={variant} size={size} disabled={disabled} icon={icon}>
-      {label}
+import figma from 'figma'
+
+const instance = figma.selectedInstance
+
+const variant = instance.getEnum('Variant', {
+  Primary: 'primary',
+  Secondary: 'secondary',
+})
+const size = instance.getEnum('Size', {
+  Small: 'sm',
+  Medium: 'md',
+  Large: 'lg',
+})
+const disabled = instance.getBoolean('Disabled')
+const label = instance.getString('Label')
+const iconInstance = instance.getInstanceSwap('Icon')
+const iconSnippet = iconInstance?.executeTemplate().example
+
+export default {
+  id: 'Button',
+  imports: ['import { Button } from "@/components/Button"'],
+  example: figma.code`
+    <Button variant="${variant}" size="${size}" disabled={${disabled}} icon={${iconSnippet}}>
+      ${label}
     </Button>
-  )
-})
+  `,
+  metadata: { nestable: true },
+}
 ```
 
-## Icon Connection Patterns
+### Example with renderProp (mixed/unknown prop types)
 
-### Icons as JSX Elements
-```tsx
-// Icon component
-figma.connect('https://...icon-url...', {
-  example: () => <IconHeart />
-})
+```ts
+// url=https://www.figma.com/design/abc123/File?node-id=3:4
+// source=src/components/Card/Card.ts
+// component=Card
 
-// Parent using the icon
-figma.connect(Button, 'https://...button-url...', {
-  props: {
-    icon: figma.instance('Icon')
-  },
-  example: ({ icon }) => <Button>{icon}</Button>
+import figma from 'figma'
+
+const instance = figma.selectedInstance
+
+const slotNo = instance.getEnum('Slot No.', {
+  '1 Slot': '1 Slot',
+  '2 Slots': '2 Slots',
 })
-// Renders: <Button><IconHeart/></Button>
+const header = instance.getInstanceSwap('Header Slot')?.executeTemplate().example
+const main = instance.getInstanceSwap('Main Slot')?.executeTemplate().example
+
+export default {
+  id: 'Card',
+  imports: ['import { Card } from "@/components/Card"'],
+  example: figma.code`<Card slotNo="${slotNo}" headerSlot={${header}} mainSlot={${main}} />`,
+  metadata: { nestable: true },
+}
 ```
 
-### Icons as React Components
-```tsx
-// Icon returns component reference (not JSX)
-figma.connect('https://...icon-url...', {
-  example: () => IconHeart  // No angle brackets
-})
+### Example with nested connected instances
 
-// Parent receives component type
-figma.connect(Button, 'https://...', {
-  props: {
-    Icon: figma.instance<React.FunctionComponent>('Icon')
-  },
-  example: ({ Icon }) => <Button Icon={Icon} />
-})
-// Renders: <Button Icon={IconHeart} />
+```ts
+// url=https://www.figma.com/design/abc123/File?node-id=5:6
+
+import figma from 'figma'
+
+const instance = figma.selectedInstance
+
+const items = instance.findConnectedInstances(node => node.codeConnectId() === 'tab-item')
+const itemSnippets = items.map(i => i.executeTemplate().example)
+
+export default {
+  id: 'TabGroup',
+  imports: ['import { TabGroup, Tab } from "@/components/Tabs"'],
+  example: figma.code`
+    <TabGroup>
+      ${figma.helpers.react.renderChildren(itemSnippets)}
+    </TabGroup>
+  `,
+  metadata: { nestable: false },
+}
 ```
 
-### Icons as String IDs
-```tsx
-// Icon returns string ID
-figma.connect('https://...icon-url...', {
-  example: () => 'icon-heart'
-})
+## What NOT to Do
 
-// Parent uses string
-figma.connect(Button, 'https://...', {
-  props: {
-    iconId: figma.instance<string>('Icon')
-  },
-  example: ({ iconId }) => <Button iconId={iconId} />
-})
-// Renders: <Button iconId="icon-heart" />
-```
+- **Don't use `get_design_context` property names.** MCP normalizes them to camelCase. The actual Figma property names are Title Case with spaces (e.g., `Has Icon`, `ButtonType`, `Size`). Use `get_metadata` output or the raw variant names from evidence files.
+- **Don't invent properties that don't exist in Figma.** If `proposed-api.md` lists a prop like `className` that has no Figma source, omit it from Code Connect entirely.
+- **Don't use `{${varName}}` for string enums.** It outputs `size={small}` — looks like an undefined JS variable. Use `"${varName}"` for known strings, or `figma.helpers.react.renderProp` for mixed types.
+- **Don't use the old `figma.connect()` API.** The new template API uses `figma.selectedInstance.*` and `export default { ... }`.
+- **Don't concatenate snippet values.** `'<Tag />' + snippetVar` breaks rendering. Always compose inside `figma.code\`...\``.
+- **Don't map pseudo-states.** `hover`, `focus`, `pressed`, `active` Figma variants have no corresponding props — exclude them.
+- **Don't reference `proposed-api.md` by path during generation.** The mapping contract must be inlined into your working context in Step 3.
 
 ## Output
 
-Write raw file content only—no markdown fences, no explanations.
+Write raw file content only — no markdown fences, no explanations.
 
-**File location:** `{ComponentFolder}/{ComponentName}.figma.tsx`
+**File location:** `{ComponentFolder}/{ComponentName}.figma.ts`
 
-Example: `src/components/inline-edit/EditableText/EditableText.figma.tsx`
+Example: `src/components/inline-edit/EditableText/EditableText.figma.ts`
 
-File must be immediately usable with `npx @figma/code-connect connect publish`.
+File must be immediately usable with `npm run figma:publish`.

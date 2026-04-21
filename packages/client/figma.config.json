@@ -1,10 +1,8 @@
 {
   "codeConnect": {
-    "parser": "react",
-    "include": ["src/components/**/*.tsx"],
-    "exclude": ["**/*.test.tsx", "**/*.stories.tsx"],
-    "importPaths": {
-      "src/components/*": "@/components/*"
-    }
+    "include": ["**/*.figma.ts"],
+    "label": "React",
+    "language": "jsx"
   }
 }
+
