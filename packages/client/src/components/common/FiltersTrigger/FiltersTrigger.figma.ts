@@ -3,7 +3,7 @@
 
 import figma from "figma"
 
-const state = figma.selectedInstance.getEnum("State", {
+const _state = figma.selectedInstance.getEnum("State", {
   Rest: "rest",
   Applied: "applied",
   Selected: "selected",
@@ -13,8 +13,8 @@ export default {
   id: "FiltersTrigger",
   imports: ["import { FiltersTrigger } from './FiltersTrigger';"],
   example: figma.code`function Example() {
-    const activeCount = state === 'applied' ? 1 : 0;
-    const selected = state === 'selected';
+    const activeCount = ${_state} === 'applied' ? 1 : 0;
+    const selected = ${_state} === 'selected';
     return (<FiltersTrigger activeCount={activeCount} selected={selected} onClick={() => { }}/>);
 }`,
   metadata: { nestable: false },
