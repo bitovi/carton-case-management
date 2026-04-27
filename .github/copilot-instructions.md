@@ -1,57 +1,33 @@
 # carton-case-management Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2025-12-24
-
-## Skills
-
-Before implementing any feature:
-1. Review the skills table below and read relevant documentation in `.github/skills/`
-2. Apply skills that match your task (e.g., component-reuse before creating UI)
-3. Follow skill workflows to prevent common mistakes
-
-This project uses Agent Skills for specialized workflows. See `.github/skills/`:
-
-| Skill | Purpose | When to Use |
-|-------|---------|-------------|
-| `component-reuse` | Ensure existing UI components are reused before creating new ones | Before implementing any UI from Figma, tickets, or mockups |
-| `validate-implementation` | Validate implementations for runtime errors, accessibility, and API compliance | Before marking any feature complete or committing code |
-| `figma-implement-component` | Implement React components from Figma designs | After component-reuse confirms no existing component, use to build new components from Figma |
-| `figma-design-react` | Design React components from Figma files | When analyzing Figma designs to propose component architecture and props API |
-| `figma-component-sync` | Check React components against Figma design source | When reviewing implementations, syncing designs, or auditing visual accuracy |
-| `figma-connect-component` | Generate Figma Code Connect mapping for components | When linking React components to their Figma counterparts |
-| `figma-connect-shadcn` | Connect shadcn/ui components to Figma | After adding shadcn components via `npx shadcn@latest add` |
-| `figma-explore` | Explore Figma files to discover pages and components | When you need to list components in a Figma file or find component node IDs |
-| `create-react-modlet` | Create React components following the modlet pattern | When creating any component in `packages/client/src/components/` |
-| `cross-package-types` | Type flow between shared, server, and client packages | When working with types across package boundaries |
-| `create-skill` | How to create new Agent Skills for this project | When asked to document a workflow or teach Copilot a new capability |
-
-## Package-Specific Instructions
-
-Each package has detailed instructions in `.github/instructions/`:
-
-| File | Applies To | Purpose |
-|------|-----------|---------|
-| `shared.instructions.md` | `packages/shared/**` | Prisma schema, generated types, browser-safe utilities |
-| `server.instructions.md` | `packages/server/**` | tRPC router, API definitions, database operations |
-| `client.instructions.md` | `packages/client/**` | React components, UI, tRPC client usage |
-
 ## Active Technologies
-- TypeScript 5.x, React 18.3.x + Shadcn UI components (Input, Select, Button), Radix UI primitives, Lucide icons, Tailwind CSS, Zod (validation) (004-inline-edit-components)
-- N/A (components are presentational; save handled by consumer callbacks) (004-inline-edit-components)
-
-- TypeScript 5.x (via Node.js runtime in devcontainer) + React 18, Vite, tRPC, React Query, Shadcn UI, Tailwind CSS (002-header-menu-components)
-- N/A (UI components only, no data persistence required) (002-header-menu-components)
-
-- TypeScript 5.x / Node.js 22+ + React 18, tRPC 11, @tanstack/react-query 5, Vite 6, Prisma (ORM) (001-trpc-react-query)
+- TypeScript 5.x, React 18.3.x + Shadcn UI components (Input, Select, Button), Radix UI primitives, Lucide icons, Tailwind CSS, Zod (validation)
+- TypeScript 5.x / Node.js 22+ + React 18, tRPC 11, @tanstack/react-query 5, Vite 6, Prisma (ORM)
 
 ## Project Structure
 
 ```text
-src/
-tests/
+packages/
+  client/   # React frontend
+  server/   # Express/tRPC backend
+  shared/   # Shared types, Prisma schema, utilities
 ```
 
 ## Commands
+
+### Running Dev Servers
+
+Before starting the dev servers, always kill any processes already using ports 3001 or 5173:
+
+```bash
+npm run kill-servers
+```
+
+Then start each server in a **separate async terminal**:
+- `npm run dev:server` — backend on port 3001 (wait for "listening" confirmation)
+- `npm run dev:client` — frontend on port 5173 (wait for Vite ready message)
+
+Do NOT use `npm run dev` — it combines both processes, making it impossible to confirm each is ready independently.
 
 ### Running Tests
 - **Unit Tests**: `npm test` - Runs all unit tests across workspaces (client, server, shared)
@@ -72,7 +48,7 @@ TypeScript 5.x / Node.js 22+: Follow standard conventions
 
 ## Coding Standards
 
-- When creating new React files ensure to follow the details specified in .github/prompts/modlet.prompt.md.
+- When creating new React files ensure to follow the modlet pattern in `packages/client/AGENTS.md`.
 - No tsx or ts files should have inline comments.
 - All styling should be done using Tailwind CSS classes in an external CSS file.
 - Responsive designing should be implemented using Tailwind CSS utilities.
@@ -144,13 +120,3 @@ TypeScript 5.x / Node.js 22+: Follow standard conventions
   - `npm run db:studio` - Open Prisma Studio to browse data
 - **Environment Config**: Single `.env` file at project root with `DATABASE_URL` pointing to `packages/server/db/dev.db`
 - **Cascading Deletes**: Always configure cascading deletes (`onDelete: Cascade`) in Prisma schema when an entity has related data that should be removed when the parent is deleted
-
-## Recent Changes
-- 004-inline-edit-components: Added TypeScript 5.x, React 18.3.x + Shadcn UI components (Input, Select, Button), Radix UI primitives, Lucide icons, Tailwind CSS, Zod (validation)
-
-- 002-header-menu-components: Added TypeScript 5.x (via Node.js runtime in devcontainer) + React 18, Vite, tRPC, React Query, Shadcn UI, Tailwind CSS
-
-- 001-trpc-react-query: Added TypeScript 5.x / Node.js 22+ + React 18, tRPC 11, @tanstack/react-query 5, Vite 6, Prisma (ORM)
-
-<!-- MANUAL ADDITIONS START -->
-<!-- MANUAL ADDITIONS END -->

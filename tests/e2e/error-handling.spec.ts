@@ -22,7 +22,7 @@ test.describe('Error Handling', () => {
       }
     );
 
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await expect(page.getByText('Error loading cases').first()).toBeVisible({ timeout: 15000 });
 
@@ -57,7 +57,7 @@ test.describe('Error Handling', () => {
       }
     );
 
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await expect(page.getByText('Error loading cases').first()).toBeVisible({ timeout: 15000 });
 
@@ -79,7 +79,7 @@ test.describe('Error Handling', () => {
       }
     );
 
-    await page.goto('/');
+    await page.goto('/cases/');
 
     const skeletons = page.locator('.flex.flex-col.gap-2 .h-5');
     await expect(skeletons.first())
@@ -91,7 +91,7 @@ test.describe('Error Handling', () => {
   });
 
   test('should show background refetch indicator', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/cases/');
 
     const caseList = page.locator('.flex.flex-col.gap-2 a');
     await expect(caseList.first()).toBeVisible({ timeout: 10000 });
@@ -131,7 +131,7 @@ test.describe('Error Handling', () => {
       }
     );
 
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await expect(page.getByText('No cases found').first()).toBeVisible({ timeout: 10000 });
 
@@ -160,7 +160,7 @@ test.describe('Error Handling', () => {
       }
     );
 
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await expect(page.getByText('Error loading cases').first()).toBeVisible({ timeout: 15000 });
 

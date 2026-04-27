@@ -141,7 +141,7 @@ const handleSubmit = (e) => {
 
 ### Breakpoint
 - Mobile: default styles
-- Desktop: `lg:` prefix (≥ 1024px)
+- Desktop: `lg:` prefix (>= 1024px)
 
 ### Sidebar Pattern
 ```tsx

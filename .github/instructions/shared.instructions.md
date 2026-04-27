@@ -1,5 +1,5 @@
 ---
-applyTo: packages/shared/**
+applyTo: 'packages/shared/**'
 ---
 
 # @carton/shared Package Instructions
