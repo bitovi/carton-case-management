@@ -54,7 +54,6 @@ yarn-error.log*
 Thumbs.db
 
 # IDE
-.vscode/*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
@@ -70,3 +69,9 @@ Thumbs.db
 .temp/
 .tmp/
 .vite/
+
+# Playwright
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

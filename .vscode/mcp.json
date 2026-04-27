@@ -1,0 +1,34 @@
+{
+	"servers": {
+		"Atlassian": {
+			"type": "http",
+			"url": "https://mcp.atlassian.com/v1/mcp"
+		},
+		"Database": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@bytebase/dbhub",
+				"--transport",
+				"stdio",
+				"--dsn",
+				"sqlite:///workspaces/carton-case-management/packages/shared/prisma/prisma/dev.db"
+			]
+		},
+		// "Database-Postgres": {
+		// 	"command": "npx",
+		// 	"args": [
+		// 		"-y",
+		// 		"@bytebase/dbhub",
+		// 		"--transport",
+		// 		"stdio",
+		// 		"--dsn",
+		// 		"postgresql://${input:dbUser}:${input:dbPassword}@hostname:5432/dbname"
+		// 	]
+		// }
+	},
+	"inputs": [
+		{ "id": "dbUser", "type": "promptString", "description": "DB username" },
+		{ "id": "dbPassword", "type": "promptString", "description": "DB password", "password": true }
+	]
+}

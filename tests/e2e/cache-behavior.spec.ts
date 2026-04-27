@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Cache Behavior', () => {
   test('should cache query results and display instantly on navigation', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/cases/');
 
     const firstCase = page.locator('.flex.flex-col.gap-2 a').first();
     await expect(firstCase).toBeVisible({ timeout: 10000 });
@@ -30,12 +30,12 @@ test.describe('Cache Behavior', () => {
   });
 
   test('should refetch data in background on window focus', async ({ page, context }) => {
-    await page.goto('/');
+    await page.goto('/cases/');
     const caseList = page.locator('.flex.flex-col.gap-2 a');
     await expect(caseList.first()).toBeVisible({ timeout: 10000 });
 
     const newPage = await context.newPage();
-    await newPage.goto('/');
+    await newPage.goto('/cases/');
 
     await page.bringToFront();
 
@@ -47,7 +47,7 @@ test.describe('Cache Behavior', () => {
   });
 
   test('should handle stale data by refetching after 5 minutes', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/cases/');
     const caseList = page.locator('.flex.flex-col.gap-2 a');
     await expect(caseList.first()).toBeVisible({ timeout: 10000 });
   });
@@ -61,7 +61,7 @@ test.describe('Cache Behavior', () => {
       }
     );
 
-    await page.goto('/');
+    await page.goto('/cases/');
 
     const skeletons = page.locator('.flex.flex-col.gap-2 .h-5');
     await expect(skeletons.first())
@@ -73,7 +73,7 @@ test.describe('Cache Behavior', () => {
   });
 
   test('should not show loading state when data is cached', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/cases/');
     const caseList = page.locator('.flex.flex-col.gap-2 a');
     await expect(caseList.first()).toBeVisible({ timeout: 10000 });
 
@@ -84,7 +84,7 @@ test.describe('Cache Behavior', () => {
       await page.waitForTimeout(200);
     }
 
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await expect(caseList.first()).toBeVisible({ timeout: 500 });
   });

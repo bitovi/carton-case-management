@@ -1,5 +1,5 @@
 ---
-applyTo: packages/server/**
+applyTo: 'packages/server/**'
 ---
 
 # @carton/server Package Instructions
