@@ -1,11 +1,24 @@
 import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { trpc } from '@/lib/trpc';
 import { CaseInformation } from './components/CaseInformation';
 import { CaseComments } from './components/CaseComments';
 import { CaseEssentialDetails } from './components/CaseEssentialDetails';
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 1024);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const handler = (e: MediaQueryListEvent) => setIsMobile(!e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+  return isMobile;
+}
+
 export function CaseDetails() {
   const { id } = useParams<{ id: string }>();
+  const isMobile = useIsMobile();
   const { data: caseData, isLoading } = trpc.case.getById.useQuery({ id: id! }, { enabled: !!id });
 
   if (isLoading) {
@@ -32,23 +45,23 @@ export function CaseDetails() {
 
   return (
     <div className="flex flex-1 flex-col">
-      {/* Mobile Layout */}
-      <div className="flex flex-col w-full lg:hidden gap-4 pb-6">
-        <CaseInformation caseId={caseData.id} caseData={caseData} />
-        <CaseEssentialDetails caseId={caseData.id} caseData={caseData} />
-        <CaseComments caseData={caseData} />
-      </div>
-
-      {/* Desktop Layout */}
-      <div className="hidden lg:flex flex-1 gap-4">
-        <div className="flex flex-col px-1 flex-1 gap-6">
+      {isMobile ? (
+        <div className="flex flex-col w-full gap-4 pb-6">
           <CaseInformation caseId={caseData.id} caseData={caseData} />
-          <div className="h-[9px]" />
+          <CaseEssentialDetails caseId={caseData.id} caseData={caseData} />
           <CaseComments caseData={caseData} />
         </div>
-        <div className="h-[9px]" />
-        <CaseEssentialDetails caseId={caseData.id} caseData={caseData} />
-      </div>
+      ) : (
+        <div className="flex flex-1 gap-4">
+          <div className="flex flex-col px-1 flex-1 gap-6">
+            <CaseInformation caseId={caseData.id} caseData={caseData} />
+            <div className="h-[9px]" />
+            <CaseComments caseData={caseData} />
+          </div>
+          <div className="h-[9px]" />
+          <CaseEssentialDetails caseId={caseData.id} caseData={caseData} />
+        </div>
+      )}
     </div>
   );
 }

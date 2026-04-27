@@ -1,0 +1,24 @@
+{
+	"servers": {
+		"Atlassian": {
+			"type": "http",
+			"url": "https://mcp.atlassian.com/v1/mcp"
+		},
+		// "Playwright": {
+		// 	"type": "stdio",
+		// 	"command": "npx",
+		// 	"args": [
+		// 		"@playwright/mcp@latest"
+		// 	]
+		// },
+		// "Chrome Debugging": {
+		// 	"type": "stdio",
+		// 	"command": "bash",
+		// 	"args": [
+		// 		"-c",
+		// 		"HOST=$(getent ahostsv4 host.docker.internal | awk 'NR==1{print $1}'); exec npx @playwright/mcp@latest --cdp-endpoint http://$HOST:9222"
+		// 	]
+		// },
+	},
+	"inputs": []
+}
