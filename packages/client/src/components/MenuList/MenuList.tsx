@@ -32,7 +32,7 @@ export function MenuList({ items, className, onItemClick }: MenuListProps) {
             className={`flex items-center justify-center w-9 h-9 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#bcecef] focus-visible:ring-offset-2 ${
               item.isActive ? 'bg-[#bcecef]' : 'hover:bg-gray-100'
             }`}
-            aria-current={item.isActive ? 'page' : undefined}
+            aria-current={item.isActive ? 'true' : undefined}
             aria-label={item.label}
           >
             {item.icon && <span className="flex-shrink-0">{item.icon}</span>}

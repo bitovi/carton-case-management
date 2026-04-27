@@ -5,7 +5,7 @@ import { TRPCError } from '@trpc/server';
 
 export const appRouter = router({
   health: publicProcedure.query(() => {
-    return { status: 'ok', timestamp: new Date().toISOString(), formatted: formatDate(new Date()) };
+    return { status: 'ready', timestamp: new Date().toISOString(), formatted: formatDate(new Date()) };
   }),
 
   auth: router({
@@ -425,7 +425,8 @@ export const appRouter = router({
 
         return ctx.prisma.comment.create({
           data: {
-            ...input,
+            caseId: input.caseId,
+            content: input.content,
             authorId: ctx.userId,
           },
           include: {

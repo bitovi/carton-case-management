@@ -5,13 +5,14 @@ import { MenuList } from './components/MenuList';
 import { CasePage } from './pages/CasePage';
 import { CustomerPage } from './pages/CustomerPage';
 import { UserPage } from './pages/UserPage';
+import { HomePage } from './pages/HomePage';
 import { trpc } from './lib/trpc';
 
 function App() {
   const location = useLocation();
   
   const menuItems = [
-    { id: 'home', label: 'Cases', path: '/cases/', icon: <FolderClosed size={20} />, isActive: location.pathname === '/' || location.pathname.startsWith('/cases') },
+    { id: 'home', label: 'Cases', path: '/cases/', icon: <FolderClosed size={20} />, isActive: location.pathname.startsWith('/cases') },
     { id: 'users', label: 'Users', path: '/users/', icon: <Bot size={20} />, isActive: location.pathname.startsWith('/users') },
     { id: 'customers', label: 'Customers', path: '/customers/', icon: <Users size={20} />, isActive: location.pathname.startsWith('/customers') },
   ];
@@ -53,7 +54,7 @@ function App() {
       <div className="flex flex-1 overflow-hidden lg:pl-[68px]">
         <main className="flex-1 lg:p-6 overflow-auto">
           <Routes>
-            <Route path="/" element={<CasePage />} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/cases/" element={<CasePage />} />
             <Route path="/cases/:id" element={<CasePage />} />
             <Route path="/users/" element={<UserPage />} />

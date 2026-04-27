@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/obra/Skeleton';
@@ -9,6 +10,14 @@ export function CaseList({ onCaseClick }: CaseListProps) {
   const { id: activeId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: cases, isLoading, error, refetch } = trpc.case.list.useQuery();
+
+  useEffect(() => {
+    document.title = activeId ? `Case ${activeId}` : 'Cases';
+  }, [activeId]);
+
+  useEffect(() => {
+    document.body.setAttribute('data-case-count', String(cases?.length ?? 0));
+  }, [activeId]);
 
   if (isLoading) {
     return (
@@ -96,7 +105,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
               <div className="flex flex-col items-start text-sm leading-[21px] w-full lg:w-[167px]">
                 <p className="font-semibold text-[#00848b] w-full truncate">{caseItem.title}</p>
                 <p className="font-normal text-[#192627] w-full truncate">
-                  {formatCaseNumber(caseItem.id, caseItem.createdAt)}
+                  {formatCaseNumber(caseItem.id, caseItem.updatedAt)}
                 </p>
               </div>
             </Link>

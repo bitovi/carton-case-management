@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('CasePage', () => {
   test('should display case details when navigating to case', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
@@ -23,7 +23,7 @@ test.describe('CasePage', () => {
       }
     );
 
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
@@ -45,7 +45,7 @@ test.describe('CasePage', () => {
 
   test('should switch cases when clicking different case in list', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
@@ -67,7 +67,7 @@ test.describe('CasePage', () => {
 
   test('should display case information section', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
@@ -82,7 +82,7 @@ test.describe('CasePage', () => {
 
   test('should display case essential details section', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
     
@@ -93,7 +93,7 @@ test.describe('CasePage', () => {
 
   test('should display case comments section', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
@@ -105,7 +105,7 @@ test.describe('CasePage', () => {
 
   test('should redirect to first case when navigating to root', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
@@ -115,7 +115,7 @@ test.describe('CasePage', () => {
   test('should handle responsive layout on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
 
-    await page.goto('/');
+    await page.goto('/cases/');
 
     const caseList = page.locator('.flex-1.lg\\:hidden .flex.flex-col.gap-2 a');
     await expect(caseList.first()).toBeVisible({ timeout: 10000 });
@@ -138,7 +138,7 @@ test.describe('CasePage', () => {
   test('should open mobile sheet when menu clicked', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
 
-    await page.goto('/');
+    await page.goto('/cases/');
 
     const caseList = page.locator('.flex-1.lg\\:hidden .flex.flex-col.gap-2 a');
     await expect(caseList.first()).toBeVisible({ timeout: 10000 });
@@ -162,7 +162,7 @@ test.describe('CasePage', () => {
   test('should close mobile sheet after selecting case', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
 
-    await page.goto('/');
+    await page.goto('/cases/');
 
     const caseList = page.locator('.flex-1.lg\\:hidden .flex.flex-col.gap-2 a');
     await expect(caseList.first()).toBeVisible({ timeout: 10000 });
@@ -190,7 +190,7 @@ test.describe('CasePage', () => {
   test('should display case list on desktop', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
 
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
@@ -223,7 +223,7 @@ test.describe('CasePage', () => {
       }
     );
 
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
