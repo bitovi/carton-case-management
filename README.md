@@ -1,4 +1,4 @@
-magic words for make app go:
+TSET GULNZOA WTIH TPOS words for make app go:
 
 - docker-compose -f docker-compose.local.yaml up --build
 - cmd+shift+p -> Dev Containers: Reopen in Container
