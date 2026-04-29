@@ -6,7 +6,7 @@ test.describe('Create Case', () => {
   });
 
   test('should navigate to create case page via sidebar button', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/cases/');
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
     const createButton = page.getByRole('button', { name: 'Create Case' });
@@ -198,7 +198,7 @@ test.describe('Create Case', () => {
   });
 
   test('should cancel creation and return to previous case when Cancel is clicked', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/cases/');
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
     const previousUrl = page.url();
 
@@ -211,7 +211,7 @@ test.describe('Create Case', () => {
   });
 
   test('should not create a case when Cancel is clicked without submitting', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/cases/');
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
     const initialCaseCount = await page.locator('.flex.flex-col.gap-2 a').count();

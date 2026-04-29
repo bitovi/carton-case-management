@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Header Navigation', () => {
   test('clicking logo navigates to home page', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
@@ -12,8 +12,8 @@ test.describe('Header Navigation', () => {
     const logoLink = page.locator('a[aria-label="Navigate to home"]');
     await logoLink.click();
 
-    await page.waitForURL(/\/cases\/.+/, { timeout: 5000 });
-    expect(page.url()).toMatch(/\/cases\/.+/);
+    await page.waitForURL('/', { timeout: 5000 });
+    expect(page.url()).toMatch(/\/$/); 
   });
 
   test('header appears on all pages', async ({ page }) => {
@@ -22,7 +22,7 @@ test.describe('Header Navigation', () => {
     const header = page.locator('header[aria-label="Main navigation"]');
     await expect(header).toBeVisible();
 
-    await expect(page.getByText(/carton/i)).toBeVisible();
+    await expect(header.getByText(/carton/i).first()).toBeVisible();
   });
 
   test('header displays responsive text', async ({ page }) => {
@@ -33,7 +33,8 @@ test.describe('Header Navigation', () => {
 
     await page.setViewportSize({ width: 375, height: 667 });
 
-    await expect(page.getByText(/carton/i)).toBeVisible();
+    const header = page.locator('header[aria-label="Main navigation"]');
+    await expect(header.getByText(/carton/i).first()).toBeVisible();
   });
 
   test('avatar dropdown opens on click', async ({ page }) => {
@@ -60,7 +61,7 @@ test.describe('Header Navigation', () => {
 
 test.describe('MenuList Navigation', () => {
   test('clicking menu item navigates to home page', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
@@ -79,7 +80,7 @@ test.describe('MenuList Navigation', () => {
 
   test('menu adapts to mobile viewport', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('/');
+    await page.goto('/cases/');
 
     const caseList = page.locator('.flex-1.lg\\:hidden .flex.flex-col.gap-2 a');
     await expect(caseList.first()).toBeVisible({ timeout: 10000 });
@@ -92,7 +93,7 @@ test.describe('MenuList Navigation', () => {
   });
 
   test('keyboard navigation through menu items', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
