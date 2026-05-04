@@ -2,51 +2,6 @@
 
 A reusable footer component for dialogs and sheets, providing consistent layout for action buttons with three variant options: right-aligned buttons, full-width button rows, or single full-width button.
 
-## Figma Source
-
-https://www.figma.com/design/MQUbIrlfuM8qnr9XZ7jc82/Obra-shadcn-ui--Carton-?node-id=593-62172&m=dev
-
-## Accepted Design Differences
-
-| Category | Figma | Implementation | File | Reason |
-|----------|-------|----------------|------|--------|
-| Button Content | Placeholder "Label" | Flexible children | DialogFooter.tsx | Support any button content/configuration |
-
-## Design-to-Code Mapping
-
-### Variant Mappings
-
-| Figma Variant | Figma Value | React Prop | React Value | Notes |
-|---------------|-------------|------------|-------------|-------|
-| Type | 2 Buttons Right | `type` | `'2 Buttons Right'` | Two buttons, right-aligned (default) |
-| Type | 2 Full-width Buttons | `type` | `'2 Full-width Buttons'` | Two buttons, full-width layout |
-| Type | Single Full-width Button | `type` | `'Single Full-width Button'` | Single button, full-width |
-
-### Layout Details
-
-#### 2 Buttons Right Variant
-- Container: padding 16px, flex flex-col gap-0
-- Inner wrapper: flex items-center justify-end gap-2
-- Buttons: Auto width, right-aligned
-- Typical use: Cancel + Primary action
-
-#### 2 Full-width Buttons Variant
-- Container: padding 16px, flex flex-col gap-0
-- Inner wrapper: flex items-start justify-end gap-2 rounded-[10px]
-- Buttons: Should use `flex-1` class for equal width
-- Typical use: Equal-weight actions (e.g., "Save Draft" + "Publish")
-
-#### Single Full-width Button Variant
-- Container: padding 16px, flex flex-col gap-0
-- Inner wrapper: flex items-start justify-end gap-0 rounded-[10px]
-- Button: Should use `w-full` class
-- Typical use: Single call-to-action (e.g., "Got it", "Continue")
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | `ReactNode` | - | **Required**. Action buttons or custom footer content |
-| `className` | `string` | - | Additional classes |
-
 ## Usage
 
 ### Standard Action Buttons
@@ -107,8 +62,8 @@ import { Button } from '@/components/obra';
 ```tsx
 import { Sheet, DialogHeader, DialogFooter } from '@/components/obra';
 
-<Sheet 
-  open={isOpen} 
+<Sheet
+  open={isOpen}
   onOpenChange={setIsOpen}
   header={<DialogHeader type="Header" title="Settings" />}
   footer={

@@ -2,10 +2,6 @@
 
 A generic component that displays a list of filter dropdowns, accepting any kind and number of filters.
 
-## Figma Design
-
-[Figma: Filters List](https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-id=1033-19601)
-
 ## Usage
 
 ```tsx

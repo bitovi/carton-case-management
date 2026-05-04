@@ -2,10 +2,6 @@
 
 A dialog component that displays filters with Clear and Apply actions, accepting any kind and number of filters.
 
-## Figma Design
-
-[Figma: Filters Dialog](https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-id=2941-9234)
-
 ## Usage
 
 ```tsx

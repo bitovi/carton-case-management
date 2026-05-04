@@ -2,10 +2,6 @@
 
 A button component that triggers the display of filters, showing active filter count and selection state.
 
-## Figma Design
-
-[Figma: Filters Trigger](https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-id=1031-2046)
-
 ## Usage
 
 ```tsx

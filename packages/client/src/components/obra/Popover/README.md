@@ -53,7 +53,7 @@ function FormExample() {
       <PopoverTrigger asChild>
         <Button variant="outline">Open settings</Button>
       </PopoverTrigger>
-      <PopoverContent 
+      <PopoverContent
         headerTitle="Settings"
         headerDescription="Configure your preferences below."
       >
@@ -106,8 +106,8 @@ function ControlledExample() {
           {open ? 'Close' : 'Open'} popover
         </Button>
       </PopoverTrigger>
-      <PopoverContent 
-        headerTitle="Status" 
+      <PopoverContent
+        headerTitle="Status"
         headerDescription={`Popover is ${open ? 'open' : 'closed'}`}
       >
         <div>
@@ -126,8 +126,8 @@ function ControlledExample() {
   <PopoverTrigger asChild>
     <Button>Trigger</Button>
   </PopoverTrigger>
-  <PopoverContent 
-    side="top" 
+  <PopoverContent
+    side="top"
     align="start"
     sideOffset={10}
     headerTitle="Positioned Popover"

@@ -8,21 +8,8 @@ The HoverCard component provides a floating card that appears when hovering over
 
 ## Design Reference
 
-- **Figma**: https://www.figma.com/design/MQUbIrlfuM8qnr9XZ7jc82/Obra-shadcn-ui--Carton-?node-id=303-246487
 - **Component Type**: Obra design system component
 - **Radix Primitive**: [@radix-ui/react-hover-card](https://www.radix-ui.com/primitives/docs/components/hover-card)
-
-## Design-to-Code Mapping
-
-| Figma Property | Code Prop | Notes |
-|---------------|-----------|-------|
-| Container (200px width) | `className` | Fixed 200px width via `w-[200px]` class |
-| Border | `className` | Applied via `border border-border` |
-| Background | `className` | Applied via `bg-card` |
-| Shadow | `className` | Applied via `shadow-md` |
-| Padding (8px) | `className` | Applied via `p-2` (8px) |
-| Border Radius (8px) | `className` | Applied via `rounded-lg` |
-| .Slot (48px height) | `children` | Content slot, 48px height |
 
 ## Usage
 
@@ -62,7 +49,7 @@ function Example() {
 
 ### Custom Positioning
 ```tsx
-<HoverCard 
+<HoverCard
   trigger={<button>Info</button>}
   side="top"
   align="start"
@@ -73,7 +60,7 @@ function Example() {
 
 ### Custom Delays
 ```tsx
-<HoverCard 
+<HoverCard
   trigger={<span>Quick hover</span>}
   openDelay={200}
   closeDelay={100}
@@ -84,7 +71,7 @@ function Example() {
 
 ### With Custom Styling
 ```tsx
-<HoverCard 
+<HoverCard
   trigger={<button>Styled card</button>}
   className="bg-blue-50"
 >
@@ -110,5 +97,5 @@ function Example() {
 - Built on Radix UI's Hover Card primitive for robust accessibility
 - Uses Radix Portal for proper z-index and positioning
 - Includes animations via Tailwind classes
-- 200px fixed width matches Figma design specifications
+- 200px fixed width
 - Supports all standard Tailwind utility classes via `className` prop

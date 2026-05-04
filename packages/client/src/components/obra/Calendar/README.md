@@ -2,12 +2,6 @@
 
 A calendar component for date selection with support for single date, multiple dates, and date ranges. Based on the Obra design system using react-day-picker.
 
-## Figma Source
-
-**Design URL:** https://www.figma.com/design/MQUbIrlfuM8qnr9XZ7jc82/Obra-shadcn-ui--Carton-?node-id=288-119954&m=dev
-
-**Node ID:** `288-119954`
-
 ## Design Specifications
 
 ### Dimensions
@@ -21,7 +15,7 @@ A calendar component for date selection with support for single date, multiple d
 
 ### Colors
 - Default day: `var(--foreground)` (#020617)
-- Selected day background: `var(--primary)` 
+- Selected day background: `var(--primary)`
 - Selected day text: white
 - Disabled day: `var(--muted-foreground)` (#64748b) at 50% opacity
 - Navigation button border: `var(--border)` (#e2e8f0)
@@ -31,57 +25,57 @@ A calendar component for date selection with support for single date, multiple d
 
 ### Number of Months
 
-| Figma Variant | React Prop | Value | Notes |
-|---------------|------------|-------|-------|
-| 1 Month | `numberOfMonths` | `1` | Single month view (default) |
-| 2 months | `numberOfMonths` | `2` | Two months side by side |
-| 3 months | `numberOfMonths` | `3` | Three months side by side |
+| React Prop | Value | Notes |
+|------------|-------|-------|
+| `numberOfMonths` | `1` | Single month view (default) |
+| `numberOfMonths` | `2` | Two months side by side |
+| `numberOfMonths` | `3` | Three months side by side |
 
 ### Selection Mode
 
-| Figma Concept | React Prop | Value | Notes |
-|---------------|------------|-------|-------|
-| Single date | `mode` | `'single'` | Select one date |
-| Multiple dates | `mode` | `'multiple'` | Select multiple dates |
-| Date range | `mode` | `'range'` | Select start and end date |
+| React Prop | Value | Notes |
+|------------|-------|-------|
+| `mode` | `'single'` | Select one date |
+| `mode` | `'multiple'` | Select multiple dates |
+| `mode` | `'range'` | Select start and end date |
 
 ### Day States
 
-| Figma State | React/CSS | Implementation | Notes |
-|-------------|-----------|----------------|-------|
-| Default | Base styles | 32×32px, foreground color | Normal unselected day |
-| Selected | `day-selected` | Primary background, white text | Currently selected date(s) |
-| Active | `day-focused` | Focus-visible ring | Keyboard navigation |
-| Disabled | `day-disabled` | 50% opacity, not clickable | Outside range or unavailable |
+| React/CSS | Implementation | Notes |
+|-----------|----------------|-------|
+| Base styles | 32×32px, foreground color | Normal unselected day |
+| `day-selected` | Primary background, white text | Currently selected date(s) |
+| `day-focused` | Focus-visible ring | Keyboard navigation |
+| `day-disabled` | 50% opacity, not clickable | Outside range or unavailable |
 
 ### Range Positions
 
-| Figma Position | React/CSS | Implementation | Notes |
-|----------------|-----------|----------------|-------|
-| Single | `day-selected` (no range) | Full 8px border-radius | Single selected date |
-| Left | `day-range-start` | Right side squared | Range start date |
-| Middle | `day-range-middle` | Both sides squared, muted bg | Dates between start/end |
-| Right | `day-range-end` | Left side squared | Range end date |
+| React/CSS | Implementation | Notes |
+|-----------|----------------|-------|
+| `day-selected` (no range) | Full 8px border-radius | Single selected date |
+| `day-range-start` | Right side squared | Range start date |
+| `day-range-middle` | Both sides squared, muted bg | Dates between start/end |
+| `day-range-end` | Left side squared | Range end date |
 
 ## Property Mappings
 
-| Figma Property | Type | React Prop | Default | Notes |
-|----------------|------|------------|---------|-------|
-| Months | Enum | `numberOfMonths` | `1` | 1, 2, or 3 month display |
-| - | String | `mode` | `'single'` | Selection mode: single/multiple/range |
-| - | Date/Date[] | `selected` | `undefined` | Currently selected date(s) |
-| - | Function | `onSelect` | - | Callback when date is selected |
-| - | Matcher | `disabled` | - | Disable specific dates/ranges |
-| - | Boolean | `showOutsideDays` | `true` | Show days from adjacent months |
+| Type | React Prop | Default | Notes |
+|------|------------|---------|-------|
+| Enum | `numberOfMonths` | `1` | 1, 2, or 3 month display |
+| String | `mode` | `'single'` | Selection mode: single/multiple/range |
+| Date/Date[] | `selected` | `undefined` | Currently selected date(s) |
+| Function | `onSelect` | - | Callback when date is selected |
+| Matcher | `disabled` | - | Disable specific dates/ranges |
+| Boolean | `showOutsideDays` | `true` | Show days from adjacent months |
 
 ## Excluded Properties (CSS/Internal)
 
-| Figma Property | Handling | Reason |
-|----------------|----------|--------|
-| State: Active | CSS `focus-visible:` | Pseudo-state for keyboard nav |
-| State: Selected | CSS `.day-selected` | Conditional styling |
-| State: Disabled | CSS `.day-disabled` | Conditional styling |
-| Position: Left/Middle/Right | CSS `.day-range-*` | Internal range styling |
+| Handling | Reason |
+|----------|--------|
+| CSS `focus-visible:` | Pseudo-state for keyboard nav |
+| CSS `.day-selected` | Conditional styling |
+| CSS `.day-disabled` | Conditional styling |
+| CSS `.day-range-*` | Internal range styling |
 
 ## Usage
 
