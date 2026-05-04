@@ -22,8 +22,10 @@ This project uses Agent Skills for specialized workflows. See `.claude/skills/`:
 | `create-react-modlet` | Create React components following the modlet pattern | When creating any component in `packages/client/src/components/` |
 | `cross-package-types` | Type flow between shared, server, and client packages | When working with types across package boundaries |
 | `create-skill` | How to create new Agent Skills for this project | When asked to document a workflow or teach Claude a new capability |
-| `figma-setup-variables` | Extract Carton's CSS/Tailwind tokens → create Figma variable collections. Run before `figma:figma-generate-library` so Phase 1 is pre-done | Starting a Figma design system build for this project |
-| `figma-component-dependency-map` | Pre-computed component build order (atoms → molecules → features → pages). Feed into `figma:figma-generate-library` Phase 3 | Before building components in Figma so the library skill processes them in the right order |
+| `figma-rebuild-from-code` | **Orchestrator** — runs all 4 phases in order (tokens → file structure → components → screens), tracks state, delegates to the right skill per phase | Starting or resuming a full Figma rebuild from the codebase |
+| `figma-setup-variables` | Phase 1 accelerator — extracts Carton's CSS/Tailwind tokens and creates Figma variable collections. Feeds into `figma:figma-generate-library` Phase 1 | When the orchestrator runs Phase 1, or when tokens change |
+| `figma-setup-file-structure` | Phase 2 — creates the Figma page skeleton (Foundations, Components, Screens) and foundations docs (color swatches, type ramp, spacing scale) | When the orchestrator runs Phase 2, or to set up a fresh file |
+| `figma-component-dependency-map` | Phase 3 input — pre-computed 4-tier build order (atoms → composites → common → features). Feeds into `figma:figma-generate-library` Phase 3 | When the orchestrator runs Phase 3, or to understand component relationships |
 
 ## Package-Specific Instructions
 
