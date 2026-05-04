@@ -22,10 +22,8 @@ This project uses Agent Skills for specialized workflows. See `.claude/skills/`:
 | `create-react-modlet` | Create React components following the modlet pattern | When creating any component in `packages/client/src/components/` |
 | `cross-package-types` | Type flow between shared, server, and client packages | When working with types across package boundaries |
 | `create-skill` | How to create new Agent Skills for this project | When asked to document a workflow or teach Claude a new capability |
-| `figma-setup-variables` | Extract CSS/Tailwind design tokens → create Figma variables (step 1 of code→Figma) | First step when building a Figma file from the codebase |
-| `figma-component-dependency-map` | Analyze React codebase → produce component build order (step 2 of code→Figma) | Before building components in Figma to understand build order |
-| `figma-component-from-code` | Analyze one React component → build equivalent Figma component with variants (step 3) | Building Figma components from existing React code |
-| `figma-page-from-code` | Assemble Figma page from page component using built components (step 4 of code→Figma) | Building full-page Figma screens from React pages |
+| `figma-setup-variables` | Extract Carton's CSS/Tailwind tokens → create Figma variable collections. Run before `figma:figma-generate-library` so Phase 1 is pre-done | Starting a Figma design system build for this project |
+| `figma-component-dependency-map` | Pre-computed component build order (atoms → molecules → features → pages). Feed into `figma:figma-generate-library` Phase 3 | Before building components in Figma so the library skill processes them in the right order |
 
 ## Package-Specific Instructions
 

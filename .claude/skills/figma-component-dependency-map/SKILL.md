@@ -1,156 +1,83 @@
 ---
 name: figma-component-dependency-map
-description: Analyze the React codebase to produce a component dependency graph and ordered build list. Identifies atomic components (no other custom component deps) vs composed components. This is step 2 of the code-to-Figma workflow.
+description: Scan the Carton React codebase and produce a topologically-sorted component build order. Run this before figma:figma-generate-library so Phase 3 (components) processes atoms before molecules.
 ---
 
 # Skill: Component Dependency Map
 
-This skill scans the React codebase and produces a dependency graph showing which components depend on which. The output is an ordered list suitable for building Figma components bottom-up (atoms first, composed components after).
+Analyzes `packages/client/src/components/` and `packages/client/src/pages/` to produce a build order for `figma:figma-generate-library`. The library skill needs to know which components to build first — this skill answers that.
 
 ## When to Use
 
-- Before building components in Figma to understand build order
-- When you need to identify the "atomic" base components
-- When onboarding to a new codebase to understand component architecture
+Before starting `figma:figma-generate-library` Phase 3, or when the component tree has changed significantly.
 
-## What This Skill Produces
+## What to Do
 
-1. **Dependency map** — which components import which custom components
-2. **Build order** — topologically sorted list (atoms first)
-3. **Component catalog** — one-line description of each component's purpose
-4. **Output file** — `.temp/figma-from-code/component-map.md`
+Run these bash commands and analyze the output:
 
-## Prerequisites
-
-- Access to `packages/client/src/components/` directory
-- Access to `packages/client/src/pages/` directory
-
-## Workflow
-
-```
-┌──────────────────────────────────────────────────────────────┐
-│ 1. SCAN — Find all .tsx component files (not tests/stories)  │
-├──────────────────────────────────────────────────────────────┤
-│ 2. PARSE — Extract imports that reference @/components       │
-├──────────────────────────────────────────────────────────────┤
-│ 3. MAP — Build adjacency list (component → deps)             │
-├──────────────────────────────────────────────────────────────┤
-│ 4. SORT — Topological sort to get build order                │
-├──────────────────────────────────────────────────────────────┤
-│ 5. CATALOG — Read each component to write one-line summary   │
-├──────────────────────────────────────────────────────────────┤
-│ 6. WRITE — Save component-map.md                             │
-└──────────────────────────────────────────────────────────────┘
-```
-
-## Step-by-Step Instructions
-
-### Step 1: Scan Component Files
-
-Find all `.tsx` files that are NOT tests or stories:
 ```bash
+# Find all component files (exclude tests and stories)
 find packages/client/src/components -name "*.tsx" | grep -v ".test.\|.stories."
 find packages/client/src/pages -name "*.tsx" | grep -v ".test.\|.stories."
+
+# For each file, extract its custom component imports
+grep -E "^import.*from.*@/components|^import.*from.*\.\./|^import.*from.*\./" <file>
 ```
 
-### Step 2: Parse Imports
+## Tier Classification
 
-For each file, read the imports and identify which import from:
-- `@/components/...` — custom components
-- `../` or `./` — relative component imports within the components directory
-- `packages/client/src/components/ui/` — shadcn UI components
-- `packages/client/src/components/obra/` — obra design system components
+- **Tier 1 — Atomic** (`obra/` components): No imports from other custom components. These are the Figma primitives. Build first.
+- **Tier 2 — Composed** (`common/`, `inline-edit/`): Import from `obra/` or other composed components.
+- **Tier 3 — Feature** (`CaseList`, `CaseDetails`, etc.): Import from Tier 1 and 2.
+- **Tier 4 — Pages** (`pages/`): Import feature components. Build last.
 
-Ignore imports from:
-- `react`, `react-router-dom` — framework
-- `lucide-react` — icons (note which icons are used)
-- `@tanstack/react-query`, `trpc` — data fetching
-- `zod` — validation
+## Current Build Order (as of 2026-05-04)
 
-### Step 3: Build the Dependency Map
+### Tier 1: Atomic (obra)
+Button, Input, Badge, Textarea, Label, Skeleton, Checkbox, Select, Accordion, Dialog, AlertDialog, HoverCard, Popover, Card, Alert, Sheet, Tooltip, Calendar
 
-Create a map:
-```
-ComponentName:
-  file: relative/path/to/Component.tsx
-  imports: [ComponentA, ComponentB, ...]  // only custom components
-  imported_by: [ComponentX, ComponentY, ...]
-  tier: atomic | composed | page
-  icons: [IconName, ...]  // from lucide-react
-```
+### Tier 2: Composed (common + inline-edit)
+CheckboxGroup → Checkbox  
+RichCheckboxGroup → Checkbox  
+DialogHeader → Button + DialogTitle + DialogDescription  
+MoreOptionsMenu → Button + Popover  
+VoterTooltip → HoverCard  
+FiltersTrigger → Badge  
+MultiSelect → Popover + Checkbox  
+ConfirmationDialog → AlertDialog + Button  
+RelationshipManagerList → Checkbox  
+BaseEditable → (none)  
+EditControls → Button  
+EditableText/Currency/Number/Percent → Input + BaseEditable + EditControls  
+EditableTextarea → Textarea + Button  
+EditableTitle → Button + Input  
+EditableDate → Calendar + BaseEditable  
+EditableSelect → BaseEditable  
 
-**Tier classification:**
-- `atomic` — imports no other custom components (or only UI primitives from obra/ui/)
-- `composed` — imports other composed or atomic custom components
-- `page` — lives in `/pages/` directory
-
-### Step 4: Topological Sort
-
-Build order:
-1. All atomic components (no custom deps)
-2. Composed components, sorted by depth (shallowest deps first)
-3. Pages last
-
-### Step 5: Write Component Catalog
-
-For each component, read the first 30 lines to understand its purpose. Write a one-line summary.
-
-### Step 6: Save Output
-
-Create `.temp/figma-from-code/component-map.md`:
-
-```markdown
-# Carton Component Map
-
-Generated: {date}
-
-## Build Order for Figma
-
-### Tier 1: Atomic Components (Build First)
-
-| Component | Path | Description | Icons Used |
-|-----------|------|-------------|-----------|
-| Button | obra/Button | Primary action button with variants | - |
-| Input | obra/Input | Text input with label and error states | - |
-| Badge | obra/Badge | Status badge with color variants | - |
-| ... | | | |
-
-### Tier 2: Composed Components
-
-| Component | Path | Description | Dependencies |
-|-----------|------|-------------|-------------|
-| FiltersTrigger | common/FiltersTrigger | Button that opens filters dialog | Button, Badge |
-| VoteButton | common/VoteButton | Upvote/downvote with count | Button, Tooltip |
-| ... | | | |
-
-### Tier 3: Feature Components
-
-| Component | Path | Description | Dependencies |
-|-----------|------|-------------|-------------|
-| CaseList | CaseList | Scrollable list of case cards | ... |
-| CaseDetails | CaseDetails | Full case detail view | ... |
-| ... | | | |
+### Tier 3: Feature
+FiltersList → Select + MultiSelect  
+FiltersDialog → Dialog + FiltersList  
+VoteButton → VoterTooltip  
+ReactionStatistics → VoteButton  
+RelationshipManagerAccordion → Accordion + Button  
+RelatedCasesAccordion → RelationshipManagerAccordion  
+RelationshipManagerDialog → Dialog + Button + RelationshipManagerList  
+Header → Button + MoreOptionsMenu  
+MenuList → (none)  
+CaseList → Skeleton + Button  
+CaseDetails → CaseInformation + CaseComments + CaseEssentialDetails  
+  CaseInformation → Button + EditableTitle + EditableTextarea + MoreOptionsMenu + ConfirmationDialog  
+  CaseComments → Textarea  
+  CaseEssentialDetails → Button + EditableSelect  
+CustomerDetails → CustomerInformation + RelatedCasesAccordion  
+UserDetails → UserInformation + RelatedCasesAccordion  
 
 ### Tier 4: Pages
+CasePage → CaseList + CaseDetails  
+CustomerPage → CustomerList + CustomerDetails  
+UserPage → UserList + UserDetails  
+CreateCasePage → (form with Input, Select, Button)  
 
-| Page | Path | Description | Key Components |
-|------|------|-------------|---------------|
-| CasePage | pages/CasePage | Cases list + detail split view | CaseList, CaseDetails |
-| ... | | | |
+## Feeds Into
 
-## Full Dependency Graph
-
-{component}: depends on {deps}
-...
-```
-
-## Output
-
-Report the summary counts:
-```
-✅ Component map complete:
-  - Atomic components: X
-  - Composed components: Y  
-  - Pages: Z
-  - Full map saved to: .temp/figma-from-code/component-map.md
-```
+`figma:figma-generate-library` Phase 3. Hand this build order to the library skill so it processes components in dependency order — atoms before molecules, components before pages.
