@@ -63,6 +63,7 @@ Discover   Tokens    File      Components  Screens
 **Goal:** Understand the current state of the Figma file and codebase before writing anything.
 
 Steps:
+
 1. Read `figma-component-dependency-map` skill — the build order is pre-computed, no need to re-derive it
 2. Run a read-only `use_figma` to inspect the file:
    - List all pages (names + IDs)
@@ -82,12 +83,14 @@ Steps:
 **Delegate to:** `figma-setup-variables` skill
 
 Key context to pass:
+
 - File key
 - Which collections already exist (skip those)
 
 **Skip if:** `phase1: complete` in state file AND all three collections verified to exist in Figma.
 
 After completion:
+
 - Verify collections exist via `use_figma`
 - Update state: `"phase1": "complete"`
 - **Checkpoint:** report variable counts (Palette: 89, Semantic: 50, Spacing: 19)
@@ -101,12 +104,14 @@ After completion:
 **Delegate to:** `figma-setup-file-structure` skill
 
 Key context to pass:
+
 - File key
 - Which pages already exist (skip those)
 
 **Skip if:** `phase2: complete` in state file AND all three pages verified to exist.
 
 After completion:
+
 - Screenshot the Foundations page
 - Update state: `"phase2": "complete"`, save page IDs to `figmaNodes`
 - **Checkpoint:** show screenshot of foundations page
@@ -122,30 +127,82 @@ After completion:
 **Build order** (from `figma-component-dependency-map`):
 
 #### Tier 1a — obra primitives (no custom deps)
+
 Button, Input, Badge, Textarea, Label, Skeleton, Checkbox, Select, AlertDialog, HoverCard, Calendar, Card, Alert, Sheet, Dialog, AccordionContent, AccordionTrigger, PopoverHeader, TooltipContent, TooltipProvider, TooltipTrigger
 
 #### Tier 1b — obra composites (depend only on other obra)
+
 Accordion, Popover, DialogHeader, CheckboxGroup, RichCheckboxGroup, Tooltip
 
 #### Tier 2 — common + inline-edit
+
 BaseEditable, EditControls, EditableSelect, EditableText, EditableCurrency, EditableNumber, EditablePercent, EditableTextarea, EditableTitle, EditableDate, FiltersTrigger, VoterTooltip, RelationshipManagerList, MoreOptionsMenu, MultiSelect, ConfirmationDialog, RelationshipManagerAccordion, FiltersList, VoteButton, RelationshipManagerDialog, FiltersDialog, ReactionStatistics, RelatedCasesAccordion
 
 #### Tier 3 — feature components
+
 Header, MenuList, CaseList, CustomerList, UserList, CaseComments, CaseEssentialDetails, CaseInformation, CaseDetails, CustomerInformation, CustomerDetails, UserInformation, UserDetails
 
 **Per-component process** (for each component, in order):
-1. Read the component's `.tsx` source file
-2. Read its `.stories.tsx` to understand variants
-3. Tell `figma:figma-generate-library` to build this one component
-4. Validate: `get_screenshot` of the resulting component set
-5. Update state: add component name to `phase3Progress.completed`
-6. Move to next component
+
+1. Read the component's `.tsx` source file(s) to understand props, variants, and visual structure
+2. Look up the component in the **Component App Map** (see `figma-rebuild-from-code-validator` skill) to find its app URL and Playwright selector
+3. Take a Playwright screenshot from the live app **before building**:
+   - Use `.claude/skills/figma-rebuild-from-code-validator/screenshot.js` with the component's selector
+   - Save to `.temp/figma-from-code/screenshots/{ComponentName}/app.png`
+   - For components without an app selector (see **Components with no app selector** list below), skip steps 3 and 3b and note it
+3b. Extract the text content from the live app element:
+   ```bash
+   node .claude/skills/figma-rebuild-from-code-validator/extract-text.js \
+     "http://localhost:5173{url}" \
+     --selector "{selector}" \
+     [--click "{click-selector}"] \
+     [--nth N]
+   ```
+   Save the JSON output to `.temp/figma-from-code/screenshots/{ComponentName}/text.json`.
+   Use the extracted strings (`.lines`, `.headings`, `.inputs`, `.buttons`, `.labels`) as the
+   **actual text content** for all text nodes when building the Figma component in step 4.
+   Skip for components with no app selector.
+4. Build the component in Figma using `use_figma` — use both the source code AND `app.png` as visual reference when constructing the component.
+
+   **CRITICAL — Use real text, not placeholders:**
+   Text nodes in the Figma component **must use the exact strings from `text.json`**, not generic
+   placeholders. This is required so validator pixel diffs compare equivalent content.
+
+   | ❌ Do NOT use | ✅ Use instead (from text.json) |
+   |---|---|
+   | "Button" | "Create Case" (from `.buttons[0]`) |
+   | "Placeholder text" | "Enter case title" (from `.inputs[0]`) |
+   | "Page Title" | "Vehicle Accident Report" (from `.headings[0]`) |
+   | "Selected Value" | "In Progress" (from `.lines` matching status) |
+   | "Text value" | "lisa.anderson@customer.com" (from `.lines` matching field) |
+   | "Label" | "Case Title *" (from `.labels[0]`) |
+
+   For component variants (e.g., Button has `primary`, `secondary`, `ghost`), use the primary
+   app text for the default variant. Other variants may keep short contextual labels
+   (e.g., `ghost` variant can say "Cancel" if that's what appears in the app).
+
+   For **composite/layout components** (CaseList, CaseDetails, CustomerDetails, etc.) that contain
+   many pieces of real data, use all the text lines from `text.json` — fill in labels, values,
+   and list items exactly as shown in `app.png`.
+
+5. After building, get the Figma screenshot: `get_screenshot(fileKey, nodeId)` → save to `.temp/figma-from-code/screenshots/{ComponentName}/figma.png`
+6. Update state: add component name to `phase3Progress.completed`
+7. Move to next component
+
+**Prerequisite:** Dev server must be running on `localhost:5173` (`npm run dev`). Check before starting Phase 3:
+
+```bash
+curl -s --max-time 3 http://localhost:5173 > /dev/null && echo "running" || echo "not_running"
+```
+
+**Components with no app selector** (not directly visible in the running app — Figma screenshot only, no app comparison): Skeleton, Alert, HoverCard, Tooltip, Calendar, Checkbox, Badge, Card, Dialog, Sheet, AlertDialog, Popover, RichCheckboxGroup, BaseEditable, EditControls, EditableDate, EditableCurrency, EditableNumber, EditablePercent.
 
 **Resuming Phase 3:** Read `phase3Progress.completed` from state, skip those, start from the first remaining.
 
 After all Tier 3 components complete:
+
 - Update state: `"phase3": "complete"`
-- **Checkpoint:** screenshot of the Components page overview
+- **Checkpoint:** screenshot of the Components page overview via `get_screenshot`
 
 ---
 
@@ -157,30 +214,35 @@ After all Tier 3 components complete:
 
 **Screens to build** (in order):
 
-| Screen | Route | Key Components |
-|--------|-------|---------------|
-| Cases Page | `/cases/:id` | Header + MenuList + CaseList + CaseDetails |
-| Customers Page | `/customers/:id` | Header + MenuList + CustomerList + CustomerDetails |
-| Users Page | `/users/:id` | Header + MenuList + UserList + UserDetails |
-| Create Case Page | `/cases/new` | Header + MenuList + CreateCasePage form |
-| Create Customer Page | `/customers/new` | Header + MenuList + CreateCustomerPage form |
-| Create User Page | `/users/new` | Header + MenuList + CreateUserPage form |
+| Screen               | Route            | Key Components                                     |
+| -------------------- | ---------------- | -------------------------------------------------- |
+| Cases Page           | `/cases/:id`     | Header + MenuList + CaseList + CaseDetails         |
+| Customers Page       | `/customers/:id` | Header + MenuList + CustomerList + CustomerDetails |
+| Users Page           | `/users/:id`     | Header + MenuList + UserList + UserDetails         |
+| Create Case Page     | `/cases/new`     | Header + MenuList + CreateCasePage form            |
+| Create Customer Page | `/customers/new` | Header + MenuList + CreateCustomerPage form        |
+| Create User Page     | `/users/new`     | Header + MenuList + CreateUserPage form            |
 
 **Per-screen process:**
+
 1. Read the page's `.tsx` source to understand layout
-2. Tell `figma:figma-generate-design` to assemble this screen at 1440×900
-3. Screenshot the result
-4. Save screenshot to `.temp/figma-from-code/screenshots/screens/{ScreenName}.png`
+2. Take a Playwright full-page screenshot from the live app **before building** (no `--selector`, 1440×900):
+   - Use `.claude/skills/figma-rebuild-from-code-validator/screenshot.js`
+   - Save to `.temp/figma-from-code/screenshots/screens/{ScreenName}/app.png`
+3. Build the screen in Figma using `use_figma` at 1440×900 — use both the source code AND `app.png` as visual reference
+4. After building, get the Figma screenshot: `get_screenshot` on the resulting screen frame → save to `.temp/figma-from-code/screenshots/screens/{ScreenName}/figma.png`
 
 After all screens complete:
+
 - Update state: `"phase4": "complete"`
-- **Final checkpoint:** screenshot each screen, present summary
+- **Final checkpoint:** show side-by-side app vs Figma for each screen, present summary
 
 ---
 
 ## Checkpoint Protocol
 
 At the end of each phase, stop and report:
+
 - What was created (counts, node IDs)
 - A screenshot
 - What comes next
@@ -188,10 +250,11 @@ At the end of each phase, stop and report:
 Wait for user confirmation before starting the next phase. Do not auto-proceed across phase boundaries.
 
 Example checkpoint message:
+
 ```
 ✅ Phase 1 complete — 158 variables created across 3 collections
    Palette: 89 color variables
-   Semantic: 50 color variables  
+   Semantic: 50 color variables
    Spacing: 19 number variables
 
 Ready for Phase 2 (file structure). Proceed?
@@ -208,6 +271,7 @@ Ready for Phase 2 (file structure). Proceed?
 ## Error Handling
 
 If any `use_figma` call fails:
+
 - Do NOT retry immediately
 - Read the error, diagnose the cause
 - Fix the script

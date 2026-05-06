@@ -3,41 +3,44 @@
 ## Skills
 
 Before implementing any feature:
+
 1. Review the skills table below and read relevant documentation in `.claude/skills/`
 2. Apply skills that match your task (e.g., component-reuse before creating UI)
 3. Follow skill workflows to prevent common mistakes
 
 This project uses Agent Skills for specialized workflows. See `.claude/skills/`:
 
-| Skill | Purpose | When to Use |
-|-------|---------|-------------|
-| `component-reuse` | Ensure existing UI components are reused before creating new ones | Before implementing any UI from Figma, tickets, or mockups |
-| `validate-implementation` | Validate implementations for runtime errors, accessibility, and API compliance | Before marking any feature complete or committing code |
-| `figma-implement-component` | Implement React components from Figma designs | After component-reuse confirms no existing component, use to build new components from Figma |
-| `figma-design-react` | Design React components from Figma files | When analyzing Figma designs to propose component architecture and props API |
-| `figma-component-sync` | Check React components against Figma design source | When reviewing implementations, syncing designs, or auditing visual accuracy |
-| `figma-connect-component` | Generate Figma Code Connect mapping for components | When linking React components to their Figma counterparts |
-| `figma-connect-shadcn` | Connect shadcn/ui components to Figma | After adding shadcn components via `npx shadcn@latest add` |
-| `figma-explore` | Explore Figma files to discover pages and components | When you need to list components in a Figma file or find component node IDs |
-| `create-react-modlet` | Create React components following the modlet pattern | When creating any component in `packages/client/src/components/` |
-| `cross-package-types` | Type flow between shared, server, and client packages | When working with types across package boundaries |
-| `create-skill` | How to create new Agent Skills for this project | When asked to document a workflow or teach Claude a new capability |
-| `figma-rebuild-from-code` | **Orchestrator** — runs all 4 phases in order (tokens → file structure → components → screens), tracks state, delegates to the right skill per phase | Starting or resuming a full Figma rebuild from the codebase |
-| `figma-setup-variables` | Phase 1 accelerator — extracts Carton's CSS/Tailwind tokens and creates Figma variable collections. Feeds into `figma:figma-generate-library` Phase 1 | When the orchestrator runs Phase 1, or when tokens change |
-| `figma-setup-file-structure` | Phase 2 — creates the Figma page skeleton (Foundations, Components, Screens) and foundations docs (color swatches, type ramp, spacing scale) | When the orchestrator runs Phase 2, or to set up a fresh file |
-| `figma-component-dependency-map` | Phase 3 input — pre-computed 4-tier build order (atoms → composites → common → features). Feeds into `figma:figma-generate-library` Phase 3 | When the orchestrator runs Phase 3, or to understand component relationships |
+| Skill                               | Purpose                                                                                                                                                                      | When to Use                                                                                  |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `component-reuse`                   | Ensure existing UI components are reused before creating new ones                                                                                                            | Before implementing any UI from Figma, tickets, or mockups                                   |
+| `validate-implementation`           | Validate implementations for runtime errors, accessibility, and API compliance                                                                                               | Before marking any feature complete or committing code                                       |
+| `figma-implement-component`         | Implement React components from Figma designs                                                                                                                                | After component-reuse confirms no existing component, use to build new components from Figma |
+| `figma-design-react`                | Design React components from Figma files                                                                                                                                     | When analyzing Figma designs to propose component architecture and props API                 |
+| `figma-component-sync`              | Check React components against Figma design source                                                                                                                           | When reviewing implementations, syncing designs, or auditing visual accuracy                 |
+| `figma-connect-component`           | Generate Figma Code Connect mapping for components                                                                                                                           | When linking React components to their Figma counterparts                                    |
+| `figma-connect-shadcn`              | Connect shadcn/ui components to Figma                                                                                                                                        | After adding shadcn components via `npx shadcn@latest add`                                   |
+| `figma-explore`                     | Explore Figma files to discover pages and components                                                                                                                         | When you need to list components in a Figma file or find component node IDs                  |
+| `create-react-modlet`               | Create React components following the modlet pattern                                                                                                                         | When creating any component in `packages/client/src/components/`                             |
+| `cross-package-types`               | Type flow between shared, server, and client packages                                                                                                                        | When working with types across package boundaries                                            |
+| `create-skill`                      | How to create new Agent Skills for this project                                                                                                                              | When asked to document a workflow or teach Claude a new capability                           |
+| `figma-rebuild-from-code`           | **Orchestrator** — runs all 4 phases in order (tokens → file structure → components → screens), tracks state, delegates to the right skill per phase                         | Starting or resuming a full Figma rebuild from the codebase                                  |
+| `figma-rebuild-from-code-validator` | Validates a `figma-rebuild-from-code` run — lists all Figma components, screenshots each Storybook story alongside its Figma counterpart, reports components without stories | After running `figma-rebuild-from-code` to audit correctness                                 |
+| `figma-setup-variables`             | Phase 1 accelerator — extracts Carton's CSS/Tailwind tokens and creates Figma variable collections. Feeds into `figma:figma-generate-library` Phase 1                        | When the orchestrator runs Phase 1, or when tokens change                                    |
+| `figma-setup-file-structure`        | Phase 2 — creates the Figma page skeleton (Foundations, Components, Screens) and foundations docs (color swatches, type ramp, spacing scale)                                 | When the orchestrator runs Phase 2, or to set up a fresh file                                |
+| `figma-component-dependency-map`    | Phase 3 input — pre-computed 4-tier build order (atoms → composites → common → features). Feeds into `figma:figma-generate-library` Phase 3                                  | When the orchestrator runs Phase 3, or to understand component relationships                 |
 
 ## Package-Specific Instructions
 
 Each package has detailed instructions in its own `CLAUDE.md` file:
 
-| Package | CLAUDE.md Location | Purpose |
-|---------|-------------------|---------|
+| Package          | CLAUDE.md Location          | Purpose                                                |
+| ---------------- | --------------------------- | ------------------------------------------------------ |
 | `@carton/shared` | `packages/shared/CLAUDE.md` | Prisma schema, generated types, browser-safe utilities |
-| `@carton/server` | `packages/server/CLAUDE.md` | tRPC router, API definitions, database operations |
-| `@carton/client` | `packages/client/CLAUDE.md` | React components, UI, tRPC client usage |
+| `@carton/server` | `packages/server/CLAUDE.md` | tRPC router, API definitions, database operations      |
+| `@carton/client` | `packages/client/CLAUDE.md` | React components, UI, tRPC client usage                |
 
 ## Active Technologies
+
 - TypeScript 5.x, React 18.3.x + Shadcn UI components (Input, Select, Button), Radix UI primitives, Lucide icons, Tailwind CSS, Zod (validation)
 - TypeScript 5.x / Node.js 22+ + React 18, tRPC 11, @tanstack/react-query 5, Vite 6, Prisma (ORM)
 
@@ -53,6 +56,7 @@ packages/
 ## Commands
 
 ### Running Tests
+
 - **Unit Tests**: `npm test` - Runs all unit tests across workspaces (client, server, shared)
 - **E2E Tests**: `npm run test:e2e` - Runs Playwright end-to-end tests
 - **E2E Tests (UI mode)**: `npm run test:e2e:watch` - Opens Playwright UI for interactive test debugging
@@ -60,7 +64,9 @@ packages/
 - **Type Checking**: `npm run typecheck` - Runs TypeScript type checking
 
 ### Before Submitting Code
+
 Always ensure all tests pass before committing:
+
 ```bash
 npm test && npm run test:e2e && npm run lint
 ```
