@@ -52,22 +52,35 @@ Write to `.temp/figma-from-code/state.json` after every phase and tier transitio
     "phase5": "pending"
   },
   "tierProgress": {
-    "tier1a": "complete",
-    "tier1b": "in_progress",
-    "tier2": "pending",
-    "tier3": "pending"
+    "tier1": "complete",
+    "tier2": "in_progress",
+    "tier3": "pending",
+    "tier4": "pending",
+    "tier5": "pending",
+    "tier6": "pending"
+  },
+  "buildOrder": {
+    "tierCount": 6,
+    "tiers": [
+      {"tier": 1, "label": "Leaf components", "components": ["BaseEditable", "Bot", "..."]},
+      {"tier": 2, "label": "Uses tier 1", "components": ["Button", "CaseComments", "..."]},
+      "..."
+    ]
   },
   "figmaNodes": {
     "foundationsPageId": "0:1",
     "componentsPageId": "2:2",
     "screensPageId": "2:3",
     "foundationsFrameId": "10:1",
-    "tier1aFrameId": "20:1",
-    "tier1bFrameId": "20:2",
-    "tier2FrameId": "20:3",
-    "tier3FrameId": "20:4",
+    "tier1FrameId": "20:1",
+    "tier2FrameId": "20:2",
+    "tier3FrameId": "20:3",
+    "tier4FrameId": "20:4",
+    "tier5FrameId": "20:5",
+    "tier6FrameId": "20:6",
     "screensFrameId": "30:1"
-  }
+  },
+  "builtComponents": {}
 }
 ```
 
@@ -77,19 +90,21 @@ Write to `.temp/figma-from-code/state.json` after every phase and tier transitio
 
 ```
 .temp/figma-from-code/
+  component-map.json          # Phase 0: site-component-map output (authoritative build order)
+  component-map.md            # Phase 0: human-readable report with Mermaid diagram
   precapture-forms.json       # Pre-capture agent output
   precapture-cases.json
   precapture-customers.json
   precapture-users.json
   precapture-screens.json
-  build-tier1a.json           # Build agent output
-  build-tier1b.json
+  build-tier1.json            # Build agent output (one per discovered tier)
   build-tier2.json
   build-tier3.json
+  build-tier{N}.json
   build-screens.json
-  validate-primitives.json    # Validation agent output
-  validate-common.json
-  validate-features.json
+  validate-lower.json         # Validation agent output
+  validate-mid.json
+  validate-upper.json
 ```
 
 Build agent output format:
@@ -160,15 +175,46 @@ Pass `model: "haiku"` or `model: "sonnet"` in the Agent tool call when dispatchi
 
 **Runs in:** orchestrator
 
-1. Read `figma-component-dependency-map` skill for the pre-computed build order
-2. Run a read-only `use_figma` to inspect the file:
+1. **Run the `site-component-map` skill** against the live dev server to discover the actual runtime component hierarchy and build order:
+   ```bash
+   # Verify dev server is running first
+   curl -s --max-time 3 http://localhost:5173 > /dev/null || echo "Dev server not running"
+
+   # Scan all routes, generate both JSON and markdown
+   node .claude/skills/figma-rebuild-from-code-validator/map-components.js \
+     "http://localhost:5173" --crawl --max-crawl 30 \
+     --markdown .temp/figma-from-code/component-map.md \
+     --output .temp/figma-from-code/component-map.json
+   ```
+   This produces the **authoritative build order** — a topologically-sorted list of tiers where leaves come first and layouts come last. All subsequent phases use this output, not the static `figma-component-dependency-map`.
+
+2. Read `.temp/figma-from-code/component-map.json` and extract:
+   - `tiers[]` — the tiered build order (number of tiers varies per project)
+   - `tree` — the merged component hierarchy
+   - `componentCount` — total components to build
+   - Save the tier count and component names to state.json under `buildOrder`
+
+3. Run a read-only `use_figma` to inspect the Figma file:
    - List all pages (names + IDs)
    - Check if variable collections already exist (`Palette`, `Semantic`, `Spacing`)
    - Check if any components already exist on the Components page
-3. Report what exists vs what needs to be created
-4. Write initial state to `.temp/figma-from-code/state.json`
 
-**Skip if:** `resume: true` and `phase0: complete`.
+4. Report what exists vs what needs to be created, including the discovered build order
+5. Write initial state to `.temp/figma-from-code/state.json` with the `buildOrder` field:
+   ```json
+   {
+     "buildOrder": {
+       "tierCount": 6,
+       "tiers": [
+         {"tier": 1, "label": "Leaf components", "components": ["BaseEditable", "Bot", ...]},
+         {"tier": 2, "label": "Uses tier 1", "components": ["Button", "CaseComments", ...]},
+         ...
+       ]
+     }
+   }
+   ```
+
+**Skip if:** `resume: true` and `phase0: complete` — but verify `.temp/figma-from-code/component-map.json` exists.
 
 ---
 
@@ -196,21 +242,19 @@ Pass file key and which pages already exist. After completion:
 
 **Tier frame creation (orchestrator does this after the file structure skill runs):**
 
+Read the tier count from `state.json → buildOrder.tiers` (set during Phase 0 from the site-component-map output). Create one frame per tier — the number of tiers is dynamic, not hardcoded.
+
 ```javascript
 // use_figma — create tier container frames on the Components page
 await figma.setCurrentPageAsync(componentsPage);
 
-const tierFrames = [
-  { name: 'Tier 1a — Primitives', stateKey: 'tier1aFrameId' },
-  { name: 'Tier 1b — Composites', stateKey: 'tier1bFrameId' },
-  { name: 'Tier 2 — Common',      stateKey: 'tier2FrameId'  },
-  { name: 'Tier 3 — Features',    stateKey: 'tier3FrameId'  },
-];
+// buildOrder.tiers comes from Phase 0 (site-component-map output)
+const tiers = buildOrder.tiers; // [{tier: 1, label: "Leaf components", components: [...]}, ...]
 
-// Stack vertically with 120px gaps; each frame starts with auto-layout HORIZONTAL, hug content
 let yPos = 0;
 const frameIds = {};
-for (const { name } of tierFrames) {
+for (const { tier, label } of tiers) {
+  const name = `Tier ${tier} — ${label}`;
   const f = figma.createFrame();
   f.name = name;
   f.layoutMode = 'HORIZONTAL';
@@ -222,8 +266,8 @@ for (const { name } of tierFrames) {
   f.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
   f.x = 0; f.y = yPos;
   componentsPage.appendChild(f);
-  frameIds[name] = f.id;
-  yPos += 200; // placeholder; expands when components are added
+  frameIds[`tier${tier}`] = f.id;
+  yPos += 200;
 }
 
 // Screens container frame on the Screens page
@@ -243,9 +287,9 @@ screensPage.appendChild(screensFrame);
 return { tierFrameIds: frameIds, screensFrameId: screensFrame.id };
 ```
 
-Save all returned IDs to `figmaNodes` in state.json before proceeding to Phase 2.5.
+Save all returned IDs to `figmaNodes` in state.json (as `tier1FrameId`, `tier2FrameId`, ..., `tier{N}FrameId`) before proceeding to Phase 2.5.
 
-**Skip if:** `phase2: complete` AND all three pages and tier frames verified to exist.
+**Skip if:** `phase2: complete` AND all pages and tier frames verified to exist.
 
 ---
 
@@ -345,32 +389,37 @@ For the `precapture-screens` agent, use batch mode with full-page entries (no `s
 ### Phase 3: Build Components
 
 **Runs in:** sequential subagents (one per tier, foreground)  
-**Goal:** Build all Figma components using pre-captured reference material.
+**Goal:** Build all Figma components using pre-captured reference material, reusing lower-tier components as instances.
 
-Tiers run sequentially because Tier 2 depends on Tier 1 existing in Figma. Within a tier, components are independent, but Figma write concurrency on the same file is risky, so one agent per tier.
+Tiers run sequentially because each tier depends on the components built in all lower tiers. Within a tier, components are independent, but Figma write concurrency on the same file is risky, so one agent per tier.
 
-#### Tier definitions
+#### Tier definitions (dynamic)
 
-| Tier | Components | Count |
-|------|-----------|-------|
-| `tier1a` | Button, Input, Badge, Textarea, Label, Skeleton, Checkbox, Select, AlertDialog, HoverCard, Calendar, Card, Alert, Sheet, Dialog, AccordionContent, AccordionTrigger, PopoverHeader, TooltipContent, TooltipProvider, TooltipTrigger | 21 |
-| `tier1b` | Accordion, Popover, DialogHeader, CheckboxGroup, RichCheckboxGroup, Tooltip | 6 |
-| `tier2` | BaseEditable, EditControls, EditableSelect, EditableText, EditableCurrency, EditableNumber, EditablePercent, EditableTextarea, EditableTitle, EditableDate, FiltersTrigger, VoterTooltip, RelationshipManagerList, MoreOptionsMenu, MultiSelect, ConfirmationDialog, RelationshipManagerAccordion, FiltersList, VoteButton, RelationshipManagerDialog, FiltersDialog, ReactionStatistics, RelatedCasesAccordion | 23 |
-| `tier3` | Header, MenuList, CaseList, CustomerList, UserList, CaseComments, CaseEssentialDetails, CaseInformation, CaseDetails, CustomerInformation, CustomerDetails, UserInformation, UserDetails | 13 |
+Tiers come from the `site-component-map` output stored at `.temp/figma-from-code/component-map.json` during Phase 0. The number and contents of tiers vary per project. Read `state.json → buildOrder.tiers` for the current build order.
+
+Each tier entry from the component map includes:
+- `components[]` — names of components in this tier
+- `children` — for each component, which lower-tier components it uses
+
+The orchestrator reads the component map's `tiers` array and processes them sequentially from tier 1 (leaves) to tier N (layouts).
 
 #### Build agent prompt template
 
 **Model: `sonnet`** — dispatch all tier build agents with `model: "sonnet"`.
 
-Before dispatching, the orchestrator resolves the source file path for each component:
-```bash
-find packages/client/src/components -name "{ComponentName}.tsx" | grep -v ".test.\|.stories."
-```
+Before dispatching, the orchestrator:
+1. Resolves the source file path for each component:
+   ```bash
+   find packages/client/src/components -name "{ComponentName}.tsx" | grep -v ".test.\|.stories."
+   ```
+2. Collects the `builtComponents` map from state.json — these are components built in previous tiers, keyed by name with their Figma node IDs.
+3. For each component in the current tier, looks up its `children` from the component map to determine which lower-tier components it should reference as instances.
 
 ```
 Build Figma components inside a tier container frame on the Components page of a Figma file.
 
 File key: {fileKey}
+Tier: {tierNumber} of {totalTiers}
 Tier frame node ID: {tierFrameId}   ← append all components INSIDE this frame
 
 BEFORE any use_figma call, you MUST:
@@ -378,7 +427,34 @@ BEFORE any use_figma call, you MUST:
 2. Load the figma:figma-generate-library skill for component-building patterns
 
 Components to build (process in order):
-{JSON array: [{name, sourcePath, hasAppScreenshot, hasTextJson}]}
+{JSON array: [{name, sourcePath, children, hasAppScreenshot, hasTextJson}]}
+
+AVAILABLE LOWER-TIER COMPONENTS (already built in Figma — use as instances):
+{JSON object: {"Button": "123:45", "Input": "123:46", "Link": "123:47", ...}}
+
+These are Figma component node IDs from tiers 1 through {tierNumber - 1}.
+
+COMPONENT REUSE RULE — THIS IS CRITICAL:
+When building a component that contains a child listed in AVAILABLE LOWER-TIER COMPONENTS,
+you MUST create an instance of that existing component rather than rebuilding it from scratch.
+
+  // CORRECT — reuse the lower-tier Button component
+  const buttonComponent = figma.getNodeById('{nodeId}');
+  const buttonInstance = buttonComponent.createInstance();
+  parentFrame.appendChild(buttonInstance);
+
+  // WRONG — never rebuild a component that already exists in a lower tier
+  const button = figma.createFrame();
+  button.name = 'Button';
+  // ... manually recreating the button ...
+
+For COMPONENT_SET nodes (components with variants), create the instance from the set:
+  const componentSet = figma.getNodeById('{nodeId}');
+  const instance = componentSet.defaultVariant.createInstance();
+
+Check each component's `children` array to know which lower-tier components it uses.
+If a child is NOT in the available components map (e.g., it failed to build), fall back
+to building it inline.
 
 PLACEMENT RULE: Every component set / single component must be appended as a child
 of the tier frame (not the page). The tier frame uses horizontal auto-layout, so
@@ -393,9 +469,11 @@ For each component:
 2. Check for pre-captured reference:
    - .temp/figma-from-code/screenshots/{name}/app.png  (visual reference)
    - .temp/figma-from-code/screenshots/{name}/text.json (real text to use)
-3. Build the component in Figma using use_figma, appending into the tier frame
-   Use both source code AND app.png as reference when constructing
-4. After building, capture Figma screenshot:
+3. Identify which children are available as lower-tier instances (from the map above)
+4. Build the component in Figma using use_figma:
+   - Use component instances for all available children
+   - Use source code AND app.png as reference for layout and styling
+5. After building, capture Figma screenshot:
    get_screenshot(fileKey, nodeId) -> save to .temp/figma-from-code/screenshots/{name}/figma.png
 
 CRITICAL text rules:
@@ -412,34 +490,40 @@ If a use_figma call fails:
 - For complex components exceeding use_figma limits, split across multiple calls
 
 After all components, write results to:
-.temp/figma-from-code/build-{tier}.json
+.temp/figma-from-code/build-tier{tierNumber}.json
 ```
 
 #### Orchestrator behavior between tiers
 
 After each tier agent completes:
 
-1. Read `build-{tier}.json`
-2. Spot-check: `get_screenshot(fileKey, tierFrameId)` — verify the tier frame is non-empty in Figma
-3. Validate state consistency: every component must be in either `completed` or `failed`
-4. Update state: `tierProgress.{tier}` and `phase3` status
-5. If failures exist: ask user whether to retry (dispatch new agent for only failed components) or continue
-6. **Checkpoint:** "{N} built, {M} failed. Proceed to {next tier}?"
+1. Read `build-tier{N}.json`
+2. **Update `builtComponents` in state.json** — merge the newly built component node IDs:
+   ```json
+   {
+     "builtComponents": {
+       "Button": "123:45",
+       "Input": "123:46",
+       "BaseEditable": "200:10",
+       "...": "..."
+     }
+   }
+   ```
+   This map is passed to the next tier's agent so it knows which components are available as instances.
+3. Spot-check: `get_screenshot(fileKey, tierFrameId)` — verify the tier frame is non-empty in Figma
+4. Validate state consistency: every component must be in either `completed` or `failed`
+5. Update state: `tierProgress.tier{N}` and `phase3` status
+6. If failures exist: ask user whether to retry (dispatch new agent for only failed components) or continue
+7. **Checkpoint:** "Tier {N}: {X} built, {Y} failed. Built components available for next tier: {list}. Proceed to tier {N+1}?"
 
 When dispatching each tier agent, pass the correct `tierFrameId` from state.json:
-- Tier 1a → `figmaNodes.tier1aFrameId`
-- Tier 1b → `figmaNodes.tier1bFrameId`
-- Tier 2  → `figmaNodes.tier2FrameId`
-- Tier 3  → `figmaNodes.tier3FrameId`
+- Tier N → `figmaNodes.tier{N}FrameId`
 
 **Do not auto-proceed across tier boundaries.**
 
 #### Splitting large tiers
 
-If a tier agent's quality degrades on later components (visible in screenshots), split it:
-
-- `tier1a` (21) -> `tier1a-batch1` (first 10) + `tier1a-batch2` (remaining 11)
-- `tier2` (23) -> `tier2a` (inline-edit: 10) + `tier2b` (common: 13)
+If a tier has more than ~15 components, or if quality degrades on later components (visible in screenshots), split it into batches. Each batch gets the same `builtComponents` map. After batch 1 completes, merge its results into `builtComponents` before dispatching batch 2 (in case batch 2 components depend on batch 1 within the same tier).
 
 Use this split on retry if the first attempt had late-tier failures.
 
@@ -510,13 +594,17 @@ This phase merges the validation loop into the main pipeline. The standalone `fi
 
 #### Validation agent groups
 
-| Agent | Scope | Components |
-|-------|-------|------------|
-| `validate-primitives` | Tier 1a + 1b | ~27 components |
-| `validate-common` | Tier 2 | ~23 components |
-| `validate-features` | Tier 3 + screens | ~13 components + 6 screens |
+Split the discovered tiers into 3 validation groups (roughly equal size). The exact split depends on how many tiers the component map produced:
+
+| Agent | Scope | Example (6 tiers) |
+|-------|-------|--------------------|
+| `validate-lower` | Bottom third of tiers | Tiers 1-2 (leaf + first composites) |
+| `validate-mid` | Middle third of tiers | Tiers 3-4 (mid-level composites) |
+| `validate-upper` | Top third + screens | Tiers 5-6 + screen builds |
 
 All three run in **parallel** since they target different Figma nodes.
+
+For a small tier count (e.g. 3 tiers), use one validator per tier instead of grouping.
 
 #### Validation agent prompt template
 
