@@ -7,11 +7,15 @@ description: Validate a figma-rebuild-from-code run by listing all Figma compone
 
 Validates the output of `figma-rebuild-from-code` by navigating the live app, screenshotting each component in its natural context, and comparing against the **matching Figma variant** — not the entire component set. Produces a structured report with side-by-side screenshots.
 
+This skill can be used two ways:
+- **Standalone:** Run directly to validate a completed rebuild (all phases below)
+- **As a reference for Phase 5 subagents:** The orchestrator's Phase 5 dispatches per-tier validation agents that read this skill for the Component App Map, variant resolution logic, and structural QA scripts
+
 ## When to Use
 
-- After running `figma-rebuild-from-code` to verify the output
+- After running `figma-rebuild-from-code` to verify the output (standalone)
 - When auditing whether Figma components match their React implementations
-- To identify which components are not directly visible in the running app
+- When the orchestrator's Phase 5 agents need the Component App Map or comparison scripts
 
 ## Prerequisites
 
