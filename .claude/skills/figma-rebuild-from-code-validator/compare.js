@@ -34,7 +34,7 @@
  * by text content, so a lower threshold there catches styling regressions.
  */
 
-const { chromium } = require('@playwright/test');
+const { getBrowser } = require('./browser-connect');
 const path = require('path');
 const fs   = require('fs');
 
@@ -59,7 +59,7 @@ function toDataUrl(filePath) {
 }
 
 (async () => {
-  const browser = await chromium.launch();
+  const browser = await getBrowser();
   const page    = await browser.newPage();
   await page.goto('about:blank');
 

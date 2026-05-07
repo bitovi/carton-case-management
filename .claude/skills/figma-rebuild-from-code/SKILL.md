@@ -137,11 +137,22 @@ Validation agent output format:
 Phase 0    Discovery                orchestrator (lightweight)
 Phase 1    Tokens (variables)       orchestrator
 Phase 2    File Structure           orchestrator
-Phase 2.5  Pre-capture              parallel subagents (by URL group)
-Phase 3    Build components         sequential subagents (by tier)
-Phase 4    Build screens            subagent
-Phase 5    Validate + fix           parallel subagents (by tier)
+Phase 2.5  Pre-capture              parallel subagents (by URL group)   model: haiku
+Phase 3    Build components         sequential subagents (by tier)       model: sonnet
+Phase 4    Build screens            subagent                             model: sonnet
+Phase 5    Validate + fix           parallel subagents (by tier)         model: sonnet
 ```
+
+### Model assignments
+
+| Agent type | Model | Reason |
+|------------|-------|--------|
+| Pre-capture (Phase 2.5) | `haiku` | Shell commands only — no reasoning needed, runs 5 agents in parallel |
+| Build — all tiers (Phase 3) | `sonnet` | Reads source, writes Figma — quality matters |
+| Screens (Phase 4) | `sonnet` | Layout-heavy assembly from app screenshots |
+| Validation (Phase 5) | `sonnet` | Pixel diff analysis + Figma fixes require judgment |
+
+Pass `model: "haiku"` or `model: "sonnet"` in the Agent tool call when dispatching each subagent.
 
 ---
 
@@ -251,6 +262,12 @@ curl -s --max-time 3 http://localhost:5173 > /dev/null && echo "running" || echo
 ```
 If not running, halt and tell the user to run `npm run dev`.
 
+**Start shared Playwright server** (orchestrator, before dispatching agents):
+```bash
+node .claude/skills/figma-rebuild-from-code-validator/browser-server.js &
+```
+This launches a single Chromium process that all screenshot/extract-text/compare scripts connect to via WebSocket. The endpoint is written to `.temp/figma-from-code/pw-endpoint.txt` and auto-detected by every script. If the server is running, scripts connect to it (fast — new tab only). If not, they fall back to launching their own browser (backward compatible). The orchestrator kills the server after Phase 5 completes.
+
 #### Agent groups
 
 | Agent | URL(s) | Components |
@@ -265,9 +282,17 @@ If not running, halt and tell the user to run `npm run dev`.
 
 #### Pre-capture agent prompt template
 
+**Model: `haiku`** — dispatch all 5 pre-capture agents with `model: "haiku"`.
+
 The orchestrator constructs a manifest of components for each agent. The manifest is a JSON array where each entry has: `name`, `url`, `selector`, `click` (optional), `hover` (optional), `nth` (optional).
 
 Build the manifest by reading the **Component App Map** in the `figma-rebuild-from-code-validator` skill.
+
+**Batch mode (preferred):** Both screenshot.js and extract-text.js support `--batch manifest.json` mode, which processes all entries in a single browser session. This is significantly faster than invoking the script once per component because it eliminates repeated browser launches and Node.js startups.
+
+The orchestrator should write two manifest files per agent group before dispatching:
+- `.temp/figma-from-code/manifests/{group}-screenshots.json` — screenshot entries
+- `.temp/figma-from-code/manifests/{group}-text.json` — text extraction entries
 
 ```
 Capture app screenshots and text content for UI components from a running dev server.
@@ -276,33 +301,35 @@ Scripts (already exist, do not modify):
   Screenshot: node .claude/skills/figma-rebuild-from-code-validator/screenshot.js
   Text:       node .claude/skills/figma-rebuild-from-code-validator/extract-text.js
 
-For each component in the manifest below:
-1. Capture a screenshot:
-   node screenshot.js "http://localhost:5173{url}" \
-     ".temp/figma-from-code/screenshots/{name}/app.png" \
-     --selector "{selector}" [--click "{click}"] [--hover "{hover}"] [--nth {nth}]
+Both scripts support batch mode for faster execution (one browser, many captures):
 
-2. Extract text content:
-   node extract-text.js "http://localhost:5173{url}" \
-     --selector "{selector}" [--click "{click}"] [--nth {nth}] \
-     > ".temp/figma-from-code/screenshots/{name}/text.json"
+1. Capture all screenshots in one batch:
+   node .claude/skills/figma-rebuild-from-code-validator/screenshot.js \
+     --batch .temp/figma-from-code/manifests/{group}-screenshots.json
 
-3. If either step fails, log the error and continue to the next component.
+2. Extract all text content in one batch:
+   node .claude/skills/figma-rebuild-from-code-validator/extract-text.js \
+     --batch .temp/figma-from-code/manifests/{group}-text.json
 
-Manifest:
-{JSON array of component entries}
+Screenshot manifest entry format:
+{"url": "http://localhost:5173{url}", "output": ".temp/figma-from-code/screenshots/{name}/app.png", "selector": "{selector}", "click": "{click}", "hover": "{hover}", "nth": {nth}}
 
-After all components, write results to:
+Text manifest entry format:
+{"url": "http://localhost:5173{url}", "output": ".temp/figma-from-code/screenshots/{name}/text.json", "selector": "{selector}", "click": "{click}", "nth": {nth}}
+
+After both batches complete, write results to:
 .temp/figma-from-code/precapture-{group}.json
 
 Use this format:
 {"group": "{group}", "captured": [{"name": "...", "app": "...", "text": "..."}], "skipped": [...], "failed": [{"name": "...", "error": "..."}]}
 ```
 
-For the `precapture-screens` agent, use full-page mode (no `--selector`):
-```
-node screenshot.js "http://localhost:5173{route}" \
-  ".temp/figma-from-code/screenshots/screens/{ScreenName}/app.png" 1440 900
+For the `precapture-screens` agent, use batch mode with full-page entries (no `selector`):
+```json
+[
+  {"url": "http://localhost:5173/cases/", "output": ".temp/figma-from-code/screenshots/screens/CasesPage/app.png"},
+  {"url": "http://localhost:5173/customers/", "output": ".temp/figma-from-code/screenshots/screens/CustomersPage/app.png"}
+]
 ```
 
 #### After all pre-capture agents complete
@@ -332,6 +359,8 @@ Tiers run sequentially because Tier 2 depends on Tier 1 existing in Figma. Withi
 | `tier3` | Header, MenuList, CaseList, CustomerList, UserList, CaseComments, CaseEssentialDetails, CaseInformation, CaseDetails, CustomerInformation, CustomerDetails, UserInformation, UserDetails | 13 |
 
 #### Build agent prompt template
+
+**Model: `sonnet`** — dispatch all tier build agents with `model: "sonnet"`.
 
 Before dispatching, the orchestrator resolves the source file path for each component:
 ```bash
@@ -418,7 +447,7 @@ Use this split on retry if the first attempt had late-tier failures.
 
 ### Phase 4: Build Screens
 
-**Runs in:** subagent (foreground)
+**Runs in:** subagent (foreground) — **model: `sonnet`**
 
 | Screen | Route | Key Components |
 |--------|-------|----------------|
@@ -474,7 +503,7 @@ After completion:
 
 ### Phase 5: Validate + Fix
 
-**Runs in:** parallel subagents (background)  
+**Runs in:** parallel subagents (background) — **model: `sonnet`**  
 **Goal:** Compare every built component against its app screenshot, fix defects, iterate.
 
 This phase merges the validation loop into the main pipeline. The standalone `figma-rebuild-from-code-validator` skill remains available for ad-hoc use.
@@ -551,7 +580,11 @@ File: {fileKey} | Generated: {timestamp}
 ```
 
 3. Update state: `"phase5": "complete"`
-4. **Final checkpoint:** present summary table and overall verdict
+4. **Stop the shared Playwright server:**
+   ```bash
+   kill $(cat .temp/figma-from-code/pw-server.pid 2>/dev/null) 2>/dev/null; rm -f .temp/figma-from-code/pw-endpoint.txt
+   ```
+5. **Final checkpoint:** present summary table and overall verdict
 
 ---
 

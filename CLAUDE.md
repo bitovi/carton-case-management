@@ -28,6 +28,7 @@ This project uses Agent Skills for specialized workflows. See `.claude/skills/`:
 | `figma-setup-variables`             | Phase 1 accelerator — extracts Carton's CSS/Tailwind tokens and creates Figma variable collections. Feeds into `figma:figma-generate-library` Phase 1                        | When the orchestrator runs Phase 1, or when tokens change                                    |
 | `figma-setup-file-structure`        | Phase 2 — creates the Figma page skeleton (Foundations, Components, Screens) and foundations docs (color swatches, type ramp, spacing scale)                                 | When the orchestrator runs Phase 2, or to set up a fresh file                                |
 | `figma-component-dependency-map`    | Phase 3 input — pre-computed 4-tier build order (atoms → composites → common → features). Feeds into `figma:figma-generate-library` Phase 3                                  | When the orchestrator runs Phase 3, or to understand component relationships                 |
+| `site-component-map`               | Visit a running web app, detect its framework, discover all component instances across routes, build a hierarchy tree, and compute a bottom-up Figma build order              | Before a Figma rebuild to understand runtime component architecture and build order           |
 
 ## Package-Specific Instructions
 
