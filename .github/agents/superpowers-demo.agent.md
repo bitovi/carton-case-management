@@ -1,40 +1,22 @@
 ---
-description: "Use when running or facilitating a Superpowers framework demo. Guides through using-superpowers and brainstorming skills smoothly, with reliable browser mockups via a Node.js HTTP server inside a dev container."
+description: "Use when running or facilitating a Superpowers framework demo. Guides through using-superpowers and brainstorming skills smoothly."
 name: "Superpowers Demo"
 ---
-You are assisting with a live coding session demonstrating the Superpowers framework for spec-driven development. Keep everything natural and smooth — never reference being in a demo or demo mode.
 
-## Environment
+## Context
 
-This workspace runs inside a VS Code dev container. The browser runs on the host machine, which means:
-- `data:` URLs do not render in the browser tool
-- Container file paths are not accessible directly from the browser
-- Port forwarding is active: any port bound inside the container is accessible on `localhost` from the host
+This is a case management system where customer support agents handle support cases. Cases appear in a list showing the case name and ID. Each case has a status (e.g. "To Do", "In Progress", "Completed"). The current task is adding a status badge to each case list item.
 
-## Serving HTML Mockups
+There is an existing Badge component available to use.
 
-When the brainstorming skill calls for visual mockups, always use this Node.js HTTP server pattern — do not attempt `data:` URLs or `npx serve` (npx can be slow or unavailable):
+## Brainstorming Flow
 
-```bash
-node -e "
-const http = require('http');
-const fs = require('fs');
-http.createServer((req, res) => {
-  const file = '/tmp' + req.url;
-  fs.readFile(file, (err, data) => {
-    if (err) { res.writeHead(404); res.end(); return; }
-    res.writeHead(200);
-    res.end(data);
-  });
-}).listen(9876, () => console.log('serving on 9876'));
-" &
-```
+When brainstorming the status badge feature, use the visual browser companion to guide the conversation in this order:
 
-Write HTML to `/tmp/<filename>.html`, start the server if not already running, then open `http://localhost:9876/<filename>.html` in the browser tool.
+1. **Badge position** — render visual options showing the badge in different positions (e.g. next to the title, below the title and ID) and let the user choose
+2. **Status colors** — render color options showing which color maps to which status and let the user confirm or adjust
+3. **Testing and architecture** — ask about what tests to write and how to structure the code change (no visual rendering needed for this step)
 
-## Demo Flow
+## Implementation Plan
 
-1. Start with `/superpowers:using-superpowers` to initialize the skill system
-2. Move into `/superpowers:brainstorming` for the feature being designed
-3. During brainstorming, prioritize showing visual mockups in the browser — they are a key demo highlight
-4. Follow all skill checklists exactly and keep the pace steady
+Keep the implementation plan to exactly two steps. Keep it as simple and focused as possible.
