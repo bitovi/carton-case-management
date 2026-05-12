@@ -1,0 +1,210 @@
+[
+  {
+    "id": "identical",
+    "name": "Identical images",
+    "base": {
+      "width": 200, "height": 150,
+      "background": "#ffffff",
+      "elements": [
+        { "type": "rect", "x": 0, "y": 0, "w": 200, "h": 150, "fill": "#ffffff", "stroke": "#d1d5db", "strokeWidth": 1, "radius": 8 },
+        { "type": "rect", "x": 20, "y": 50, "w": 160, "h": 40, "fill": "#3b82f6", "radius": 6 },
+        { "type": "text", "x": 100, "y": 75, "text": "Submit", "font": "16px sans-serif", "fill": "#ffffff", "align": "center" }
+      ]
+    },
+    "mutation": { "type": "none" },
+    "expect": {
+      "matchPct": [100, 100],
+      "borderMatchPct": [100, 100],
+      "verdict": "match",
+      "borderVerdict": "border_ok"
+    }
+  },
+  {
+    "id": "single_pixel",
+    "name": "Single pixel change",
+    "base": {
+      "width": 200, "height": 150,
+      "background": "#3b82f6",
+      "elements": []
+    },
+    "mutation": { "type": "pixel_set", "coords": [[100, 75]], "color": "#ef4444" },
+    "expect": {
+      "matchPct": [99, 100],
+      "borderMatchPct": [100, 100],
+      "verdict": "match",
+      "borderVerdict": "border_ok"
+    }
+  },
+  {
+    "id": "border_color_shift",
+    "name": "Border-only color shift",
+    "base": {
+      "width": 200, "height": 150,
+      "background": "#ffffff",
+      "elements": [
+        { "type": "rect", "x": 0, "y": 0, "w": 200, "h": 150, "fill": "#ffffff", "stroke": "#d1d5db", "strokeWidth": 4, "radius": 0 }
+      ]
+    },
+    "mutation": { "type": "border_color_shift", "from": "#d1d5db", "to": "#3b82f6", "ring": 4 },
+    "expect": {
+      "matchPct": [90, 100],
+      "borderMatchPct": [40, 60],
+      "verdict": "match",
+      "borderVerdict": "border_diff",
+      "descriptionKeywords": ["border", "color", "stroke"]
+    }
+  },
+  {
+    "id": "layout_shift_10px",
+    "name": "Content shifted 10px right",
+    "base": {
+      "width": 300, "height": 200,
+      "background": "#ffffff",
+      "elements": [
+        { "type": "rect", "x": 20, "y": 20, "w": 260, "h": 40, "fill": "#f3f4f6", "radius": 4 },
+        { "type": "rect", "x": 20, "y": 80, "w": 120, "h": 30, "fill": "#3b82f6", "radius": 4 },
+        { "type": "rect", "x": 160, "y": 80, "w": 120, "h": 30, "fill": "#e5e7eb", "radius": 4 },
+        { "type": "text", "x": 80, "y": 100, "text": "Save", "font": "14px sans-serif", "fill": "#ffffff", "align": "center" },
+        { "type": "text", "x": 220, "y": 100, "text": "Cancel", "font": "14px sans-serif", "fill": "#374151", "align": "center" }
+      ]
+    },
+    "mutation": { "type": "translate", "dx": 10, "dy": 0 },
+    "expect": {
+      "matchPct": [94, 100],
+      "borderMatchPct": [95, 100],
+      "verdict": "match",
+      "borderVerdict": "border_ok",
+      "descriptionKeywords": ["shift", "offset", "moved", "position", "layout"]
+    }
+  },
+  {
+    "id": "color_shift_global",
+    "name": "Global hue shift",
+    "base": {
+      "width": 200, "height": 100,
+      "background": "#ffffff",
+      "elements": [
+        { "type": "rect", "x": 10, "y": 10, "w": 180, "h": 80, "fill": "#3b82f6", "radius": 8 },
+        { "type": "text", "x": 100, "y": 55, "text": "Action", "font": "16px sans-serif", "fill": "#ffffff", "align": "center" }
+      ]
+    },
+    "mutation": { "type": "color_replace", "from": "#3b82f6", "to": "#22c55e" },
+    "expect": {
+      "matchPct": [20, 40],
+      "borderMatchPct": [90, 100],
+      "verdict": "mismatch",
+      "borderVerdict": null,
+      "descriptionKeywords": ["color", "blue", "green"]
+    }
+  },
+  {
+    "id": "element_removed",
+    "name": "Element removed",
+    "base": {
+      "width": 300, "height": 200,
+      "background": "#ffffff",
+      "elements": [
+        { "type": "rect", "x": 20, "y": 20, "w": 260, "h": 40, "fill": "#f3f4f6", "radius": 4 },
+        { "type": "rect", "x": 20, "y": 80, "w": 260, "h": 40, "fill": "#3b82f6", "radius": 6 },
+        { "type": "text", "x": 150, "y": 105, "text": "Submit", "font": "16px sans-serif", "fill": "#ffffff", "align": "center" },
+        { "type": "rect", "x": 20, "y": 140, "w": 260, "h": 40, "fill": "#e5e7eb", "radius": 4 }
+      ]
+    },
+    "mutation": { "type": "remove_element", "index": 1 },
+    "expect": {
+      "matchPct": [75, 90],
+      "borderMatchPct": [95, 100],
+      "verdict": null,
+      "borderVerdict": null,
+      "descriptionKeywords": ["missing", "removed", "absent", "element"]
+    }
+  },
+  {
+    "id": "completely_different",
+    "name": "Completely different images",
+    "baseA": {
+      "width": 300, "height": 200,
+      "background": "#000000",
+      "elements": [
+        { "type": "rect", "x": 20, "y": 20, "w": 260, "h": 40, "fill": "#3b82f6", "radius": 4 },
+        { "type": "rect", "x": 20, "y": 80, "w": 260, "h": 100, "fill": "#1e3a5f", "radius": 4 }
+      ]
+    },
+    "baseB": {
+      "width": 300, "height": 200,
+      "background": "#ffffff",
+      "elements": [
+        { "type": "rect", "x": 10, "y": 10, "w": 130, "h": 180, "fill": "#ef4444", "radius": 8 },
+        { "type": "rect", "x": 160, "y": 10, "w": 130, "h": 80, "fill": "#fca5a5", "radius": 8 },
+        { "type": "rect", "x": 160, "y": 110, "w": 130, "h": 80, "fill": "#fca5a5", "radius": 8 }
+      ]
+    },
+    "mutation": { "type": "use_baseB" },
+    "expect": {
+      "matchPct": [0, 30],
+      "borderMatchPct": [0, 20],
+      "verdict": "mismatch",
+      "borderVerdict": "border_diff",
+      "descriptionKeywords": ["completely", "different", "mismatch"]
+    }
+  },
+  {
+    "id": "spacing_increase",
+    "name": "Spacing increased between elements",
+    "base": {
+      "width": 200, "height": 200,
+      "background": "#ffffff",
+      "elements": [
+        { "type": "rect", "x": 20, "y": 10, "w": 160, "h": 30, "fill": "#1e293b", "radius": 4 },
+        { "type": "rect", "x": 20, "y": 50, "w": 160, "h": 30, "fill": "#3b82f6", "radius": 4 },
+        { "type": "rect", "x": 20, "y": 90, "w": 160, "h": 30, "fill": "#ef4444", "radius": 4 }
+      ]
+    },
+    "mutation": { "type": "spacing_shift", "axis": "y", "increase": 25 },
+    "expect": {
+      "matchPct": [60, 90],
+      "borderMatchPct": [70, 100],
+      "verdict": null,
+      "borderVerdict": null,
+      "descriptionKeywords": ["spacing", "gap", "position", "moved"]
+    }
+  },
+  {
+    "id": "opacity_change",
+    "name": "Element opacity reduced",
+    "base": {
+      "width": 200, "height": 100,
+      "background": "#ffffff",
+      "elements": [
+        { "type": "rect", "x": 20, "y": 20, "w": 160, "h": 60, "fill": "#3b82f6", "radius": 8 }
+      ]
+    },
+    "mutation": { "type": "opacity_change", "index": 0, "alpha": 0.5 },
+    "expect": {
+      "matchPct": [40, 60],
+      "borderMatchPct": [90, 100],
+      "verdict": null,
+      "borderVerdict": null,
+      "descriptionKeywords": ["opacity", "faded", "lighter", "transparent", "color"]
+    }
+  },
+  {
+    "id": "border_shadow_added",
+    "name": "Box shadow added to card",
+    "base": {
+      "width": 250, "height": 150,
+      "background": "#ffffff",
+      "elements": [
+        { "type": "rect", "x": 30, "y": 30, "w": 190, "h": 90, "fill": "#ffffff", "stroke": "#e5e7eb", "strokeWidth": 1, "radius": 8 }
+      ]
+    },
+    "mutation": { "type": "add_shadow", "color": "rgba(0,0,0,0.5)", "blur": 8, "offsetX": 0, "offsetY": 6 },
+    "expect": {
+      "matchPct": [80, 100],
+      "borderMatchPct": [50, 100],
+      "verdict": null,
+      "borderVerdict": null,
+      "descriptionKeywords": ["shadow", "elevation", "border", "edge"]
+    }
+  }
+]

@@ -314,23 +314,6 @@ for (let i = 1; i < args.length; i++) {
     lines.push(`**Generated:** ${new Date().toISOString()}`);
     lines.push('');
 
-    lines.push('## Component Tree');
-    lines.push('');
-    lines.push('```');
-    function printTree(nodes, prefix, isLast) {
-      for (let i = 0; i < nodes.length; i++) {
-        const node = nodes[i];
-        const last = i === nodes.length - 1;
-        const connector = prefix === '' ? '' : (last ? '└── ' : '├── ');
-        const childPrefix = prefix === '' ? '' : prefix + (last ? '    ' : '│   ');
-        lines.push(`${prefix}${connector}${node.name}`);
-        printTree(node.children, childPrefix, last);
-      }
-    }
-    printTree(mergedTree, '', false);
-    lines.push('```');
-    lines.push('');
-
     lines.push('## Component Hierarchy');
     lines.push('');
     lines.push('```mermaid');
@@ -394,39 +377,86 @@ for (let i = 1; i < args.length; i++) {
     lines.push(`> ${legendParts.join(' → ')}`);
     lines.push('');
 
-    lines.push('## Build Order (bottom-up for Figma)');
+    lines.push('## Component Details');
     lines.push('');
+    lines.push('| Component | Tier | Routes | Instances |');
+    lines.push('|-----------|------|--------|-----------|');
     for (let i = 0; i < tiers.length; i++) {
-      const label = i === 0 ? 'Leaf components (no children)'
-        : i === tiers.length - 1 && tiers.length > 2 ? 'Top-level layouts'
-        : `Uses tier ${i} and below`;
-      lines.push(`### Tier ${i + 1} — ${label}`);
-      lines.push('');
       for (const name of tiers[i]) {
-        const children = [...(childrenOf.get(name) || [])];
         const comp = allComponents.get(name);
-        const routeStr = normalizeRoutes(comp?.routes || []).join(', ');
-        if (children.length > 0) {
-          lines.push(`- **${name}** → uses: ${children.join(', ')}  _(${routeStr})_`);
-        } else {
-          lines.push(`- **${name}**  _(${routeStr})_`);
-        }
+        const compRoutes = normalizeRoutes(comp?.routes || []).join(', ');
+        lines.push(`| ${name} | ${i + 1} | ${compRoutes} | ${comp?.instances || 0} |`);
       }
+    }
+
+    lines.push('');
+    lines.push('## Component Instances by Page');
+    lines.push('');
+
+    const routeGroups = new Map();
+    for (const entry of perRoute) {
+      const normalized = normalizeRoute(entry.route);
+      if (!routeGroups.has(normalized)) routeGroups.set(normalized, entry);
+    }
+
+    function formatNodeLabel(node) {
+      const propEntries = Object.entries(node.props || {});
+      if (propEntries.length === 0) return node.name;
+      const propsStr = propEntries.map(([k, v]) =>
+        typeof v === 'boolean' ? (v ? k : `${k}={false}`) : `${k}="${v}"`
+      ).join(' ');
+      return `\`<${node.name} ${propsStr}>\``;
+    }
+
+    function printPageTree(nodes, depth) {
+      const indent = '    '.repeat(depth);
+      for (const node of nodes) {
+        if (!opts.includeLib && isLibraryComponent(node.name)) {
+          printPageTree(node.children || [], depth);
+          continue;
+        }
+        lines.push(`${indent}- [ ] ${formatNodeLabel(node)}`);
+        printPageTree(node.children || [], depth + 1);
+      }
+    }
+
+    for (const [normalized, entry] of routeGroups) {
+      lines.push(`### ${normalized}`);
+      lines.push('');
+      printPageTree(entry.tree || [], 0);
       lines.push('');
     }
 
-    lines.push('## Component Details');
+    lines.push('## Component Variations');
     lines.push('');
-    lines.push('| Component | Tier | Routes | Selector | Instances |');
-    lines.push('|-----------|------|--------|----------|-----------|');
-    for (let i = 0; i < tiers.length; i++) {
-      for (const name of tiers[i]) {
-        const comp = allComponents.get(name);
-        const sel = comp?.selectors?.[0]?.selector || '—';
-        const truncSel = sel.length > 50 ? sel.slice(0, 47) + '...' : sel;
-        const compRoutes = normalizeRoutes(comp?.routes || []).join(', ');
-        lines.push(`| ${name} | ${i + 1} | ${compRoutes} | \`${truncSel}\` | ${comp?.instances || 0} |`);
+
+    const variations = new Map();
+    function collectVariations(nodes) {
+      for (const node of nodes) {
+        if (!opts.includeLib && isLibraryComponent(node.name)) {
+          collectVariations(node.children || []);
+          continue;
+        }
+        const propEntries = Object.entries(node.props || {});
+        if (propEntries.length > 0) {
+          if (!variations.has(node.name)) variations.set(node.name, new Set());
+          const key = propEntries.map(([k, v]) => `${k}=${v}`).join(', ');
+          variations.get(node.name).add(key);
+        }
+        collectVariations(node.children || []);
       }
+    }
+    for (const { tree } of perRoute) collectVariations(tree || []);
+
+    if (variations.size > 0) {
+      lines.push('| Component | Visual Props Seen |');
+      lines.push('|-----------|-------------------|');
+      for (const [name, props] of [...variations.entries()].sort()) {
+        const propList = [...props].map(p => `\`${p}\``).join(', ');
+        lines.push(`| ${name} | ${propList} |`);
+      }
+    } else {
+      lines.push('_No visual props detected across scanned pages._');
     }
 
     fs.mkdirSync(path.dirname(path.resolve(opts.markdown)), { recursive: true });

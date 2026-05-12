@@ -1,5 +1,5 @@
 /**
- * Component screenshot helper for figma-rebuild-from-code-validator
+ * Component screenshot helper for figma-from-code-validator
  *
  * Usage — single screenshot (element):
  *   node screenshot.js <url> <output> --selector "css" [--click "css"] [--hover "css"] [width] [height]
@@ -26,9 +26,12 @@
  */
 const { getBrowser } = require('./browser-connect');
 const path = require('path');
-const fs   = require('fs');
+const fs = require('fs');
 
-async function captureOne(page, { url, output, selector, click, hover, nth = 0, variant, width = 1440, height = 900 }) {
+async function captureOne(
+  page,
+  { url, output, selector, click, hover, nth = 0, variant, width = 1440, height = 900 }
+) {
   fs.mkdirSync(path.dirname(output), { recursive: true });
   await page.setViewportSize({ width, height });
   await page.goto(url, { waitUntil: 'networkidle', timeout: 15000 });
@@ -87,41 +90,67 @@ if (batchIdx !== -1) {
     }
 
     await browser.close();
-    console.log(`\nBatch complete: ${results.captured.length} captured, ${results.failed.length} failed`);
-  })().catch(err => {
+    console.log(
+      `\nBatch complete: ${results.captured.length} captured, ${results.failed.length} failed`
+    );
+  })().catch((err) => {
     console.error(err.message.split('\n')[0]);
     process.exit(1);
   });
 } else {
   if (args.length < 2) {
-    console.error('Usage: node screenshot.js <url> <output> [--selector "sel"] [--click "sel"] [--hover "sel"] [--nth N] [--variant "name"] [width] [height]');
+    console.error(
+      'Usage: node screenshot.js <url> <output> [--selector "sel"] [--click "sel"] [--hover "sel"] [--nth N] [--variant "name"] [width] [height]'
+    );
     process.exit(1);
   }
 
-  const url    = args[0];
+  const url = args[0];
   const output = args[1];
 
-  let selector = null, clickSel = null, hoverSel = null, nthIndex = 0, variantLabel = null;
-  let width = 1440, height = 900;
+  let selector = null,
+    clickSel = null,
+    hoverSel = null,
+    nthIndex = 0,
+    variantLabel = null;
+  let width = 1440,
+    height = 900;
 
   const numericArgs = [];
   for (let i = 2; i < args.length; i++) {
-    if (args[i] === '--selector')    { selector     = args[++i]; }
-    else if (args[i] === '--click')  { clickSel     = args[++i]; }
-    else if (args[i] === '--hover')  { hoverSel     = args[++i]; }
-    else if (args[i] === '--nth')    { nthIndex     = Number(args[++i]); }
-    else if (args[i] === '--variant'){ variantLabel = args[++i]; }
-    else if (!isNaN(Number(args[i]))){ numericArgs.push(Number(args[i])); }
+    if (args[i] === '--selector') {
+      selector = args[++i];
+    } else if (args[i] === '--click') {
+      clickSel = args[++i];
+    } else if (args[i] === '--hover') {
+      hoverSel = args[++i];
+    } else if (args[i] === '--nth') {
+      nthIndex = Number(args[++i]);
+    } else if (args[i] === '--variant') {
+      variantLabel = args[++i];
+    } else if (!isNaN(Number(args[i]))) {
+      numericArgs.push(Number(args[i]));
+    }
   }
-  if (numericArgs[0] != null) width  = numericArgs[0];
+  if (numericArgs[0] != null) width = numericArgs[0];
   if (numericArgs[1] != null) height = numericArgs[1];
 
   (async () => {
     const browser = await getBrowser();
-    const page    = await browser.newPage();
-    await captureOne(page, { url, output, selector, click: clickSel, hover: hoverSel, nth: nthIndex, variant: variantLabel, width, height });
+    const page = await browser.newPage();
+    await captureOne(page, {
+      url,
+      output,
+      selector,
+      click: clickSel,
+      hover: hoverSel,
+      nth: nthIndex,
+      variant: variantLabel,
+      width,
+      height,
+    });
     await browser.close();
-  })().catch(err => {
+  })().catch((err) => {
     console.error(err.message.split('\n')[0]);
     process.exit(1);
   });

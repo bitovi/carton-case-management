@@ -79,6 +79,34 @@ async function discoverOnPage(page, { minSize = 4 } = {}) {
       return { version, mode };
     }
 
+    // ── Visual prop extraction ───────────────────────────────────────
+
+    function extractVisualProps(memoizedProps) {
+      if (!memoizedProps) return {};
+      const SKIP = new Set([
+        'children', 'className', 'style', 'ref', 'key', 'id', 'asChild', 'forceMount', 'tabIndex',
+        'value', 'defaultValue', 'label', 'displayValue', 'placeholder', 'name',
+        'title', 'description', 'content', 'alt', 'src', 'href', 'to',
+      ]);
+      const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const result = {};
+      for (const k of Object.keys(memoizedProps)) {
+        if (SKIP.has(k)) continue;
+        if (k.endsWith('Id') || k.endsWith('Uuid') || k.endsWith('Key')) continue;
+        if (k.startsWith('on') || k.startsWith('data-') || k.startsWith('aria-')) continue;
+        const v = memoizedProps[k];
+        if (v === null || v === undefined) continue;
+        if (typeof v === 'function') continue;
+        if (typeof v === 'object') continue;
+        if (typeof v === 'string') {
+          if (!v || v.length > 50 || v.includes(' ') || v.startsWith('/') || v.startsWith('http')) continue;
+          if (UUID_RE.test(v)) continue;
+        }
+        result[k] = v;
+      }
+      return result;
+    }
+
     // ── Component extraction per framework ───────────────────────────
 
     function getReact18Components(root) {
@@ -100,7 +128,8 @@ async function discoverOnPage(page, { minSize = 4 } = {}) {
               const name = node.type?.displayName || node.type?.name || node.type?.render?.displayName || node.type?.render?.name;
               if (name && name.length > 1) {
                 seenFibers.add(node);
-                components.push({ name, el });
+                const props = extractVisualProps(node.memoizedProps);
+                components.push({ name, el, props });
                 break;
               }
             }
@@ -304,6 +333,7 @@ async function discoverOnPage(page, { minSize = 4 } = {}) {
       const entries = rawComponents.map(c => ({
         name: c.name,
         el: c.el,
+        props: c.props || {},
         depth: getDepth(c.el),
       }));
 
@@ -313,7 +343,7 @@ async function discoverOnPage(page, { minSize = 4 } = {}) {
       const nodeMap = new Map();
 
       for (const entry of entries) {
-        const node = { name: entry.name, children: [], el: entry.el };
+        const node = { name: entry.name, props: entry.props, children: [], el: entry.el };
         let parentEl = entry.el.parentElement;
         let parentNode = null;
         while (parentEl) {
@@ -343,6 +373,7 @@ async function discoverOnPage(page, { minSize = 4 } = {}) {
     function serializeTree(nodes) {
       return nodes.map(n => ({
         name: n.name,
+        props: n.props || {},
         children: serializeTree(n.children),
       }));
     }

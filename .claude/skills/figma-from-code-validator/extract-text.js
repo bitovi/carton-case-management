@@ -1,5 +1,5 @@
 /**
- * Text content extractor for figma-rebuild-from-code
+ * Text content extractor for figma-from-code
  *
  * Usage — single extraction:
  *   node extract-text.js <url> --selector "css" [--click "css"] [--nth N]
@@ -32,32 +32,46 @@ async function extractOne(page, { url, selector, click, nth = 0 }) {
     await page.waitForTimeout(400);
   }
 
-  const root = selector
-    ? page.locator(selector).nth(nth)
-    : page.locator('body');
+  const root = selector ? page.locator(selector).nth(nth) : page.locator('body');
 
   await root.waitFor({ state: 'visible', timeout: 8000 });
 
-  return await root.evaluate(el => {
+  return await root.evaluate((el) => {
     const lines = (el.innerText ?? '')
       .split('\n')
-      .map(l => l.trim())
-      .filter(l => l.length > 0);
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0);
 
     const inputs = [...el.querySelectorAll('input, textarea')]
-      .map(i => i.placeholder || i.value || '')
+      .map((i) => i.placeholder || i.value || '')
       .filter(Boolean);
 
     const buttons = [...el.querySelectorAll('button')]
-      .map(b => b.innerText?.trim())
-      .filter(t => t && t.length > 0 && t.length < 60);
+      .map((b) => b.innerText?.trim())
+      .filter((t) => t && t.length > 0 && t.length < 60);
 
     const headings = [...el.querySelectorAll('h1,h2,h3,h4,h5,h6')]
-      .map(h => h.innerText?.trim())
+      .map((h) => h.innerText?.trim())
       .filter(Boolean);
 
     const labels = [...el.querySelectorAll('label')]
-      .map(l => l.innerText?.trim())
+      .map((l) => l.innerText?.trim())
+      .filter(Boolean);
+
+    const icons = [...el.querySelectorAll('svg')]
+      .map((svg) => {
+        const classes = svg.getAttribute('class') || '';
+        const lucideClass = classes.split(' ').find((c) => c.startsWith('lucide-'));
+        if (!lucideClass) return null;
+        const kebab = lucideClass.replace('lucide-', '');
+        const name = kebab
+          .split('-')
+          .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+          .join('');
+        const sizeMatch = classes.match(/\b[hw]-(\d+(?:\.\d+)?)\b/);
+        const size = sizeMatch ? parseFloat(sizeMatch[1]) * 4 : 24;
+        return { name, size };
+      })
       .filter(Boolean);
 
     return {
@@ -67,6 +81,7 @@ async function extractOne(page, { url, selector, click, nth = 0 }) {
       buttons,
       headings,
       labels,
+      icons,
     };
   });
 }
@@ -86,7 +101,8 @@ if (batchIdx !== -1) {
   (async () => {
     const browser = await getBrowser();
     const page = await browser.newPage();
-    let captured = 0, failed = 0;
+    let captured = 0,
+      failed = 0;
 
     for (const entry of manifest) {
       try {
@@ -98,25 +114,31 @@ if (batchIdx !== -1) {
         }
         captured++;
       } catch (err) {
-        process.stderr.write(`Failed ${entry.output || entry.url}: ${err.message.split('\n')[0]}\n`);
+        process.stderr.write(
+          `Failed ${entry.output || entry.url}: ${err.message.split('\n')[0]}\n`
+        );
         failed++;
       }
     }
 
     await browser.close();
     console.log(`\nBatch complete: ${captured} extracted, ${failed} failed`);
-  })().catch(err => {
+  })().catch((err) => {
     process.stderr.write('extract-text.js error: ' + err.message + '\n');
     process.exit(1);
   });
 } else {
   if (args.length < 1) {
-    process.stderr.write('Usage: node extract-text.js <url> --selector "css" [--click "css"] [--nth N]\n');
+    process.stderr.write(
+      'Usage: node extract-text.js <url> --selector "css" [--click "css"] [--nth N]\n'
+    );
     process.exit(1);
   }
 
   const url = args[0];
-  let selector = null, clickSel = null, nthIndex = 0;
+  let selector = null,
+    clickSel = null,
+    nthIndex = 0;
 
   for (let i = 1; i < args.length; i++) {
     if (args[i] === '--selector') selector = args[++i];
@@ -130,7 +152,7 @@ if (batchIdx !== -1) {
     const result = await extractOne(page, { url, selector, click: clickSel, nth: nthIndex });
     await browser.close();
     process.stdout.write(JSON.stringify(result, null, 2));
-  })().catch(err => {
+  })().catch((err) => {
     process.stderr.write('extract-text.js error: ' + err.message + '\n');
     process.exit(1);
   });

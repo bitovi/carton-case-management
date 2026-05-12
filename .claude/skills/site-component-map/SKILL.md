@@ -9,7 +9,7 @@ Discover every UI component on a running web application — regardless of frame
 
 ## When to Use
 
-- Before a `figma-rebuild-from-code` run, to know which components exist and their nesting
+- Before a `figma-from-code` run, to know which components exist and their nesting
 - When you need a build order so parent Figma components can reference child components
 - When auditing a site to understand its component architecture from the runtime (not source code)
 - When comparing what the code declares vs. what actually renders
@@ -18,14 +18,14 @@ Discover every UI component on a running web application — regardless of frame
 
 Detection is automatic. The scripts handle:
 
-| Framework | Version | Detection Method |
-|-----------|---------|-----------------|
-| React | 18+ (concurrent) | `__reactFiber$` keys on DOM elements |
-| React | <18 (legacy) | `__reactInternalInstance$` keys |
-| Vue | 3 (composition) | `__vueParentComponent` property |
-| Vue | 2 (options) | `__vue__` property |
-| Angular | Ivy | `__ngContext__`, `ng-version` attribute, `window.ng` |
-| Svelte | dev mode | `__svelte_meta` property |
+| Framework | Version          | Detection Method                                     |
+| --------- | ---------------- | ---------------------------------------------------- |
+| React     | 18+ (concurrent) | `__reactFiber$` keys on DOM elements                 |
+| React     | <18 (legacy)     | `__reactInternalInstance$` keys                      |
+| Vue       | 3 (composition)  | `__vueParentComponent` property                      |
+| Vue       | 2 (options)      | `__vue__` property                                   |
+| Angular   | Ivy              | `__ngContext__`, `ng-version` attribute, `window.ng` |
+| Svelte    | dev mode         | `__svelte_meta` property                             |
 
 ## Prerequisites
 
@@ -41,10 +41,11 @@ Follow these steps in order. The primary deliverable is a markdown file at `.tem
 Run a quick single-page check to confirm the framework is detected and components are found:
 
 ```bash
-node .claude/skills/figma-rebuild-from-code-validator/discover-components.js <url> --list
+node .claude/skills/figma-from-code-validator/discover-components.js <url> --list
 ```
 
 If this returns `Framework: unknown` or 0 components, troubleshoot before proceeding. Common issues:
+
 - App not fully loaded — add `--wait 2000`
 - Components behind auth or interaction — use `--click <selector>` to trigger state
 - Dev mode not enabled (Svelte requires dev mode for `__svelte_meta`)
@@ -54,7 +55,7 @@ If this returns `Framework: unknown` or 0 components, troubleshoot before procee
 Run the multi-route mapper. Always pass `--markdown` to produce the review document:
 
 ```bash
-node .claude/skills/figma-rebuild-from-code-validator/map-components.js <base-url> \
+node .claude/skills/figma-from-code-validator/map-components.js <base-url> \
   --routes <comma-separated-routes> \
   --markdown .temp/component-map.md
 ```
@@ -62,7 +63,7 @@ node .claude/skills/figma-rebuild-from-code-validator/map-components.js <base-ur
 If routes are unknown, use `--crawl` to auto-discover them:
 
 ```bash
-node .claude/skills/figma-rebuild-from-code-validator/map-components.js <base-url> \
+node .claude/skills/figma-from-code-validator/map-components.js <base-url> \
   --crawl --max-crawl 30 \
   --markdown .temp/component-map.md
 ```
@@ -86,10 +87,10 @@ If the user wants details on a particular component, use the single-page tool:
 
 ```bash
 # Show where a component appears and its children
-node .claude/skills/figma-rebuild-from-code-validator/discover-components.js <url> --tree --name <ComponentName>
+node .claude/skills/figma-from-code-validator/discover-components.js <url> --tree --name <ComponentName>
 
 # Screenshot a component instance
-node .claude/skills/figma-rebuild-from-code-validator/discover-components.js <url> --screenshot <ComponentName>
+node .claude/skills/figma-from-code-validator/discover-components.js <url> --screenshot <ComponentName>
 ```
 
 ## Report Format
@@ -119,12 +120,12 @@ App
 
 Components grouped into tiers using topological sort — leaves first:
 
-| Tier | Meaning | Figma Action |
-|------|---------|--------------|
-| Tier 1 | Leaf components — no children | Build these first as standalone Figma components |
-| Tier 2 | Depend only on Tier 1 | Build using Tier 1 component instances |
-| Tier 3+ | Depend on lower tiers | Build using component instances from tiers below |
-| Last tier | Top-level layouts | Build last — these compose everything |
+| Tier      | Meaning                       | Figma Action                                     |
+| --------- | ----------------------------- | ------------------------------------------------ |
+| Tier 1    | Leaf components — no children | Build these first as standalone Figma components |
+| Tier 2    | Depend only on Tier 1         | Build using Tier 1 component instances           |
+| Tier 3+   | Depend on lower tiers         | Build using component instances from tiers below |
+| Last tier | Top-level layouts             | Build last — these compose everything            |
 
 Each component lists its children and the routes where it appears.
 
@@ -137,41 +138,42 @@ A summary table with every component's tier, routes, best CSS selector, and inst
 ### discover-components.js (single page)
 
 ```bash
-node .claude/skills/figma-rebuild-from-code-validator/discover-components.js <url> [options]
+node .claude/skills/figma-from-code-validator/discover-components.js <url> [options]
 ```
 
-| Flag | Description |
-|------|-------------|
-| `--list` | Print component names with instance counts |
-| `--tree` | Print the component hierarchy as an indented tree |
-| `--name <name>` | Filter to a specific component |
-| `--output <file.json>` | Write full JSON results |
-| `--click <selector>` | Click an element before discovery (open dialogs, menus) |
-| `--wait <ms>` | Extra wait after page load |
-| `--include-lib` | Include library/internal components (filtered by default) |
-| `--screenshot <name>` | Screenshot a component's first visible instance |
+| Flag                     | Description                                                    |
+| ------------------------ | -------------------------------------------------------------- |
+| `--list`                 | Print component names with instance counts                     |
+| `--tree`                 | Print the component hierarchy as an indented tree              |
+| `--name <name>`          | Filter to a specific component                                 |
+| `--output <file.json>`   | Write full JSON results                                        |
+| `--click <selector>`     | Click an element before discovery (open dialogs, menus)        |
+| `--wait <ms>`            | Extra wait after page load                                     |
+| `--include-lib`          | Include library/internal components (filtered by default)      |
+| `--screenshot <name>`    | Screenshot a component's first visible instance                |
 | `--screenshot-dir <dir>` | Directory for screenshots (default: `./component-screenshots`) |
 
 ### map-components.js (multi-route + build order)
 
 ```bash
-node .claude/skills/figma-rebuild-from-code-validator/map-components.js <base-url> [options]
+node .claude/skills/figma-from-code-validator/map-components.js <base-url> [options]
 ```
 
-| Flag | Description |
-|------|-------------|
-| `--routes <paths>` | Comma-separated route paths (default: `/`) |
-| `--crawl` | Auto-discover routes by following internal links |
-| `--max-crawl <n>` | Max pages to crawl (default: 20) |
+| Flag                   | Description                                           |
+| ---------------------- | ----------------------------------------------------- |
+| `--routes <paths>`     | Comma-separated route paths (default: `/`)            |
+| `--crawl`              | Auto-discover routes by following internal links      |
+| `--max-crawl <n>`      | Max pages to crawl (default: 20)                      |
 | `--markdown <file.md>` | Write the human-readable report (**always use this**) |
-| `--output <file.json>` | Write structured JSON (optional companion) |
-| `--include-lib` | Include library/internal components |
-| `--click <selector>` | Click an element on every page before discovery |
-| `--wait <ms>` | Extra wait after each page load |
+| `--output <file.json>` | Write structured JSON (optional companion)            |
+| `--include-lib`        | Include library/internal components                   |
+| `--click <selector>`   | Click an element on every page before discovery       |
+| `--wait <ms>`          | Extra wait after each page load                       |
 
 ## Library Component Filtering
 
 By default, internal/library components are filtered out. This includes:
+
 - React internals: `Suspense`, `Fragment`, `Provider`, `StrictMode`, `ForwardRef`, `Memo`
 - Router components: `Route`, `Router`, `Routes`, `BrowserRouter`, `Outlet`
 - Radix primitives: `Primitive.*`, `Slot`, `Portal`, `DismissableLayer`, `FocusScope`
@@ -187,7 +189,7 @@ Use `--include-lib` to see everything.
 The scripts share common modules:
 
 ```
-figma-rebuild-from-code-validator/
+figma-from-code-validator/
 ├── browser-connect.js      # Shared Playwright browser management
 ├── detect-components.js    # Framework detection + component extraction (runs in browser)
 ├── library-filter.js       # Library component filter patterns

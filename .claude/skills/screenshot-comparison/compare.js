@@ -1,56 +1,37 @@
-/**
- * Visual diff helper for figma-rebuild-from-code-validator
- *
- * Loads two PNG screenshots into a headless browser canvas, scales both to the
- * same dimensions, and computes a pixel-level diff. Also runs a separate
- * border-region analysis (outer 4px ring) to catch subtle styling differences
- * like extra strokes, wrong border colors, or box-shadow issues that can be
- * masked by text-content diffs in the overall score.
- *
- * Usage:
- *   node compare.js <appPng> <figmaPng> <outputDir>
- *
- * Outputs (written to outputDir/):
- *   diff.png        — red pixels where the images differ (dimmed original for context)
- *   comparison.json — { matchPct, diffPct, borderMatchPct, verdict, borderVerdict, ... }
- *
- * Verdict thresholds (overall):
- *   >= 90%  → "match"
- *   75–90%  → "minor_diff"   (flag for review — show diff image)
- *   < 75%   → "mismatch"     (auto-defect)
- *
- * When Figma components are seeded with real app text (via extract-text.js),
- * the thresholds become meaningful: a score of 75–90% on a text-seeded component
- * is likely a real structural difference (layout, spacing, color), not a content delta.
- * For components still using placeholder text, scores < 75% may be text-content-only.
- *
- * Border-region verdict (outer BORDER_RING px):
- *   >= 85%  → "border_ok"
- *   < 85%   → "border_diff"  (flag as defect even if overall score is "match")
- *
- * The border check exists because text content differences (real data vs Figma
- * placeholder) inflate the overall diff score, allowing subtle border/shadow
- * defects to hide below the threshold. The border ring is almost never affected
- * by text content, so a lower threshold there catches styling regressions.
- */
-
 const { getBrowser } = require('./browser-connect');
 const path = require('path');
 const fs   = require('fs');
 
-const MATCH_THRESHOLD  = 90;  // % overall — below this is flagged for review
-const DEFECT_THRESHOLD = 75;  // % overall — below this is auto-defect
-const BORDER_RING      = 4;   // px — width of edge ring examined separately
-const BORDER_THRESHOLD = 85;  // % — border-region match; below = border_diff defect
+function parseArgs(argv) {
+  const positional = [];
+  const flags = {};
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i].startsWith('--') && i + 1 < argv.length) {
+      flags[argv[i].slice(2)] = parseFloat(argv[i + 1]);
+      i++;
+    } else {
+      positional.push(argv[i]);
+    }
+  }
+  return { positional, flags };
+}
 
-const [appPng, figmaPng, outputDir] = process.argv.slice(2);
-if (!appPng || !figmaPng || !outputDir) {
-  console.error('Usage: node compare.js <appPng> <figmaPng> <outputDir>');
+const { positional, flags } = parseArgs(process.argv.slice(2));
+const [imageA, imageB, outputDir] = positional;
+
+if (!imageA || !imageB || !outputDir) {
+  console.error('Usage: node compare.js <imageA> <imageB> <outputDir> [--match-threshold N] [--defect-threshold N] [--border-ring N] [--border-threshold N] [--tolerance N]');
   process.exit(1);
 }
 
-const appAbs   = path.resolve(appPng);
-const figmaAbs = path.resolve(figmaPng);
+const MATCH_THRESHOLD  = flags['match-threshold']  ?? 90;
+const DEFECT_THRESHOLD = flags['defect-threshold'] ?? 75;
+const BORDER_RING      = flags['border-ring']      ?? 4;
+const BORDER_THRESHOLD = flags['border-threshold'] ?? 85;
+const TOLERANCE        = flags['tolerance']        ?? 28;
+
+const absA = path.resolve(imageA);
+const absB = path.resolve(imageB);
 fs.mkdirSync(outputDir, { recursive: true });
 
 function toDataUrl(filePath) {
@@ -64,8 +45,8 @@ function toDataUrl(filePath) {
   await page.goto('about:blank');
 
   const result = await page.evaluate(async ({
-    appUrl, figmaUrl,
-    matchThreshold, defectThreshold, borderRing, borderThreshold,
+    urlA, urlB,
+    matchThreshold, defectThreshold, borderRing, borderThreshold, tolerance,
   }) => {
     function loadImage(src) {
       return new Promise((resolve, reject) => {
@@ -76,12 +57,8 @@ function toDataUrl(filePath) {
       });
     }
 
-    const [imgA, imgB] = await Promise.all([loadImage(appUrl), loadImage(figmaUrl)]);
+    const [imgA, imgB] = await Promise.all([loadImage(urlA), loadImage(urlB)]);
 
-    // Normalise to the Figma image's native dimensions.
-    // The Figma screenshot is the designed/intended size; we scale the app screenshot
-    // to match it so the full width is always compared — not just a cropped left edge.
-    // This is critical for catching border/shadow differences that span the full width.
     const w = imgB.naturalWidth;
     const h = imgB.naturalHeight;
 
@@ -89,14 +66,12 @@ function toDataUrl(filePath) {
     const cvB = document.createElement('canvas'); cvB.width = w; cvB.height = h;
     const cvD = document.createElement('canvas'); cvD.width = w; cvD.height = h;
 
-    cvA.getContext('2d').drawImage(imgA, 0, 0, w, h); // scale app → figma size
-    cvB.getContext('2d').drawImage(imgB, 0, 0, w, h); // figma at native size
+    cvA.getContext('2d').drawImage(imgA, 0, 0, w, h);
+    cvB.getContext('2d').drawImage(imgB, 0, 0, w, h);
 
     const dataA   = cvA.getContext('2d').getImageData(0, 0, w, h);
     const dataB   = cvB.getContext('2d').getImageData(0, 0, w, h);
     const diffImg = cvD.getContext('2d').createImageData(w, h);
-
-    const TOLERANCE = 28; // per-channel delta — accounts for renderer anti-aliasing
 
     let diffPixels   = 0;
     let borderDiff   = 0;
@@ -109,9 +84,8 @@ function toDataUrl(filePath) {
         const gD = Math.abs(dataA.data[i + 1] - dataB.data[i + 1]);
         const bD = Math.abs(dataA.data[i + 2] - dataB.data[i + 2]);
         const maxDiff = Math.max(rD, gD, bD);
-        const isDiff  = maxDiff > TOLERANCE;
+        const isDiff  = maxDiff > tolerance;
 
-        // Is this pixel in the border ring?
         const inBorder = x < borderRing || x >= w - borderRing
                       || y < borderRing || y >= h - borderRing;
 
@@ -153,15 +127,13 @@ function toDataUrl(filePath) {
       w, h,
       diffDataUrl: cvD.toDataURL('image/png'),
     };
-  }, { appUrl: toDataUrl(appAbs), figmaUrl: toDataUrl(figmaAbs),
+  }, { urlA: toDataUrl(absA), urlB: toDataUrl(absB),
        matchThreshold: MATCH_THRESHOLD, defectThreshold: DEFECT_THRESHOLD,
-       borderRing: BORDER_RING, borderThreshold: BORDER_THRESHOLD });
+       borderRing: BORDER_RING, borderThreshold: BORDER_THRESHOLD, tolerance: TOLERANCE });
 
-  // Save diff PNG
   const b64 = result.diffDataUrl.replace(/^data:image\/png;base64,/, '');
   fs.writeFileSync(path.join(outputDir, 'diff.png'), Buffer.from(b64, 'base64'));
 
-  // Save JSON
   const json = {
     matchPct:       result.matchPct,
     borderMatchPct: result.borderMatchPct,
@@ -176,13 +148,13 @@ function toDataUrl(filePath) {
     thresholds: {
       match: MATCH_THRESHOLD, defect: DEFECT_THRESHOLD,
       borderRing: BORDER_RING, border: BORDER_THRESHOLD,
+      tolerance: TOLERANCE,
     },
   };
   fs.writeFileSync(path.join(outputDir, 'comparison.json'), JSON.stringify(json, null, 2));
 
   await browser.close();
 
-  // Determine effective verdict — border_diff overrides an overall "match"
   const effectiveVerdict = result.borderVerdict === 'border_diff' && result.verdict === 'match'
     ? 'minor_diff' : result.verdict;
 
