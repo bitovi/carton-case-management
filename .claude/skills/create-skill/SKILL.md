@@ -1,6 +1,6 @@
 ---
 name: create-skill
-description: Create new Agent Skills for this project. Use when asked to create a skill, document a workflow, or teach Claude a new capability. Skills are stored in .claude/skills/ and can include instructions, scripts, examples, and resources.
+description: Create new Agent Skills for this project. Use when asked to create a skill, document a workflow, or teach the agent a new capability. Skills are stored in .claude/skills/ and can include instructions, scripts, examples, and resources.
 ---
 
 # Skill: Creating Agent Skills

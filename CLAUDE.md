@@ -21,7 +21,7 @@ This project uses Agent Skills for specialized workflows. See `.claude/skills/`:
 | `figma-explore` | Explore Figma files to discover pages and components | When you need to list components in a Figma file or find component node IDs |
 | `create-react-modlet` | Create React components following the modlet pattern | When creating any component in `packages/client/src/components/` |
 | `cross-package-types` | Type flow between shared, server, and client packages | When working with types across package boundaries |
-| `create-skill` | How to create new Agent Skills for this project | When asked to document a workflow or teach Claude a new capability |
+| `create-skill` | How to create new Agent Skills for this project | When asked to document a workflow or teach the agent a new capability |
 
 ## Package-Specific Instructions
 
