@@ -1,3 +1,13 @@
+/**
+ * Evaluation harness for the screenshot-comparison pipeline.
+ *
+ * Reads synthetic test cases from evaluate-cases.json, renders a pair of
+ * canvas images per case (base + mutation), runs compare.js on each pair,
+ * and asserts that the reported matchPct, borderMatchPct, verdict, and
+ * borderVerdict fall within expected ranges. Produces a JSON and Markdown
+ * report under .temp/evaluate/.
+ */
+
 const { getBrowser } = require('./browser-connect');
 const { execFileSync } = require('child_process');
 const path = require('path');
@@ -12,10 +22,23 @@ const verbose  = args.includes('--verbose');
 const caseFlag = args.indexOf('--case');
 const caseFilter = caseFlag !== -1 ? args[caseFlag + 1] : null;
 
+/**
+ * Deep-clone a JSON-serializable object via round-trip stringify/parse.
+ * @param {Object} obj
+ * @returns {Object}
+ */
 function deepClone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
+/**
+ * Apply a declarative mutation to a canvas spec, producing a modified copy.
+ * Supported mutation types: pixel_set, border_color_shift, translate,
+ * color_replace, remove_element, spacing_shift, opacity_change, add_shadow.
+ * @param {Object} base - The base canvas spec (with `elements` array).
+ * @param {{ type: string, [key: string]: * }} mutation - Mutation descriptor.
+ * @returns {Object} A new spec with the mutation applied.
+ */
 function applyMutation(base, mutation) {
   if (mutation.type === 'none') return deepClone(base);
 
@@ -90,6 +113,12 @@ function applyMutation(base, mutation) {
   return mutated;
 }
 
+/**
+ * Render a declarative canvas spec to a PNG buffer using an in-browser canvas.
+ * @param {import('@playwright/test').Page} page - Playwright page for canvas rendering.
+ * @param {{ width: number, height: number, background: string, elements: Object[] }} spec - Canvas drawing spec.
+ * @returns {Promise<Buffer>} PNG image buffer.
+ */
 async function renderSpec(page, spec) {
   const dataUrl = await page.evaluate(({ width, height, background, elements }) => {
     const canvas = document.createElement('canvas');
@@ -138,6 +167,13 @@ async function renderSpec(page, spec) {
   return Buffer.from(dataUrl.replace(/^data:image\/png;base64,/, ''), 'base64');
 }
 
+/**
+ * Run compare.js as a child process on two PNG files.
+ * @param {string} aPng - Path to the first image.
+ * @param {string} bPng - Path to the second image.
+ * @param {string} outDir - Directory for diff.png and comparison.json output.
+ * @returns {{ exitCode: number, stdout: string, stderr?: string }}
+ */
 function runCompare(aPng, bPng, outDir) {
   try {
     const stdout = execFileSync('node', [COMPARE_PATH, aPng, bPng, outDir], {
@@ -154,17 +190,36 @@ function runCompare(aPng, bPng, outDir) {
   }
 }
 
+/**
+ * Assert that a numeric value falls within an inclusive range.
+ * @param {number} actual - The observed value.
+ * @param {[number, number]} range - [min, max] inclusive bounds.
+ * @param {string} label - Human-readable assertion name.
+ * @returns {{ pass: boolean, label: string, actual: number, expected: string }}
+ */
 function assertRange(actual, [min, max], label) {
   const pass = actual >= min && actual <= max;
   return { pass, label, actual, expected: `${min}–${max}` };
 }
 
+/**
+ * Assert strict equality between two values. Skips if expected is null.
+ * @param {*} actual - The observed value.
+ * @param {*} expected - The expected value, or null to skip the check.
+ * @param {string} label - Human-readable assertion name.
+ * @returns {{ pass: boolean, label: string, actual: *, expected: *, skipped?: boolean }}
+ */
 function assertEqual(actual, expected, label) {
   if (expected === null) return { pass: true, label, actual, expected: '(any)', skipped: true };
   const pass = actual === expected;
   return { pass, label, actual, expected };
 }
 
+/**
+ * Map a verdict string to its display emoji.
+ * @param {string} v - One of 'match', 'minor_diff', or 'mismatch'.
+ * @returns {string}
+ */
 function verdictIcon(v) {
   if (v === 'match') return '✅';
   if (v === 'minor_diff') return '⚠️';
@@ -172,6 +227,17 @@ function verdictIcon(v) {
   return '—';
 }
 
+/**
+ * Build a Markdown evaluation report from test results.
+ * Includes a summary table, per-case results, and detailed sections for
+ * failed cases with inline image references.
+ * @param {Object[]} results - Array of per-case result objects.
+ * @param {number} passCount - Number of passing cases.
+ * @param {number} failCount - Number of failing cases.
+ * @param {number} total - Total number of cases evaluated.
+ * @param {string} timestamp - ISO 8601 timestamp for the report header.
+ * @returns {string} Complete Markdown document.
+ */
 function buildMarkdownReport(results, passCount, failCount, total, timestamp) {
   const lines = [];
   lines.push('# Screenshot Comparison — Evaluation Report');

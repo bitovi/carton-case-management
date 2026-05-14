@@ -1,7 +1,23 @@
+/**
+ * Pixel-level visual comparison of two screenshot images.
+ *
+ * Loads both images into a headless browser canvas, walks every pixel to
+ * compute an overall match percentage and a separate border-ring match
+ * percentage, then writes a red-highlighted diff image and a JSON report
+ * to the output directory. Exit code signals the verdict:
+ *   0 = match, 1 = minor_diff, 2 = mismatch, 3 = error.
+ */
+
 const { getBrowser } = require('./browser-connect');
 const path = require('path');
 const fs   = require('fs');
 
+/**
+ * Parse CLI arguments into positional args and `--flag value` pairs.
+ * Numeric flag values are coerced to floats.
+ * @param {string[]} argv - Raw argument list (typically `process.argv.slice(2)`).
+ * @returns {{ positional: string[], flags: Record<string, number> }}
+ */
 function parseArgs(argv) {
   const positional = [];
   const flags = {};
@@ -34,6 +50,11 @@ const absA = path.resolve(imageA);
 const absB = path.resolve(imageB);
 fs.mkdirSync(outputDir, { recursive: true });
 
+/**
+ * Read an image file from disk and return it as a base64-encoded data URL.
+ * @param {string} filePath - Absolute or relative path to a PNG image.
+ * @returns {string} A `data:image/png;base64,...` data URL.
+ */
 function toDataUrl(filePath) {
   const bytes = fs.readFileSync(filePath);
   return 'data:image/png;base64,' + bytes.toString('base64');
@@ -48,6 +69,11 @@ function toDataUrl(filePath) {
     urlA, urlB,
     matchThreshold, defectThreshold, borderRing, borderThreshold, tolerance,
   }) => {
+    /**
+     * Load an image from a data URL into an HTMLImageElement.
+     * @param {string} src - Image source (data URL or remote URL).
+     * @returns {Promise<HTMLImageElement>} Resolves when the image is decoded.
+     */
     function loadImage(src) {
       return new Promise((resolve, reject) => {
         const img = new Image();
