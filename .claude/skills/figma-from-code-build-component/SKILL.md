@@ -177,7 +177,19 @@ For each required child, check `builtComponents[childName]`. If the node ID is p
 
 Write this result to `.temp/figma-from-code/build-results/{componentName}.json` so the orchestrator can see which children need to be built first.
 
-Only proceed to step 1f and beyond if all children are confirmed present.
+**Standalone (no orchestrator)** — if the caller is the user directly, also surface the rejection in the conversation and ask how to proceed. Don't fall back to inlining the missing children, building stubs, or downgrading the build into "best effort" — those produce a different artifact than the skill is supposed to produce. The right options are: (a) build the missing children first in dependency order, (b) abandon the build, or (c) get explicit user authorization to deviate.
+
+**Enforcement gate** — before you call `use_figma` to start building, run:
+
+```bash
+node .claude/skills/figma-from-code-build-component/check-prereqs.js <componentName> <sourceFile.tsx>
+```
+
+The script reads imports from `sourceFile.tsx`, looks each one up in `.temp/figma-from-code/builtComponents.json`, and either writes `.temp/figma-from-code/prereqs/<componentName>.ok` (exit 0) or prints the rejection JSON and exits 1. A `PreToolUse` hook on `mcp__claude_ai_Figma__use_figma` blocks any `use_figma` call that creates a fresh component (contains `figma.createComponent()` with a `<var>.name = '<componentName>'` assignment) unless the matching `.ok` marker exists and is fresh (< 1 hour). The hook is configured at `.claude/hooks/figma-prereqs-gate.js`.
+
+If the script reports `missing_children`, that *is* the rejection — write it to the build-results file, surface it to the user (when standalone), and stop. Do not work around the hook by renaming the master, splitting `createComponent` across calls to evade the regex, or editing the hook itself.
+
+Only proceed to step 1f and beyond if check-prereqs.js exits 0.
 
 ### 1f. Plan text content
 
