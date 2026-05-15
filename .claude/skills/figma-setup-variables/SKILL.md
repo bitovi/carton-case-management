@@ -1,54 +1,65 @@
 ---
 name: figma-setup-variables
-description: Extract Carton's design tokens from index.css and tailwind.config.js and create Figma variable collections. Run this before figma:figma-generate-library so Phase 1 (tokens) is already done.
+description: Extract design tokens from the project's CSS and Tailwind config and create Figma variable collections. Run this before figma:figma-generate-library so Phase 1 (tokens) is already done.
 ---
 
-# Skill: Set Up Figma Variables from Carton Code
+# Skill: Set Up Figma Variables from Code
 
-Extracts design tokens from this codebase and creates Figma variable collections. This is a project-specific accelerator for Phase 1 of `figma:figma-generate-library` — run it first so the library build can skip straight to components.
+Extracts design tokens from the project's CSS and Tailwind configuration and creates Figma variable collections. This is Phase 1 of the code-to-Figma workflow — run it first so the library build can skip straight to components.
 
 ## When to Use
 
-Before running `figma:figma-generate-library` on a fresh Figma file, or when tokens in `index.css` have changed and Figma variables need syncing.
+Before running `figma:figma-generate-library` on a fresh Figma file, or when design tokens have changed and Figma variables need syncing.
 
-## Token Sources (project-specific)
+## Required Inputs
+
+| Input | Description |
+|-------|-------------|
+| `fileKey` | The Figma file key |
+| `cssPath` | Path to the main CSS file containing custom properties (e.g., `src/index.css`) |
+| `tailwindConfigPath` (optional) | Path to the Tailwind config file (e.g., `tailwind.config.js`) |
+
+## Token Sources
 
 | File | What it contains |
 |------|-----------------|
-| `packages/client/src/index.css` | All CSS custom properties with hex values — palette colors and semantic aliases |
-| `packages/client/tailwind.config.js` | Color names mapped to CSS variables, border radius extensions |
+| `{cssPath}` | All CSS custom properties — palette colors and semantic aliases |
+| `{tailwindConfigPath}` | Color names mapped to CSS variables, border radius extensions (if using Tailwind) |
+
+## Token Discovery Process
+
+Rather than hardcoding token values, extract them dynamically from the project files:
+
+1. **Read the CSS file** and parse all `--variable-name: value` declarations from `:root` or theme blocks
+2. **Categorize variables** into:
+   - **Palette colors**: Raw color scales (e.g., `--gray-50` through `--gray-950`) — group by color family
+   - **Semantic tokens**: Aliases that reference palette colors or define contextual colors (e.g., `--background`, `--primary`, `--foreground`)
+   - **Spacing/sizing**: Numeric values for radius, spacing, gaps
+3. **If Tailwind config exists**, read it to discover:
+   - Color name mappings to CSS variables
+   - Border radius extensions
+   - Spacing scale extensions
 
 ## Collections to Create
 
 ### 1. `Palette` (mode: `Value`)
-Raw color scales — scopes set to `[]` (hidden from property pickers, used only for aliasing).
+Raw color scales extracted from CSS — scopes set to `[]` (hidden from property pickers, used only for aliasing).
 
-Groups: `gray/50`→`gray/950`, `teal/50`→`teal/950`, `orange`, `green`, `yellow`, `violet`, `blue`, `pink`, `white`
+Groups are discovered dynamically from CSS variable naming patterns (e.g., `--{color}-{step}` where step is 50→950).
 
 ### 2. `Semantic` (mode: `Light`)
-Alias tokens that components bind to — scopes set appropriately.
+Alias tokens that components bind to — scopes set appropriately based on usage:
 
-| Token group | Scope |
-|------------|-------|
+| Token pattern | Scope |
+|--------------|-------|
 | `background`, `card/*`, `popover/*`, `sidebar/*` fills | `FRAME_FILL, SHAPE_FILL` |
-| `foreground`, `*-foreground`, `muted/foreground` | `TEXT_FILL` |
+| `foreground`, `*-foreground` | `TEXT_FILL` |
 | `border/*`, `ring/*`, `outline/*` | `STROKE_COLOR` |
-| `backdrop` | `FRAME_FILL, SHAPE_FILL` |
 
-Key aliases (value references `Palette` variable where possible):
-- `background` → `Palette/white`
-- `primary/DEFAULT` → `Palette/gray/950`
-- `destructive/DEFAULT` → direct hex `#dc2626` (no palette match)
+Where a semantic token's value maps to a palette variable, create an alias reference. Where it's a standalone hex value, use a direct color.
 
 ### 3. `Spacing` (mode: `Value`)
-Float variables. Radius scope: `CORNER_RADIUS`. Spacing scope: `GAP, WIDTH_HEIGHT`.
-
-```
-radius/none=0, radius/xs=2, radius/sm=4, radius/md=6, radius/DEFAULT=8,
-radius/xl=12, radius/2xl=16, radius/3xl=24, radius/full=9999
-spacing/1=4, spacing/2=8, spacing/3=12, spacing/4=16, spacing/5=20,
-spacing/6=24, spacing/8=32, spacing/10=40, spacing/12=48, spacing/16=64
-```
+Float variables extracted from CSS or Tailwind config. Radius scope: `CORNER_RADIUS`. Spacing scope: `GAP, WIDTH_HEIGHT`.
 
 ## How to Execute
 

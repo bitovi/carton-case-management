@@ -20,24 +20,40 @@ Creates a single Figma component (or component set with variants) from source co
 
 | Input             | Description                                                                                       | Source                                               |
 | ----------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| `componentName`   | Name of the component (e.g., `Button`, `CaseDetails`)                                             | Build order / caller                                 |
+| `componentName`   | Name of the component (e.g., `Button`, `UserProfile`)                                             | Build order / caller                                 |
 | `fileKey`         | Figma file key                                                                                    | State ledger or caller                               |
 | `parentFrameId`   | Node ID of the tier/container frame to append the component into                                  | State ledger                                         |
-| `sourceCode`      | The component's `.tsx` source code (read the file contents)                                       | `packages/client/src/components/`                    |
+| `sourceCode`      | The component's `.tsx` source code (read the file contents)                                       | Project's component source directory                 |
 | `appScreenshot`   | Path to the app screenshot PNG                                                                    | `.temp/figma-from-code/screenshots/{name}/app.png`   |
 | `textContent`     | Extracted text JSON from the live app                                                             | `.temp/figma-from-code/screenshots/{name}/text.json` |
 | `variants`        | List of variant configurations (props/states) to build                                            | Source code analysis                                 |
 | `iconUsage`       | Which Lucide icons and SVG assets the component uses, with sizes                                  | Source code imports + `icons.json`                   |
 | `builtComponents` | Map of `{componentName: nodeId}` for all previously built components available for instance reuse | State ledger `builtComponents`                       |
+| `preExistingComponents` | Immutable snapshot of components that existed in Figma BEFORE this orchestrator run started | State ledger `preExistingComponents` (Phase 0a snapshot) |
 | `screenshotDir`   | Directory for saving Figma screenshots and diff artifacts                                         | `.temp/figma-from-code/screenshots/{name}/`          |
 
 ### Optional Inputs
 
-| Input            | Description                                                                                 |
-| ---------------- | ------------------------------------------------------------------------------------------- |
-| `computedStyles` | CSS custom properties, Tailwind classes, or computed style values relevant to the component |
-| `cssFile`        | Path to the component's `.css` module file if external styles exist                         |
-| `figmaVariant`   | Variant properties that match the app rendering (for comparison targeting)                  |
+| Input            | Description                                                                                                                                  |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `computedStyles` | Resolved CSS values from `computed-styles.json` (produced by `inspect-styles.js` in step 1g). Authoritative for colors, spacing, typography |
+| `stateScreenshots` | Paths to state screenshots (`state-hover.png`, `state-focus.png`, `state-disabled.png`) and style diffs from `states.json`                |
+| `cssFile`        | Path to the component's `.css` module file if external styles exist                                                                         |
+| `figmaVariant`   | Variant properties that match the app rendering (for comparison targeting)                                                                  |
+
+---
+
+## Pre-Existing Components Rule
+
+Before doing any work that resolves to a node ID in `preExistingComponents`, **stop**. That node existed in Figma before this run; modifying it (rebuild, resize the master, delete + recreate, swap variants out from under existing instances) requires explicit user authorization per the orchestrator skill's "Pre-Existing Components Rule".
+
+Concretely:
+
+- If `componentName` itself maps to a node in `preExistingComponents` and the caller's intent is to **rebuild** that node: write a result file with `"status": "needs_authorization"` and `"preExistingTouched": ["<name>"]`, then return. Do not call `use_figma` to delete, replace, resize, or restyle the existing node. Building a *fresh* component with the same name into a different `parentFrameId` is also a modification (it creates a duplicate the orchestrator must reconcile) — don't do it without authorization.
+- If a *child* you would normally instantiate inside this component (e.g., `Icon/Check`, `Button`) is in `preExistingComponents`: **instancing it is fine** — that's reuse, not modification. Modifying its master is not.
+- The fix-loop in Step 5 must never edit a node in `preExistingComponents`. If the comparison says you need to, escalate to the orchestrator instead.
+
+This rule overrides Steps 2–5 of the workflow when in conflict.
 
 ---
 
@@ -62,12 +78,13 @@ The subagent writes its result to `.temp/figma-from-code/build-results/{componen
 ## Workflow
 
 ```
-Step 1    Analyze       Read source + reference material, plan the component structure
+Step 1    Analyze       Read source + reference material, inspect live component, plan structure
 Step 2    Build         Create the component in Figma via use_figma
 Step 3    Screenshot    Capture the Figma result via get_screenshot
 Step 4    Compare       Pixel diff against the app screenshot
 Step 5    Fix Loop      If mismatch, diagnose and fix (up to 3 iterations)
-Step 6    Return        Report result with node ID, match score, and any remaining issues
+Step 6    Track         Write figma.json into the component folder
+Step 7    Return        Report result with node ID, match score, and any remaining issues
 ```
 
 ---
@@ -76,12 +93,19 @@ Step 6    Return        Report result with node ID, match score, and any remaini
 
 Before writing any `use_figma` code, analyze all inputs to plan the Figma structure.
 
+> **Pre-flight: dev server is required for Step 1g (live inspection).** Step 1g — inspecting the rendered component in a browser via `inspect-styles.js` — is the authoritative source for colors, spacing, typography, and interactive states. **Do not silently skip it.** If you don't already have a dev server URL (from the orchestrator state ledger, project memory, or the caller's arguments), pause and ask the user for one before proceeding past Step 1. Only skip Step 1g if the user explicitly says no dev server is available, or has already said so earlier in this conversation. See Step 1g for the full decision tree.
+
 ### 1a. Identify the component structure
 
 Read the source code and determine:
 
 - **Layout direction**: Is the root a vertical stack (`flex-col`) or horizontal row (`flex`, `flex-row`)?
-- **Sizing**: Fixed width/height from Tailwind classes (e.g., `w-[200px]`, `h-10`) or flexible (`flex-1`, `w-full`)?
+- **Sizing intent** (CAPTURE THIS EXPLICITLY — Step 4a verifies the built component matches): For the *outermost* container, classify each axis as one of:
+  - `fill` — has `w-full`, `flex-1`, `flex: 1`, `min-w-full`, or in a flex parent without sized siblings (Figma equivalent: `primaryAxisSizingMode='FIXED'` on the parent + `layoutSizingHorizontal='FILL'` on the child; or for masters, fixed width matching the consumer)
+  - `fixed:NNN` — has explicit value like `w-[200px]`, `w-64`, `h-10` (Figma: fixed width/height matching NNN)
+  - `hug` — none of the above; content-driven (Figma: `*SizingMode='AUTO'`)
+  Repeat per axis (width AND height). Capture this as `{widthIntent: 'fill' | 'fixed:NNN' | 'hug', heightIntent: ...}`. Record it now — Step 4a uses it.
+- **Role hint**: If the source file path is under `pages/` or `routes/`, OR the component name ends in `Page` / `Screen` / `Layout`, treat it as a **page-level** component. Page-level components default to filling the screen body (typically ~1380×768 — read `screensFrameId` body size from state if available) regardless of how the captured `app.png` looks, because the precapture selector may have grabbed a hug-content wrapper.
 - **Spacing**: `gap-*` classes map to `itemSpacing` in Figma. `p-*`, `px-*`, `py-*` map to padding.
 - **Colors**: `bg-*`, `text-*`, `border-*` classes. Resolve CSS variables from `index.css` if needed.
 - **Typography**: Font size, weight, line height from Tailwind classes.
@@ -95,12 +119,14 @@ Examine the source code for variant-producing patterns:
 - `cva()` or `class-variance-authority` definitions
 - Conditional classes based on props (e.g., `variant`, `size`, `state`)
 - Boolean props that toggle visual states (e.g., `disabled`, `active`, `selected`)
+- HTML elements states (e.g., `:hover`, `:focus`, `:disabled`) that require separate variants for accurate screenshot comparison
 - Explicit variant types in the component's props interface
 
 For each variant combination, note:
 
 - The variant property names and values (e.g., `{Variant: "primary", Size: "regular"}`)
 - The visual differences (colors, sizes, borders, etc.)
+- Create a screenshot by manipulating props and capturing the app rendering for each variant to use as reference during comparison
 
 ### 1c. Identify icon and image usage
 
@@ -128,7 +154,32 @@ Check if any child components in the source code are already in `builtComponents
 // → Create an instance of Button, don't rebuild it
 ```
 
-### 1e. Plan text content
+### 1e. Verify all child components exist in Figma (prerequisite gate)
+
+After identifying all child components (sub-components and icons) from steps 1c and 1d, verify that **every one** exists in `builtComponents`. Build a list of required children:
+
+- Every sub-component referenced in source code (from step 1d)
+- Every icon referenced in source code (from step 1c), as `Icon/{Name}`
+
+For each required child, check `builtComponents[childName]`. If the node ID is present, the child is available. If **any** child is missing:
+
+**STOP — do not proceed to step 2.** Return immediately with a rejection result:
+
+```json
+{
+  "componentName": "CaseDetails",
+  "status": "rejected",
+  "reason": "missing_children",
+  "missingChildren": ["CaseComments", "Icon/Trash"],
+  "availableChildren": ["Button", "CaseInformation", "Icon/Check"]
+}
+```
+
+Write this result to `.temp/figma-from-code/build-results/{componentName}.json` so the orchestrator can see which children need to be built first.
+
+Only proceed to step 1f and beyond if all children are confirmed present.
+
+### 1f. Plan text content
 
 Use `textContent` (from `text.json`) for exact text strings. Never use generic placeholders like "Lorem ipsum" or "Button text". The text.json structure:
 
@@ -143,6 +194,69 @@ Use `textContent` (from `text.json`) for exact text strings. Never use generic p
   "icons": [{ "name": "Check", "size": "h-4 w-4" }]
 }
 ```
+
+### 1g. Inspect live component in Playwright
+
+Before building, inspect the actual rendered component in the browser to capture computed styles and interactive state screenshots. This provides ground-truth values that are more reliable than inferring from Tailwind classes alone — especially for resolved colors, inherited styles, and CSS variable chains.
+
+Run `inspect-styles.js` against the component's selector on the dev server:
+
+```bash
+node .claude/skills/figma-from-code-validator/inspect-styles.js \
+  "http://localhost:5173/{route}" \
+  --selector "{componentSelector}" \
+  --output ".temp/figma-from-code/screenshots/{ComponentName}/"
+```
+
+This produces:
+
+| File | Contents |
+|------|----------|
+| `computed-styles.json` | Key CSS properties from `getComputedStyle` (colors, spacing, typography, layout, borders, shadows) plus the element's class list |
+| `state-hover.png` | Screenshot with `:hover` emulated — **only created if visually different from default** |
+| `state-focus.png` | Screenshot with `:focus-visible` emulated — **only created if visually different** |
+| `state-disabled.png` | Screenshot with `[disabled]` set — **only created if the element supports it and looks different** |
+| `states.json` | Index of which states were captured vs skipped, with per-state computed style diffs |
+
+**How to use the outputs:**
+
+1. **`computed-styles.json`** — Use resolved color values (RGB) directly instead of tracing Tailwind → CSS variable → HSL → RGB. Use exact `fontSize`, `fontWeight`, `lineHeight`, `borderRadius`, `padding`, `gap` values to set Figma properties. These are the authoritative values.
+
+2. **State screenshots** — Each captured state screenshot becomes a variant in the Figma component set. For example, if `state-hover.png` exists, create a `State=Hover` variant using the hover computed styles from `states.json`. If `state-focus.png` exists, create a `State=Focus` variant. Combine with any prop-based variants from step 1b (e.g., `Variant=primary, State=Hover`).
+
+3. **Skipped states** — If `states.json` shows a state was skipped (`"reason": "no visual difference from default"`), do not create a variant for it.
+
+**Batch mode** — When the orchestrator dispatches subagents, it can pre-run inspect-styles in batch for all components in a tier:
+
+```bash
+node .claude/skills/figma-from-code-validator/inspect-styles.js --batch manifest.json
+```
+
+Where `manifest.json` contains entries like:
+```json
+[
+  {"url": "http://localhost:5173/cases", "selector": "[data-component='Button']", "output": ".temp/figma-from-code/screenshots/Button/"},
+  {"url": "http://localhost:5173/cases", "selector": "[data-component='Input']", "output": ".temp/figma-from-code/screenshots/Input/"}
+]
+```
+
+**Dev server is required — don't silently skip this step.**
+
+The live-component inspection produces the authoritative ground truth for colors, spacing, typography, and interactive states. Skipping it means the build is inferred entirely from Tailwind classes and CSS variable chains, which routinely drifts from what the app actually renders. Only skip when the user has explicitly told you no dev server is available.
+
+Decide what to do based on what the caller gave you:
+
+1. **Orchestrator-dispatched (subagent) call** — the orchestrator passes the dev server URL and per-component route/selector in the state ledger. Use those directly. If they're missing from the manifest, treat that as a state-ledger bug and report it back to the orchestrator; do not fall back to skipping.
+
+2. **Standalone call (no orchestrator)** — before falling back to source-only analysis, determine whether a dev server is running:
+   - Check the project for an obvious dev command (`package.json` `scripts.dev`, `npm run dev`, `vite`, etc.) and a likely URL (commonly `http://localhost:5173` for Vite, `localhost:3000` for Next.js/CRA). If memory contains a known dev server URL for this project, use that.
+   - Probe the URL with a quick `curl -s -o /dev/null -w "%{http_code}" <url>` (or equivalent). If it responds, proceed with inspect-styles against it.
+   - If no URL is reachable AND the user has not already told you a dev server is unavailable, **stop and ask the user**: "Is a dev server running for this project? If so, what's the URL and the route/selector for `{ComponentName}`?" Wait for the answer before continuing.
+   - Only skip step 1g if the user explicitly says no dev server is available (or has said so earlier in the conversation). Record that decision in the result file's `notes` field so the omission is visible downstream.
+
+3. **Auto/non-interactive mode** — if you cannot ask the user (e.g., running fully autonomously inside a batch), and probing finds no dev server, still attempt to start one if the project clearly supports it (e.g., `npm run dev &` with a port check loop). If starting the server isn't safe or appropriate, proceed without 1g but explicitly flag `"liveInspection": "skipped_no_dev_server"` in the result so the validator can re-check later.
+
+**If the component has no known selector or route but the dev server IS running**, attempt to derive them: search the codebase for routes that render `{ComponentName}` (e.g., grep imports of the component file), and use a Playwright selector like `[data-component='{ComponentName}']`, the component's display class, or a text-content match from `text.json`. Only fall back to source-only analysis if this derivation also fails — and ask the user before doing so.
 
 ---
 
@@ -328,7 +442,7 @@ parent.appendChild(divider);
 When source code references Tailwind semantic colors (e.g., `bg-primary`, `text-muted-foreground`, `border-input`), resolve them through the CSS variable chain:
 
 1. Look up the Tailwind class in `tailwind.config.js` to find the CSS variable name
-2. Look up that CSS variable in `packages/client/src/index.css` to find the HSL/OKLCH value
+2. Look up that CSS variable in the project's main CSS file to find the HSL/OKLCH value
 3. Convert to Figma RGB (`{ r: 0-1, g: 0-1, b: 0-1 }`)
 
 Common color resolutions (update these from the actual CSS):
@@ -386,6 +500,55 @@ curl -sL "{image_url}" -o "{screenshotDir}/figma.png"
 
 ## Step 4: Compare Against App Screenshot
 
+### 4a. Sizing sanity check (run BEFORE the pixel compare)
+
+A pixel diff against a narrow `app.png` can pass even when the component is built far smaller than it will render in real usage — this is the most common silent failure mode. Run this check first; it is independent of the screenshot.
+
+Inspect the built component (`use_figma`) and read its top-level frame:
+
+```javascript
+const node = figma.getNodeById('{nodeId}');
+const built = {
+  w: Math.round(node.width),
+  h: Math.round(node.height),
+  primaryAxisSizingMode: node.primaryAxisSizingMode,
+  counterAxisSizingMode: node.counterAxisSizingMode,
+  layoutMode: node.layoutMode,
+};
+```
+
+Compare against the **sizing intent** captured in Step 1a:
+
+| Intent (per axis) | Expected built state | Flag if … |
+|---|---|---|
+| `fill` | Master is FIXED at the consumer's expected size (page body width for page-level; parent slot width otherwise). Or the root child is FILL inside its parent. | `*SizingMode === 'AUTO'` AND the dimension is much smaller than the expected fill size (< 50%) |
+| `fixed:NNN` | Dimension equals NNN ± 2px | Difference > 2px |
+| `hug` | `*SizingMode === 'AUTO'` | Forced FIXED with no clear reason |
+
+**Additional checks:**
+
+- **Page-level component (role hint from Step 1a)**: width must be ≥ 1200px AND height must be ≥ 600px (or the screen body dimensions read from `figmaNodes.screensFrameId`). If the master is 622×304 because precapture cropped the screenshot, this check catches it.
+- **Children with `flex-1` siblings in source but matching `*SizingMode='HUG'` in Figma**: the auto-layout will collapse the component. Flag.
+
+If any check fails, **treat this as a `size_mismatch` discrepancy and feed it into Step 5 alongside (or before) the pixel diff results.** Do not declare a match based on pixel score alone if the sizing check failed — pixel match against a too-narrow `app.png` is a false positive.
+
+Record the sizing check result in the eventual result file:
+
+```json
+"comparison": {
+  "sizingCheck": {
+    "verdict": "pass" | "fail",
+    "issues": ["page-level component is 622×304, expected ≥1200×600"],
+    "builtSize": {"w": 622, "h": 304},
+    "expectedSize": {"w": 1380, "h": 768}
+  },
+  "matchPct": 95.26,
+  ...
+}
+```
+
+### 4b. Pixel diff comparison
+
 Run the pixel diff comparison:
 
 ```bash
@@ -400,13 +563,16 @@ This produces:
 - `diff.png` — red pixels mark differences, matching pixels dimmed
 - `comparison.json` — `{ matchPct, borderMatchPct, verdict, borderVerdict }`
 
-**Verdict thresholds:**
+**Verdict thresholds (combined with Step 4a result):**
 
-- `matchPct >= 90%` and `borderMatchPct >= 85%` → **match** (done)
-- `matchPct 75-90%` or `borderMatchPct < 85%` → **minor_diff** (needs fixing)
-- `matchPct < 75%` → **mismatch** (needs fixing)
+- 4a passed AND `matchPct >= 90%` AND `borderMatchPct >= 85%` → **match** (done)
+- 4a failed (regardless of pixel score) → **size_mismatch** (needs fixing — fix sizing first, then re-screenshot, then re-run 4a + 4b)
+- 4a passed AND `matchPct 75-90%` or `borderMatchPct < 85%` → **minor_diff** (needs fixing)
+- 4a passed AND `matchPct < 75%` → **mismatch** (needs fixing)
 
-If no app screenshot exists (`appScreenshot` is null), skip comparison — report `no_app_reference` and return after build.
+A passing pixel verdict alone is NOT enough — 4a must also pass. Otherwise the build is silently wrong-sized and the validation phase will reject it later.
+
+If no app screenshot exists (`appScreenshot` is null), skip pixel comparison — but still run Step 4a. Report `no_app_reference` only if 4a also passes; otherwise report `size_mismatch`.
 
 ---
 
@@ -420,23 +586,26 @@ If the verdict is `minor_diff` or `mismatch`, enter the fix loop.
 
 Use all four inputs together to identify specific differences:
 
-1. **Read `diff.png`** — red regions show exactly where pixels differ
-2. **Read `app.png`** — what the component should look like
-3. **Read `figma.png`** — what was actually built
-4. **Read source `.tsx`** — Tailwind classes reveal intended values (colors, spacing, radii, font weights)
+1. **Step 4a sizing check result** — if it failed, address sizing FIRST. A too-small master will mask everything else and will re-fail validation later.
+2. **Read `diff.png`** — red regions show exactly where pixels differ
+3. **Read `app.png`** — what the component should look like
+4. **Read `figma.png`** — what was actually built
+5. **Read source `.tsx`** — Tailwind classes reveal intended values (colors, spacing, radii, font weights)
 
 Cross-reference to identify the exact Figma properties that need correction. Common discrepancy patterns:
 
-| Symptom in diff.png              | Likely Cause                                                    | Fix                                             |
-| -------------------------------- | --------------------------------------------------------------- | ----------------------------------------------- |
-| Red border ring around component | Wrong border color, extra stroke, missing stroke                | Adjust `strokes`, `strokeWeight`, `strokeAlign` |
-| Red fill region                  | Wrong background color                                          | Adjust `fills` color values                     |
-| Red text area                    | Wrong font size/weight, wrong text color, wrong text content    | Adjust font properties, text fills              |
-| Shifted content                  | Wrong padding or spacing                                        | Adjust `itemSpacing`, padding values            |
-| Missing element                  | Child not created or wrong visibility                           | Add missing child element                       |
-| Extra element                    | Decorative element not in source                                | Remove unexpected child                         |
-| Size mismatch                    | Wrong resize values or sizing mode                              | Adjust `resize()` or `layoutSizingMode`         |
-| Components all thin strips       | `fixSizing()` not applied, or `counterAxisSizingMode = 'FIXED'` | Run `fixSizing()` on the component              |
+| Symptom                                                                  | Likely Cause                                                                    | Fix                                                                                                                                                                  |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Step 4a sizing check failed** (master too small for `fill` intent)     | Master built with `*SizingMode='AUTO'`, hugged content, app.png was cropped narrow | Set sizing modes FIRST, then resize: `node.primaryAxisSizingMode='FIXED'; node.counterAxisSizingMode='FIXED'; node.resizeWithoutConstraints(W, H)`. Set fill children to `layoutSizingHorizontal='FILL'` / `layoutSizingVertical='FILL'`. Order matters — sizing modes before `resize()`, otherwise the resize collapses back to AUTO. |
+| **Step 4a sizing check failed** (fixed dimension off by > 2px)           | Wrong literal width/height from Tailwind class                                  | `node.resizeWithoutConstraints(intendedW, intendedH)`                                                                                                                |
+| Red border ring around component                                         | Wrong border color, extra stroke, missing stroke                                | Adjust `strokes`, `strokeWeight`, `strokeAlign`                                                                                                                      |
+| Red fill region                                                          | Wrong background color                                                          | Adjust `fills` color values                                                                                                                                          |
+| Red text area                                                            | Wrong font size/weight, wrong text color, wrong text content                    | Adjust font properties, text fills                                                                                                                                   |
+| Shifted content                                                          | Wrong padding or spacing                                                        | Adjust `itemSpacing`, padding values                                                                                                                                 |
+| Missing element                                                          | Child not created or wrong visibility                                           | Add missing child element                                                                                                                                            |
+| Extra element                                                            | Decorative element not in source                                                | Remove unexpected child                                                                                                                                              |
+| Size mismatch (from pixel diff, not 4a)                                  | Wrong resize values or sizing mode                                              | Adjust `resize()` or `layoutSizingMode`                                                                                                                              |
+| Components all thin strips                                               | `fixSizing()` not applied, or `counterAxisSizingMode = 'FIXED'`                 | Run `fixSizing()` on the component                                                                                                                                   |
 
 **5b. Apply the fix via `use_figma`**
 
@@ -497,7 +666,51 @@ Fix structural issues before screenshotting — `strokeAlign: 'INSIDE'` causes d
 
 ---
 
-## Step 6: Return Result
+## Step 6: Write figma.json tracking file
+
+Write a Figma tracking record to the component's modlet folder so the codebase has a durable link back to the Figma node. Applies whether this run created the component fresh or worked with an existing one.
+
+**Path:** `packages/client/src/components/{ComponentName}/figma.json`
+
+**Schema:**
+
+```json
+{
+  "fileKey": "{figmaFileKey}",
+  "nodeId": "{componentSetIdOrComponentId}",
+  "url": "https://figma.com/design/{fileKey}?node-id={nodeIdWithDashes}",
+  "componentName": "Button",
+  "createdAt": "2026-05-15T14:32:00Z",
+  "updatedAt": "2026-05-15T14:32:00Z"
+}
+```
+
+**Field rules:**
+
+- `nodeId` — the COMPONENT_SET id when variants exist, otherwise the COMPONENT id. Same value reported as `nodeId` in Step 7.
+- `url` — convert the colon in `nodeId` to a dash for the URL fragment (Figma's URL format).
+- `componentName` — the Figma component name (e.g. `Button`, `Icon/Check`, `Asset/CartonLogoSvg`).
+
+**Read-then-write semantics:**
+
+1. If `figma.json` already exists at the target path: parse it, preserve the existing `createdAt`, and refresh `nodeId`, `url`, `updatedAt` (and `componentName` if it changed) with current values.
+2. If it does not exist: write a fresh file with `createdAt` and `updatedAt` both set to the current ISO 8601 UTC timestamp.
+
+**Folder resolution:**
+
+The component folder is the modlet folder for `componentName`. For namespaced names (`Icon/Bot`, `Asset/CartonLogoSvg`), the folder lives under the corresponding subdirectory:
+
+- `Button` → `packages/client/src/components/Button/figma.json`
+- `Icon/Bot` → `packages/client/src/components/Icon/Bot/figma.json`
+- `Asset/CartonLogoSvg` → `packages/client/src/components/Asset/CartonLogoSvg/figma.json`
+
+If the target folder does not exist (e.g. an icon or asset whose modlet hasn't been scaffolded), create the folder before writing the file.
+
+**Failure handling:** if the write fails (permission, missing parent path that can't be created), log the failure and continue — do not fail the build. Surface the failure in the Step 7 return result under a `trackingFile` field with `{ written: false, error: "..." }` so the orchestrator can report it.
+
+---
+
+## Step 7: Return Result
 
 Return a structured result for the caller:
 
@@ -601,7 +814,7 @@ comp.resize(200, 10); // width hint only
 | `compare.js` fails                     | Report comparison error, return the component with `nodeId` but no match score               |
 | `get_screenshot` fails                 | Retry once. If still failing, return component as built but unvalidated                      |
 | Font not available                     | Fall back to `{ family: 'Inter', style: 'Regular' }` — Inter is always available in Figma    |
-| Sub-component not in `builtComponents` | Build a placeholder frame with the expected dimensions and a name label                      |
-| Icon not in `builtComponents`          | Create a placeholder 24x24 rectangle named `Icon/{Name}`                                     |
+| Sub-component not in `builtComponents` | Reject the build — return `status: "rejected"` with the missing children list (step 1e)      |
+| Icon not in `builtComponents`          | Reject the build — return `status: "rejected"` with the missing icon in `missingChildren`    |
 
 Never fail silently. Every error or skip must appear in the returned result.

@@ -15,12 +15,14 @@ Discovers all Lucide icons and SVG file assets imported across the codebase, ext
 
 ## Prerequisites
 
-- `packages/client/src/` exists (source tree to scan)
+- Source directory exists (the directory containing the project's component source files)
 - `node_modules/lucide-react` installed (for resolving icon SVG data)
 
 ## Required Inputs
 
-None — paths are hardcoded to the Carton project structure.
+| Input | Description |
+|-------|-------------|
+| `sourceDir` | Path to the source directory to scan (e.g., `src/`, `packages/client/src/`) |
 
 ## Output Files
 
@@ -44,16 +46,16 @@ Written to `.temp/figma-from-code/`:
   ],
   "assets": [
     {
-      "name": "CartonLogoSvg",
+      "name": "AppLogoSvg",
       "importPath": "@/assets/logo.svg",
-      "sourcePath": "packages/client/src/assets/logo.svg",
+      "sourcePath": "{sourceDir}/assets/logo.svg",
       "svgString": "...",
       "usedBy": ["Header"]
     }
   ],
   "iconsByComponent": {
     "Button": ["Check", "X"],
-    "Header": ["CartonLogoSvg"]
+    "Header": ["AppLogoSvg"]
   },
   "summary": {
     "totalIcons": 21,
@@ -75,7 +77,7 @@ mkdir -p .temp/figma-from-code/
 
 ```bash
 node .claude/skills/figma-from-code-validator/extract-icons.js \
-  --scan packages/client/src/ \
+  --scan {sourceDir} \
   --output .temp/figma-from-code/icons.json
 ```
 
@@ -121,6 +123,6 @@ If called with `resume: true`, check whether `.temp/figma-from-code/icons.json` 
 
 | Scenario | Action |
 |----------|--------|
-| `extract-icons.js` fails | Verify `packages/client/src/` exists and `node_modules/lucide-react` is installed |
+| `extract-icons.js` fails | Verify the source directory exists and `node_modules/lucide-react` is installed |
 | Icon SVG resolution fails | Script logs warnings per-icon; other icons still extracted |
 | SVG file asset not found on disk | Script logs warning; asset entry created without `svgString` |

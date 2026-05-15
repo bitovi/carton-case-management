@@ -1,23 +1,23 @@
 ---
 name: figma-from-code
-description: Orchestrates the full code-to-Figma rebuild workflow for Carton. Runs seven phases (discovery, icon discovery, tokens, file structure, pre-capture, component builds, screens + validate). All Figma MCP tools (use_figma, get_screenshot) work in both the orchestrator and subagents.
+description: Orchestrates the full code-to-Figma rebuild workflow for a web application. Runs seven phases (discovery, icon discovery, tokens, file structure, pre-capture, component builds, screens + validate). All Figma MCP tools (use_figma, get_screenshot) work in both the orchestrator and subagents.
 ---
 
 # Skill: Rebuild Figma from Code (Orchestrator)
 
-Conducts the full code-to-Figma pipeline for Carton. Phase 3 dispatches parallel subagents that each run the complete `figma-from-code-build-component` workflow (analyze → build → screenshot → compare → fix) for a single component.
+Conducts the full code-to-Figma pipeline for a web application. Phase 3 dispatches parallel subagents that each run the complete `figma-from-code-build-component` workflow (analyze → build → screenshot → compare → fix) for a single component.
 
 > **Figma MCP in subagents:** All Figma MCP tools (`use_figma`, `get_screenshot`, etc.) work in subagents. This enables full parallelization of component builds in Phase 3.
 
 ## When to Use
 
-- Starting a fresh Figma rebuild from the Carton codebase
+- Starting a fresh Figma rebuild from the codebase
 - Resuming a partially completed build after a session break
 - After significant code changes that require the Figma file to be re-synced
 
 ## Required Inputs
 
-- `fileKey`: The Figma file key (e.g. `o3eOcCYZWvOpie7ZYRonPO`)
+- `fileKey`: The Figma file key (e.g. `{fileKey}`)
 - `resume` (optional): `true` to resume from last completed phase
 
 ## Page Frame Convention
@@ -40,7 +40,7 @@ Write to `.temp/figma-from-code/state.json` after every phase and tier transitio
 
 ```json
 {
-  "fileKey": "o3eOcCYZWvOpie7ZYRonPO",
+  "fileKey": "{fileKey}",
   "startedAt": "2026-05-06T00:00:00Z",
   "phases": {
     "phase0a": "complete",
@@ -63,8 +63,8 @@ Write to `.temp/figma-from-code/state.json` after every phase and tier transitio
   "buildOrder": {
     "tierCount": 6,
     "tiers": [
-      { "tier": 1, "label": "Leaf components", "components": ["BaseEditable", "Bot", "..."] },
-      { "tier": 2, "label": "Uses tier 1", "components": ["Button", "CaseComments", "..."] },
+      { "tier": 1, "label": "Leaf components", "components": ["ComponentA", "ComponentB", "..."] },
+      { "tier": 2, "label": "Uses tier 1", "components": ["ComponentC", "ComponentD", "..."] },
       "..."
     ]
   },
@@ -83,16 +83,44 @@ Write to `.temp/figma-from-code/state.json` after every phase and tier transitio
     "screensFrameId": "30:1"
   },
   "builtComponents": {},
+  "preExistingComponents": {},
   "iconDiscovery": {
     "iconCount": 21,
     "icons": ["Check", "X", "Loader2", "..."],
     "assetCount": 1,
-    "assets": ["CartonLogoSvg"]
+    "assets": ["AppLogoSvg"]
   }
 }
 ```
 
 **Subagents do not modify state.json.** Each writes its own output file. The orchestrator reads those files and updates state.
+
+---
+
+## Pre-Existing Components Rule
+
+`preExistingComponents` is an **immutable snapshot** captured during Phase 0a — every Figma component that existed in the file before this orchestrator run started. It is never updated after Phase 0a.
+
+**Hard rule:** the orchestrator MUST pause and obtain explicit user authorization before any operation that modifies, replaces, deletes, or detaches a node listed in `preExistingComponents`. This includes:
+
+- Rebuilding a component because Phase 5 validation flagged it as a mismatch
+- Resizing a master to fit screen frames (Phase 4/5 finding)
+- Swapping instances away from the old node and deleting the old set
+- Re-running an icon/asset preamble that would overwrite existing icons
+- Any Phase 3 build invocation for a name that resolves to a pre-existing node
+
+These actions affect work the user committed to Figma before this run. They are not destructive *within* the pipeline, but they may overwrite intent the orchestrator did not author.
+
+**Authorization protocol:**
+
+1. List the pre-existing components the proposed action would touch
+2. Summarize what would change (rebuild / resize / delete / swap)
+3. Show the validation evidence or the reason for the change
+4. Ask the user to confirm. Do not auto-proceed even in auto mode — this is exactly the "anything that deletes data or modifies shared systems" case that auto mode reserves for explicit confirmation.
+
+Components **created during this run** (added to `builtComponents` but not in `preExistingComponents`) can be freely modified without the user prompt — the pipeline owns them.
+
+Subagent prompts that may touch pre-existing nodes MUST receive `preExistingComponents` as part of their inputs and MUST honor this rule by rejecting the modification and returning control to the orchestrator rather than acting unilaterally.
 
 ### Per-Agent Output Files
 
@@ -101,14 +129,10 @@ Write to `.temp/figma-from-code/state.json` after every phase and tier transitio
   component-map.json          # Phase 0a: site-component-map output (authoritative build order)
   component-map.md            # Phase 0a: human-readable report with Mermaid diagram
   icons.json                  # Phase 0b: icon/asset manifest (SVG strings, per-component mapping)
-  precapture-forms.json       # Pre-capture agent output
-  precapture-cases.json
-  precapture-customers.json
-  precapture-users.json
+  precapture-{group}.json     # Pre-capture agent output (one per route group, dynamically named)
   precapture-screens.json
   build-tier1.json            # Build agent output (one per discovered tier)
   build-tier2.json
-  build-tier3.json
   build-tier{N}.json
   build-screens.json
   validate-lower.json         # Validation agent output
@@ -171,7 +195,7 @@ Phase 0    Discovery                orchestrator — delegates to discovery skil
 Phase 1    Tokens (variables)       orchestrator — delegates to figma-setup-variables
 Phase 2    File Structure           orchestrator — delegates to figma-setup-file-structure + inline use_figma
 Phase 2.5  Pre-capture              parallel subagents — figma-from-code-precapture   model: haiku
-Phase 3    Build components         parallel subagents — figma-from-code-build-tier   model: sonnet
+Phase 3    Build components         parallel subagents — figma-from-code-build-tier   model: opus
 Phase 4    Build screens            orchestrator — delegates to figma-from-code-build-screens
 Phase 5    Validate + fix           orchestrator — use_figma + shell scripts directly
 ```
@@ -183,7 +207,7 @@ All Figma MCP tools (`use_figma`, `get_screenshot`, etc.) work in subagents. Two
 | Phase | Subagent role | Model | What they do |
 |-------|--------------|-------|-------------|
 | 2.5 Pre-capture | Capture app screenshots + text | haiku | Per `figma-from-code-precapture` skill: run `screenshot.js` and `extract-text.js` in batch mode |
-| 3 Build components | Full build + validate per component | sonnet | Per `figma-from-code-build-tier` skill: run the entire `figma-from-code-build-component` workflow per component |
+| 3 Build components | Full build + validate per component | opus | Per `figma-from-code-build-tier` skill: run the entire `figma-from-code-build-component` workflow per component |
 
 Phase 3 dispatches one subagent per component within a tier. All components in the same tier run in parallel. **Tiers run sequentially** because each tier depends on components built in lower tiers. The orchestrator collects results between tiers, updates `builtComponents` in state.json, and checkpoints with the user.
 
@@ -209,14 +233,26 @@ After completion, read outputs and merge into state.json:
      "buildOrder": {
        "tierCount": 6,
        "tiers": [
-         {"tier": 1, "label": "Leaf components", "components": ["BaseEditable", "Bot", ...]},
-         {"tier": 2, "label": "Uses tier 1", "components": ["Button", "CaseComments", ...]},
+         {"tier": 1, "label": "Leaf components", "components": ["ComponentA", "ComponentB", ...]},
+         {"tier": 2, "label": "Uses tier 1", "components": ["ComponentC", "ComponentD", ...]},
          ...
        ]
      }
    }
    ```
-3. Update state: `"phase0a": "complete"`
+3. **Seed `builtComponents` from Figma inspection:** For every component in `component-map.json` that has a non-null `figmaNodeId`, add it to `state.json → builtComponents`:
+   ```json
+   {
+     "builtComponents": {
+       "Button": "918:50",
+       "Icon/Bot": "827:9",
+       "Header": "966:59"
+     }
+   }
+   ```
+   This enables the pipeline to skip already-built components in Phase 3 instead of rebuilding them.
+4. **Snapshot `preExistingComponents` (immutable):** Write the same map ALSO to `state.json → preExistingComponents`. This snapshot freezes the Figma file's state at the start of the run and is never modified afterward. It gates the **Pre-Existing Components Rule** (see above): any later phase that wants to modify, replace, delete, or detach one of these nodes MUST stop and obtain explicit user authorization. `builtComponents` continues to grow as the pipeline creates new things; `preExistingComponents` does not.
+5. Update state: `"phase0a": "complete"`
 
 **Skip if:** `resume: true` and `phase0a: complete` — but verify `.temp/figma-from-code/component-map.json` exists.
 
@@ -234,7 +270,7 @@ After completion, read output and merge into state.json:
        "iconCount": 21,
        "icons": ["Check", "X", "Loader2", "..."],
        "assetCount": 1,
-       "assets": ["CartonLogoSvg"]
+       "assets": ["AppLogoSvg"]
      }
    }
    ```
@@ -378,10 +414,10 @@ Captures all app screenshots and text.json files before any Figma building begin
 
 ### Phase 3: Build Components
 
-**Runs in:** orchestrator + parallel sonnet subagents (tier by tier)  
+**Runs in:** orchestrator + parallel opus subagents (tier by tier)  
 **Delegate to:** `figma-from-code-build-tier` skill (contains preamble, library component handling, subagent prompt template, result format)
 
-The skill handles the icon/asset preamble, then processes tiers sequentially. Within each tier, one sonnet subagent per component runs in parallel via the `figma-from-code-build-component` workflow.
+The skill handles the icon/asset preamble, then processes tiers sequentially. Within each tier, one opus subagent per component runs in parallel via the `figma-from-code-build-component` workflow.
 
 **Orchestrator responsibilities:**
 
@@ -389,7 +425,7 @@ The skill handles the icon/asset preamble, then processes tiers sequentially. Wi
 2. **Per tier** — for each tier in `state.json → buildOrder.tiers`:
    - Filter out library components (icons already in `builtComponents`)
    - Construct subagent prompts using the template from the skill
-   - Dispatch all subagents for the tier in a single message (`model: "sonnet"`)
+   - Dispatch all subagents for the tier in a single message (`model: "opus"`)
 3. **Between tiers** — after all subagents complete:
    - Read `.temp/figma-from-code/build-results/{ComponentName}.json` per component
    - Write `build-tier{N}.json` with completed/failed/match lists
@@ -428,10 +464,11 @@ The standalone `figma-from-code-validator` skill remains available for ad-hoc us
 Process tiers in groups (lower / mid / upper) sequentially in the orchestrator. For each component that was not already validated as `match` during Phase 3:
 
 1. If `COMPONENT_SET`: resolve the specific variant that matches the app rendering (see Phase 1e in validator skill)
-2. Follow Steps 3–5 of the `figma-from-code-build-component` skill (screenshot → compare → fix loop) for the existing Figma node. The skill's fix loop (up to 3 iterations) applies here too.
-3. If no `app.png`: record `"no_app_reference"`, skip.
+2. **Pre-Existing Components gate:** If the component's node ID is in `state.json → preExistingComponents`, the validation step is **read-only**. Run the screenshot + compare, record the verdict, but DO NOT invoke the fix loop. Surface the mismatch to the user via the aggregate report; the user decides whether to authorize a rebuild (see the Pre-Existing Components Rule above).
+3. Otherwise (the component was built during this run): follow Steps 3–5 of the `figma-from-code-build-component` skill (screenshot → compare → fix loop). The skill's fix loop (up to 3 iterations) applies here.
+4. If no `app.png`: record `"no_app_reference"`, skip.
 
-Write results to `.temp/figma-from-code/validate-{scope}.json` after each group.
+Write results to `.temp/figma-from-code/validate-{scope}.json` after each group. Validation subagents (if dispatched) MUST be told this is a **read-only audit** for pre-existing components and must not modify those nodes.
 
 #### After all validation groups complete
 
@@ -456,6 +493,8 @@ File: {fileKey} | Generated: {timestamp}
 | Average match %         | {avg}%                                  |
 | **Overall verdict**     | {PASS if >=80% of compared are "match"} |
 ```
+
+For any mismatch where the component is in `preExistingComponents`, include a dedicated section in the report listing the pre-existing components flagged, with a one-line summary of what the diff looked like. Explicitly note that these were not auto-fixed because they pre-date this orchestrator run, and ask the user which (if any) to authorize rebuilds for.
 
 3. Update state: `"phase5": "complete"`
 4. **Stop the shared Playwright server:**
@@ -517,7 +556,9 @@ Phase 2.5 complete - 42 app screenshots, 38 text.json files captured
   17 components skipped (no app selector)
   0 failures
 
-Ready for Phase 3 (build Tier 1a - 21 primitives). Proceed?
+Ready for Phase 3 (build components across 6 tiers).
+  32 total components, 20 already built in Figma, 12 to build.
+  Proceed?
 ```
 
 ---
@@ -538,7 +579,7 @@ Ready for Phase 3 (build Tier 1a - 21 primitives). Proceed?
 
 | Scenario                                      | Action                                                                                                        |
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| Dev server not running                        | Halt before Phase 2.5, tell user to run `npm run dev`                                                         |
+| Dev server not running                        | Halt before Phase 2.5, tell user to start the dev server                                                         |
 | Pre-capture agent fails entirely              | Report, offer retry; missing screenshots are non-fatal — build uses source code alone                         |
 | Pre-capture partial failures                  | Log in output file, continue — icons and library components won't have app references anyway                  |
 | `use_figma` fails in orchestrator             | Diagnose error, fix script, retry once; if it fails again mark component as failed and continue               |

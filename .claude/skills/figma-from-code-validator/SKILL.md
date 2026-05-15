@@ -21,7 +21,7 @@ This skill can be used two ways:
 ## Prerequisites
 
 - Figma MCP must be connected and authenticated
-- Dev server must be running on `localhost:5173` (`npm run dev` from project root)
+- Dev server must be running (e.g., `localhost:5173` — use the URL from `state.json` or the `devServerUrl` parameter)
 - `.temp/figma-from-code/state.json` must exist (produced by `figma-from-code`)
 - `screenshot-comparison` skill must be present (provides `compare.js` for pixel diff)
 
@@ -68,10 +68,10 @@ Use the **Component App Map** below to assign each component a `url`, `selector`
 ### Step 1d — Check dev server
 
 ```bash
-curl -s --max-time 3 http://localhost:5173 > /dev/null && echo "running" || echo "not_running"
+curl -s --max-time 3 {devServerUrl} > /dev/null && echo "running" || echo "not_running"
 ```
 
-If `not_running`: halt and tell the user to run `npm run dev`.
+If `not_running`: halt and tell the user to run `the dev server`.
 
 Print the classification to the conversation:
 
@@ -154,14 +154,16 @@ Some components appear in multiple variants in the app (e.g., Button appears as 
 
 | Entry                | App Variant                                              | Figma Variant Props                     |
 | -------------------- | -------------------------------------------------------- | --------------------------------------- |
-| Button (submit)      | `button[type="submit"]` on `/cases/new`                  | `{Variant: "primary", Size: "regular"}` |
-| Button (menu action) | `[data-radix-dropdown-menu-content] button` on `/cases/` | `{Variant: "ghost", Size: "small"}`     |
+| Button (submit)      | `button[type="submit"]` on the create form page          | `{Variant: "primary", Size: "regular"}` |
+| Button (menu action) | `[data-radix-dropdown-menu-content] button` on list page | `{Variant: "ghost", Size: "small"}`     |
 
 ---
 
 ## Component App Map
 
-Maps every Figma component to the app page, Playwright CSS selector, and the Figma variant properties that match the app rendering.
+The Component App Map assigns each Figma component a URL, Playwright CSS selector, optional click/hover action, and Figma variant properties for comparison targeting.
+
+**This map is built dynamically during Phase 1c** from the `component-map.json` output (Phase 0a). It is NOT hardcoded.
 
 The screenshot script is: `.claude/skills/figma-from-code-validator/screenshot.js`
 
@@ -183,109 +185,41 @@ Flags:
 - `--variant` — label printed in output for logging (no effect on screenshot)
 - `--nth N` — use the Nth matching element (0-indexed)
 
-### Tier 1 — App chrome (always visible)
+### Building the Map
 
-| Component | URL       | Selector                                            | Figma Variant |
-| --------- | --------- | --------------------------------------------------- | ------------- |
-| Header    | `/cases/` | `header[aria-label="Main navigation"]`              | `{}` (single) |
-| MenuList  | `/cases/` | `nav[aria-label="Main menu"] div[class*="lg:flex"]` | `{}` (single) |
+For each component discovered in `component-map.json`:
 
-### Tier 2 — List sidebars (200px columns)
+1. **URL**: Use the route(s) where the component appears (from `component-map.json -> routes`)
+2. **Selector**: Use the best CSS selector (from `component-map.json -> selector`). Prefer `[data-component="Name"]`, `[aria-label="..."]`, or class-based selectors
+3. **Click action**: If the component requires interaction to become visible (overlays, dropdowns, edit modes), specify a click selector
+4. **Hover action**: If the component requires hover to reveal (tooltips, hover cards), specify a hover selector
+5. **Figma variant**: The variant properties that match the app's default rendering (e.g., `{Variant: "primary", State: "Default"}`)
 
-| Component    | URL           | Selector               | Figma Variant |
-| ------------ | ------------- | ---------------------- | ------------- |
-| CaseList     | `/cases/`     | `[class*="w-[200px]"]` | `{}` (single) |
-| CustomerList | `/customers/` | `[class*="w-[200px]"]` | `{}` (single) |
-| UserList     | `/users/`     | `[class*="w-[200px]"]` | `{}` (single) |
+### Selector Strategy by Component Type
 
-### Tier 3 — Detail panels (auto-selected first record on desktop)
+| Component Type | Selector Strategy | Example |
+|---------------|-------------------|---------|
+| Always visible (nav, header, sidebar) | `aria-label` or semantic HTML | `header[aria-label="Main navigation"]` |
+| List panels | Class-based width selectors | `[class*="w-[200px]"]` |
+| Detail panels | Flex layout selectors | `[class*="flex-1"][class*="flex-col"]` |
+| Form inputs | Input type + placeholder | `input[placeholder="..."]`, `textarea` |
+| Buttons | Type or role selectors | `button[type="submit"]`, `a[href="..."]` |
+| Inline editing | Click to enter edit mode | `--click "h1"` then screenshot the input |
+| Overlays/dialogs | Click trigger, screenshot overlay | `--click "button[aria-label='...']"` then `[role="dialog"]` |
+| Embedded components | Parent context selectors | `[class*="ComponentName"]` |
 
-| Component            | URL           | Selector                                                  | Figma Variant |
-| -------------------- | ------------- | --------------------------------------------------------- | ------------- |
-| CaseDetails          | `/cases/`     | `[class*="flex-1"][class*="flex-col"]`                    | `{}` (single) |
-| CaseInformation      | `/cases/`     | `[class*="flex-col"][class*="gap-4"]`                     | `{}` (single) |
-| CaseEssentialDetails | `/cases/`     | `[class*="w-[200px]"][class*="flex-col"][class*="gap-3"]` | `{}` (single) |
-| CaseComments         | `/cases/`     | `[class*="gap-4"] textarea`                               | `{}` (single) |
-| CustomerDetails      | `/customers/` | `.flex-1.flex-col.lg\\:flex-row`                          | `{}` (single) |
-| UserDetails          | `/users/`     | `.flex-1.flex-col.lg\\:flex-row`                          | `{}` (single) |
+### Components Not Directly Visible in App
 
-### Tier 4 — Create form components
+Some components are not rendered by default and require special handling:
 
-Navigate to `/cases/new` which shows Input, Textarea, Select, Label, and Button.
-
-| Component          | URL          | Selector                                | Figma Variant                                               |
-| ------------------ | ------------ | --------------------------------------- | ----------------------------------------------------------- |
-| Input              | `/cases/new` | `input[placeholder="Enter case title"]` | `{State: "Default"}`                                        |
-| Textarea           | `/cases/new` | `textarea`                              | `{State: "Default"}`                                        |
-| Label              | `/cases/new` | `label[for="title"]`                    | `{}` (single or first variant)                              |
-| Button (primary)   | `/cases/new` | `button[type="submit"]`                 | `{Variant: "primary", Size: "regular", State: "Default"}`   |
-| Button (secondary) | `/cases/new` | `a[href="/cases/"]`                     | `{Variant: "secondary", Size: "regular", State: "Default"}` |
-| Select             | `/cases/new` | `button[role="combobox"]`               | `{State: "Default"}`                                        |
-
-### Tier 5 — Inline editing (click to enter edit mode)
-
-Use `--click` to enter edit mode before screenshotting.
-
-| Component        | URL       | Click selector                           | Screenshot selector                                      | Figma Variant        |
-| ---------------- | --------- | ---------------------------------------- | -------------------------------------------------------- | -------------------- |
-| EditableTitle    | `/cases/` | `h1`                                     | `div[class*="flex"][class*="gap-1"] input`               | `{State: "editing"}` |
-| EditableSelect   | `/cases/` | `[class*="EditableSelect"] [data-state]` | `[class*="EditableSelect"]`                              | `{State: "editing"}` |
-| EditableTextarea | `/cases/` | `[class*="EditableTextarea"] p`          | `[class*="EditableTextarea"] textarea`                   | `{State: "editing"}` |
-| EditControls     | `/cases/` | `h1`                                     | `div[class*="flex"][class*="gap-1"] div[class*="gap-1"]` | `{}` (single)        |
-
-### Tier 6 — Overlays (require click to open)
-
-Use `--click` to trigger before screenshotting the overlay.
-
-| Component                 | URL       | Click selector                                                        | Screenshot selector                   | Figma Variant        |
-| ------------------------- | --------- | --------------------------------------------------------------------- | ------------------------------------- | -------------------- |
-| MoreOptionsMenu           | `/cases/` | `button[aria-label="More options"]`                                   | `[data-radix-popper-content-wrapper]` | `{}` (single)        |
-| ConfirmationDialog        | `/cases/` | `button[aria-label="More options"]`, then `button:has-text("Delete")` | `[role="alertdialog"]`                | `{}` (single)        |
-| FiltersTrigger            | `/cases/` | — (visible)                                                           | `button:has-text("Filters")`          | `{State: "Default"}` |
-| FiltersDialog             | `/cases/` | `button:has-text("Filters")`                                          | `[role="dialog"]`                     | `{}` (single)        |
-| FiltersList               | `/cases/` | `button:has-text("Filters")`, apply a filter                          | `[class*="FiltersList"]`              | `{}` (single)        |
-| MultiSelect               | `/cases/` | `button:has-text("Filters")`                                          | `[data-radix-popper-content-wrapper]` | `{}` (single)        |
-| RelationshipManagerDialog | `/cases/` | `button:has-text("Add")`                                              | `[role="dialog"]`                     | `{}` (single)        |
-| Dialog                    | `/cases/` | trigger                                                               | `[role="dialog"]`                     | `{}` (single)        |
-| AlertDialog               | `/cases/` | delete trigger                                                        | `[role="alertdialog"]`                | `{}` (single)        |
-| Sheet                     | `/cases/` | mobile menu button                                                    | `[data-radix-dialog-content]`         | `{}` (single)        |
-
-### Tier 7 — Common components (appear embedded)
-
-| Component                    | URL                      | Selector                                                    | Figma Variant                                                         |
-| ---------------------------- | ------------------------ | ----------------------------------------------------------- | --------------------------------------------------------------------- | ------------- |
-| FiltersTrigger               | `/cases/`                | `button:has-text("Filters")`                                | `{State: "Default"}`                                                  |
-| VoteButton                   | `/cases/`                | `button[class*="vote"], [class*="VoteButton"]`              | `{State: "Default"}`                                                  |
-| ReactionStatistics           | `/cases/`                | `[class*="ReactionStatistics"], [class*="reaction"]`        | `{}` (single)                                                         |
-| CheckboxGroup                | `/cases/` → open filters | `[class*="CheckboxGroup"]`                                  | `{}` (single)                                                         |
-| RelationshipManagerList      | `/cases/` → open manage  | `[class*="RelationshipManager"]`                            | `{}` (single)                                                         |
-| RelationshipManagerAccordion | `/customers/`            | `[class*="Accordion"][class*="Related"]`                    | `{}` (single)                                                         |
-| RelatedCasesAccordion        | `/customers/`            | `button:has-text("Related Cases")`                          | `{}` (single)                                                         |
-| VoterTooltip                 | `/cases/`                | `[data-radix-popper-content-wrapper]:has([class*="voter"])` | Use `--hover "[class*='VoteButton']"` to reveal before screenshotting | `{}` (single) |
-| EditableText                 | `/customers/`            | `[class*="EditableText"]:not([class*="EditableTitle"])`     | `{State: "Default"}`                                                  |
-| EditableCurrency             | n/a                      | not used in app UI                                          | —                                                                     |
-| EditableNumber               | n/a                      | not used in app UI                                          | —                                                                     |
-| EditablePercent              | n/a                      | not used in app UI                                          | —                                                                     |
-| EditableDate                 | n/a                      | not used in app UI                                          | —                                                                     |
-
-### Components not directly visible in app
-
-| Component         | Reason                                                                                             |
-| ----------------- | -------------------------------------------------------------------------------------------------- |
-| Skeleton          | Loading state only — capture during initial page load before data arrives                          |
-| Alert             | Error state only — capture by simulating a network error                                           |
-| HoverCard         | Hover required — use `--hover "trigger-selector" --selector "[data-radix-popper-content-wrapper]"` |
-| Tooltip           | Hover required — use `--hover "trigger-selector" --selector "[role='tooltip']"`                    |
-| Calendar          | Requires click-to-edit on a date field                                                             |
-| Checkbox          | Embedded inside FiltersList or RelationshipManagerList                                             |
-| Badge             | Embedded inside FiltersTrigger (only when filters active)                                          |
-| Card              | Not currently used in app UI                                                                       |
-| Accordion         | In CaseEssentialDetails collapse — click to expand                                                 |
-| Popover           | Click required                                                                                     |
-| DialogHeader      | Inside Dialog — open dialog first                                                                  |
-| CheckboxGroup     | Inside FiltersDialog                                                                               |
-| RichCheckboxGroup | Not used in app UI                                                                                 |
-| EditControls      | Appears after clicking into edit mode                                                              |
+| Type | Reason | Capture Strategy |
+|------|--------|-----------------|
+| Loading states (e.g., Skeleton) | Only visible during data fetch | Capture during initial page load before data arrives |
+| Error states (e.g., Alert) | Only visible on errors | Simulate a network error |
+| Hover components (Tooltip, HoverCard) | Requires hover | Use `--hover "trigger-selector"` |
+| Click-to-reveal (Calendar, Popover) | Requires interaction | Use `--click "trigger-selector"` |
+| Embedded primitives (Badge, Checkbox) | Only inside parent components | Screenshot parent, or open container first |
+| Not used in UI | Component exists but not rendered | Skip — note as `not_visible` in report |
 
 For hover-only components, use Playwright's `.hover()` API in a custom script rather than the `--click` flag.
 
@@ -299,15 +233,11 @@ Dispatch one subagent per tier so all tiers run concurrently. Each subagent hand
 
 Launch all tier subagents in a **single message** with multiple Agent tool calls so they run in parallel. Use `model: "sonnet"` — these agents execute a well-defined capture+compare script, not creative work.
 
-| Subagent        | Tier   | Components                                                                                                                                          | Notes                                  |
-| --------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| tier-1-chrome   | Tier 1 | Header, MenuList                                                                                                                                    | 2 components, `/cases/`                |
-| tier-2-lists    | Tier 2 | CaseList, CustomerList, UserList                                                                                                                    | 3 components, 3 URLs                   |
-| tier-3-details  | Tier 3 | CaseDetails, CaseInformation, CaseEssentialDetails, CaseComments, CustomerDetails, UserDetails                                                      | 6 components, 3 URLs                   |
-| tier-4-forms    | Tier 4 | Input, Textarea, Label, Button (primary), Button (secondary), Select                                                                                | 6 components, `/cases/new`             |
-| tier-5-editing  | Tier 5 | EditableTitle, EditableSelect, EditableTextarea, EditControls                                                                                       | 4 components, `/cases/` with `--click` |
-| tier-6-overlays | Tier 6 | MoreOptionsMenu, ConfirmationDialog, FiltersTrigger, FiltersDialog, FiltersList, MultiSelect, RelationshipManagerDialog, Dialog, AlertDialog, Sheet | 10 components, click-to-open           |
-| tier-7-common   | Tier 7 | VoteButton, ReactionStatistics, CheckboxGroup, RelationshipManagerList, etc.                                                                        | ~15 components, mixed URLs             |
+| Subagent | Tier | Components | Notes |
+| -------- | ---- | ---------- | ----- |
+| tier-{N}-{label} | Tier {N} | Components from `component-map.json` tier {N} | Group by shared URL for efficiency |
+
+Dispatch one subagent per tier from `state.json -> buildOrder.tiers`. Name each subagent after its tier number and label.
 
 ### Subagent Prompt Template
 
@@ -539,7 +469,7 @@ results.foundationFrames = figma.currentPage.children.map((f) => f.name);
 return JSON.stringify(results);
 ```
 
-Expected: Palette (89), Semantic (50), Spacing (19), 3 pages, 3 foundation frames, 6 screens at 1440×900.
+Validate variable counts against the actual counts from Phase 1 (stored in `state.json`). Verify the expected number of pages, foundation frames, and screens match the project's configuration.
 
 ---
 
@@ -669,7 +599,7 @@ Update the summary counter: `Fixed after validation: {total fixed so far}`.
 
 | Error                                  | Action                                                                      |
 | -------------------------------------- | --------------------------------------------------------------------------- |
-| Dev server not running                 | Halt, tell user to run `npm run dev`                                        |
+| Dev server not running                 | Halt, tell user to run `the dev server`                                        |
 | Component set has no matching variant  | Log resolved variant + all available props; use first child; note in report |
 | Selector not found on page             | Log as `selector_not_found`, skip; note in report                           |
 | Element exists but empty/zero-size     | Log as `element_empty`, try broader selector                                |

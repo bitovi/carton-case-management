@@ -5,7 +5,7 @@ description: Build full-page screen frames in Figma by composing built component
 
 # Skill: Build Screens (Phase 4)
 
-Builds full-page screen frames in Figma by composing built component instances into 1440x900 layouts. Each screen assembles Header, MenuList, list sidebar, and detail/form panels using instances of components already created in Phase 3.
+Builds full-page screen frames in Figma by composing built component instances into 1440x900 layouts. Each screen assembles navigation, list panels, and detail/form panels using instances of components already created in Phase 3.
 
 ## When to Use
 
@@ -21,20 +21,44 @@ Builds full-page screen frames in Figma by composing built component instances i
 
 ## Screen Definitions
 
-| Screen               | Route            | Key Components                                     |
-| -------------------- | ---------------- | -------------------------------------------------- |
-| Cases Page           | `/cases/:id`     | Header + MenuList + CaseList + CaseDetails         |
-| Customers Page       | `/customers/:id` | Header + MenuList + CustomerList + CustomerDetails |
-| Users Page           | `/users/:id`     | Header + MenuList + UserList + UserDetails         |
-| Create Case Page     | `/cases/new`     | Header + MenuList + form                           |
-| Create Customer Page | `/customers/new` | Header + MenuList + form                           |
-| Create User Page     | `/users/new`     | Header + MenuList + form                           |
+Screens are built dynamically from the routes discovered in `component-map.json` (Phase 0a). For each route:
+
+| Field | Source |
+|-------|--------|
+| Screen name | Convert route path to PascalCase (e.g., `/items/:id` → `ItemsPage`, `/items/new` → `CreateItemPage`) |
+| Route | From `component-map.json → routes` |
+| Key components | The top-level components that appear on that route (from `component-map.json → tree`) |
+
+Read each page's source file for layout structure. The page source path varies by project — discover it from the component's source file location in the codebase.
 
 ## Workflow
 
-For each screen:
+### 0. Verify all components exist (prerequisite gate)
 
-1. Read `packages/client/src/pages/{PageFile}.tsx` for layout structure
+Before building any screen, verify that **every component** referenced by the screens exists in `builtComponents` from `state.json`.
+
+For each screen, identify its key components from `component-map.json → tree` (the top-level components on that route and all their descendants). Check each one against `builtComponents`.
+
+If **any** component is missing from `builtComponents`:
+
+**STOP — do not build any screens.** Return immediately with a rejection result:
+
+```json
+{
+  "status": "rejected",
+  "reason": "missing_components",
+  "missingComponents": ["CaseDetails", "MenuList"],
+  "screens": []
+}
+```
+
+Write this to `.temp/figma-from-code/build-screens.json` so the orchestrator can see what's missing.
+
+Only proceed to step 1 if all components are confirmed present.
+
+### For each screen:
+
+1. Read the page source file for layout structure
 2. Use `.temp/figma-from-code/screenshots/screens/{ScreenName}/app.png` as visual reference
 3. Build a 1440x900 frame via `use_figma` and append to the Screens container:
 
@@ -60,8 +84,7 @@ Written to `.temp/figma-from-code/`:
 ```json
 {
   "screens": [
-    {"name": "CasesPage", "nodeId": "600:1", "figmaScreenshot": ".temp/.../CasesPage/figma.png"},
-    {"name": "CustomersPage", "nodeId": "600:2", "figmaScreenshot": ".temp/.../CustomersPage/figma.png"}
+    {"name": "{ScreenName}", "nodeId": "600:1", "figmaScreenshot": ".temp/.../ScreenName/figma.png"}
   ],
   "failed": []
 }
@@ -71,6 +94,6 @@ Written to `.temp/figma-from-code/`:
 
 | Scenario | Action |
 |----------|--------|
-| Component missing from `builtComponents` | Use a placeholder frame with the component name, log warning |
+| Component missing from `builtComponents` | Reject the entire build — return `status: "rejected"` with the missing components list (step 0) |
 | `use_figma` fails for a screen | Retry once; if still fails, mark as failed and continue |
 | App screenshot missing | Build from source code alone, note in output |

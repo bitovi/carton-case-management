@@ -105,14 +105,14 @@ An indented tree showing how components nest inside each other, merged across al
 App
   Header
     Link
-      CartonLogo
+      AppLogo
     Button
-  CasePage
-    CaseList
+  ListPage
+    ItemList
       Button
       Link
-    CaseDetails
-      CaseInformation
+    ItemDetails
+      ItemInformation
         EditableTitle
 ```
 

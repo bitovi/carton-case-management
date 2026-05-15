@@ -25,19 +25,20 @@ Captures app screenshots and structured text content for every UI component befo
 
 ## Agent Groups
 
-Each subagent captures a group of components that share the same route(s), minimizing navigation.
+### Building Agent Groups
 
-| Agent                  | URL(s)        | Components                                                                                                                                                                                                                                                                                                                                                                 |
-| ---------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `precapture-forms`     | `/cases/new`  | Button (primary + secondary), Input, Textarea, Label, Select                                                                                                                                                                                                                                                                                                               |
-| `precapture-cases`     | `/cases/`     | Header, MenuList, CaseList, CaseDetails, CaseInformation, CaseEssentialDetails, CaseComments, EditableTitle, EditableSelect, EditableTextarea, EditControls, MoreOptionsMenu, ConfirmationDialog, FiltersTrigger, FiltersDialog, FiltersList, MultiSelect, VoteButton, ReactionStatistics, VoterTooltip, RelationshipManagerDialog, RelationshipManagerList, CheckboxGroup |
-| `precapture-customers` | `/customers/` | CustomerList, CustomerDetails, CustomerInformation, RelationshipManagerAccordion, RelatedCasesAccordion, EditableText                                                                                                                                                                                                                                                      |
-| `precapture-users`     | `/users/`     | UserList, UserDetails, UserInformation                                                                                                                                                                                                                                                                                                                                     |
-| `precapture-screens`   | all 6 routes  | Full-page screenshots at 1440x900 for Phase 4                                                                                                                                                                                                                                                                                                                              |
+Agent groups are built dynamically from the `component-map.json` output (Phase 0a). Group components by route to minimize Playwright page navigations:
+
+1. Read `component-map.json` to get all components and the routes where they appear
+2. Read the **Component App Map** from the `figma-from-code-validator` skill for selectors
+3. Group components that share the same route(s) into agents
+4. Create a `precapture-screens` agent for full-page screenshots of all discovered routes
+
+Name each group after its primary route (e.g., `precapture-{routeName}`). The number of groups varies per project.
 
 ### Components with no app selector (skip entirely)
 
-Skeleton, Alert, HoverCard, Tooltip, Calendar, Checkbox, Badge, Card, Dialog, Sheet, AlertDialog, Popover, RichCheckboxGroup, BaseEditable, EditableDate, EditableCurrency, EditableNumber, EditablePercent.
+Components that have no CSS selector in the Component App Map should be skipped. These are typically loading states, error states, hover-only components, and components not directly visible in the UI.
 
 ## Manifest Format
 
@@ -66,18 +67,15 @@ Write two manifest files per agent group before dispatching:
 
 ```json
 [
-  {"url": "http://localhost:5173/cases/", "output": ".temp/figma-from-code/screenshots/screens/CasesPage/app.png"},
-  {"url": "http://localhost:5173/customers/", "output": ".temp/figma-from-code/screenshots/screens/CustomersPage/app.png"},
-  {"url": "http://localhost:5173/users/", "output": ".temp/figma-from-code/screenshots/screens/UsersPage/app.png"},
-  {"url": "http://localhost:5173/cases/new", "output": ".temp/figma-from-code/screenshots/screens/CreateCasePage/app.png"},
-  {"url": "http://localhost:5173/customers/new", "output": ".temp/figma-from-code/screenshots/screens/CreateCustomerPage/app.png"},
-  {"url": "http://localhost:5173/users/new", "output": ".temp/figma-from-code/screenshots/screens/CreateUserPage/app.png"}
+  {"url": "http://localhost:5173{route}", "output": ".temp/figma-from-code/screenshots/screens/{ScreenName}/app.png"}
 ]
 ```
 
+Build one entry per discovered route from `component-map.json`. Name screens by converting route paths to PascalCase (e.g., `/items/new` → `CreateItemPage`).
+
 ## Subagent Prompt Template
 
-**Model: `haiku`** — dispatch all 5 pre-capture agents with `model: "haiku"`.
+**Model: `haiku`** — dispatch all pre-capture agents with `model: "haiku"`.
 
 ```
 Capture app screenshots and text content for UI components from a running dev server.
@@ -109,10 +107,7 @@ Written to `.temp/figma-from-code/`:
 
 | File | Contents |
 |------|----------|
-| `precapture-forms.json` | Results for form components |
-| `precapture-cases.json` | Results for case page components |
-| `precapture-customers.json` | Results for customer page components |
-| `precapture-users.json` | Results for user page components |
+| `precapture-{group}.json` | Results for each route group (one file per agent) |
 | `precapture-screens.json` | Results for full-page screenshots |
 
 ### Output format
@@ -140,13 +135,13 @@ Do NOT modify these scripts.
 
 ## Skip / Resume
 
-If called with `resume: true`, check whether all 5 `precapture-{group}.json` files exist. If all present, skip. If some are missing, re-run only the missing groups.
+If called with `resume: true`, check whether all expected `precapture-{group}.json` files exist (one per agent group plus `precapture-screens.json`). If all present, skip. If some are missing, re-run only the missing groups.
 
 ## Error Handling
 
 | Scenario | Action |
 |----------|--------|
-| Dev server not running | Halt, tell user to run `npm run dev` |
+| Dev server not running | Halt, tell user to start the dev server |
 | Screenshot script fails for one component | Log in `failed` array, continue with remaining components |
 | Entire batch fails | Report error, offer retry for that group |
 | Missing selectors | Component goes in `skipped` array, non-fatal |

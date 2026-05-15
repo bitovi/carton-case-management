@@ -1,6 +1,6 @@
 ---
 name: figma-from-code-build-tier
-description: Build all Figma components for a single tier by dispatching parallel sonnet subagents. Handles the icon/asset preamble, library component filtering, subagent prompt construction, and result collection. This is Phase 3 of figma-from-code.
+description: Build all Figma components for a single tier by dispatching parallel opus subagents. Handles the icon/asset preamble, library component filtering, subagent prompt construction, and result collection. This is Phase 3 of figma-from-code.
 ---
 
 # Skill: Build Components (Phase 3)
@@ -23,8 +23,11 @@ Builds all Figma components using pre-captured reference material, reusing lower
 
 **Before processing any tier**, the orchestrator creates all icon and asset components directly via `use_figma`. This is deterministic work — no judgment needed, just SVG data in, vector components out.
 
+**Skip already-built icons/assets:** Check `builtComponents` in state.json first. Any icon or asset that already has a node ID (seeded from Phase 0a Figma inspection) should be skipped. Only create icons/assets that are not yet in `builtComponents`.
+
 1. Read `.temp/figma-from-code/icons.json` (produced in Phase 0b)
-2. For each icon, call `use_figma` to create a component from SVG. Batch ~7 icons per call to stay within code limits:
+2. Filter out icons/assets already in `builtComponents` (e.g. if `Icon/Bot` already has a node ID, skip it)
+3. For each remaining icon, call `use_figma` to create a component from SVG. Batch ~7 icons per call to stay within code limits:
 
 ```javascript
 // use_figma — create icon components from SVG strings
@@ -57,13 +60,13 @@ for (const icon of iconData) {
 return JSON.stringify(results);
 ```
 
-3. For SVG file assets (e.g., CartonLogo), use the same approach with the raw SVG file content:
+3. For SVG file assets (e.g., app logos), use the same approach with the raw SVG file content:
 
 ```javascript
 const logoSvg = `<svg width="34" height="34" ...>...</svg>`; // from icons.json assets[].svgString
 const svgGroup = figma.createNodeFromSvg(logoSvg);
 const comp = figma.createComponent();
-comp.name = 'Asset/CartonLogoSvg';
+comp.name = 'Asset/AppLogoSvg';
 comp.resize(34, 34);
 comp.fills = [];
 while (svgGroup.children.length > 0) {
@@ -71,11 +74,11 @@ while (svgGroup.children.length > 0) {
 }
 svgGroup.remove();
 iconsFrame.appendChild(comp);
-results['Asset/CartonLogoSvg'] = comp.id;
+results['Asset/AppLogoSvg'] = comp.id;
 ```
 
-4. Merge all icon/asset component IDs into `builtComponents` in state.json
-5. **Checkpoint:** "Built {N} icon components and {M} asset components. Proceeding to tier builds."
+4. Merge all newly created icon/asset component IDs into `builtComponents` in state.json
+5. **Checkpoint:** "Built {N} icon components and {M} asset components. Skipped {S} already-built. Proceeding to tier builds."
 
 If `figma.createNodeFromSvg()` fails for a specific icon, fall back to creating a 24x24 placeholder rectangle named `Icon/{Name}` so higher-tier components can still instantiate it for correct sizing.
 
@@ -86,7 +89,7 @@ Many tier-1 components detected by site-component-map are Lucide icons or router
 | Type             | Example                           | Figma approach                                                                                            |
 | ---------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | Lucide icon      | `Bot`, `Star`, `EllipsisVertical` | **Already built as `Icon/{Name}` in preamble** — skip, these are in `builtComponents`                     |
-| SVG asset        | `CartonLogoSvg`                   | **Already built as `Asset/{Name}` in preamble** — skip                                                    |
+| SVG asset        | `AppLogoSvg`                   | **Already built as `Asset/{Name}` in preamble** — skip                                                    |
 | Router primitive | `Link` (react-router-dom)         | Build as a nav link component set (Default / Active variants) showing what the link looks like in context |
 
 When a tier-1 component name matches a Lucide icon discovered in Phase 0b, do not rebuild it — it already exists as `Icon/{Name}` in `builtComponents`.
@@ -100,9 +103,24 @@ Each subagent runs the **entire** `figma-from-code-build-component` workflow for
 mkdir -p .temp/figma-from-code/build-results
 ```
 
+### Filter out already-built components
+
+Before dispatching subagents for a tier, check each component against `builtComponents` in state.json. If a component's name already has a node ID in `builtComponents` (seeded from Phase 0a Figma inspection or from a prior tier build), **skip it** — do not dispatch a subagent.
+
+> **Pre-Existing Components Rule (orchestrator skill):** components whose node ID is in `state.json → preExistingComponents` predate this run. They are skipped here by default. If the user (or a Phase 5 finding) requests a rebuild for one of them, the orchestrator MUST first obtain explicit user authorization before dispatching, even in auto mode. See the orchestrator skill's "Pre-Existing Components Rule" section.
+
+```
+Tier 2 components: [Button, CaseComments, Link, RelatedCasesAccordion]
+Already in builtComponents: [Button, Link]
+→ Dispatch subagents only for: [CaseComments, RelatedCasesAccordion]
+→ Report: "Skipped 2 already-built components: Button, Link"
+```
+
+This enables partial rebuilds — pointing the pipeline at a Figma file that already has some components built will skip those and only create what's missing.
+
 ### Subagent Prompt Template
 
-**Model: `sonnet`** — dispatch one subagent per component. Send all subagents for the tier in a **single message** so they run in parallel.
+**Model: `opus`** — dispatch one subagent per component. Send all subagents for the tier in a **single message** so they run in parallel.
 
 ```
 Build a Figma component from its React source code, then validate it visually.
@@ -128,6 +146,16 @@ Inputs:
 
 Available built components (for instance reuse):
 {JSON.stringify(builtComponents)}
+
+Pre-existing Figma nodes (DO NOT MODIFY without orchestrator authorization):
+{JSON.stringify(preExistingComponents)}
+
+If your build would require modifying any node ID listed in preExistingComponents — including
+rebuilding, resizing the master, swapping out the variant set, deleting and recreating, etc.
+— do NOT proceed. Stop and write a result file with "status": "needs_authorization" and
+"preExistingTouched": [<list of names>] so the orchestrator can prompt the user. Creating
+a new component that *references* a pre-existing node as an instance is fine — that's reuse,
+not modification.
 
 Read the figma-from-code-build-component skill for the Tailwind-to-Figma
 mapping reference, fixSizing() function, variant handling, and common pitfalls.

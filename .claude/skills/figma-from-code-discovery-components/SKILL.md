@@ -47,7 +47,7 @@ mkdir -p .temp/figma-from-code/
 curl -s --max-time 3 http://localhost:5173 > /dev/null || echo "Dev server not running"
 ```
 
-If not running, halt and tell the user to run `npm run dev`.
+If not running, halt and tell the user to start the dev server.
 
 ### 3. Run the component discovery script
 
@@ -60,7 +60,30 @@ node .claude/skills/figma-from-code-validator/map-components.js \
 
 This produces the **authoritative build order** — a topologically-sorted list of tiers where leaves come first and layouts come last. All subsequent phases of `figma-from-code` use this output, not the static `figma-component-dependency-map`.
 
-### 4. Read and summarize the output
+### 4. Normalize component names
+
+The DOM scanner extracts React component names from the fiber tree, which may differ from the Figma naming convention for icons and assets:
+
+- Lucide icons: scanner reads the internal `displayName` (e.g. `EllipsisVertical`) rather than the import alias used in code (e.g. `MoreVertical`)
+- SVG asset wrappers: scanner sees the wrapper component name (e.g. `CartonLogo`) rather than the Figma asset name (e.g. `Asset/CartonLogoSvg`)
+
+Run the normalization script to align names with Figma conventions. This requires `icons.json` from Phase 0b.
+
+```bash
+node .claude/skills/figma-from-code-discovery-components/normalize-component-map.js \
+  .temp/figma-from-code/component-map.json \
+  .temp/figma-from-code/icons.json \
+  --write
+```
+
+If `icons.json` does not yet exist (Phase 0b hasn't run), skip this step — the orchestrator will re-run normalization after Phase 0b completes.
+
+The script resolves names via three strategies:
+1. **Direct icon match**: component name is a known icon import name → prefix with `Icon/`
+2. **Lucide alias resolution**: component name is a Lucide canonical name that differs from the import alias → resolve via `lucide-react` exports → prefix with `Icon/`
+3. **Asset prefix match**: component name is a prefix of a known asset name → prefix with `Asset/`
+
+### 5. Read and summarize the output
 
 Read `.temp/figma-from-code/component-map.json` and extract:
 
@@ -68,15 +91,76 @@ Read `.temp/figma-from-code/component-map.json` and extract:
 - `tree` — the merged component hierarchy
 - `componentCount` — total components to build
 
-### 5. Inspect the Figma file (read-only)
+### 6. Inspect the Figma file and match components
 
-Run a read-only `use_figma` to inspect the Figma file:
+Use `get_metadata` (fileKey) to retrieve all components and component sets from the Figma file. This returns every component with its `name` and `nodeId`.
+
+Build a lookup map from the Figma metadata: `{ componentName → nodeId }`.
+
+After normalization (step 4), component names in `component-map.json` use Figma conventions (`Icon/Bot`, `Asset/CartonLogoSvg`, `Button`). Match each component by exact name against the Figma lookup map.
+
+For each component in every tier of `component-map.json`, add a `figmaNodeId` field:
+
+- If a matching Figma component exists: set `figmaNodeId` to the node ID string (e.g. `"918:50"`)
+- If no match: set `figmaNodeId` to `null`
+
+Also use `use_figma` to do a read-only inspection for file-level state:
 
 - List all pages (names + IDs)
 - Check if variable collections already exist (`Palette`, `Semantic`, `Spacing`)
-- Check if any components already exist on the Components page
 
-### 6. Report
+### 6b. Ensure figma.json exists for every matched component
+
+For each Figma component returned by `get_metadata` (regardless of whether it appears in the runtime `component-map.json`), ensure a tracking record exists at `packages/client/src/components/{ComponentName}/figma.json`. Same schema and same folder-resolution rules as Step 6 of `figma-from-code-build-component`:
+
+```json
+{
+  "fileKey": "{figmaFileKey}",
+  "nodeId": "{nodeId}",
+  "url": "https://figma.com/design/{fileKey}?node-id={nodeIdWithDashes}",
+  "componentName": "Button",
+  "createdAt": "2026-05-15T14:32:00Z",
+  "updatedAt": "2026-05-15T14:32:00Z"
+}
+```
+
+**Behavior:**
+
+- **File missing:** create it. Set `createdAt` and `updatedAt` to the current ISO 8601 UTC timestamp. Create the folder first if it does not exist (use the namespace-aware path rules — `Icon/Bot` → `packages/client/src/components/Icon/Bot/figma.json`).
+- **File present:** do not modify it. This phase only seeds tracking files for components that lack one — refreshing `updatedAt` is `figma-from-code-build-component`'s job.
+
+Skip COMPONENT children of COMPONENT_SET nodes (variants) — only write tracking files for the top-level component or component set.
+
+**Failure handling:** if a write fails (permission, missing parent path that can't be created), log the failure and continue with the rest. Surface the count of failures in the final report (Step 8).
+
+### 7. Write updated output
+
+Re-write `.temp/figma-from-code/component-map.json` with the `figmaNodeId` field added to every component entry across all tiers. Also add a top-level `figma` summary object.
+
+> **Why this matters for later phases:** the orchestrator uses every component with a non-null `figmaNodeId` as the **immutable** `preExistingComponents` snapshot in `state.json`. The orchestrator's "Pre-Existing Components Rule" requires explicit user authorization before modifying, replacing, or deleting any of those nodes in later phases (Phase 3 rebuilds, Phase 5 fix-loops, ad-hoc cleanup). Accuracy of `figmaNodeId` matters — a missed match silently degrades that protection.
+
+```json
+{
+  "figma": {
+    "fileKey": "{fileKey}",
+    "pages": [{ "name": "...", "id": "..." }],
+    "variableCollections": ["Palette", "Semantic"] or [],
+    "existingComponentCount": 12,
+    "missingComponentCount": 5
+  },
+  "tiers": [
+    {
+      "tier": 1,
+      "components": [
+        { "name": "Button", "figmaNodeId": "918:50", ... },
+        { "name": "NewThing", "figmaNodeId": null, ... }
+      ]
+    }
+  ]
+}
+```
+
+### 8. Report
 
 Report what exists in Figma vs what needs to be created, including the discovered build order:
 
@@ -91,7 +175,8 @@ Component Discovery complete:
 Figma file state:
 - Pages: {existing page names}
 - Variable collections: {existing or "none"}
-- Existing components: {count or "none"}
+- Already built: {count} components ({list})
+- Not yet built: {count} components ({list})
 ```
 
 ## Scripts Reference
@@ -99,8 +184,9 @@ Figma file state:
 | Script | Location | Purpose |
 |--------|----------|---------|
 | `map-components.js` | `.claude/skills/figma-from-code-validator/map-components.js` | Crawls routes, detects framework, discovers components, computes build order |
+| `normalize-component-map.js` | `.claude/skills/figma-from-code-discovery-components/normalize-component-map.js` | Aligns scanner names with Figma conventions using icons.json + Lucide alias table |
 
-Do NOT modify this script.
+Do NOT modify `map-components.js`.
 
 ## Skip / Resume
 
@@ -110,7 +196,7 @@ If called with `resume: true`, check whether `.temp/figma-from-code/component-ma
 
 | Scenario | Action |
 |----------|--------|
-| Dev server not running | Halt, tell user to run `npm run dev` |
+| Dev server not running | Halt, tell user to start the dev server |
 | `map-components.js` fails | Check Playwright installation, verify URL is accessible |
 | Figma `use_figma` read-only call fails | Report error but do not block — component discovery output is still valid |
 | Empty `component-map.json` | Check that dev server is serving the app (not an error page) |
