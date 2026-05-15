@@ -67,69 +67,6 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
   });
 
   const voteCommentMutation = trpc.comment.vote.useMutation({
-    onMutate: async ({ commentId, type }) => {
-      if (!currentUser) {
-        return;
-      }
-
-      await utils.case.getById.cancel({ id: caseData.id });
-      const previousCase = utils.case.getById.getData({ id: caseData.id });
-
-      if (!previousCase?.comments) {
-        return { previousCase };
-      }
-
-      const updatedComments = previousCase.comments.map((comment) => {
-        if (comment.id !== commentId) {
-          return comment;
-        }
-
-        const existingVote = comment.votes?.find((vote) => vote.user.id === currentUser.id);
-        let nextVotes = comment.votes ? [...comment.votes] : [];
-
-        if (existingVote?.type === type) {
-          nextVotes = nextVotes.filter((vote) => vote.user.id !== currentUser.id);
-        } else if (existingVote) {
-          nextVotes = nextVotes.map((vote) =>
-            vote.user.id === currentUser.id ? { ...vote, type } : vote
-          );
-        } else {
-          nextVotes.push({
-            id: `temp-vote-${Date.now()}`,
-            type,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            commentId,
-            userId: currentUser.id,
-            user: {
-              id: currentUser.id,
-              firstName: currentUser.firstName,
-              lastName: currentUser.lastName,
-            },
-          });
-        }
-
-        return {
-          ...comment,
-          votes: nextVotes,
-        };
-      });
-
-      utils.case.getById.setData(
-        { id: caseData.id },
-        {
-          ...previousCase,
-          comments: updatedComments,
-        }
-      );
-
-      return { previousCase };
-    },
-    onError: (_err, _variables, context) => {
-      if (context?.previousCase) {
-        utils.case.getById.setData({ id: caseData.id }, context.previousCase);
-      }
-    },
     onSettled: () => {
       utils.case.getById.invalidate({ id: caseData.id });
     },
@@ -165,8 +102,13 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
       </form>
       <div className="flex flex-col gap-4">
         {caseData.comments && caseData.comments.length > 0 ? (
-          caseData.comments.map((comment) => (
-            <div key={comment.id} className="flex flex-col gap-2 py-2">
+          caseData.comments.map((comment) => {
+            const currentUserVote = comment.votes?.find((vote) => vote.user.id === currentUser?.id);
+            const upvoteEntries = comment.votes?.filter((vote) => vote.type === 'UP') ?? [];
+            const downvoteEntries = comment.votes?.filter((vote) => vote.type === 'DOWN') ?? [];
+
+            return (
+              <div key={comment.id} className="flex flex-col gap-2 py-2">
               <div className="flex gap-2 items-center">
                 <div className="w-10 flex items-center justify-center text-sm font-semibold text-gray-900">
                   {comment.author.firstName[0]}{comment.author.lastName[0]}
@@ -188,30 +130,23 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
               <p className="text-sm text-gray-700">{comment.content}</p>
               <ReactionStatistics
                 userVote={
-                  comment.votes?.find((vote) => vote.user.id === currentUser?.id)?.type === 'UP'
+                  currentUserVote?.type === 'UP'
                     ? 'up'
-                    : comment.votes?.find((vote) => vote.user.id === currentUser?.id)?.type === 'DOWN'
+                    : currentUserVote?.type === 'DOWN'
                       ? 'down'
                       : 'none'
                 }
-                upvotes={comment.votes?.filter((vote) => vote.type === 'UP').length ?? 0}
-                downvotes={comment.votes?.filter((vote) => vote.type === 'DOWN').length ?? 0}
-                upvoters={
-                  comment.votes
-                    ?.filter((vote) => vote.type === 'UP')
-                    .map((vote) => `${vote.user.firstName} ${vote.user.lastName}`) ?? []
-                }
-                downvoters={
-                  comment.votes
-                    ?.filter((vote) => vote.type === 'DOWN')
-                    .map((vote) => `${vote.user.firstName} ${vote.user.lastName}`) ?? []
-                }
+                upvotes={upvoteEntries.length}
+                downvotes={downvoteEntries.length}
+                upvoters={upvoteEntries.map((vote) => `${vote.user.firstName} ${vote.user.lastName}`)}
+                downvoters={downvoteEntries.map((vote) => `${vote.user.firstName} ${vote.user.lastName}`)}
                 isPending={voteCommentMutation.isPending}
                 onUpvote={() => voteCommentMutation.mutate({ commentId: comment.id, type: 'UP' })}
                 onDownvote={() => voteCommentMutation.mutate({ commentId: comment.id, type: 'DOWN' })}
               />
-            </div>
-          ))
+              </div>
+            );
+          })
         ) : (
           <div className="text-sm text-gray-500">No comments yet</div>
         )}

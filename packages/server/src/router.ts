@@ -1,9 +1,7 @@
 import { z } from 'zod';
 import { router, publicProcedure } from './trpc.js';
-import { formatDate, casePrioritySchema, caseStatusSchema } from '@carton/shared';
+import { formatDate, casePrioritySchema, caseStatusSchema, CommentVoteTypeSchema } from '@carton/shared';
 import { TRPCError } from '@trpc/server';
-
-const commentVoteTypeSchema = z.enum(['UP', 'DOWN']);
 
 export const appRouter = router({
   health: publicProcedure.query(() => {
@@ -468,7 +466,7 @@ export const appRouter = router({
       .input(
         z.object({
           commentId: z.string(),
-          type: commentVoteTypeSchema,
+          type: CommentVoteTypeSchema,
         })
       )
       .mutation(async ({ ctx, input }) => {

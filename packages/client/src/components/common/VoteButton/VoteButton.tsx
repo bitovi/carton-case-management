@@ -1,9 +1,13 @@
-import { useRef, useState } from 'react';
-import type { PointerEvent } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { PointerEvent, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import { VoterTooltip } from '../VoterTooltip';
 import type { VoteButtonProps } from './types';
+
+const LONG_PRESS_DURATION_MS = 2000;
+const MOBILE_TOOLTIP_DURATION_MS = 3000;
+const TOOLTIP_WIDTH_CLASS = 'w-[200px]';
 
 export function VoteButton({
   type,
@@ -17,6 +21,7 @@ export function VoteButton({
 }: VoteButtonProps) {
   const [isMobileTooltipOpen, setIsMobileTooltipOpen] = useState(false);
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mobileTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressTriggeredRef = useRef(false);
   const Icon = type === 'up' ? ThumbsUp : ThumbsDown;
   const hasTooltip = Boolean(voters && voters.length > 0 && count !== undefined && count > 0 && !isPending);
@@ -27,24 +32,45 @@ export function VoteButton({
       : 'text-red-500'   
     : 'text-slate-700';  
 
-  const clearLongPressTimer = () => {
+  const clearLongPressTimer = useCallback(() => {
     if (longPressTimerRef.current) {
       clearTimeout(longPressTimerRef.current);
       longPressTimerRef.current = null;
     }
-  };
+  }, []);
+
+  const clearMobileTooltipTimer = useCallback(() => {
+    if (mobileTooltipTimerRef.current) {
+      clearTimeout(mobileTooltipTimerRef.current);
+      mobileTooltipTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      clearLongPressTimer();
+      clearMobileTooltipTimer();
+    };
+  }, [clearLongPressTimer, clearMobileTooltipTimer]);
+
+  const openMobileTooltip = useCallback(() => {
+    setIsMobileTooltipOpen(true);
+    mobileTooltipTimerRef.current = setTimeout(() => {
+      setIsMobileTooltipOpen(false);
+    }, MOBILE_TOOLTIP_DURATION_MS);
+  }, []);
 
   const handlePointerDown = (event: PointerEvent<HTMLButtonElement>) => {
-    if (event.pointerType === 'mouse' || !hasTooltip) {
+    if (event.pointerType !== 'touch' || !hasTooltip) {
       return;
     }
     clearLongPressTimer();
+    clearMobileTooltipTimer();
     longPressTriggeredRef.current = false;
     longPressTimerRef.current = setTimeout(() => {
       longPressTriggeredRef.current = true;
-      setIsMobileTooltipOpen(true);
-      setTimeout(() => setIsMobileTooltipOpen(false), 3000);
-    }, 2000);
+      openMobileTooltip();
+    }, LONG_PRESS_DURATION_MS);
   };
 
   const handlePointerUp = () => {
@@ -104,21 +130,25 @@ export function VoteButton({
       </div>
     );
 
+    const renderTooltipCard = (content: ReactNode, isMobile: boolean) => (
+      <div
+        className={cn(
+          isMobile
+            ? `absolute left-1/2 top-full z-50 mt-2 ${TOOLTIP_WIDTH_CLASS} -translate-x-1/2 rounded-lg border border-border bg-card p-3 shadow-md`
+            : '',
+          type === 'up' ? 'text-teal-500' : 'text-red-500'
+        )}
+      >
+        {content}
+      </div>
+    );
+
     return (
       <div className="relative inline-flex">
         <VoterTooltip type={type} trigger={button}>
-          {tooltipContent}
+          {renderTooltipCard(tooltipContent, false)}
         </VoterTooltip>
-        {isMobileTooltipOpen && (
-          <div
-            className={cn(
-              'absolute left-1/2 top-full z-50 mt-2 w-[200px] -translate-x-1/2 rounded-lg border border-border bg-card p-3 shadow-md',
-              type === 'up' ? 'text-teal-500' : 'text-red-500'
-            )}
-          >
-            {tooltipContent}
-          </div>
-        )}
+        {isMobileTooltipOpen && renderTooltipCard(tooltipContent, true)}
       </div>
     );
   }
