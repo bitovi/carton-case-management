@@ -5,6 +5,35 @@ import { Textarea } from '@/components/obra';
 import { ReactionStatistics } from '@/components/common';
 import type { CaseCommentsProps } from './types';
 
+let tempReactionCounter = 0;
+
+const createTempReactionId = () =>
+  typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+    ? `temp-reaction-${crypto.randomUUID()}`
+    : `temp-reaction-${Date.now()}-${++tempReactionCounter}`;
+
+const calculateReactionDetails = (
+  comment: NonNullable<CaseCommentsProps['caseData']['comments']>[number],
+  currentUserId?: string
+) => {
+  const reactions = comment.reactions || [];
+  const upvoters = reactions
+    .filter((reaction) => reaction.reactionType === 'LIKE')
+    .map((reaction) => `${reaction.user.firstName} ${reaction.user.lastName}`);
+  const downvoters = reactions
+    .filter((reaction) => reaction.reactionType === 'DISLIKE')
+    .map((reaction) => `${reaction.user.firstName} ${reaction.user.lastName}`);
+  const userReaction = reactions.find((reaction) => reaction.userId === currentUserId)?.reactionType;
+
+  return {
+    upvotes: upvoters.length,
+    downvotes: downvoters.length,
+    upvoters,
+    downvoters,
+    userVote: userReaction === 'LIKE' ? 'up' : userReaction === 'DISLIKE' ? 'down' : 'none',
+  } as const;
+};
+
 export function CaseComments({ caseData }: CaseCommentsProps) {
   const [newComment, setNewComment] = useState('');
   const utils = trpc.useUtils();
@@ -101,7 +130,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
                 nextReactions = [
                   ...nextReactions,
                   {
-                    id: `temp-reaction-${Date.now()}`,
+                    id: createTempReactionId(),
                     commentId: comment.id,
                     userId: currentUser.id,
                     reactionType: nextReactionType,
@@ -147,25 +176,6 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
     });
   };
 
-  const getReactionDetails = (comment: NonNullable<CaseCommentsProps['caseData']['comments']>[number]) => {
-    const reactions = comment.reactions || [];
-    const upvoters = reactions
-      .filter((reaction) => reaction.reactionType === 'LIKE')
-      .map((reaction) => `${reaction.user.firstName} ${reaction.user.lastName}`);
-    const downvoters = reactions
-      .filter((reaction) => reaction.reactionType === 'DISLIKE')
-      .map((reaction) => `${reaction.user.firstName} ${reaction.user.lastName}`);
-    const userReaction = reactions.find((reaction) => reaction.userId === currentUser?.id)?.reactionType;
-
-    return {
-      upvotes: upvoters.length,
-      downvotes: downvoters.length,
-      upvoters,
-      downvoters,
-      userVote: userReaction === 'LIKE' ? 'up' : userReaction === 'DISLIKE' ? 'down' : 'none',
-    } as const;
-  };
-
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-base font-semibold">Comments</h2>
@@ -208,7 +218,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
               </div>
               <p className="text-sm text-gray-700">{comment.content}</p>
               <ReactionStatistics
-                {...getReactionDetails(comment)}
+                {...calculateReactionDetails(comment, currentUser?.id)}
                 isPending={toggleReactionMutation.isPending}
                 onUpvote={() => {
                   toggleReactionMutation.mutate({ commentId: comment.id, type: 'up' });

@@ -19,6 +19,7 @@ describe('CaseComments', () => {
 
   it('renders reaction counts and sends a toggle reaction request', async () => {
     const user = userEvent.setup();
+    let toggleReactionRequests = 0;
 
     server.use(
       http.get('http://localhost:3000/trpc/user.list*', () => {
@@ -39,12 +40,17 @@ describe('CaseComments', () => {
           },
         });
       }),
-      http.post('http://localhost:3000/trpc/comment.toggleReaction*', () => {
-        return HttpResponse.json({
-          result: {
-            data: { success: true },
+      http.post('http://localhost:3000/trpc/comment.toggleReaction*', async () => {
+        toggleReactionRequests += 1;
+        await new Promise((resolve) => globalThis.setTimeout(resolve, 50));
+        return HttpResponse.json(
+          {
+            result: {
+              data: { success: true },
+            },
           },
-        });
+          { status: 200 }
+        );
       })
     );
 
@@ -88,6 +94,10 @@ describe('CaseComments', () => {
     expect(screen.getAllByText('1')).toHaveLength(2);
 
     await user.click(screen.getByLabelText('Upvote'));
+
+    await waitFor(() => {
+      expect(toggleReactionRequests).toBe(1);
+    });
 
     await waitFor(() => {
       expect(screen.getByLabelText('Upvote')).toBeInTheDocument();
