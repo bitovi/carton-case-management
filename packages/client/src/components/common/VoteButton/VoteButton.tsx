@@ -1,3 +1,5 @@
+import { useRef, useState } from 'react';
+import type { PointerEvent } from 'react';
 import { cn } from '@/lib/utils';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import { VoterTooltip } from '../VoterTooltip';
@@ -13,18 +15,58 @@ export function VoteButton({
   onClick,
   className,
 }: VoteButtonProps) {
+  const [isMobileTooltipOpen, setIsMobileTooltipOpen] = useState(false);
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressTriggeredRef = useRef(false);
   const Icon = type === 'up' ? ThumbsUp : ThumbsDown;
-  
+  const hasTooltip = Boolean(voters && voters.length > 0 && count !== undefined && count > 0 && !isPending);
+
   const colorClasses = active
     ? type === 'up'
       ? 'text-teal-500' 
       : 'text-red-500'   
     : 'text-slate-700';  
 
+  const clearLongPressTimer = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  };
+
+  const handlePointerDown = (event: PointerEvent<HTMLButtonElement>) => {
+    if (event.pointerType === 'mouse' || !hasTooltip) {
+      return;
+    }
+    clearLongPressTimer();
+    longPressTriggeredRef.current = false;
+    longPressTimerRef.current = setTimeout(() => {
+      longPressTriggeredRef.current = true;
+      setIsMobileTooltipOpen(true);
+      setTimeout(() => setIsMobileTooltipOpen(false), 3000);
+    }, 2000);
+  };
+
+  const handlePointerUp = () => {
+    clearLongPressTimer();
+  };
+
+  const handleClick = () => {
+    if (longPressTriggeredRef.current) {
+      longPressTriggeredRef.current = false;
+      return;
+    }
+    onClick?.();
+  };
+
   const button = (
     <button
       type="button"
-      onClick={onClick}
+      onClick={handleClick}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+      onPointerLeave={handlePointerUp}
       className={cn(
         'inline-flex items-center gap-2 transition-colors hover:opacity-80',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
@@ -43,30 +85,43 @@ export function VoteButton({
     </button>
   );
 
-  // If voters are provided and there's a count, wrap with tooltip
-  // Skip tooltip if mutation is pending to avoid showing stale data
-  if (voters && voters.length > 0 && count !== undefined && count > 0 && !isPending) {
-    const displayVoters = voters.slice(0, 3);
-    const remainingCount = voters.length - 3;
+  if (hasTooltip) {
+    const resolvedVoters = voters ?? [];
+    const displayVoters = resolvedVoters.slice(0, 4);
+    const remainingCount = resolvedVoters.length - 4;
+    const tooltipContent = (
+      <div className="flex flex-col gap-1 text-left">
+        {displayVoters.map((voter, index) => (
+          <span key={index} className="text-sm font-semibold">
+            {voter}
+          </span>
+        ))}
+        {remainingCount > 0 && (
+          <span className="text-xs font-semibold">
+            and {remainingCount} others
+          </span>
+        )}
+      </div>
+    );
 
     return (
-      <VoterTooltip type={type} trigger={button}>
-        <div className="flex flex-col gap-1 text-left">
-          {displayVoters.map((voter, index) => (
-            <span key={index} className="text-sm font-semibold">
-              {voter}
-            </span>
-          ))}
-          {remainingCount > 0 && (
-            <span className="text-xs font-semibold">
-              +{remainingCount} more
-            </span>
-          )}
-        </div>
-      </VoterTooltip>
+      <div className="relative inline-flex">
+        <VoterTooltip type={type} trigger={button}>
+          {tooltipContent}
+        </VoterTooltip>
+        {isMobileTooltipOpen && (
+          <div
+            className={cn(
+              'absolute left-1/2 top-full z-50 mt-2 w-[200px] -translate-x-1/2 rounded-lg border border-border bg-card p-3 shadow-md',
+              type === 'up' ? 'text-teal-500' : 'text-red-500'
+            )}
+          >
+            {tooltipContent}
+          </div>
+        )}
+      </div>
     );
   }
 
   return button;
 }
-

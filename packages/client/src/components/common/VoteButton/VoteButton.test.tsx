@@ -152,7 +152,7 @@ describe('VoteButton', () => {
       expect(screen.getByText('Charlie')).toBeInTheDocument();
     });
 
-    it('truncates voters after 3 and shows +X more', async () => {
+    it('truncates voters after 4 and shows and N others', async () => {
       const user = userEvent.setup();
       render(
         <VoteButton 
@@ -167,8 +167,8 @@ describe('VoteButton', () => {
       expect(await screen.findByText('Alice')).toBeInTheDocument();
       expect(screen.getByText('Bob')).toBeInTheDocument();
       expect(screen.getByText('Charlie')).toBeInTheDocument();
-      expect(screen.getByText('+2 more')).toBeInTheDocument();
-      expect(screen.queryByText('David')).not.toBeInTheDocument();
+      expect(screen.getByText('David')).toBeInTheDocument();
+      expect(screen.getByText('and 1 others')).toBeInTheDocument();
       expect(screen.queryByText('Eve')).not.toBeInTheDocument();
     });
 
@@ -205,4 +205,3 @@ describe('VoteButton', () => {
     });
   });
 });
-

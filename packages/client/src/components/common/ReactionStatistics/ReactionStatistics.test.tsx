@@ -29,21 +29,21 @@ describe('ReactionStatistics', () => {
   });
 
   describe('UserVote variant behavior', () => {
-    it('shows no counts when userVote="none"', () => {
+    it('shows counts when userVote="none" and count is above zero', () => {
       render(<ReactionStatistics userVote="none" upvotes={5} downvotes={3} />);
-      expect(screen.queryByText('5')).not.toBeInTheDocument();
-      expect(screen.queryByText('3')).not.toBeInTheDocument();
+      expect(screen.getByText('5')).toBeInTheDocument();
+      expect(screen.getByText('3')).toBeInTheDocument();
     });
 
-    it('shows only upvote count when userVote="up"', () => {
+    it('shows both counts when both are above zero and userVote="up"', () => {
       render(<ReactionStatistics userVote="up" upvotes={5} downvotes={3} />);
       expect(screen.getByText('5')).toBeInTheDocument();
-      expect(screen.queryByText('3')).not.toBeInTheDocument();
+      expect(screen.getByText('3')).toBeInTheDocument();
     });
 
-    it('shows only downvote count when userVote="down"', () => {
+    it('shows both counts when both are above zero and userVote="down"', () => {
       render(<ReactionStatistics userVote="down" upvotes={5} downvotes={3} />);
-      expect(screen.queryByText('5')).not.toBeInTheDocument();
+      expect(screen.getByText('5')).toBeInTheDocument();
       expect(screen.getByText('3')).toBeInTheDocument();
     });
 
@@ -104,15 +104,15 @@ describe('ReactionStatistics', () => {
   });
 
   describe('Default prop values', () => {
-    it('defaults userVote to "none"', () => {
+    it('defaults userVote to "none" and still hides zero counts', () => {
       render(<ReactionStatistics upvotes={5} downvotes={3} />);
-      expect(screen.queryByText('5')).not.toBeInTheDocument();
-      expect(screen.queryByText('3')).not.toBeInTheDocument();
+      expect(screen.getByText('5')).toBeInTheDocument();
+      expect(screen.getByText('3')).toBeInTheDocument();
     });
 
-    it('defaults upvotes and downvotes to 0', () => {
+    it('defaults upvotes and downvotes to 0 and hides both counts', () => {
       render(<ReactionStatistics userVote="up" />);
-      expect(screen.getByText('0')).toBeInTheDocument();
+      expect(screen.queryByText('0')).not.toBeInTheDocument();
     });
   });
 });

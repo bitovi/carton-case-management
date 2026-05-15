@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Textarea } from '@/components/obra';
+import { ReactionStatistics } from '@/components/common/ReactionStatistics';
 import type { CaseCommentsProps } from './types';
 
 export function CaseComments({ caseData }: CaseCommentsProps) {
@@ -29,6 +30,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
           updatedAt: new Date().toISOString(),
           caseId: caseData.id,
           authorId: currentUser.id,
+          votes: [],
           author: {
             id: currentUser.id,
             firstName: currentUser.firstName,
@@ -60,6 +62,75 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
     },
     onSettled: () => {
       // Refetch to sync with server
+      utils.case.getById.invalidate({ id: caseData.id });
+    },
+  });
+
+  const voteCommentMutation = trpc.comment.vote.useMutation({
+    onMutate: async ({ commentId, type }) => {
+      if (!currentUser) {
+        return;
+      }
+
+      await utils.case.getById.cancel({ id: caseData.id });
+      const previousCase = utils.case.getById.getData({ id: caseData.id });
+
+      if (!previousCase?.comments) {
+        return { previousCase };
+      }
+
+      const updatedComments = previousCase.comments.map((comment) => {
+        if (comment.id !== commentId) {
+          return comment;
+        }
+
+        const existingVote = comment.votes?.find((vote) => vote.user.id === currentUser.id);
+        let nextVotes = comment.votes ? [...comment.votes] : [];
+
+        if (existingVote?.type === type) {
+          nextVotes = nextVotes.filter((vote) => vote.user.id !== currentUser.id);
+        } else if (existingVote) {
+          nextVotes = nextVotes.map((vote) =>
+            vote.user.id === currentUser.id ? { ...vote, type } : vote
+          );
+        } else {
+          nextVotes.push({
+            id: `temp-vote-${Date.now()}`,
+            type,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            commentId,
+            userId: currentUser.id,
+            user: {
+              id: currentUser.id,
+              firstName: currentUser.firstName,
+              lastName: currentUser.lastName,
+            },
+          });
+        }
+
+        return {
+          ...comment,
+          votes: nextVotes,
+        };
+      });
+
+      utils.case.getById.setData(
+        { id: caseData.id },
+        {
+          ...previousCase,
+          comments: updatedComments,
+        }
+      );
+
+      return { previousCase };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousCase) {
+        utils.case.getById.setData({ id: caseData.id }, context.previousCase);
+      }
+    },
+    onSettled: () => {
       utils.case.getById.invalidate({ id: caseData.id });
     },
   });
@@ -115,6 +186,30 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
                 </div>
               </div>
               <p className="text-sm text-gray-700">{comment.content}</p>
+              <ReactionStatistics
+                userVote={
+                  comment.votes?.find((vote) => vote.user.id === currentUser?.id)?.type === 'UP'
+                    ? 'up'
+                    : comment.votes?.find((vote) => vote.user.id === currentUser?.id)?.type === 'DOWN'
+                      ? 'down'
+                      : 'none'
+                }
+                upvotes={comment.votes?.filter((vote) => vote.type === 'UP').length ?? 0}
+                downvotes={comment.votes?.filter((vote) => vote.type === 'DOWN').length ?? 0}
+                upvoters={
+                  comment.votes
+                    ?.filter((vote) => vote.type === 'UP')
+                    .map((vote) => `${vote.user.firstName} ${vote.user.lastName}`) ?? []
+                }
+                downvoters={
+                  comment.votes
+                    ?.filter((vote) => vote.type === 'DOWN')
+                    .map((vote) => `${vote.user.firstName} ${vote.user.lastName}`) ?? []
+                }
+                isPending={voteCommentMutation.isPending}
+                onUpvote={() => voteCommentMutation.mutate({ commentId: comment.id, type: 'UP' })}
+                onDownvote={() => voteCommentMutation.mutate({ commentId: comment.id, type: 'DOWN' })}
+              />
             </div>
           ))
         ) : (

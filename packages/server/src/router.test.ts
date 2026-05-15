@@ -27,6 +27,11 @@ describe('appRouter', () => {
       comment: {
         create: vi.fn(),
       },
+      commentVote: {
+        findUnique: vi.fn(),
+        delete: vi.fn(),
+        upsert: vi.fn(),
+      },
     };
 
     mockContext = {
@@ -363,6 +368,17 @@ describe('appRouter', () => {
                 author: {
                   select: { id: true, firstName: true, lastName: true, email: true },
                 },
+                votes: {
+                  include: {
+                    user: {
+                      select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                      },
+                    },
+                  },
+                },
               },
               orderBy: { createdAt: 'desc' },
             },
@@ -484,6 +500,17 @@ describe('appRouter', () => {
                     email: true,
                   },
                 },
+                votes: {
+                  include: {
+                    user: {
+                      select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                      },
+                    },
+                  },
+                },
               },
               orderBy: {
                 createdAt: 'desc',
@@ -542,6 +569,17 @@ describe('appRouter', () => {
                     firstName: true,
                     lastName: true,
                     email: true,
+                  },
+                },
+                votes: {
+                  include: {
+                    user: {
+                      select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                      },
+                    },
                   },
                 },
               },
@@ -633,6 +671,69 @@ describe('appRouter', () => {
           })
         ).rejects.toMatchObject({
           code: 'UNAUTHORIZED',
+        });
+      });
+    });
+
+    describe('vote', () => {
+      it('throws UNAUTHORIZED when not authenticated', async () => {
+        mockContext.userId = undefined;
+        const caller = appRouter.createCaller(mockContext);
+
+        await expect(caller.comment.vote({ commentId: 'comment-1', type: 'UP' })).rejects.toMatchObject({
+          code: 'UNAUTHORIZED',
+        });
+      });
+
+      it('removes existing vote when voting same direction', async () => {
+        mockContext.userId = 'user-1';
+        mockPrisma.commentVote.findUnique.mockResolvedValue({
+          id: 'vote-1',
+          commentId: 'comment-1',
+          userId: 'user-1',
+          type: 'UP',
+        });
+
+        const caller = appRouter.createCaller(mockContext);
+        await caller.comment.vote({ commentId: 'comment-1', type: 'UP' });
+
+        expect(mockPrisma.commentVote.delete).toHaveBeenCalledWith({
+          where: {
+            commentId_userId: {
+              commentId: 'comment-1',
+              userId: 'user-1',
+            },
+          },
+        });
+      });
+
+      it('upserts vote when changing or creating vote', async () => {
+        mockContext.userId = 'user-1';
+        mockPrisma.commentVote.findUnique.mockResolvedValue({
+          id: 'vote-1',
+          commentId: 'comment-1',
+          userId: 'user-1',
+          type: 'DOWN',
+        });
+
+        const caller = appRouter.createCaller(mockContext);
+        await caller.comment.vote({ commentId: 'comment-1', type: 'UP' });
+
+        expect(mockPrisma.commentVote.upsert).toHaveBeenCalledWith({
+          where: {
+            commentId_userId: {
+              commentId: 'comment-1',
+              userId: 'user-1',
+            },
+          },
+          create: {
+            commentId: 'comment-1',
+            userId: 'user-1',
+            type: 'UP',
+          },
+          update: {
+            type: 'UP',
+          },
         });
       });
     });

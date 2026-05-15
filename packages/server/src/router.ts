@@ -3,6 +3,8 @@ import { router, publicProcedure } from './trpc.js';
 import { formatDate, casePrioritySchema, caseStatusSchema } from '@carton/shared';
 import { TRPCError } from '@trpc/server';
 
+const commentVoteTypeSchema = z.enum(['UP', 'DOWN']);
+
 export const appRouter = router({
   health: publicProcedure.query(() => {
     return { status: 'ok', timestamp: new Date().toISOString(), formatted: formatDate(new Date()) };
@@ -313,6 +315,17 @@ export const appRouter = router({
                   email: true,
                 },
               },
+              votes: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      firstName: true,
+                      lastName: true,
+                    },
+                  },
+                },
+              },
             },
             orderBy: {
               createdAt: 'desc',
@@ -391,6 +404,17 @@ export const appRouter = router({
                     email: true,
                   },
                 },
+                votes: {
+                  include: {
+                    user: {
+                      select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                      },
+                    },
+                  },
+                },
               },
               orderBy: {
                 createdAt: 'desc',
@@ -439,6 +463,58 @@ export const appRouter = router({
             },
           },
         });
+      }),
+    vote: publicProcedure
+      .input(
+        z.object({
+          commentId: z.string(),
+          type: commentVoteTypeSchema,
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated',
+          });
+        }
+
+        const existingVote = await ctx.prisma.commentVote.findUnique({
+          where: {
+            commentId_userId: {
+              commentId: input.commentId,
+              userId: ctx.userId,
+            },
+          },
+        });
+
+        if (existingVote?.type === input.type) {
+          await ctx.prisma.commentVote.delete({
+            where: {
+              commentId_userId: {
+                commentId: input.commentId,
+                userId: ctx.userId,
+              },
+            },
+          });
+        } else {
+          await ctx.prisma.commentVote.upsert({
+            where: {
+              commentId_userId: {
+                commentId: input.commentId,
+                userId: ctx.userId,
+              },
+            },
+            create: {
+              commentId: input.commentId,
+              userId: ctx.userId,
+              type: input.type,
+            },
+            update: {
+              type: input.type,
+            },
+          });
+        }
       }),
   }),
 });

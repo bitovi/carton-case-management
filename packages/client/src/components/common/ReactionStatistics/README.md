@@ -18,9 +18,9 @@ https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-
 
 | Figma Variant | Figma Value | React Prop | React Value | Notes |
 |---------------|-------------|------------|-------------|-------|
-| UserVote | None | `userVote` | `'none'` | Both buttons inactive, no counts |
-| UserVote | Up | `userVote` | `'up'` | Thumbs up active (teal), shows upvote count |
-| UserVote | Down | `userVote` | `'down'` | Thumbs down active (red), shows downvote count |
+| UserVote | None | `userVote` | `'none'` | Both buttons inactive, counts shown only when above zero |
+| UserVote | Up | `userVote` | `'up'` | Thumbs up active (teal), counts shown only when above zero |
+| UserVote | Down | `userVote` | `'down'` | Thumbs down active (red), counts shown only when above zero |
 
 ### Property Mappings
 
@@ -42,6 +42,6 @@ https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-
 
 ### Layout Variations
 
-- **userVote='none'**: Two inactive buttons, no counts
-- **userVote='up'**: Active up button + count, inactive down button
-- **userVote='down'**: Inactive up button, active down button + count
+- **userVote='none'**: Two inactive buttons, each count shown only when above zero
+- **userVote='up'**: Active up button; both counts shown only when above zero
+- **userVote='down'**: Active down button; both counts shown only when above zero

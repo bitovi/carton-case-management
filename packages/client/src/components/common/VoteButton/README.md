@@ -5,7 +5,7 @@ A voting interaction component that allows users to upvote or downvote content. 
 ## Features
 
 - **Automatic Tooltip Integration**: When `voters` array is provided along with a `count`, the component automatically wraps itself with `VoterTooltip` to show voter names on hover
-- **Smart Truncation**: Displays up to 3 voter names, then shows "+X more" for additional voters
+- **Smart Truncation**: Displays up to 4 voter names, then shows "and N others" for additional voters
 - **Type-aware Styling**: Tooltip inherits the color scheme based on vote type (teal for up, red for down)
 - **Accessibility**: Full keyboard navigation and screen reader support
 
@@ -40,7 +40,7 @@ https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-
 | State | Variant | `active?: boolean` | Default false - voted state |
 | Count | Boolean | `showCount?: boolean` | Default true - display count |
 | - | - | `count?: number` | Vote count value (Figma shows "1") |
-| - | - | `voters?: string[]` | Array of voter names for tooltip (shows first 3) |
+| - | - | `voters?: string[]` | Array of voter names for tooltip (shows first 4) |
 | - | - | `onClick?: () => void` | Vote interaction handler |
 
 ### Excluded Properties (Handled Separately)
@@ -77,7 +77,8 @@ When hovering, this will show:
 - Alice
 - Bob  
 - Charlie
-- +2 more
+- David
+- and 1 others
 
 ### Active State
 ```tsx
