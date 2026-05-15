@@ -27,6 +27,12 @@ describe('appRouter', () => {
       comment: {
         create: vi.fn(),
       },
+      commentReaction: {
+        findUnique: vi.fn(),
+        create: vi.fn(),
+        update: vi.fn(),
+        delete: vi.fn(),
+      },
     };
 
     mockContext = {
@@ -363,6 +369,13 @@ describe('appRouter', () => {
                 author: {
                   select: { id: true, firstName: true, lastName: true, email: true },
                 },
+                reactions: {
+                  include: {
+                    user: {
+                      select: { id: true, firstName: true, lastName: true },
+                    },
+                  },
+                },
               },
               orderBy: { createdAt: 'desc' },
             },
@@ -484,6 +497,17 @@ describe('appRouter', () => {
                     email: true,
                   },
                 },
+                reactions: {
+                  include: {
+                    user: {
+                      select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                      },
+                    },
+                  },
+                },
               },
               orderBy: {
                 createdAt: 'desc',
@@ -542,6 +566,17 @@ describe('appRouter', () => {
                     firstName: true,
                     lastName: true,
                     email: true,
+                  },
+                },
+                reactions: {
+                  include: {
+                    user: {
+                      select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                      },
+                    },
                   },
                 },
               },
@@ -630,6 +665,81 @@ describe('appRouter', () => {
           caller.comment.create({
             caseId: 'case-1',
             content: 'Test comment',
+          })
+        ).rejects.toMatchObject({
+          code: 'UNAUTHORIZED',
+        });
+      });
+    });
+
+    describe('toggleReaction', () => {
+      it('creates a new reaction when none exists', async () => {
+        mockContext.userId = 'user-1';
+        mockPrisma.commentReaction.findUnique.mockResolvedValue(null);
+        mockPrisma.commentReaction.create.mockResolvedValue({});
+
+        const caller = appRouter.createCaller(mockContext);
+        const result = await caller.comment.toggleReaction({
+          commentId: 'comment-1',
+          type: 'up',
+        });
+
+        expect(mockPrisma.commentReaction.create).toHaveBeenCalledWith({
+          data: {
+            commentId: 'comment-1',
+            userId: 'user-1',
+            reactionType: 'LIKE',
+          },
+        });
+        expect(result).toEqual({ success: true });
+      });
+
+      it('deletes reaction when user toggles same reaction', async () => {
+        mockContext.userId = 'user-1';
+        mockPrisma.commentReaction.findUnique.mockResolvedValue({
+          id: 'reaction-1',
+          reactionType: 'LIKE',
+        });
+
+        const caller = appRouter.createCaller(mockContext);
+        await caller.comment.toggleReaction({
+          commentId: 'comment-1',
+          type: 'up',
+        });
+
+        expect(mockPrisma.commentReaction.delete).toHaveBeenCalledWith({
+          where: { id: 'reaction-1' },
+        });
+      });
+
+      it('updates reaction when user switches reaction type', async () => {
+        mockContext.userId = 'user-1';
+        mockPrisma.commentReaction.findUnique.mockResolvedValue({
+          id: 'reaction-1',
+          reactionType: 'LIKE',
+        });
+
+        const caller = appRouter.createCaller(mockContext);
+        await caller.comment.toggleReaction({
+          commentId: 'comment-1',
+          type: 'down',
+        });
+
+        expect(mockPrisma.commentReaction.update).toHaveBeenCalledWith({
+          where: { id: 'reaction-1' },
+          data: { reactionType: 'DISLIKE' },
+        });
+      });
+
+      it('throws UNAUTHORIZED when not authenticated', async () => {
+        mockContext.userId = undefined;
+
+        const caller = appRouter.createCaller(mockContext);
+
+        await expect(
+          caller.comment.toggleReaction({
+            commentId: 'comment-1',
+            type: 'up',
           })
         ).rejects.toMatchObject({
           code: 'UNAUTHORIZED',

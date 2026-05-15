@@ -313,6 +313,17 @@ export const appRouter = router({
                   email: true,
                 },
               },
+              reactions: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      firstName: true,
+                      lastName: true,
+                    },
+                  },
+                },
+              },
             },
             orderBy: {
               createdAt: 'desc',
@@ -391,6 +402,17 @@ export const appRouter = router({
                     email: true,
                   },
                 },
+                reactions: {
+                  include: {
+                    user: {
+                      select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                      },
+                    },
+                  },
+                },
               },
               orderBy: {
                 createdAt: 'desc',
@@ -439,6 +461,53 @@ export const appRouter = router({
             },
           },
         });
+      }),
+    toggleReaction: publicProcedure
+      .input(
+        z.object({
+          commentId: z.string(),
+          type: z.enum(['up', 'down']),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated',
+          });
+        }
+
+        const existingReaction = await ctx.prisma.commentReaction.findUnique({
+          where: {
+            commentId_userId: {
+              commentId: input.commentId,
+              userId: ctx.userId,
+            },
+          },
+        });
+
+        const targetReactionType = input.type === 'up' ? 'LIKE' : 'DISLIKE';
+
+        if (existingReaction?.reactionType === targetReactionType) {
+          await ctx.prisma.commentReaction.delete({
+            where: { id: existingReaction.id },
+          });
+        } else if (existingReaction) {
+          await ctx.prisma.commentReaction.update({
+            where: { id: existingReaction.id },
+            data: { reactionType: targetReactionType },
+          });
+        } else {
+          await ctx.prisma.commentReaction.create({
+            data: {
+              commentId: input.commentId,
+              userId: ctx.userId,
+              reactionType: targetReactionType,
+            },
+          });
+        }
+
+        return { success: true };
       }),
   }),
 });

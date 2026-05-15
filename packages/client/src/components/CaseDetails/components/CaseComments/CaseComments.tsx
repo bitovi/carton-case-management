@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Textarea } from '@/components/obra';
+import { ReactionStatistics } from '@/components/common';
 import type { CaseCommentsProps } from './types';
 
 export function CaseComments({ caseData }: CaseCommentsProps) {
@@ -35,6 +36,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
             lastName: currentUser.lastName,
             email: currentUser.email,
           },
+          reactions: [],
         };
 
         utils.case.getById.setData(
@@ -64,6 +66,77 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
     },
   });
 
+  const toggleReactionMutation = trpc.comment.toggleReaction.useMutation({
+    onMutate: async (variables) => {
+      await utils.case.getById.cancel({ id: caseData.id });
+
+      const previousCase = utils.case.getById.getData({ id: caseData.id });
+
+      if (previousCase && currentUser) {
+        utils.case.getById.setData(
+          { id: caseData.id },
+          {
+            ...previousCase,
+            comments: (previousCase.comments || []).map((comment) => {
+              if (comment.id !== variables.commentId) {
+                return comment;
+              }
+
+              const currentReaction = comment.reactions?.find(
+                (reaction) => reaction.userId === currentUser.id
+              );
+              const nextReactionType = variables.type === 'up' ? 'LIKE' : 'DISLIKE';
+
+              let nextReactions = comment.reactions || [];
+
+              if (currentReaction?.reactionType === nextReactionType) {
+                nextReactions = nextReactions.filter((reaction) => reaction.id !== currentReaction.id);
+              } else if (currentReaction) {
+                nextReactions = nextReactions.map((reaction) =>
+                  reaction.id === currentReaction.id
+                    ? { ...reaction, reactionType: nextReactionType }
+                    : reaction
+                );
+              } else {
+                nextReactions = [
+                  ...nextReactions,
+                  {
+                    id: `temp-reaction-${Date.now()}`,
+                    commentId: comment.id,
+                    userId: currentUser.id,
+                    reactionType: nextReactionType,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    user: {
+                      id: currentUser.id,
+                      firstName: currentUser.firstName,
+                      lastName: currentUser.lastName,
+                    },
+                  },
+                ];
+              }
+
+              return {
+                ...comment,
+                reactions: nextReactions,
+              };
+            }),
+          }
+        );
+      }
+
+      return { previousCase };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousCase) {
+        utils.case.getById.setData({ id: caseData.id }, context.previousCase);
+      }
+    },
+    onSettled: () => {
+      utils.case.getById.invalidate({ id: caseData.id });
+    },
+  });
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!newComment.trim() || !currentUser) return;
@@ -72,6 +145,25 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
       caseId: caseData.id,
       content: newComment.trim(),
     });
+  };
+
+  const getReactionDetails = (comment: NonNullable<CaseCommentsProps['caseData']['comments']>[number]) => {
+    const reactions = comment.reactions || [];
+    const upvoters = reactions
+      .filter((reaction) => reaction.reactionType === 'LIKE')
+      .map((reaction) => `${reaction.user.firstName} ${reaction.user.lastName}`);
+    const downvoters = reactions
+      .filter((reaction) => reaction.reactionType === 'DISLIKE')
+      .map((reaction) => `${reaction.user.firstName} ${reaction.user.lastName}`);
+    const userReaction = reactions.find((reaction) => reaction.userId === currentUser?.id)?.reactionType;
+
+    return {
+      upvotes: upvoters.length,
+      downvotes: downvoters.length,
+      upvoters,
+      downvoters,
+      userVote: userReaction === 'LIKE' ? 'up' : userReaction === 'DISLIKE' ? 'down' : 'none',
+    } as const;
   };
 
   return (
@@ -115,6 +207,16 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
                 </div>
               </div>
               <p className="text-sm text-gray-700">{comment.content}</p>
+              <ReactionStatistics
+                {...getReactionDetails(comment)}
+                isPending={toggleReactionMutation.isPending}
+                onUpvote={() => {
+                  toggleReactionMutation.mutate({ commentId: comment.id, type: 'up' });
+                }}
+                onDownvote={() => {
+                  toggleReactionMutation.mutate({ commentId: comment.id, type: 'down' });
+                }}
+              />
             </div>
           ))
         ) : (
