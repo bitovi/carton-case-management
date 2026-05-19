@@ -1,15 +1,16 @@
 import { z } from 'zod';
 
 // Re-export enum schemas from generated
-export { CasePrioritySchema, CaseStatusSchema } from './generated/index.js';
-export type { CasePriorityType, CaseStatusType } from './generated/index.js';
+export { CasePrioritySchema, CaseStatusSchema, ReactionTypeSchema } from './generated/index.js';
+export type { CasePriorityType, CaseStatusType, ReactionTypeType } from './generated/index.js';
 
 // Import for local alias
-import { CasePrioritySchema, CaseStatusSchema } from './generated/index.js';
+import { CasePrioritySchema, CaseStatusSchema, ReactionTypeSchema } from './generated/index.js';
 
 // Lowercase aliases for backwards compatibility
 export const casePrioritySchema = CasePrioritySchema;
 export const caseStatusSchema = CaseStatusSchema;
+export const reactionTypeSchema = ReactionTypeSchema;
 
 // Legacy type aliases for backwards compatibility
 export type CasePriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';

@@ -1,3 +1,9 @@
+export type CommentReaction = {
+  id: string;
+  type: 'LIKE' | 'DISLIKE';
+  userId: string;
+};
+
 export type CaseCommentsProps = {
   caseData: {
     id: string;
@@ -6,6 +12,7 @@ export type CaseCommentsProps = {
       content: string;
       createdAt: string;
       author: { id: string; firstName: string; lastName: string; email: string };
+      reactions?: CommentReaction[];
     }>;
   };
 };

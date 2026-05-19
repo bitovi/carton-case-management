@@ -7,7 +7,8 @@ import { CaseComments } from './CaseComments';
 const mockUsers = [
   {
     id: '1',
-    name: 'Alex Morgan',
+    firstName: 'Alex',
+    lastName: 'Morgan',
     email: 'alex@example.com',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
@@ -16,9 +17,6 @@ const mockUsers = [
 
 const mockCaseData = {
   id: '1',
-  title: 'Test Case',
-  description: 'Test description',
-  status: 'IN_PROGRESS',
   comments: [
     {
       id: '1',
@@ -26,8 +24,14 @@ const mockCaseData = {
       createdAt: new Date('2024-01-15T10:00:00Z').toISOString(),
       author: {
         id: '1',
-        name: 'Alex Morgan',
+        firstName: 'Alex',
+        lastName: 'Morgan',
+        email: 'alex@example.com',
       },
+      reactions: [
+        { id: 'r1', type: 'LIKE' as const, userId: '1' },
+        { id: 'r2', type: 'LIKE' as const, userId: '2' },
+      ],
     },
     {
       id: '2',
@@ -35,8 +39,11 @@ const mockCaseData = {
       createdAt: new Date('2024-01-16T14:30:00Z').toISOString(),
       author: {
         id: '2',
-        name: 'Jane Smith',
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane@example.com',
       },
+      reactions: [{ id: 'r3', type: 'DISLIKE' as const, userId: '3' }],
     },
   ],
 };
@@ -108,8 +115,11 @@ export const ManyComments: Story = {
           createdAt: new Date('2024-01-17T09:15:00Z').toISOString(),
           author: {
             id: '1',
-            name: 'Alex Morgan',
+            firstName: 'Alex',
+            lastName: 'Morgan',
+            email: 'alex@example.com',
           },
+          reactions: [],
         },
         {
           id: '4',
@@ -117,8 +127,15 @@ export const ManyComments: Story = {
           createdAt: new Date('2024-01-17T15:45:00Z').toISOString(),
           author: {
             id: '3',
-            name: 'John Doe',
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john@example.com',
           },
+          reactions: [
+            { id: 'r4', type: 'LIKE' as const, userId: '1' },
+            { id: 'r5', type: 'LIKE' as const, userId: '2' },
+            { id: 'r6', type: 'DISLIKE' as const, userId: '3' },
+          ],
         },
         {
           id: '5',
@@ -126,8 +143,11 @@ export const ManyComments: Story = {
           createdAt: new Date('2024-01-18T11:20:00Z').toISOString(),
           author: {
             id: '2',
-            name: 'Jane Smith',
+            firstName: 'Jane',
+            lastName: 'Smith',
+            email: 'jane@example.com',
           },
+          reactions: [],
         },
       ],
     },

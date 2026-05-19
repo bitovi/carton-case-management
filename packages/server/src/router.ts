@@ -1,6 +1,11 @@
 import { z } from 'zod';
 import { router, publicProcedure } from './trpc.js';
-import { formatDate, casePrioritySchema, caseStatusSchema } from '@carton/shared';
+import {
+  formatDate,
+  casePrioritySchema,
+  caseStatusSchema,
+  reactionTypeSchema,
+} from '@carton/shared';
 import { TRPCError } from '@trpc/server';
 
 export const appRouter = router({
@@ -313,6 +318,13 @@ export const appRouter = router({
                   email: true,
                 },
               },
+              reactions: {
+                select: {
+                  id: true,
+                  type: true,
+                  userId: true,
+                },
+              },
             },
             orderBy: {
               createdAt: 'desc',
@@ -435,6 +447,64 @@ export const appRouter = router({
                 firstName: true,
                 lastName: true,
                 email: true,
+              },
+            },
+            reactions: {
+              select: {
+                id: true,
+                type: true,
+                userId: true,
+              },
+            },
+          },
+        });
+      }),
+    react: publicProcedure
+      .input(
+        z.object({
+          commentId: z.string(),
+          type: reactionTypeSchema.nullable(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.userId) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated',
+          });
+        }
+
+        const where = {
+          commentId_userId: {
+            commentId: input.commentId,
+            userId: ctx.userId,
+          },
+        };
+
+        if (input.type === null) {
+          await ctx.prisma.commentReaction.deleteMany({
+            where: { commentId: input.commentId, userId: ctx.userId },
+          });
+        } else {
+          await ctx.prisma.commentReaction.upsert({
+            where,
+            create: {
+              commentId: input.commentId,
+              userId: ctx.userId,
+              type: input.type,
+            },
+            update: { type: input.type },
+          });
+        }
+
+        return ctx.prisma.comment.findUniqueOrThrow({
+          where: { id: input.commentId },
+          include: {
+            reactions: {
+              select: {
+                id: true,
+                type: true,
+                userId: true,
               },
             },
           },
