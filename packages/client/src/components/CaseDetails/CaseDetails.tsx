@@ -1,11 +1,14 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { CaseInformation } from './components/CaseInformation';
 import { CaseComments } from './components/CaseComments';
 import { CaseEssentialDetails } from './components/CaseEssentialDetails';
+import { RelationshipManagerAccordion } from '@/components/common/RelationshipManagerAccordion';
+import { TASK_STATUS_OPTIONS } from '@carton/shared/client';
 
 export function CaseDetails() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { data: caseData, isLoading } = trpc.case.getById.useQuery({ id: id! }, { enabled: !!id });
 
   if (isLoading) {
@@ -30,12 +33,32 @@ export function CaseDetails() {
     );
   }
 
+  const statusLabel = (status: string) =>
+    TASK_STATUS_OPTIONS.find((option) => option.value === status)?.label ?? status;
+
+  const relatedTaskItems = (caseData.tasks ?? []).map((task) => ({
+    id: task.id,
+    title: task.summary,
+    subtitle: statusLabel(task.status),
+    to: `/tasks/${task.id}`,
+  }));
+
+  const handleAddTask = () => {
+    navigate(`/tasks/new?caseId=${caseData.id}`);
+  };
+
   return (
     <div className="flex flex-1 flex-col">
       {/* Mobile Layout */}
       <div className="flex flex-col w-full lg:hidden gap-4 pb-6">
         <CaseInformation caseId={caseData.id} caseData={caseData} />
         <CaseEssentialDetails caseId={caseData.id} caseData={caseData} />
+        <RelationshipManagerAccordion
+          accordionTitle="Related Tasks"
+          items={relatedTaskItems}
+          defaultOpen={true}
+          onAddClick={handleAddTask}
+        />
         <CaseComments caseData={caseData} />
       </div>
 
@@ -47,7 +70,15 @@ export function CaseDetails() {
           <CaseComments caseData={caseData} />
         </div>
         <div className="h-[9px]" />
-        <CaseEssentialDetails caseId={caseData.id} caseData={caseData} />
+        <div className="flex flex-col gap-4">
+          <CaseEssentialDetails caseId={caseData.id} caseData={caseData} />
+          <RelationshipManagerAccordion
+            accordionTitle="Related Tasks"
+            items={relatedTaskItems}
+            defaultOpen={true}
+            onAddClick={handleAddTask}
+          />
+        </div>
       </div>
     </div>
   );

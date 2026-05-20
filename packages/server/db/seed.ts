@@ -5,6 +5,7 @@ async function main() {
   console.log('Clearing existing data...');
 
   // Delete all existing data in correct order (respecting foreign keys)
+  await prisma.task.deleteMany();
   await prisma.comment.deleteMany();
   await prisma.case.deleteMany();
   await prisma.customer.deleteMany();
@@ -295,11 +296,96 @@ async function main() {
   });
 
 
+  await prisma.task.create({
+    data: {
+      summary: 'Confirm eligibility',
+      description:
+        'Reach out to the Housing First program coordinator to walk through the customer’s current situation, share intake notes, and confirm whether they meet the eligibility criteria given their income level and recent loss of stable housing.',
+      caseId: case1.id,
+      status: 'IN_PROGRESS',
+      createdBy: alexMorgan.id,
+      assignedTo: alexMorgan.id,
+    },
+  });
+
+  await prisma.task.create({
+    data: {
+      summary: 'Collect income docs',
+      description:
+        'Request the most recent two months of pay stubs, last year’s tax return, and any unemployment paperwork from the customer so we can finalize the income-eligibility section of the Housing First application.',
+      caseId: case1.id,
+      status: 'TO_DO',
+      createdBy: alexMorgan.id,
+      assignedTo: sarahJohnson.id,
+    },
+  });
+
+  await prisma.task.create({
+    data: {
+      summary: 'Email coverage summary',
+      description:
+        'Draft and send a coverage summary email to Jessica Miller covering her flood damage limits, the $1,000 deductible, and a short FAQ on how to file a flood claim. Attach the relevant policy PDF.',
+      caseId: case2.id,
+      status: 'COMPLETED',
+      createdBy: sarahJohnson.id,
+      assignedTo: emilyBrown.id,
+    },
+  });
+
+  await prisma.task.create({
+    data: {
+      summary: 'Schedule follow-up call',
+      description:
+        'Book a 20-minute follow-up call with the customer to walk through any remaining flood coverage questions, confirm the deductible, and discuss optional sump-pump endorsement pricing.',
+      caseId: case2.id,
+      status: 'TO_DO',
+      createdBy: sarahJohnson.id,
+      assignedTo: sarahJohnson.id,
+    },
+  });
+
+  await prisma.task.create({
+    data: {
+      summary: 'Verify vendor discount',
+      description:
+        'Cross-check the customer’s newly installed security system against our approved vendor list, then process the 10% premium discount and update the policy with the new effective date.',
+      caseId: case3.id,
+      status: 'IN_PROGRESS',
+      createdBy: johnSorenson.id,
+      assignedTo: aliceSmith.id,
+    },
+  });
+
+  await prisma.task.create({
+    data: {
+      summary: 'Inspect vehicle',
+      description:
+        'Coordinate with the approved body shop to perform the post-accident vehicle inspection, gather damage photos, and submit the assessor’s report so we can move the claim into the adjudication phase.',
+      caseId: case4.id,
+      status: 'TO_DO',
+      createdBy: alexMorgan.id,
+      assignedTo: bobWilliams.id,
+    },
+  });
+
+  await prisma.task.create({
+    data: {
+      summary: 'Issue billing credit',
+      description:
+        'Apply the $30 billing correction to the customer’s account, send a written confirmation explaining the rate-application error, and add a note to the policy so future audits can trace the adjustment.',
+      caseId: case5.id,
+      status: 'COMPLETED',
+      createdBy: aliceSmith.id,
+      assignedTo: johnSorenson.id,
+    },
+  });
+
   console.log('Seeding completed!');
   console.log(`Created ${await prisma.user.count()} users`);
   console.log(`Created ${await prisma.customer.count()} customers`);
   console.log(`Created ${await prisma.case.count()} cases`);
   console.log(`Created ${await prisma.comment.count()} comments`);
+  console.log(`Created ${await prisma.task.count()} tasks`);
 }
 
 main()

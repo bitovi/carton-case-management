@@ -41,6 +41,13 @@ enum CasePriority {
   URGENT
 }
 
+enum TaskStatus {
+  TO_DO
+  IN_PROGRESS
+  COMPLETED
+  CLOSED
+}
+
 model User {
   id         String   @id @default(uuid())
   firstName  String
@@ -55,6 +62,8 @@ model User {
   comments      Comment[]
   createdCases  Case[]    @relation("UserCreatedBy")
   assignedCases Case[]    @relation("UserAssignedTo")
+  createdTasks  Task[]    @relation("TaskCreatedBy")
+  assignedTasks Task[]    @relation("TaskAssignedTo")
 }
 
 model Customer {
@@ -87,8 +96,29 @@ model Case {
   creator  User     @relation("UserCreatedBy", fields: [createdBy], references: [id], onDelete: Cascade)
   assignee User?    @relation("UserAssignedTo", fields: [assignedTo], references: [id], onDelete: Cascade)
   comments Comment[]
+  tasks    Task[]
 
   @@index([customerId])
+  @@index([createdBy])
+  @@index([assignedTo])
+}
+
+model Task {
+  id          String     @id @default(uuid())
+  summary     String     @default("")
+  description String
+  status      TaskStatus @default(TO_DO)
+  caseId      String
+  createdBy   String
+  assignedTo  String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  case     Case  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  creator  User  @relation("TaskCreatedBy", fields: [createdBy], references: [id], onDelete: Cascade)
+  assignee User? @relation("TaskAssignedTo", fields: [assignedTo], references: [id], onDelete: Cascade)
+
+  @@index([caseId])
   @@index([createdBy])
   @@index([assignedTo])
 }
