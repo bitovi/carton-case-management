@@ -161,7 +161,7 @@ export function TaskInformation({ taskId, taskData }: TaskInformationProps) {
         </div>
 
         <EditableTextarea
-          label="Task Description"
+          label="Description"
           value={taskData.description}
           onSave={handleDescriptionSave}
           readonly={updateTask.isPending}

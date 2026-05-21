@@ -73,7 +73,7 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
     <div className="w-full lg:w-[200px] flex flex-col gap-3">
       <Button
         onClick={() => setIsExpanded(!isExpanded)}
-        variant="ghost"
+        variant="secondary"
         className="flex items-center justify-between py-4 w-full h-auto"
       >
         <h3 className="text-sm font-semibold">Essential Details</h3>

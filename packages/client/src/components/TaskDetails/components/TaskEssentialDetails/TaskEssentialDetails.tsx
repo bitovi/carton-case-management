@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/obra/Button';
-import { EditableSelect } from '@/components/inline-edit';
+import { EditableSelect, EditableDate } from '@/components/inline-edit';
 import { trpc } from '@/lib/trpc';
 import type { TaskEssentialDetailsProps } from './types';
 
@@ -58,8 +58,8 @@ export function TaskEssentialDetails({ taskData, taskId }: TaskEssentialDetailsP
     <div className="w-full lg:w-[200px] flex flex-col gap-3">
       <Button
         onClick={() => setIsExpanded(!isExpanded)}
-        variant="ghost"
-        className="flex items-center justify-between py-4 w-full h-auto"
+        variant="secondary"
+        className="flex items-center justify-between py-2 w-full h-auto"
       >
         <h3 className="text-sm font-semibold">Essential Details</h3>
         <svg
@@ -113,11 +113,20 @@ export function TaskEssentialDetails({ taskData, taskId }: TaskEssentialDetailsP
             readonly={updateTaskMutation.isPending}
             placeholder="Unassigned"
           />
+          <EditableDate
+            label="Due Date"
+            value={taskData.dueDate ? new Date(taskData.dueDate).toISOString() : null}
+            onSave={async (newValue) => {
+              await updateTaskMutation.mutateAsync({ id: taskId, dueDate: newValue });
+            }}
+            readonly={updateTaskMutation.isPending}
+            placeholder="No due date"
+          />
           <div className="flex flex-col">
-            <span className="text-xs text-gray-950 tracking-[0.18px] leading-4 px-1">
+            <span className="text-[11px] text-gray-800 tracking-[0.24px] leading-4 px-1" style={{ fontFamily: '"Source Sans 3", sans-serif' }}>
               Created By
             </span>
-            <p className="text-sm font-medium px-1 py-2">
+            <p className="text-[13px] font-semibold px-1.5 py-1.5" style={{ fontFamily: '"Source Sans 3", sans-serif' }}>
               {taskData.creator.firstName} {taskData.creator.lastName}
             </p>
           </div>

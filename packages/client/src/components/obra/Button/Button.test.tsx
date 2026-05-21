@@ -60,25 +60,25 @@ describe('Button', () => {
     it('renders with regular size by default', () => {
       render(<Button>Regular</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('h-9');
+      expect(button).toHaveClass('py-2');
     });
 
     it('renders with large size', () => {
       render(<Button size="large">Large</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('h-10');
+      expect(button).toHaveClass('py-2');
     });
 
     it('renders with small size', () => {
       render(<Button size="small">Small</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('h-8');
+      expect(button).toHaveClass('py-1');
     });
 
     it('renders with mini size', () => {
       render(<Button size="mini">Mini</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('h-6');
+      expect(button).toHaveClass('py-0.5');
     });
   });
 

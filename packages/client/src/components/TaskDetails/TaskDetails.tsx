@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { TaskInformation } from './components/TaskInformation';
 import { TaskEssentialDetails } from './components/TaskEssentialDetails';
+import { TaskComments } from './components/TaskComments';
 
 export function TaskDetails() {
   const { id } = useParams<{ id: string }>();
@@ -42,6 +43,7 @@ export function TaskDetails() {
       <div className="hidden lg:flex flex-1 gap-4">
         <div className="flex flex-col px-1 flex-1 gap-6">
           <TaskInformation taskId={taskData.id} taskData={taskData} />
+          <TaskComments taskData={taskData} />
         </div>
         <div className="h-[9px]" />
         <TaskEssentialDetails taskId={taskData.id} taskData={taskData} />

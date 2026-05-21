@@ -492,6 +492,21 @@ export const appRouter = router({
               email: true,
             },
           },
+          comments: {
+            include: {
+              author: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  email: true,
+                },
+              },
+            },
+            orderBy: {
+              createdAt: 'desc',
+            },
+          },
         },
       });
     }),
@@ -520,6 +535,7 @@ export const appRouter = router({
           status: taskStatusSchema.optional(),
           caseId: z.string().optional(),
           assignedTo: z.string().nullable().optional(),
+          dueDate: z.string().nullable().optional(),
         })
       )
       .mutation(async ({ ctx, input }) => {
@@ -568,7 +584,8 @@ export const appRouter = router({
     create: publicProcedure
       .input(
         z.object({
-          caseId: z.string(),
+          caseId: z.string().optional(),
+          taskId: z.string().optional(),
           content: z.string().min(1),
         })
       )

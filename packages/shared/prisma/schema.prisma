@@ -41,13 +41,6 @@ enum CasePriority {
   URGENT
 }
 
-enum TaskStatus {
-  TO_DO
-  IN_PROGRESS
-  COMPLETED
-  CLOSED
-}
-
 model User {
   id         String   @id @default(uuid())
   firstName  String
@@ -62,8 +55,8 @@ model User {
   comments      Comment[]
   createdCases  Case[]    @relation("UserCreatedBy")
   assignedCases Case[]    @relation("UserAssignedTo")
-  createdTasks  Task[]    @relation("TaskCreatedBy")
-  assignedTasks Task[]    @relation("TaskAssignedTo")
+  createdTasks  Task[]    @relation("UserCreatedTasksBy")
+  assignedTasks Task[]    @relation("UserAssignedTasksTo")
 }
 
 model Customer {
@@ -103,20 +96,29 @@ model Case {
   @@index([assignedTo])
 }
 
+enum TaskStatus {
+  TO_DO
+  IN_PROGRESS
+  COMPLETED
+  CLOSED
+}
+
 model Task {
   id          String     @id @default(uuid())
-  summary     String     @default("")
+  summary     String
   description String
-  status      TaskStatus @default(TO_DO)
   caseId      String
   createdBy   String
   assignedTo  String?
+  status      TaskStatus @default(TO_DO)
+  dueDate     DateTime?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
-  case     Case  @relation(fields: [caseId], references: [id], onDelete: Cascade)
-  creator  User  @relation("TaskCreatedBy", fields: [createdBy], references: [id], onDelete: Cascade)
-  assignee User? @relation("TaskAssignedTo", fields: [assignedTo], references: [id], onDelete: Cascade)
+  case     Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  creator  User     @relation("UserCreatedTasksBy", fields: [createdBy], references: [id], onDelete: Cascade)
+  assignee User?    @relation("UserAssignedTasksTo", fields: [assignedTo], references: [id], onDelete: Cascade)
+  comments Comment[]
 
   @@index([caseId])
   @@index([createdBy])
@@ -126,14 +128,17 @@ model Task {
 model Comment {
   id        String   @id @default(uuid())
   content   String
-  caseId    String
+  caseId    String?
+  taskId    String?
   authorId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  case   Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  case   Case? @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  task   Task? @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  author User  @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([caseId])
+  @@index([taskId])
   @@index([authorId])
 }

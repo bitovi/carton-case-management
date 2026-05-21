@@ -70,17 +70,10 @@ export function UserInformation({
     },
   });
 
-  const handleFirstNameSave = async (newFirstName: string): Promise<void> => {
+  const handleFullNameSave = async (newFullName: string): Promise<void> => {
     await updateUser.mutateAsync({
       id: userId,
-      firstName: newFirstName,
-    });
-  };
-
-  const handleLastNameSave = async (newLastName: string): Promise<void> => {
-    await updateUser.mutateAsync({
-      id: userId,
-      lastName: newLastName,
+      fullName: newFullName,
     });
   };
 
@@ -107,18 +100,7 @@ export function UserInformation({
       <div className="flex flex-col gap-6">
         {/* Mobile: Title */}
         <div className="flex flex-col gap-1 lg:hidden w-full">
-          <div className="flex items-center gap-2">
-            <EditableTitle
-              value={userData.firstName}
-              onSave={handleFirstNameSave}
-              className="text-2xl font-semibold truncate"
-            />
-            <EditableTitle
-              value={userData.lastName}
-              onSave={handleLastNameSave}
-              className="text-2xl font-semibold truncate"
-            />
-          </div>
+          <h1 className="text-2xl font-semibold truncate">{userData.firstName} {userData.lastName}</h1>
           <div className="flex items-center gap-1">
             <span className="text-sm text-gray-600">@</span>
             <EditableTitle
@@ -132,18 +114,7 @@ export function UserInformation({
         {/* Desktop: Title + More menu */}
         <div className="hidden lg:flex items-start justify-between w-full">
           <div className="flex flex-col gap-1 flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <EditableTitle
-                value={userData.firstName}
-                onSave={handleFirstNameSave}
-                className="text-2xl font-semibold truncate"
-              />
-              <EditableTitle
-                value={userData.lastName}
-                onSave={handleLastNameSave}
-                className="text-2xl font-semibold truncate"
-              />
-            </div>
+            <h1 className="text-2xl font-semibold truncate">{userData.firstName} {userData.lastName}</h1>
             <div className="flex items-center gap-1">
               <span className="text-sm text-gray-600">@</span>
               <EditableTitle
@@ -178,6 +149,12 @@ export function UserInformation({
 
         {/* User Details */}
         <div className="flex flex-col gap-4">
+          <EditableText
+            label="Full Name"
+            value={`${userData.firstName} ${userData.lastName}`}
+            onSave={handleFullNameSave}
+          />
+
           <div>
             <p className="text-sm font-medium text-gray-500 mb-1">Date Joined</p>
             <p className="text-base">{format(new Date(userData.dateJoined), 'M/d/yyyy')}</p>
