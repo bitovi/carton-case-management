@@ -129,7 +129,19 @@ async function discoverOnPage(page, { minSize = 4 } = {}) {
               if (name && name.length > 1) {
                 seenFibers.add(node);
                 const props = extractVisualProps(node.memoizedProps);
-                components.push({ name, el, props });
+                let parentFiber = node.return;
+                let fiberParent = null;
+                while (parentFiber) {
+                  if (typeof parentFiber.type === 'function' || (typeof parentFiber.type === 'object' && parentFiber.type !== null)) {
+                    const parentName = parentFiber.type?.displayName || parentFiber.type?.name || parentFiber.type?.render?.displayName || parentFiber.type?.render?.name;
+                    if (parentName && parentName.length > 1 && parentName !== name) {
+                      fiberParent = parentName;
+                      break;
+                    }
+                  }
+                  parentFiber = parentFiber.return;
+                }
+                components.push({ name, el, props, fiberParent });
                 break;
               }
             }
@@ -334,6 +346,7 @@ async function discoverOnPage(page, { minSize = 4 } = {}) {
         name: c.name,
         el: c.el,
         props: c.props || {},
+        fiberParent: c.fiberParent || null,
         depth: getDepth(c.el),
       }));
 
@@ -343,7 +356,7 @@ async function discoverOnPage(page, { minSize = 4 } = {}) {
       const nodeMap = new Map();
 
       for (const entry of entries) {
-        const node = { name: entry.name, props: entry.props, children: [], el: entry.el };
+        const node = { name: entry.name, props: entry.props, fiberParent: entry.fiberParent, children: [], el: entry.el };
         let parentEl = entry.el.parentElement;
         let parentNode = null;
         while (parentEl) {
@@ -360,6 +373,27 @@ async function discoverOnPage(page, { minSize = 4 } = {}) {
         }
         nodeMap.set(entry.el, node);
       }
+
+      const nameToNode = new Map();
+      function indexNodes(nodes) {
+        for (const node of nodes) {
+          if (!nameToNode.has(node.name)) nameToNode.set(node.name, node);
+          indexNodes(node.children);
+        }
+      }
+      indexNodes(tree);
+
+      const reparented = [];
+      for (let i = tree.length - 1; i >= 0; i--) {
+        const node = tree[i];
+        if (node.fiberParent && nameToNode.has(node.fiberParent)) {
+          const parent = nameToNode.get(node.fiberParent);
+          parent.children.push(node);
+          reparented.push(i);
+        }
+      }
+      for (const idx of reparented) tree.splice(idx, 1);
+
       return tree;
     }
 

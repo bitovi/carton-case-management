@@ -28,6 +28,14 @@ const { getBrowser } = require('./browser-connect');
 const path = require('path');
 const fs = require('fs');
 
+const DEVICE_SCALE_FACTOR = 1;
+const SCRIPT_TIMEOUT = 60000;
+const _scriptTimer = setTimeout(() => {
+  console.error('screenshot.js: script timeout after 60s — exiting');
+  process.exit(124);
+}, SCRIPT_TIMEOUT);
+_scriptTimer.unref();
+
 async function captureOne(
   page,
   { url, output, selector, click, hover, nth = 0, variant, width = 1440, height = 900 }
@@ -76,7 +84,8 @@ if (batchIdx !== -1) {
 
   (async () => {
     const browser = await getBrowser();
-    const page = await browser.newPage();
+    const context = await browser.newContext({ deviceScaleFactor: DEVICE_SCALE_FACTOR });
+    const page = await context.newPage();
     const results = { captured: [], failed: [] };
 
     for (const entry of manifest) {
@@ -137,7 +146,8 @@ if (batchIdx !== -1) {
 
   (async () => {
     const browser = await getBrowser();
-    const page = await browser.newPage();
+    const context = await browser.newContext({ deviceScaleFactor: DEVICE_SCALE_FACTOR });
+    const page = await context.newPage();
     await captureOne(page, {
       url,
       output,

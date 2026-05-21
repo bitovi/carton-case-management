@@ -18,7 +18,10 @@
  *   ]
  *
  * Output per component (written to output dir):
- *   computed-styles.json  — key CSS properties from getComputedStyle
+ *   computed-styles.json  — key CSS properties from getComputedStyle, plus
+ *                           layoutContext { element, parent, viewport, derived }
+ *                           used by build-component step 1a to detect intended
+ *                           consumer width (parent ≫ element ⇒ fill:<parentWidth>)
  *   state-hover.png       — screenshot with :hover emulated (only if visually different)
  *   state-focus.png       — screenshot with :focus-visible emulated (only if visually different)
  *   state-disabled.png    — screenshot with [disabled] set (only if visually different)
@@ -28,6 +31,13 @@
 const { getBrowser } = require('./browser-connect');
 const fs = require('fs');
 const path = require('path');
+
+const SCRIPT_TIMEOUT = 90000;
+const _scriptTimer = setTimeout(() => {
+  console.error('inspect-styles.js: script timeout after 90s — exiting');
+  process.exit(124);
+}, SCRIPT_TIMEOUT);
+_scriptTimer.unref();
 
 const STYLE_PROPERTIES = [
   'color',
@@ -99,6 +109,75 @@ async function getComputedStyles(element) {
   }, STYLE_PROPERTIES);
 }
 
+async function getLayoutContext(element) {
+  return await element.evaluate((el) => {
+    const rect = el.getBoundingClientRect();
+    const elementInfo = {
+      offsetWidth: el.offsetWidth,
+      offsetHeight: el.offsetHeight,
+      clientWidth: el.clientWidth,
+      clientHeight: el.clientHeight,
+      boundingRect: {
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+        top: Math.round(rect.top),
+        left: Math.round(rect.left),
+      },
+    };
+
+    const parent = el.parentElement;
+    let parentInfo = null;
+    if (parent) {
+      const pcs = window.getComputedStyle(parent);
+      const prect = parent.getBoundingClientRect();
+      parentInfo = {
+        tag: parent.tagName.toLowerCase(),
+        id: parent.id || null,
+        classes: parent.getAttribute('class') || '',
+        offsetWidth: parent.offsetWidth,
+        offsetHeight: parent.offsetHeight,
+        clientWidth: parent.clientWidth,
+        boundingRect: {
+          width: Math.round(prect.width),
+          height: Math.round(prect.height),
+        },
+        display: pcs.display,
+        flexDirection: pcs.flexDirection,
+        paddingLeft: pcs.paddingLeft,
+        paddingRight: pcs.paddingRight,
+        paddingTop: pcs.paddingTop,
+        paddingBottom: pcs.paddingBottom,
+        gap: pcs.gap,
+      };
+    }
+
+    const viewport = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
+
+    const elementFillsParent =
+      parent && parent.clientWidth > 0
+        ? Math.abs(el.offsetWidth - (parent.clientWidth -
+            (parseFloat(window.getComputedStyle(parent).paddingLeft) || 0) -
+            (parseFloat(window.getComputedStyle(parent).paddingRight) || 0))) <= 2
+        : false;
+
+    const hugRatio =
+      parent && parent.clientWidth > 0 ? el.offsetWidth / parent.clientWidth : null;
+
+    return {
+      element: elementInfo,
+      parent: parentInfo,
+      viewport,
+      derived: {
+        elementFillsParent,
+        elementToParentRatio: hugRatio,
+      },
+    };
+  });
+}
+
 async function captureBaseScreenshot(element, outputPath) {
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   await element.screenshot({ path: outputPath });
@@ -132,8 +211,12 @@ async function inspectOne(page, { url, selector, nth = 0, output, states }) {
   await element.waitFor({ state: 'visible', timeout: 8000 });
 
   const { styles, cssVars } = await getComputedStyles(element);
+  const layoutContext = await getLayoutContext(element);
   const stylesPath = path.join(output, 'computed-styles.json');
-  fs.writeFileSync(stylesPath, JSON.stringify({ styles, cssVars }, null, 2));
+  fs.writeFileSync(
+    stylesPath,
+    JSON.stringify({ styles, cssVars, layoutContext }, null, 2)
+  );
 
   const baseFp = await getStyleFingerprint(element);
 

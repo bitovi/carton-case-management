@@ -39,30 +39,51 @@ if (!componentName || !sourcePath) {
 }
 
 const cwd = process.cwd();
+const stateJsonPath = path.join(cwd, '.temp/figma-from-code/state.json');
 const builtMapPath = path.join(cwd, '.temp/figma-from-code/builtComponents.json');
 
-if (!fs.existsSync(builtMapPath)) {
+let built;
+let resolvedSource;
+
+if (fs.existsSync(stateJsonPath)) {
+  try {
+    const state = JSON.parse(fs.readFileSync(stateJsonPath, 'utf-8'));
+    if (state.builtComponents && typeof state.builtComponents === 'object') {
+      built = state.builtComponents;
+      resolvedSource = stateJsonPath;
+    }
+  } catch (err) {
+    console.error(`Invalid JSON in ${stateJsonPath}: ${err.message}`);
+    process.exit(1);
+  }
+}
+
+if (!built) {
+  if (fs.existsSync(builtMapPath)) {
+    try {
+      built = JSON.parse(fs.readFileSync(builtMapPath, 'utf-8'));
+      resolvedSource = builtMapPath;
+    } catch (err) {
+      console.error(`Invalid JSON in ${builtMapPath}: ${err.message}`);
+      process.exit(1);
+    }
+  }
+}
+
+if (!built) {
   console.error(
     JSON.stringify(
       {
         status: 'error',
         reason: 'missing_built_components_cache',
-        expectedPath: builtMapPath,
+        checkedPaths: [stateJsonPath, builtMapPath],
         howToFix:
-          'Populate this file with a JSON map { "ComponentName": "nodeId", ... } for the target Figma file. The figma-explore skill or get_metadata MCP tool can produce this.',
+          'Either run the figma-from-code orchestrator (which writes state.json → builtComponents) or populate .temp/figma-from-code/builtComponents.json with a JSON map { "ComponentName": "nodeId", ... }. The figma-explore skill or get_metadata MCP tool can produce this.',
       },
       null,
       2
     )
   );
-  process.exit(1);
-}
-
-let built;
-try {
-  built = JSON.parse(fs.readFileSync(builtMapPath, 'utf-8'));
-} catch (err) {
-  console.error(`Invalid JSON in ${builtMapPath}: ${err.message}`);
   process.exit(1);
 }
 
@@ -146,7 +167,7 @@ const markerBody = {
   sourceFile: sourcePath,
   availableChildren: available.sort(),
   checkedAt: new Date().toISOString(),
-  builtComponentsCache: builtMapPath,
+  builtComponentsCache: resolvedSource,
 };
 fs.writeFileSync(markerPath, JSON.stringify(markerBody, null, 2));
 console.log(`OK ${componentName}: ${available.length} child(ren) verified. Marker: ${markerPath}`);

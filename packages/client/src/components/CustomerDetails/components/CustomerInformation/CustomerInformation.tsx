@@ -21,10 +21,7 @@ interface CustomerInformationProps {
   };
 }
 
-export function CustomerInformation({
-  customerId,
-  customerData,
-}: CustomerInformationProps) {
+export function CustomerInformation({ customerId, customerData }: CustomerInformationProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -105,7 +102,7 @@ export function CustomerInformation({
 
   const renderStars = (rating: number | null) => {
     if (rating === null) return null;
-    
+
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 >= 0.5;
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
@@ -149,11 +146,7 @@ export function CustomerInformation({
           </div>
           <div className="flex items-center gap-1">
             <span className="text-sm text-gray-600">@</span>
-            <EditableTitle
-              value={customerData.username}
-              onSave={handleUsernameSave}
-              className="text-sm text-gray-600"
-            />
+            <EditableTitle value={customerData.username} onSave={handleUsernameSave} />
           </div>
         </div>
 
@@ -174,11 +167,7 @@ export function CustomerInformation({
             </div>
             <div className="flex items-center gap-1">
               <span className="text-sm text-gray-600">@</span>
-              <EditableTitle
-                value={customerData.username}
-                onSave={handleUsernameSave}
-                className="text-sm text-gray-600"
-              />
+              <EditableTitle value={customerData.username} onSave={handleUsernameSave} />
             </div>
           </div>
           <MoreOptionsMenu

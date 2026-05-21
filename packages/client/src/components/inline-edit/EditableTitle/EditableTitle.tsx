@@ -23,6 +23,7 @@ export interface EditableTitleProps {
   isEditing?: boolean;
   /** Optional callback when editing state changes */
   onEditingChange?: (isEditing: boolean) => void;
+  textSize?: 'sm' | 'md' | 'lg';
 }
 
 /**
@@ -78,11 +79,7 @@ export function EditableTitle({
   const isSaving = internalState === 'saving';
 
   // Determine visual state
-  const state: EditableState = isSaving
-    ? 'saving'
-    : isEditing
-      ? 'edit'
-      : internalState;
+  const state: EditableState = isSaving ? 'saving' : isEditing ? 'edit' : internalState;
 
   /**
    * Enter edit mode
@@ -146,8 +143,7 @@ export function EditableTitle({
       setError(null);
     } catch (err) {
       // Error - return to edit mode with error
-      const errorMessage =
-        err instanceof Error ? err.message : 'Save failed';
+      const errorMessage = err instanceof Error ? err.message : 'Save failed';
       setError(errorMessage);
       if (isControlled) {
         onEditingChange?.(true);
@@ -187,10 +183,7 @@ export function EditableTitle({
   const handleBlur = useCallback(
     (e: FocusEvent) => {
       // Check if focus is moving outside the container
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.relatedTarget as Node)
-      ) {
+      if (containerRef.current && !containerRef.current.contains(e.relatedTarget as Node)) {
         if (state === 'interest') {
           setInternalState('rest');
         }
@@ -263,11 +256,7 @@ export function EditableTitle({
     readonly && 'cursor-default'
   );
 
-  const savingClasses = cn(
-    titleClasses,
-    'flex items-center gap-2',
-    'cursor-wait'
-  );
+  const savingClasses = cn(titleClasses, 'flex items-center gap-2', 'cursor-wait');
 
   const errorClasses = cn('text-xs text-destructive mt-1');
 
@@ -361,9 +350,7 @@ export function EditableTitle({
         onClick={handleClick}
         onKeyDown={handleTitleKeyDown}
       >
-        {value || (
-          <span className="text-muted-foreground italic">{placeholder}</span>
-        )}
+        {value || <span className="text-muted-foreground italic">{placeholder}</span>}
       </h1>
     </div>
   );

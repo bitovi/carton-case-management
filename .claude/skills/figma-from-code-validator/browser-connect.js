@@ -8,7 +8,11 @@ async function getBrowser() {
   try {
     const wsEndpoint = fs.readFileSync(ENDPOINT_FILE, 'utf-8').trim();
     return await chromium.connect(wsEndpoint);
-  } catch {
+  } catch (err) {
+    const reason = fs.existsSync(ENDPOINT_FILE)
+      ? `endpoint unreachable (${err.message.split('\n')[0]})`
+      : 'no endpoint file';
+    console.error(`[browser-connect] Shared server not available: ${reason}. Launching standalone browser.`);
     return await chromium.launch();
   }
 }

@@ -407,8 +407,10 @@ If any issues are returned, fix them before screenshotting (e.g., change `stroke
 
 **Always use the `variantNodeId` resolved in Phase 1e, NOT the component set node ID.**
 
+**Always request `scale: 1`** to produce a 1x export that matches the app screenshots (captured at `deviceScaleFactor: 1` by `screenshot.js`). Without explicit scale, Figma may return higher-resolution images that cause dimension mismatches during comparison.
+
 ```
-get_screenshot(fileKey, variantNodeId)
+get_screenshot(fileKey, variantNodeId, { scale: 1 })
 curl -sL "{image_url}" -o ".temp/figma-validation/screenshots/{ComponentName}/figma.png"
 ```
 
@@ -539,7 +541,7 @@ For each defective component:
 
 1. Identify the specific visual difference (color, spacing, layout, missing variant, wrong text, etc.)
 2. Fix it in Figma using `use_figma`
-3. Re-take the Figma screenshot: `get_screenshot(fileKey, variantNodeId)` — use the **same resolved variant node ID**, not the set
+3. Re-take the Figma screenshot: `get_screenshot(fileKey, variantNodeId, { scale: 1 })` — use the **same resolved variant node ID**, not the set
 4. Overwrite `.temp/figma-validation/screenshots/{ComponentName}/figma.png`
 5. Compare the new `figma.png` against the existing `app.png`
 6. Mark as **✅ Fixed** or **⚠️ Still Defective**

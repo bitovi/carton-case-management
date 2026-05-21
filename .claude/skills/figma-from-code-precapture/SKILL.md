@@ -40,6 +40,10 @@ Name each group after its primary route (e.g., `precapture-{routeName}`). The nu
 
 Components that have no CSS selector in the Component App Map should be skipped. These are typically loading states, error states, hover-only components, and components not directly visible in the UI.
 
+### Code-only components (skip entirely)
+
+Components with `source: "code"` in `component-map.json` were discovered by static code analysis but have no browser route or selector. They cannot be screenshotted from the running app. Skip them during pre-capture — they proceed to Phase 3 build with `appScreenshot: null` (the build skill handles the `no_app_reference` path).
+
 ## Manifest Format
 
 The orchestrator constructs a manifest of components for each agent. The manifest is a JSON array where each entry has: `name`, `url`, `selector`, `click` (optional), `hover` (optional), `nth` (optional).
@@ -132,6 +136,8 @@ Written to `.temp/figma-from-code/`:
 | `browser-server.js` | `.claude/skills/figma-from-code-validator/browser-server.js` | Shared Playwright WebSocket server |
 
 Do NOT modify these scripts.
+
+All screenshots are captured at 1x scale (`deviceScaleFactor: 1` is enforced in `screenshot.js`). This prevents Retina 2x doubling and ensures consistent dimensions for downstream comparison against Figma screenshots (which must also use `scale: 1` in `get_screenshot` calls).
 
 ## Skip / Resume
 

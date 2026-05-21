@@ -22,6 +22,8 @@ build/
 out/
 storybook-static/
 .temp/
+.figma/
+.lock
 
 # Environment files
 .env

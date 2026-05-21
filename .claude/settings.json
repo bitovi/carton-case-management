@@ -1,0 +1,24 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__claude_ai_Figma__use_figma",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/figma-prereqs-gate.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/figma-instances-gate.js"
+          }
+        ]
+      }
+    ]
+  }
+}

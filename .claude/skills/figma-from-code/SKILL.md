@@ -3,7 +3,7 @@ name: figma-from-code
 description: Orchestrates the full code-to-Figma rebuild workflow for a web application. Runs seven phases (discovery, icon discovery, tokens, file structure, pre-capture, component builds, screens + validate). All Figma MCP tools (use_figma, get_screenshot) work in both the orchestrator and subagents.
 ---
 
-# Skill: Rebuild Figma from Code (Orchestrator)
+# Skill: Build Figma from Code (Orchestrator)
 
 Conducts the full code-to-Figma pipeline for a web application. Phase 3 dispatches parallel subagents that each run the complete `figma-from-code-build-component` workflow (analyze → build → screenshot → compare → fix) for a single component.
 
@@ -82,6 +82,7 @@ Write to `.temp/figma-from-code/state.json` after every phase and tier transitio
     "tier6FrameId": "20:6",
     "screensFrameId": "30:1"
   },
+  "variableMapPath": ".temp/figma-from-code/variables.json",
   "builtComponents": {},
   "preExistingComponents": {},
   "iconDiscovery": {
@@ -109,7 +110,7 @@ Write to `.temp/figma-from-code/state.json` after every phase and tier transitio
 - Re-running an icon/asset preamble that would overwrite existing icons
 - Any Phase 3 build invocation for a name that resolves to a pre-existing node
 
-These actions affect work the user committed to Figma before this run. They are not destructive *within* the pipeline, but they may overwrite intent the orchestrator did not author.
+These actions affect work the user committed to Figma before this run. They are not destructive _within_ the pipeline, but they may overwrite intent the orchestrator did not author.
 
 **Authorization protocol:**
 
@@ -204,14 +205,22 @@ Phase 5    Validate + fix           orchestrator — use_figma + shell scripts d
 
 All Figma MCP tools (`use_figma`, `get_screenshot`, etc.) work in subagents. Two phases use parallel subagents:
 
-| Phase | Subagent role | Model | What they do |
-|-------|--------------|-------|-------------|
-| 2.5 Pre-capture | Capture app screenshots + text | haiku | Per `figma-from-code-precapture` skill: run `screenshot.js` and `extract-text.js` in batch mode |
-| 3 Build components | Full build + validate per component | opus | Per `figma-from-code-build-tier` skill: run the entire `figma-from-code-build-component` workflow per component |
+| Phase              | Subagent role                       | Model | What they do                                                                                                    |
+| ------------------ | ----------------------------------- | ----- | --------------------------------------------------------------------------------------------------------------- |
+| 2.5 Pre-capture    | Capture app screenshots + text      | haiku | Per `figma-from-code-precapture` skill: run `screenshot.js` and `extract-text.js` in batch mode                 |
+| 3 Build components | Full build + validate per component | opus  | Per `figma-from-code-build-tier` skill: run the entire `figma-from-code-build-component` workflow per component |
 
 Phase 3 dispatches one subagent per component within a tier. All components in the same tier run in parallel. **Tiers run sequentially** because each tier depends on components built in lower tiers. The orchestrator collects results between tiers, updates `builtComponents` in state.json, and checkpoints with the user.
 
 Phase 0 (0a + 0b) delegates to discovery skills. Phases 1–2, 4, and 5 run directly in the orchestrator.
+
+### Screenshot Scale Convention
+
+All screenshot comparisons in the pipeline use **1x scale on both sides**:
+
+- **App side**: `screenshot.js` creates its browser context with `deviceScaleFactor: 1`, preventing Retina 2x doubling. Viewport is 1440x900.
+- **Figma side**: Every `get_screenshot` call must pass `scale: 1` to produce a 1x export.
+- Minor dimension differences between the two are acceptable; comparison focuses on visual fidelity, not pixel-exact sizes.
 
 ---
 
@@ -222,7 +231,7 @@ Phase 0 (0a + 0b) delegates to discovery skills. Phases 1–2, 4, and 5 run dire
 **Runs in:** orchestrator  
 **Delegate to:** `figma-from-code-discovery-components` skill
 
-Pass file key. The skill runs `map-components.js` against the live dev server and inspects the Figma file (read-only).
+Pass file key. The skill runs `map-components.js` against the live dev server, then runs `discover-code-components.js` to scan the source code and merge in components not visible during the browser crawl. The code scan auto-discovers frontend packages and source directories, confirms them with the user, then enriches the component map with `source` (`"browser"`, `"code"`, or `"both"`) and `codeDependencies` fields. Tiers are recomputed from static import analysis to include all discovered components. Components with `source: "code"` won't have browser routes or selectors — they proceed to Phase 3 build with `appScreenshot: null` (no app reference).
 
 After completion, read outputs and merge into state.json:
 
@@ -274,8 +283,16 @@ After completion, read output and merge into state.json:
      }
    }
    ```
-3. Update state: `"phase0b": "complete"`
-4. **Checkpoint:** report build order summary and icon/asset counts
+3. **Re-run normalization** to apply icon name resolution now that `icons.json` is available. Phase 0a's normalization step was skipped if `icons.json` did not exist at that time:
+   ```bash
+   node .claude/skills/figma-from-code-discovery-components/normalize-component-map.js \
+     .temp/figma-from-code/component-map.json \
+     .temp/figma-from-code/icons.json \
+     --write
+   ```
+   After normalization, re-read `component-map.json` and update `state.json → buildOrder` to reflect the renamed components (e.g., `EllipsisVertical` → `Icon/EllipsisVertical`). Also update `builtComponents` and `preExistingComponents` if any renamed component had a `figmaNodeId`.
+4. Update state: `"phase0b": "complete"`
+5. **Checkpoint:** report build order summary and icon/asset counts
 
 **Skip if:** `resume: true` and `phase0b: complete` — but verify `.temp/figma-from-code/icons.json` exists.
 
@@ -289,6 +306,53 @@ After completion, read output and merge into state.json:
 Pass file key and which collections already exist. After completion, verify via `use_figma`, update state, checkpoint with variable counts.
 
 **Skip if:** `phase1: complete` AND all three collections verified to exist.
+
+#### Phase 1 post-step: Extract variable lookup map
+
+After Phase 1 completes (or immediately when resuming with `phase1: complete`), build a CSS-variable-name → Figma-variable-ID map and write it to `.temp/figma-from-code/variables.json`. This map is consumed by Phase 3 subagents to bind Figma variables to component properties instead of hardcoding RGB values.
+
+Run this `use_figma` call in the orchestrator:
+
+```javascript
+// use_figma — build CSS var → Figma variable ID map
+const collections = await figma.variables.getLocalVariableCollectionsAsync();
+const map = {};
+for (const col of collections) {
+  for (const varId of col.variableIds) {
+    const v = await figma.variables.getVariableByIdAsync(varId);
+    if (v.codeSyntax && v.codeSyntax.WEB) {
+      // Key by CSS var name, e.g. "var(--primary)" or "var(--radius)"
+      map[v.codeSyntax.WEB] = { id: v.id, name: v.name, collectionName: col.name, resolvedType: v.resolvedType };
+    }
+  }
+}
+return JSON.stringify(map);
+```
+
+Write the returned JSON string to `.temp/figma-from-code/variables.json`. Then update `state.json`:
+
+```json
+{
+  "variableMapPath": ".temp/figma-from-code/variables.json"
+}
+```
+
+**Skip if:** `variables.json` already exists and `state.json` has `variableMapPath` set.
+
+#### Phase 1 post-step: Resolve CSS colors
+
+Run the color resolution script to pre-compute all CSS variable colors as sRGB values:
+
+```bash
+node .claude/skills/figma-from-code-validator/resolve-colors.js \
+  packages/client/src/index.css \
+  --tailwind packages/client/tailwind.config.js \
+  --output .temp/figma-from-code/resolved-colors.json
+```
+
+This eliminates LLM color-space math during Phase 3 builds. Subagents read the pre-computed RGB values directly.
+
+**Skip if:** `.temp/figma-from-code/resolved-colors.json` already exists.
 
 ---
 
@@ -421,7 +485,14 @@ The skill handles the icon/asset preamble, then processes tiers sequentially. Wi
 
 **Orchestrator responsibilities:**
 
-1. **Preamble** — build icon/asset components per the skill's preamble section. Merge IDs into `builtComponents` in state.json.
+1. **Preamble** — build icon/asset components per the skill's preamble section. Merge IDs into `builtComponents` in state.json. Then **materialize** the updated map:
+   ```bash
+   # Extract builtComponents from state.json into a standalone file for subagent use
+   node -e "
+     const s = JSON.parse(require('fs').readFileSync('.temp/figma-from-code/state.json','utf-8'));
+     require('fs').writeFileSync('.temp/figma-from-code/builtComponents.json', JSON.stringify(s.builtComponents || {}, null, 2));
+   "
+   ```
 2. **Per tier** — for each tier in `state.json → buildOrder.tiers`:
    - Filter out library components (icons already in `builtComponents`)
    - Construct subagent prompts using the template from the skill
@@ -430,6 +501,7 @@ The skill handles the icon/asset preamble, then processes tiers sequentially. Wi
    - Read `.temp/figma-from-code/build-results/{ComponentName}.json` per component
    - Write `build-tier{N}.json` with completed/failed/match lists
    - Merge new node IDs into `builtComponents` in state.json
+   - **Materialize** the updated map to the standalone file (same one-liner as step 1 above) so the next tier's subagents can read it via `check-prereqs.js`
    - Spot-check: `get_screenshot(fileKey, tierFrameId)` — verify varied heights
    - Update `tierProgress.tier{N}` and `phase3` status
    - Report match counts
@@ -505,14 +577,18 @@ For any mismatch where the component is in `preExistingComponents`, include a de
 
    ```javascript
    // Step 1: Move any misplaced components into their correct tier frames
-   const componentsPage = figma.root.children.find(p => p.name.includes('Components'));
+   const componentsPage = figma.root.children.find((p) => p.name.includes('Components'));
    await figma.setCurrentPageAsync(componentsPage);
 
    // Known tier frame IDs from state.json → figmaNodes
-   const tierFrameIds = new Set([iconsFrameId, tier1FrameId, tier2FrameId, /* ...all tier frames... */]);
+   const tierFrameIds = new Set([
+     iconsFrameId,
+     tier1FrameId,
+     tier2FrameId /* ...all tier frames... */,
+   ]);
 
    // Find stray frames (children of the page that aren't designated tier frames)
-   const strayFrames = componentsPage.children.filter(c => !tierFrameIds.has(c.id));
+   const strayFrames = componentsPage.children.filter((c) => !tierFrameIds.has(c.id));
 
    // For each stray frame, move its children to the correct tier frame based on
    // which tier the component belongs to (look up in state.json → buildOrder.tiers)
@@ -522,7 +598,7 @@ For any mismatch where the component is in `preExistingComponents`, include a de
    // the Components page — move them to the correct tier frame
 
    // Step 2: Re-stack all tier frames vertically with 80px gaps
-   const frameOrder = [iconsFrameId, tier1FrameId, tier2FrameId, /* ... */];
+   const frameOrder = [iconsFrameId, tier1FrameId, tier2FrameId /* ... */];
    let yPos = 0;
    const gap = 80;
    for (const id of frameOrder) {
@@ -579,7 +655,7 @@ Ready for Phase 3 (build components across 6 tiers).
 
 | Scenario                                      | Action                                                                                                        |
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| Dev server not running                        | Halt before Phase 2.5, tell user to start the dev server                                                         |
+| Dev server not running                        | Halt before Phase 2.5, tell user to start the dev server                                                      |
 | Pre-capture agent fails entirely              | Report, offer retry; missing screenshots are non-fatal — build uses source code alone                         |
 | Pre-capture partial failures                  | Log in output file, continue — icons and library components won't have app references anyway                  |
 | `use_figma` fails in orchestrator             | Diagnose error, fix script, retry once; if it fails again mark component as failed and continue               |
@@ -589,5 +665,6 @@ Ready for Phase 3 (build components across 6 tiers).
 | Library component has no source file          | Check import site; build icon placeholder or nav link variant per the library component table                 |
 | Validation shell script fails                 | Report, offer manual validation via standalone `figma-from-code-validator` skill                              |
 | State inconsistency                           | Trust per-tier build JSON files over state.json; rebuild state from outputs                                   |
+| Subagent appears hung (no output for 5+ minutes) | Check if a Playwright script is blocking. Kill the subagent, mark the component as `failed` with `"error": "timeout"`, and continue to the next tier. Playwright scripts have a 60–90s process timeout and exit with code 124 on timeout. |
 
 Never skip a failed component silently. Every failure must surface at the next checkpoint.

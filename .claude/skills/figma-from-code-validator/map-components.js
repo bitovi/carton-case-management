@@ -173,6 +173,100 @@ for (let i = 1; i < args.length; i++) {
     }
   }
 
+  // ── Disambiguate component name collisions ─────────────────────
+  // A name collision occurs when the same React display name (e.g. "Header")
+  // is used for both a root-level component AND a nested sub-component inside
+  // a different parent. In allComponents both map to the same key, so the
+  // second one overwrites the first's node ID in the built-components map.
+  //
+  // Detection: build a reverse-parent map from edges. If a name appears as
+  // a child of some parent, AND that same name also appears as a top-level
+  // component (nothing points to it), there is a collision. The nested one
+  // gets renamed to "ParentName/ChildName" in edges and allComponents.
+  //
+  // Genuine reuse (Button, Icon appearing under many parents) is NOT a
+  // collision — those components are NOT also top-level roots.
+
+  {
+    // Build: parentOf[child] = Set of parent names that have this child
+    const parentOf = new Map();
+    for (const [parent, children] of edges) {
+      for (const child of children) {
+        if (!parentOf.has(child)) parentOf.set(child, new Set());
+        parentOf.get(child).add(parent);
+      }
+    }
+
+    // Top-level names: present in allComponents but NOT referenced as a child
+    // by any other component in edges.
+    const topLevel = new Set();
+    for (const name of allComponents.keys()) {
+      if (!parentOf.has(name) || parentOf.get(name).size === 0) {
+        topLevel.add(name);
+      }
+    }
+
+    // Find names that are BOTH a top-level component AND a child of something.
+    // Those are genuine collisions: the same display name used for two distinct
+    // visual components at different tree depths.
+    //
+    // We also handle the case where a name appears as a child of multiple
+    // parents AND appears in allComponents, but is NOT top-level — this is
+    // genuine reuse (skip it).
+    //
+    // For each collision: the top-level entry keeps its name; every nested
+    // occurrence (parent → name edge) gets renamed to "Parent/name".
+    const renames = new Map(); // oldName -> Map<parentName, qualifiedName>
+
+    for (const name of allComponents.keys()) {
+      const parents = parentOf.get(name);
+      if (!parents || parents.size === 0) continue; // pure top-level, no collision
+      if (!topLevel.has(name)) continue; // not also a top-level root, genuine reuse
+
+      // This name is BOTH a top-level root AND a nested child — collision!
+      // Skip very common components that would appear everywhere (>3 parents
+      // and NOT a root = genuine reuse, already excluded above; but guard anyway).
+      if (parents.size > 3) continue;
+
+      const parentRenames = new Map();
+      for (const parentName of parents) {
+        const qualifiedName = `${parentName}/${name}`;
+        parentRenames.set(parentName, qualifiedName);
+      }
+      renames.set(name, parentRenames);
+    }
+
+    for (const [oldName, parentRenames] of renames) {
+      for (const [parentName, qualifiedName] of parentRenames) {
+        // 1. Rewrite the parent's child list in edges
+        const parentChildren = edges.get(parentName);
+        if (parentChildren && parentChildren.has(oldName)) {
+          parentChildren.delete(oldName);
+          parentChildren.add(qualifiedName);
+        }
+
+        // 2. Add an edges entry for the qualified name (copy children from old)
+        if (!edges.has(qualifiedName)) {
+          const oldChildren = edges.get(oldName);
+          edges.set(qualifiedName, oldChildren ? new Set(oldChildren) : new Set());
+        }
+
+        // 3. Add an allComponents entry for the qualified name
+        if (!allComponents.has(qualifiedName)) {
+          const oldEntry = allComponents.get(oldName);
+          if (oldEntry) {
+            allComponents.set(qualifiedName, { ...oldEntry, name: qualifiedName });
+          }
+        }
+
+        console.error(`  [disambiguate] "${oldName}" under "${parentName}" → "${qualifiedName}"`);
+      }
+
+      // The original top-level entry in allComponents and edges keeps its name.
+      // The nested qualified entries now live separately.
+    }
+  }
+
   // ── Compute build tiers (topological sort, leaves first) ───────
 
   const childrenOf = new Map();

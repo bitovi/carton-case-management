@@ -142,6 +142,7 @@ Inputs:
 - App screenshot: .temp/figma-from-code/screenshots/{ComponentName}/app.png
 - Text content: .temp/figma-from-code/screenshots/{ComponentName}/text.json
 - Icons manifest: .temp/figma-from-code/icons.json
+- Variable map: .temp/figma-from-code/variables.json (CSS-variable → Figma-variable-ID lookup, used in Step 2e for binding variables to fills/strokes/radius)
 - Screenshot dir: .temp/figma-from-code/screenshots/{ComponentName}/
 
 Available built components (for instance reuse):
@@ -254,3 +255,4 @@ If called with `resume: true`, check `state.json → tierProgress` for completed
 | Library component has no source file | Check icon/asset preamble; build nav link variant if router primitive |
 | Subagent produces no result file | Log as failed, report at checkpoint |
 | `createNodeFromSvg()` fails for icon | Create 24x24 placeholder rectangle so higher tiers can instantiate |
+| Subagent hung / no result after 10 minutes | The component's Playwright scripts have built-in 60–90s timeouts. If a subagent is still running after 10 minutes, it is likely stuck in a `use_figma` call or MCP roundtrip. Log the component as `failed` with `"error": "subagent_timeout"` and proceed. |

@@ -1,11 +1,11 @@
 ---
 name: figma-from-code-discovery-components
-description: Discover runtime component hierarchy and tiered build order by crawling the live dev server with Playwright. Produces component-map.json and component-map.md. Also inspects the Figma file to report what exists vs what needs to be created. This is Phase 0a of figma-from-code.
+description: Discover runtime component hierarchy and tiered build order by crawling the live dev server with Playwright, then scan source code to find all components (including those not rendered at crawl time). Produces component-map.json and component-map.md. Also inspects the Figma file to report what exists vs what needs to be created. This is Phase 0a of figma-from-code.
 ---
 
 # Skill: Component Discovery
 
-Discovers the runtime component architecture of a running web application and produces a topologically-sorted build order (leaves first, layouts last). Also inspects the target Figma file to report existing pages, variable collections, and components.
+Discovers the complete component architecture of a web application by combining two methods: (1) browser crawling to find runtime components with routes and selectors, and (2) static code scanning to find all components including those not rendered during the crawl (modals, inline-edit variants, conditional renders, etc.). Produces a merged, topologically-sorted build order (leaves first, layouts last). Also inspects the target Figma file to report existing pages, variable collections, and components.
 
 ## When to Use
 
@@ -83,15 +83,52 @@ The script resolves names via three strategies:
 2. **Lucide alias resolution**: component name is a Lucide canonical name that differs from the import alias → resolve via `lucide-react` exports → prefix with `Icon/`
 3. **Asset prefix match**: component name is a prefix of a known asset name → prefix with `Asset/`
 
-### 5. Read and summarize the output
+### 5. Discover frontend source directories
+
+Run the code scanner in discovery mode to locate component directories:
+
+```bash
+node .claude/skills/figma-from-code-discovery-components/discover-code-components.js \
+  --discover --root .
+```
+
+Read the JSON output. Present the discovered `componentDirectories` to the user for confirmation:
+
+> "Found these component source directories:
+>   - `packages/client/src/components` (52 components across obra, common, inline-edit, ...)
+>   - `packages/client/src/pages` (6 components)
+>
+> Are these correct? Any directories to exclude?"
+
+Wait for user confirmation. If the user wants to exclude a directory (e.g., a deprecated `ui/` folder), note it for the `--exclude` flag.
+
+### 6. Scan code for all components
+
+Run the code scanner in scan mode with the confirmed directories:
+
+```bash
+node .claude/skills/figma-from-code-discovery-components/discover-code-components.js \
+  --scan {confirmed_dir_1} {confirmed_dir_2} \
+  --browser-map .temp/figma-from-code/component-map.json \
+  --output .temp/figma-from-code/component-map.json \
+  [--exclude {excluded_dirs}]
+```
+
+This merges code-discovered components into the browser-discovered map. Each component gains a `source` field (`"browser"`, `"code"`, or `"both"`) and a `codeDependencies` array. Tiers are **recomputed** from static import analysis to include all components. Browser data (`routes`, `selector`, `instances`) is preserved for components found by both methods.
+
+### 7. Read and summarize the output
 
 Read `.temp/figma-from-code/component-map.json` and extract:
 
 - `tiers[]` — the tiered build order (number of tiers varies per project)
 - `tree` — the merged component hierarchy
 - `componentCount` — total components to build
+- Source breakdown:
+  - `{bothCount}` found in browser + code
+  - `{codeOnlyCount}` found in code only
+  - `{browserOnlyCount}` found in browser only (no source file matched)
 
-### 6. Inspect the Figma file and match components
+### 8. Inspect the Figma file and match components
 
 Use `get_metadata` (fileKey) to retrieve all components and component sets from the Figma file. This returns every component with its `name` and `nodeId`.
 
@@ -109,9 +146,9 @@ Also use `use_figma` to do a read-only inspection for file-level state:
 - List all pages (names + IDs)
 - Check if variable collections already exist (`Palette`, `Semantic`, `Spacing`)
 
-### 6b. Ensure figma.json exists for every matched component
+### 8b. Ensure .figma/figma.json exists for every matched component
 
-For each Figma component returned by `get_metadata` (regardless of whether it appears in the runtime `component-map.json`), ensure a tracking record exists at `packages/client/src/components/{ComponentName}/figma.json`. Same schema and same folder-resolution rules as Step 6 of `figma-from-code-build-component`:
+For each Figma component returned by `get_metadata` (regardless of whether it appears in the runtime `component-map.json`), ensure a tracking record exists at `packages/client/src/components/{ComponentName}/.figma/figma.json`. Same schema and same folder-resolution rules as Step 6 of `figma-from-code-build-component`:
 
 ```json
 {
@@ -120,20 +157,21 @@ For each Figma component returned by `get_metadata` (regardless of whether it ap
   "url": "https://figma.com/design/{fileKey}?node-id={nodeIdWithDashes}",
   "componentName": "Button",
   "createdAt": "2026-05-15T14:32:00Z",
-  "updatedAt": "2026-05-15T14:32:00Z"
+  "updatedAt": "2026-05-15T14:32:00Z",
+  "dependencies": []
 }
 ```
 
 **Behavior:**
 
-- **File missing:** create it. Set `createdAt` and `updatedAt` to the current ISO 8601 UTC timestamp. Create the folder first if it does not exist (use the namespace-aware path rules — `Icon/Bot` → `packages/client/src/components/Icon/Bot/figma.json`).
+- **File missing:** create it. Set `createdAt` and `updatedAt` to the current ISO 8601 UTC timestamp. Create the `.figma/` folder first if it does not exist (use the namespace-aware path rules — `Icon/Bot` → `packages/client/src/components/Icon/Bot/.figma/figma.json`).
 - **File present:** do not modify it. This phase only seeds tracking files for components that lack one — refreshing `updatedAt` is `figma-from-code-build-component`'s job.
 
 Skip COMPONENT children of COMPONENT_SET nodes (variants) — only write tracking files for the top-level component or component set.
 
-**Failure handling:** if a write fails (permission, missing parent path that can't be created), log the failure and continue with the rest. Surface the count of failures in the final report (Step 8).
+**Failure handling:** if a write fails (permission, missing parent path that can't be created), log the failure and continue with the rest. Surface the count of failures in the final report (Step 10).
 
-### 7. Write updated output
+### 9. Write updated output
 
 Re-write `.temp/figma-from-code/component-map.json` with the `figmaNodeId` field added to every component entry across all tiers. Also add a top-level `figma` summary object.
 
@@ -160,13 +198,14 @@ Re-write `.temp/figma-from-code/component-map.json` with the `figmaNodeId` field
 }
 ```
 
-### 8. Report
+### 10. Report
 
-Report what exists in Figma vs what needs to be created, including the discovered build order:
+Report what exists in Figma vs what needs to be created, including the discovered build order and source breakdown:
 
 ```
 Component Discovery complete:
 - {componentCount} components across {tierCount} tiers
+- Source breakdown: {bothCount} browser+code, {codeOnlyCount} code-only, {browserOnlyCount} browser-only
 - Tier 1 (leaves): {component list}
 - Tier 2: {component list}
 - ...
@@ -185,6 +224,7 @@ Figma file state:
 |--------|----------|---------|
 | `map-components.js` | `.claude/skills/figma-from-code-validator/map-components.js` | Crawls routes, detects framework, discovers components, computes build order |
 | `normalize-component-map.js` | `.claude/skills/figma-from-code-discovery-components/normalize-component-map.js` | Aligns scanner names with Figma conventions using icons.json + Lucide alias table |
+| `discover-code-components.js` | `.claude/skills/figma-from-code-discovery-components/discover-code-components.js` | Auto-discovers frontend packages and scans source for all components. `--discover` mode finds directories; `--scan` mode parses imports, merges with browser map, recomputes tiers |
 
 Do NOT modify `map-components.js`.
 
