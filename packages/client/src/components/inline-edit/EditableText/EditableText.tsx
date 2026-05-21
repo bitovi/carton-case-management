@@ -8,7 +8,6 @@
  */
 import * as React from 'react';
 import { useState, useCallback } from 'react';
-import { cn } from '@/lib/utils';
 import { Input } from '@/components/obra/Input';
 import { BaseEditable } from '../BaseEditable';
 import { EditControls } from '../EditControls';
@@ -100,13 +99,7 @@ function EditModeRenderer({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         maxLength={maxLength}
-        className={cn(
-          'h-9', // 36px
-          'rounded-lg', // 8px border-radius
-          'px-3 py-[7.5px]', // 12px horizontal, 7.5px vertical
-          'text-sm tracking-[0.07px] leading-[21px]', // paragraph/small
-          'shadow-xs' // 0px 1px 2px rgba(0,0,0,0.05)
-        )}
+        className="text-sm tracking-[0.07px] leading-[21px]"
       />
       {/* Controls - absolute positioned to float over content below */}
       <EditControls onSave={() => onSave(localValue)} onCancel={onCancel} />

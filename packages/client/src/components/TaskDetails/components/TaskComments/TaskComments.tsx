@@ -1,8 +1,8 @@
 import { trpc } from '@/lib/trpc';
 import { Comments } from '@/components/common/Comments';
-import type { CaseCommentsProps } from './types';
+import type { TaskCommentsProps } from './types';
 
-export function CaseComments({ caseData }: CaseCommentsProps) {
+export function TaskComments({ taskData }: TaskCommentsProps) {
   const utils = trpc.useUtils();
 
   const { data: users } = trpc.user.list.useQuery();
@@ -10,17 +10,17 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
 
   const createCommentMutation = trpc.comment.create.useMutation({
     onMutate: async (variables) => {
-      await utils.case.getById.cancel({ id: caseData.id });
-      const previousCase = utils.case.getById.getData({ id: caseData.id });
+      await utils.task.getById.cancel({ id: taskData.id });
+      const previousTask = utils.task.getById.getData({ id: taskData.id });
 
-      if (previousCase && currentUser) {
+      if (previousTask && currentUser) {
         const optimisticComment = {
           id: `temp-${Date.now()}`,
           content: variables.content,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          caseId: caseData.id,
-          taskId: null,
+          caseId: null,
+          taskId: taskData.id,
           authorId: currentUser.id,
           author: {
             id: currentUser.id,
@@ -30,35 +30,35 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
           },
         };
 
-        utils.case.getById.setData(
-          { id: caseData.id },
+        utils.task.getById.setData(
+          { id: taskData.id },
           {
-            ...previousCase,
-            comments: [optimisticComment, ...(previousCase.comments || [])],
+            ...previousTask,
+            comments: [optimisticComment, ...(previousTask.comments || [])],
           }
         );
       }
 
-      return { previousCase };
+      return { previousTask };
     },
     onError: (_err, _variables, context) => {
-      if (context?.previousCase) {
-        utils.case.getById.setData({ id: caseData.id }, context.previousCase);
+      if (context?.previousTask) {
+        utils.task.getById.setData({ id: taskData.id }, context.previousTask);
       }
     },
     onSettled: () => {
-      utils.case.getById.invalidate({ id: caseData.id });
+      utils.task.getById.invalidate({ id: taskData.id });
     },
   });
 
   const handleSubmit = (content: string) => {
     if (!currentUser) return;
-    createCommentMutation.mutate({ caseId: caseData.id, content });
+    createCommentMutation.mutate({ taskId: taskData.id, content });
   };
 
   return (
     <Comments
-      comments={caseData.comments || []}
+      comments={taskData.comments || []}
       onSubmit={handleSubmit}
       isSubmitting={createCommentMutation.isPending}
     />

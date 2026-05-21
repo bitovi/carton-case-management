@@ -40,7 +40,12 @@ export function Header({ className, userInitials = 'AM', onAvatarClick }: Header
         }
         align="end"
       >
-        <MenuItem>No menu items yet</MenuItem>
+        <div className="px-3 py-2 border-b border-gray-200">
+          <p className="text-sm font-medium text-gray-900">Welcome Alex</p>
+        </div>
+        <MenuItem>
+          <Link to="/users" className="w-full">Account settings</Link>
+        </MenuItem>
       </MoreOptionsMenu>
     </header>
   );
