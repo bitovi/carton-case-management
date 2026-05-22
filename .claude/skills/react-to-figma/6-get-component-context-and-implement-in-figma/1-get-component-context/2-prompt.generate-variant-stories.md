@@ -1,0 +1,255 @@
+# Generate Variant Stories
+
+Generate a Storybook story file containing one named export per visual variant, suitable for automated screenshot capture.
+
+## Inputs
+
+- **Component name**: PascalCase name (e.g., `Button`)
+- **Source file path**: Path to the component source
+- **variants.md**: Contents of `.temp/react-to-figma/components/{Name}/variants.md`
+- **props.md**: Contents of `.temp/react-to-figma/components/{Name}/props.md`
+- **story-patterns.md**: Contents of `.temp/react-to-figma/story-patterns.md` (discovered conventions)
+- **Output directory**: `.temp/react-to-figma/components/{Name}/`
+- **Retry context** (optional): If this is a retry call, includes failed variant names, their screenshots, and their rendered HTML
+
+## Procedure
+
+### 1. Read story patterns
+
+Read `.temp/react-to-figma/story-patterns.md` to understand the app's conventions:
+- Which decorators to use (routers, providers, etc.)
+- How to mock data (MSW handlers, mock providers, inline data, etc.)
+- How to simulate loading/error states
+- How to type-safe mock data
+
+### 2. Determine the component's needs
+
+Read the component source to understand what it requires to render:
+
+| Need | Detection | Solution (in priority order) |
+|------|-----------|------------------------------|
+| **Props only** | Component accepts props, renders statically | Pass props directly — no special setup |
+| **Router context** | Uses `useNavigate`, `useParams`, `Link`, `NavLink` | Use the router decorator from `story-patterns.md` |
+| **Data from hooks** | Uses custom hooks that fetch data (`useQuery`, `useFetch`, custom hooks) | 1) Use existing mocking pattern from `story-patterns.md`. 2) If no pattern fits, add optional override props to the component. 3) Story-only wrapper as last resort. |
+| **Context providers** | Uses `useContext` for theme, auth, etc. | Use the provider decorators from `story-patterns.md` |
+| **Children components** | Renders child components that also need context | Ensure decorators cover children's needs too |
+
+### 3. Handle data-fetching components (escalation strategy)
+
+When a component fetches data internally via hooks:
+
+**Priority 1: Use existing mocking patterns**
+If `story-patterns.md` documents a mocking approach (e.g., MSW handlers, mock providers), use that approach. Copy the pattern exactly as existing stories use it.
+
+**Priority 2: Add optional override props**
+If no existing pattern fits, modify the component source to accept optional override props:
+
+```typescript
+interface ComponentProps {
+  // ... existing props ...
+  /** @internal Story-only override — do not use in production */
+  __storyData?: DataType;
+  /** @internal Story-only override — do not use in production */
+  __storyLoading?: boolean;
+  /** @internal Story-only override — do not use in production */
+  __storyError?: Error;
+}
+
+function Component({ __storyData, __storyLoading, __storyError, ...props }: ComponentProps) {
+  const { data, isLoading, error } = __storyData !== undefined
+    ? { data: __storyData, isLoading: __storyLoading ?? false, error: __storyError ?? null }
+    : useRealHook();
+  // ... rest of component
+}
+```
+
+When modifying source code, make minimal changes and clearly mark story-only code with `@internal` JSDoc tags.
+
+**Priority 3: Story-only wrapper**
+Create a wrapper component inside the story file that intercepts hook calls:
+
+```typescript
+function StoryWrapper(props: Partial<ComponentProps>) {
+  return <Component {...mockProps} {...props} />;
+}
+```
+
+### 4. Handle retry (if retry context provided)
+
+If this prompt is called with retry context (failed variants from a prior capture attempt):
+
+1. Read the failed variant's screenshot — analyze what was visible (or not visible)
+2. Read the failed variant's rendered HTML — check what actually rendered
+3. Diagnose the root cause:
+   - **Blank page**: Missing provider/decorator, hook threw, component crashed
+   - **Spinner only**: Loading state not overridden, need mock data
+   - **Wrong content**: Mock data shape mismatch
+   - **Partially visible**: Portal/modal rendering off-screen
+4. Fix the story for the failed variants and regenerate
+
+### 5. Generate the story file
+
+Create the story file in the **component's source directory** (next to the component source file) so Storybook can discover it. Also copy it to the `.temp/` output directory for reference.
+
+- **Primary (Storybook-discoverable)**: `{source-dir}/{ComponentName}.figma-variants.stories.tsx` (same directory as the component source file from the **Source file path** input)
+- **Copy**: `.temp/react-to-figma/components/{Name}/{ComponentName}.figma-variants.stories.tsx`
+
+Example: If source is `packages/client/src/components/obra/Accordion/Accordion.tsx`, write the story to `packages/client/src/components/obra/Accordion/Accordion.figma-variants.stories.tsx`.
+
+Story file template:
+
+```typescript
+import type { Meta, StoryObj } from '@storybook/react';
+import { Component } from './Component';
+
+const meta = {
+  title: 'Figma Variants/ComponentName',
+  component: Component,
+  decorators: [
+    // decorators from story-patterns.md
+  ],
+  parameters: {
+    layout: 'centered',
+    // mocking parameters from story-patterns.md
+  },
+} satisfies Meta<typeof Component>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const VariantPrimarySizeMdStateDefault: Story = {
+  args: {
+    variant: 'primary',
+    size: 'md',
+  },
+};
+
+export const VariantPrimarySizeMdStateHover: Story = {
+  args: {
+    variant: 'primary',
+    size: 'md',
+  },
+  play: async ({ canvasElement }) => {
+    const button = canvasElement.querySelector('button');
+    if (button) {
+      button.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      button.classList.add('hover');
+    }
+  },
+};
+
+export const VariantPrimarySizeMdStateDisabled: Story = {
+  args: {
+    variant: 'primary',
+    size: 'md',
+    disabled: true,
+  },
+};
+
+// ... one export per variant from variants.md
+```
+
+#### Story naming convention
+
+Convert variant combination to PascalCase export name:
+- `variant=primary, size=md, state=default` → `VariantPrimarySizeMdStateDefault`
+- `state=loading` → `StateLoading`
+- `leftIcon=true` → `WithLeftIcon`
+
+#### Interaction state stories
+
+For hover, focus, and active states, use Storybook `play` functions:
+
+```typescript
+// Hover
+play: async ({ canvasElement }) => {
+  const el = canvasElement.querySelector('[data-testid="component"]') || canvasElement.firstElementChild;
+  if (el) {
+    el.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+    // Also add CSS pseudo-class simulation if needed
+    (el as HTMLElement).style.setProperty('--hover', '1');
+  }
+};
+
+// Focus
+play: async ({ canvasElement }) => {
+  const el = canvasElement.querySelector('button, input, [tabindex]') || canvasElement.firstElementChild;
+  if (el) (el as HTMLElement).focus();
+};
+
+// Active
+play: async ({ canvasElement }) => {
+  const el = canvasElement.querySelector('button') || canvasElement.firstElementChild;
+  if (el) {
+    el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+  }
+};
+```
+
+#### Viewport configuration
+
+Set a tight viewport for clean screenshots:
+
+```typescript
+parameters: {
+  layout: 'centered',
+  viewport: {
+    defaultViewport: 'responsive',
+  },
+  chromatic: { disableSnapshot: true }, // Prevent chromatic from capturing these
+},
+```
+
+### 6. Generate stories-manifest.md
+
+#### Story ID derivation (CRITICAL)
+
+Storybook converts PascalCase export names to **kebab-case** story IDs by inserting hyphens before each uppercase letter and lowercasing. The full story ID is: `{title-kebab}--{export-kebab}`.
+
+Algorithm:
+1. Take the export name (e.g., `VariantPrimarySizeMdStateDefault`)
+2. Insert `-` before each uppercase letter: `Variant-Primary-Size-Md-State-Default`
+3. Lowercase everything: `variant-primary-size-md-state-default`
+4. Combine with the title slug: `figma-variants-{component-kebab}--{export-kebab}`
+
+Examples:
+- `TypeMultipleItemCount3AllOpen` → `type-multiple-item-count-3-all-open`
+- `VariantPrimarySizeMdStateHover` → `variant-primary-size-md-state-hover`
+- `StateLoading` → `state-loading`
+- `WithLeftIcon` → `with-left-icon`
+
+**Common mistake**: Do NOT use all-lowercase-no-hyphens (e.g., `typemultipleitemcount3allopen`). Storybook always inserts hyphens at camelCase boundaries.
+
+Write to `.temp/react-to-figma/components/{Name}/stories-manifest.md`:
+
+```markdown
+# {ComponentName} Stories Manifest
+
+**Story file**: {source-dir}/{ComponentName}.figma-variants.stories.tsx
+**Storybook title**: Figma Variants/{ComponentName}
+**Total variants**: {count}
+
+| Variant | Export Name | Story ID (kebab-case) | Storybook URL | Needs Interaction |
+|---------|-----------|----------------------|---------------|-------------------|
+| variant=primary, size=md, state=default | VariantPrimarySizeMdStateDefault | variant-primary-size-md-state-default | /iframe.html?id=figma-variants-componentname--variant-primary-size-md-state-default | no |
+| variant=primary, size=md, state=hover | VariantPrimarySizeMdStateHover | variant-primary-size-md-state-hover | /iframe.html?id=figma-variants-componentname--variant-primary-size-md-state-hover | yes (play) |
+...
+
+## Source Modifications
+
+{List any modifications made to the component source, or "None — stories use existing mocking patterns."}
+
+- Added `__storyData` prop to {Component}.tsx (line {N}) for loading/error state overrides
+```
+
+### 7. Return summary
+
+```
+Story generation complete: {ComponentName}
+- Story file: {path}
+- Variants: {count}
+- Interaction stories (with play): {count}
+- Source modifications: {count or "none"}
+- Mocking approach: {which approach was used}
+- Output: .temp/react-to-figma/components/{Name}/stories-manifest.md
+```

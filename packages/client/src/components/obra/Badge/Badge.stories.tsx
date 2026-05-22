@@ -118,15 +118,6 @@ export const WithIconRight: Story = {
   },
 };
 
-export const WithBothIcons: Story = {
-  args: {
-    variant: 'outline',
-    children: 'Label',
-    iconLeft: <Check size={12} />,
-    iconRight: <X size={12} />,
-  },
-};
-
 export const DestructiveWithIcon: Story = {
   args: {
     variant: 'destructive',
