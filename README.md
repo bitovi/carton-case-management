@@ -18,6 +18,37 @@ This application follows a monorepo structure using npm workspaces:
 - **packages/server** - Node.js backend with tRPC, Prisma, and SQLite
 - **packages/shared** - Shared types and utilities used by both client and server
 
+```mermaid
+flowchart TD
+    Browser["Browser / End User"]
+
+    subgraph AWS["AWS (us-east-2)"]
+        %% HTTP :80 listener redirects to HTTPS :443
+        ALB["ALB (external)\nHTTPS :443"]
+
+        subgraph Fargate["ECS Fargate Cluster"]
+            %% Task definition is environment-specific (staging / production workspaces)
+            FE["React + Vite\nport 5173"]
+            BE["Express + tRPC\nport 3001"]
+            DB[("SQLite DB\nfile:./db/dev.db")]
+        end
+
+        CW["CloudWatch Logs\n/ecs/carton-case-mgmt-env-task"]
+        S3[("S3 Terraform State\nbitovi-carton-tf-state")]
+    end
+
+    Shared["@carton/shared\nPrisma schema + Zod + types"]
+
+    Browser -->|"HTTPS"| ALB
+    ALB -->|"forward :5173"| FE
+    FE -->|"tRPC /trpc"| BE
+    BE -->|"Prisma ORM"| DB
+    BE -.->|"awslogs driver"| CW
+
+    Shared -.->|"shared dep"| FE
+    Shared -.->|"shared dep"| BE
+```
+
 ## Tech Stack
 
 ### Frontend
