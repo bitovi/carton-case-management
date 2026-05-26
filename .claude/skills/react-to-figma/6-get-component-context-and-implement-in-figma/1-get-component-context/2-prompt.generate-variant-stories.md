@@ -1,4 +1,8 @@
-# Generate Variant Stories
+# 6 Get Component Context and Implement in Figma
+## 6.1 Get Component Context
+### 6.1.2 Generate Variant Stories
+
+**Begin your response by outputting the heading lines above verbatim.**
 
 Generate a Storybook story file containing one named export per visual variant, suitable for automated screenshot capture.
 
@@ -24,7 +28,19 @@ Read `.temp/react-to-figma/story-patterns.md` to understand the app's convention
 
 ### 2. Determine the component's needs
 
-Read the component source to understand what it requires to render:
+Read the component source to understand what it requires to render.
+
+**Also read any existing `.stories.tsx` file** in the same directory (excluding `*.figma-variants.stories.tsx`). Use it to discover:
+- Correct import paths for helper components (e.g., `Input`, `Select`, `Button`)
+- Decorators and providers already in use
+- Mock data patterns specific to this component
+
+**CRITICAL — Import path resolution**: Never guess import paths. When the story needs to import helper components (e.g., for `renderEditMode` props, children, or composition):
+1. Check the existing `.stories.tsx` file's imports first
+2. If not found there, check the component source file's own imports
+3. Verify the resolved path exists before writing it into the story
+
+Also read the **Component Properties (Independent)** section from `variants.md`. These axes are NOT multiplied with the dependent axes — they get one story per non-default value, rendered at the default dependent-axis values.
 
 | Need | Detection | Solution (in priority order) |
 |------|-----------|------------------------------|
@@ -95,6 +111,18 @@ Create the story file in the **component's source directory** (next to the compo
 - **Copy**: `.temp/react-to-figma/components/{Name}/{ComponentName}.figma-variants.stories.tsx`
 
 Example: If source is `packages/client/src/components/obra/Accordion/Accordion.tsx`, write the story to `packages/client/src/components/obra/Accordion/Accordion.figma-variants.stories.tsx`.
+
+#### Story generation strategy
+
+**Dependent axes** — Generate one story per combination in the "Variant Combinations" section of `variants.md`. These are the full cross-product of dependent axes.
+
+**Independent axes (Component Properties)** — Generate one story per non-default value, at the default dependent-axis values. These appear in the "Independent axis screenshots" section of `variants.md`.
+
+Example: If `variants.md` lists:
+- 20 dependent combinations (5 variant × 2 roundness × 2 state)
+- 3 independent screenshots (leftIcon=true, rightIcon=true, both)
+
+Generate 23 stories total, NOT 80 (which would be 20 × 4 icon combos).
 
 Story file template:
 

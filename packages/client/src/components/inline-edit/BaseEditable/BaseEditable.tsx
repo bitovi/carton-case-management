@@ -69,6 +69,8 @@ export function BaseEditable<T>({
   exitOnBlur = true,
   formatValue,
   showSavingState = true,
+  __storyState,
+  __storyError,
 }: BaseEditableProps<T>) {
   // State management
   const [internalState, setInternalState] = useState<EditableState>('rest');
@@ -85,12 +87,20 @@ export function BaseEditable<T>({
   const isEditing = isControlled ? controlledIsEditing : internalState === 'edit';
   const isSaving = internalState === 'saving';
 
-  // Derive the current state
-  const state: EditableState = isSaving
-    ? 'saving'
-    : isEditing
-      ? 'edit'
-      : internalState;
+  // Derive the current state (with story overrides for Storybook screenshots)
+  let state: EditableState;
+  if (__storyState !== undefined) {
+    state = __storyState;
+  } else {
+    state = isSaving
+      ? 'saving'
+      : isEditing
+        ? 'edit'
+        : internalState;
+  }
+
+  // Use story error override if provided
+  const displayError = __storyError !== undefined ? __storyError : error;
 
   /**
    * Transitions to edit state
@@ -248,7 +258,7 @@ export function BaseEditable<T>({
     onSave: handleSave,
     onCancel: handleCancel,
     inputRef: inputRef as React.RefObject<HTMLElement>,
-    error,
+    error: displayError,
     clearError,
   };
 
@@ -303,9 +313,9 @@ export function BaseEditable<T>({
       return (
         <div className={editContainerClasses}>
           {renderEditMode(editModeProps)}
-          {error && (
+          {displayError && (
             <span className={errorClasses} role="alert">
-              {error}
+              {displayError}
             </span>
           )}
         </div>

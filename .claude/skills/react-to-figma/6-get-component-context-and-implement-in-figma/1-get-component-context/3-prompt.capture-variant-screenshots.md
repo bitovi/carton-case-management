@@ -1,4 +1,8 @@
-# Capture Variant Screenshots
+# 6 Get Component Context and Implement in Figma
+## 6.1 Get Component Context
+### 6.1.3 Capture Variant Screenshots
+
+**Begin your response by outputting the heading lines above verbatim.**
 
 Run the reusable `capture-storybook-variants.js` helper to capture a screenshot, rendered HTML structure, and computed CSS for every variant story. The helper fetches story IDs directly from Storybook's `index.json`, so there is no need to manually construct story URLs.
 

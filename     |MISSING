@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "react-to-figma-dom-ir@1",
+  "componentName": "BaseEditable",
+  "generatedAt": "2026-05-24T19:56:25.262Z",
+  "nodeCount": 7,
+  "fonts": [
+    {
+      "family": "Inter",
+      "style": "Regular"
+    }
+  ],
+  "warnings": [],
+  "root": {
+    "type": "COMPONENT",
+    "name": "BaseEditable",
+    "layoutMode": "HORIZONTAL",
+    "itemSpacing": 0,
+    "primaryAxisAlignItems": "MIN",
+    "counterAxisAlignItems": "MIN",
+    "paddingTop": 0,
+    "paddingRight": 0,
+    "paddingBottom": 0,
+    "paddingLeft": 0,
+    "primaryAxisSizingMode": "AUTO",
+    "counterAxisSizingMode": "AUTO",
+    "fills": [
+      {
+        "type": "SOLID",
+        "color": {
+          "r": 1,
+          "g": 1,
+          "b": 1
+        },
+        "opacity": 1,
+        "variableId": "VariableID:5:14",
+        "figmaPath": "Palette/white"
+      }
+    ],
+    "children": [
+      {
+        "type": "FRAME",
+        "name": "div",
+        "layoutMode": "VERTICAL",
+        "itemSpacing": 0,
+        "primaryAxisAlignItems": "MIN",
+        "counterAxisAlignItems": "MIN",
+        "paddingTop": 0,
+        "paddingRight": 0,
+        "paddingBottom": 0,
+        "paddingLeft": 0,
+        "primaryAxisSizingMode": "AUTO",
+        "counterAxisSizingMode": "AUTO",
+        "layoutSizingHorizontal": "HUG",
+        "layoutSizingVertical": "HUG",
+        "children": [
+          {
+            "type": "FRAME",
+            "name": "div",
+            "layoutMode": "HORIZONTAL",
+            "itemSpacing": 0,
+            "primaryAxisAlignItems": "MIN",
+            "counterAxisAlignItems": "MIN",
+            "paddingTop": 0,
+            "paddingRight": 0,
+            "paddingBottom": 0,
+            "paddingLeft": 0,
+            "primaryAxisSizingMode": "AUTO",
+            "counterAxisSizingMode": "AUTO",
+            "children": [
+              {
+                "type": "FRAME",
+                "name": "span",
+                "layoutMode": "VERTICAL",
+                "itemSpacing": 0,
+                "primaryAxisAlignItems": "MIN",
+                "counterAxisAlignItems": "MIN",
+                "paddingTop": 0,
+                "paddingRight": 0,
+                "paddingBottom": 0,
+                "paddingLeft": 0,
+                "primaryAxisSizingMode": "AUTO",
+                "counterAxisSizingMode": "AUTO",
+                "layoutSizingHorizontal": "HUG",
+                "layoutSizingVertical": "HUG"
+              },
+              {
+                "type": "FRAME",
+                "name": "div",
+                "layoutMode": "HORIZONTAL",
+                "itemSpacing": 0,
+                "primaryAxisAlignItems": "MIN",
+                "counterAxisAlignItems": "MIN",
+                "paddingTop": 0,
+                "paddingRight": 0,
+                "paddingBottom": 0,
+                "paddingLeft": 0,
+                "primaryAxisSizingMode": "AUTO",
+                "counterAxisSizingMode": "AUTO",
+                "layoutSizingHorizontal": "HUG",
+                "layoutSizingVertical": "HUG",
+                "children": [
+                  {
+                    "type": "FRAME",
+                    "name": "span",
+                    "layoutMode": "VERTICAL",
+                    "itemSpacing": 0,
+                    "primaryAxisAlignItems": "MIN",
+                    "counterAxisAlignItems": "MIN",
+                    "paddingTop": 0,
+                    "paddingRight": 0,
+                    "paddingBottom": 0,
+                    "paddingLeft": 0,
+                    "primaryAxisSizingMode": "AUTO",
+                    "counterAxisSizingMode": "AUTO",
+                    "layoutSizingHorizontal": "HUG",
+                    "layoutSizingVertical": "HUG"
+                  },
+                  {
+                    "type": "SVG_PLACEHOLDER",
+                    "name": "icon",
+                    "width": 13,
+                    "height": 13,
+                    "hint": "SVG detected but no fiber component match. May need manual icon mapping."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

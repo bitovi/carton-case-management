@@ -173,8 +173,56 @@ async function captureVariant(page, storyUrl, exportName, outputDir, opts) {
     )
     .catch(() => {});
 
+  const renderError = await page.evaluate(() => {
+    const root = document.querySelector('#storybook-root') || document.querySelector('#root');
+    const inner = root ? root.innerHTML.replace(/<!--[\s\S]*?-->/g, '').trim() : '';
+    const hasContent = inner && inner !== '<div></div>' && inner.length >= 10;
+
+    if (hasContent) {
+      return null;
+    }
+
+    const errorDisplay = document.querySelector('#error-message, .sb-errordisplay, [id*="error"]');
+    if (errorDisplay && errorDisplay.textContent && errorDisplay.textContent.trim().length > 0) {
+      return errorDisplay.textContent.trim().slice(0, 300);
+    }
+
+    const bodyText = document.body.innerText || '';
+    if (bodyText.includes('Failed to fetch dynamically imported module')) {
+      return 'Failed to fetch dynamically imported module (likely broken import path)';
+    }
+    if (bodyText.includes('TypeError') || bodyText.includes('Error')) {
+      return bodyText.slice(0, 300);
+    }
+    return 'Storybook root is empty — component did not render';
+  });
+
+  if (renderError) {
+    await page.screenshot({ path: path.join(outputDir, `${exportName}.png`), fullPage: false });
+    throw new Error(`Render failed: ${renderError}`);
+  }
+
   const screenshotPath = path.join(outputDir, `${exportName}.png`);
-  await page.screenshot({ path: screenshotPath, fullPage: false });
+
+  let elementScreenshot = false;
+  try {
+    const root = await page.$('#storybook-root') || await page.$('#root');
+    if (root) {
+      const child = await root.$(':first-child');
+      if (child) {
+        const box = await child.boundingBox();
+        if (box && box.width > 1 && box.height > 1) {
+          await child.screenshot({ path: screenshotPath });
+          elementScreenshot = true;
+        }
+      }
+    }
+  } catch (_) {}
+
+  if (!elementScreenshot) {
+    console.warn(`    ⚠ element screenshot failed for ${exportName}, falling back to full page`);
+    await page.screenshot({ path: screenshotPath, fullPage: false });
+  }
 
   const htmlContent = await page.evaluate(() => {
     const root =

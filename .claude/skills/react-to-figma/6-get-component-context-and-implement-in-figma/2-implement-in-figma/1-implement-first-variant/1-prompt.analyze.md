@@ -1,4 +1,9 @@
-# Analyze Default Variant
+# 6 Get Component Context and Implement in Figma
+## 6.2 Implement in Figma
+### 6.2.1 Implement First Variant
+#### 6.2.1.1 Analyze Default Variant
+
+**Begin your response by outputting the heading lines above verbatim.**
 
 Parse all raw inputs and produce a structured build plan for the default variant. The build agent reads ONLY this plan — it never touches the raw input files.
 
@@ -8,11 +13,13 @@ Parse all raw inputs and produce a structured build plan for the default variant
 |-------|-------------|
 | `analysis.md` | Child relationships, source type, leaf status |
 | `props.md` | Component props with types and defaults |
-| `figma-variants.md` | Figma variant axes with defaults, React↔Figma mappings, representative screenshots |
+| `figma-variants.md` | Figma variant axes with defaults, React↔Figma mappings, representative screenshots, component properties |
 | `variants.md` | Full code-level variant enumeration (Tailwind classes, computed styles) |
 | `app-context/*.html.md` | Live app HTML structure (optional) |
 | `app-context/*.styles.md` | Computed CSS from live app (optional) |
-| `screenshots/` | React variant PNGs — view to understand visual target |
+| `screenshots/*.html.md` | Storybook HTML structure per variant (always present, fallback for text when `app-context/` absent) |
+| `screenshots/*.styles.md` | Storybook computed CSS per variant (always present, fallback for layout when `app-context/` absent) |
+| `screenshots/*.png` | React variant PNGs — view to understand visual target |
 | `figma-variables-map.json` | Tailwind class / CSS var → Figma variable ID |
 | `figma-icons-map.json` | Icon name → Figma component ID |
 | `figma-assets-map.json` | Asset name → Figma component ID |
@@ -26,13 +33,15 @@ Write `build-plan.md` to the component directory.
 
 ### 1. Identify the default combo
 
-Read `figma-variants.md` → variant axes. The default combo is where every axis is at its default value.
+Read `figma-variants.md` → "Figma Variant Axes" table. Only axes with type=VARIANT contribute to physical variants. **BOOLEAN axes are NEVER physical variants** — they are Component Properties wired after combining. Do NOT include BOOLEAN axes in `allCombos`.
 
-If there are no variant axes, the default is the only combo — record `singleComponent: true`.
+The default combo is where every VARIANT-type axis is at its default value.
+
+If there are no VARIANT-type axes, the default is the only combo — record `singleComponent: true`.
 
 Record:
-- `defaultCombo`: e.g., `{ Variant: 'primary', Size: 'regular' }`
-- `allCombos`: full list from `figma-variants.md` (used later by Phase 2)
+- `defaultCombo`: e.g., `{ Variant: 'primary', Size: 'regular' }` (VARIANT axes only)
+- `allCombos`: cross-product of VARIANT-type axes only (excludes BOOLEAN/INSTANCE_SWAP/TEXT properties)
 - `singleComponent`: true/false
 
 ### 2. Build instance manifest
@@ -44,13 +53,13 @@ Read `analysis.md` "Rendered Children" table. For each child:
 3. If not found, check `figma-assets-map.json` → record with asset componentId
 4. If not found anywhere → **STOP** and report missing dependency
 
-From `app-context/*.html.md`, count how many times each child appears → set `usageCount`.
+From `app-context/*.html.md` (or `screenshots/{defaultScreenshot}.html.md` if `app-context/` is absent), count how many times each child appears → set `usageCount`.
 
 From text content in the HTML, determine what text overrides each instance needs → set `textOverrides` (list of `{ findBy, characters }` per usage).
 
 ### 3. Determine layout structure
 
-From `app-context/*.styles.md` root element, extract:
+From `app-context/*.styles.md` (or `screenshots/{defaultScreenshot}.styles.md` if `app-context/` is absent) root element, extract:
 - `display` / `flexDirection` → `layoutMode` (VERTICAL or HORIZONTAL)
 - `gap` → `itemSpacing`
 - `padding*` → padding values
@@ -82,6 +91,7 @@ Rules for the frame tree:
 - Text nodes are ONLY for text not owned by a child component
 - Wrapper frames are created for HTML divs that group children with their own flex layout
 - Order matches the HTML source order
+- For each Component Property of type BOOLEAN (from `figma-variants.md`), include the controlled child node in the tree with `visible=false`. This hidden placeholder enables the BOOLEAN toggle to show/hide it after `combineAsVariants`.
 
 ### 5. Resolve variable bindings
 
@@ -154,6 +164,15 @@ Scan the frame tree for all text nodes and instance text overrides. Collect uniq
 - Inter Regular
 - Inter Medium
 - Inter Semi Bold
+
+## Component Properties
+
+| Property | Figma Type | Default | Controlled Node | Wiring |
+|----------|-----------|---------|----------------|--------|
+| Show left icon | BOOLEAN | false | leftIcon frame (visible=false) | `componentPropertyReferences = { visible: key }` |
+| Left icon | INSTANCE_SWAP | {placeholderId} | leftIcon instance | `componentPropertyReferences = { mainComponent: key }` |
+
+{Include this section only if `figma-variants.md` has a Component Properties section. Copy each property with its type, default, controlled node name, and wiring pattern.}
 
 ## Default Variant Screenshot
 

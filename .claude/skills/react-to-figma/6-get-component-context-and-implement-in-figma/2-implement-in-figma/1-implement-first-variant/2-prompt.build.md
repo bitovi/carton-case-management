@@ -1,4 +1,9 @@
-# Build Default Variant
+# 6 Get Component Context and Implement in Figma
+## 6.2 Implement in Figma
+### 6.2.1 Implement First Variant
+#### 6.2.1.2 Build Default Variant
+
+**Begin your response by outputting the heading lines above verbatim.**
 
 Build a single Figma component from a structured build plan. This agent reads ONLY the build plan and reference files — no raw component inputs.
 
@@ -11,6 +16,14 @@ Read these reference files in `2-implement-in-figma/reference/`:
 4. `figma-variable-binding.md` — How to bind design tokens
 5. `tailwind-figma-map.md` — Tailwind CSS → Figma property translation
 6. `fix-sizing.md` — The `fixSizing()` function (mandatory after every build)
+
+## DO NOT
+
+- Do NOT write `use_figma` code from memory. Use the exact patterns from the reference files above.
+- Do NOT exceed ~10 node operations per `use_figma` call. Split larger builds across multiple calls and return node IDs from each.
+- Do NOT skip `fixSizing()` — it must run on every component after all children are added and before `appendChild` to the parent frame.
+- Do NOT set `x`/`y` on nodes inside auto-layout parents (silently ignored).
+- Do NOT use `resize()` after setting sizing modes — it resets them to FIXED.
 
 ## Inputs
 
@@ -61,12 +74,19 @@ Before writing the `use_figma` call:
 
 3. **Plan call splitting** — if the frame tree has >10 nodes, split across multiple `use_figma` calls. Return all node IDs from each call.
 
+4. **Resolve the parent frame** — the first `use_figma` call MUST start by getting the parent frame node. This ensures the component is created on the correct Figma page (e.g., "Components"), not the default active page:
+   ```javascript
+   const parentFrame = figma.getNodeById('{parentFrameId}');
+   ```
+   Include this line at the top of every `use_figma` call that appends to the parent frame.
+
 ### 3. Execute use_figma calls
 
 Follow the frame tree top-down. For each node in the tree:
 
 **COMPONENT (root)**:
 ```javascript
+const parentFrame = figma.getNodeById('{parentFrameId}');
 const comp = figma.createComponent();
 comp.name = '{componentName}';
 comp.layoutMode = '{from build plan}';
@@ -136,6 +156,27 @@ const iconMaster = figma.getNodeById(masters['Icon/{name}']);
 const iconInst = iconMaster.createInstance();
 iconInst.resize({w}, {h}); // from plan, e.g. 16,16
 parent.appendChild(iconInst);
+```
+
+**Hidden placeholder node** (for BOOLEAN component properties):
+```javascript
+// If the build plan's Component Properties section lists a BOOLEAN-controlled node,
+// create the child but set visible=false. This placeholder enables the BOOLEAN toggle
+// after combineAsVariants.
+const slotFrame = figma.createFrame();
+slotFrame.name = '{slotName}'; // e.g. 'leftIcon'
+slotFrame.visible = false;
+slotFrame.layoutMode = 'HORIZONTAL';
+slotFrame.primaryAxisSizingMode = 'AUTO';
+slotFrame.counterAxisSizingMode = 'AUTO';
+slotFrame.fills = [];
+// Add a placeholder instance inside if INSTANCE_SWAP is also defined
+const placeholderMaster = figma.getNodeById(masters['{placeholderName}']);
+if (placeholderMaster) {
+  const placeholderInst = placeholderMaster.createInstance();
+  slotFrame.appendChild(placeholderInst);
+}
+parent.appendChild(slotFrame);
 ```
 
 ### 4. Bind variables

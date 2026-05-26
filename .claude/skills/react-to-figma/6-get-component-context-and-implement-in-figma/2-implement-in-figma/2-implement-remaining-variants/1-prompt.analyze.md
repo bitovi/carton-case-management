@@ -1,4 +1,9 @@
-# Analyze Remaining Variants
+# 6 Get Component Context and Implement in Figma
+## 6.2 Implement in Figma
+### 6.2.2 Implement Remaining Variants
+#### 6.2.2.1 Analyze Remaining Variants
+
+**Begin your response by outputting the heading lines above verbatim.**
 
 Produce override plans for every non-default variant combo. Each plan describes ONLY what differs from the proven default variant.
 
@@ -10,7 +15,8 @@ Produce override plans for every non-default variant combo. Each plan describes 
 | `default-variant/figma-result.md` | Proven default's node ID and structure |
 | `figma-variants.md` | Figma variant axes, React↔Figma mappings, representative screenshots |
 | `variants.md` | Full code-level variant enumeration (Tailwind classes per combo) |
-| `screenshots/` | React PNGs for every variant combo |
+| `screenshots/*.png` | React PNGs for every variant combo |
+| `screenshots/*.html.md` | Storybook HTML structure per variant (exact text content for each variant) |
 | `figma-variables-map.json` | Tailwind class → Figma variable ID |
 
 ## Output
@@ -43,15 +49,18 @@ For each changed Tailwind class:
 2. Map to Figma property using `tailwind-figma-map.md` (from reference/)
 3. Record: `{ node, property, newVariableId, newFallbackRgb }`
 
-**c) View the screenshot**
+**c) Extract text content**
+
+Read `screenshots/{comboScreenshot}.html.md` (the `.html.md` file matching the screenshot name, without `.png`). Extract all text content from the HTML structure. Compare against the default variant's text. Record any differences as text overrides: `{ findBy: "{defaultText}", characters: "{variantText}" }`.
+
+**d) View the screenshot**
 
 View `screenshots/{comboScreenshot}` and compare against the default screenshot. Note any structural differences:
 - Children appearing/disappearing (conditional rendering)
 - Icon changes
-- Text content changes
 - Visibility changes
 
-**d) Record override plan**
+**e) Record override plan**
 
 For each combo, produce:
 - Combo identity: `{ axisName: value, ... }`

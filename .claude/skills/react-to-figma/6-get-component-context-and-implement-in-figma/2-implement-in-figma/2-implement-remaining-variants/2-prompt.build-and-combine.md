@@ -1,4 +1,9 @@
-# Build Remaining Variants and Combine
+# 6 Get Component Context and Implement in Figma
+## 6.2 Implement in Figma
+### 6.2.2 Implement Remaining Variants
+#### 6.2.2.2 Build Remaining Variants and Combine
+
+**Begin your response by outputting the heading lines above verbatim.**
 
 Build ALL remaining variant components from override plans, then combine everything (including the default) into a Figma component set.
 
@@ -10,6 +15,15 @@ Read these reference files in `2-implement-in-figma/reference/`:
 3. `figma-component-patterns.md` — Component and component set creation, `combineAsVariants()`
 4. `figma-variable-binding.md` — How to bind design tokens
 5. `fix-sizing.md` — The `fixSizing()` function
+
+## DO NOT
+
+- Do NOT write `use_figma` code from memory. Use the exact patterns from the reference files above.
+- Do NOT build more than 3-4 variants per `use_figma` call. Split into batches and return node IDs from each.
+- Do NOT skip setting layout on the component set after `combineAsVariants()` — it stacks everything at (0,0) by default.
+- Do NOT skip `fixSizing()` on each variant before combining, AND on the set after combining.
+- Do NOT report the build as successful without the orchestrator running the verify step. A call returning without error does NOT mean the component looks correct.
+- Do NOT create variants from scratch when cloning is available. Use `base.clone()` + override (see §2a).
 
 ## Inputs
 
@@ -38,15 +52,15 @@ Parse:
 
 For each combo in `variant-plans.md`:
 
-**a) Clone the default variant structure**
+**a) Resolve the parent frame and clone the default variant**
 
-Create a new component with the same frame tree as the default. Use the frame tree from `build-plan.md` — build it from scratch (do NOT use `clone()` — Figma Plugin API component cloning creates instances, not independent components).
+Every `use_figma` call that appends to the parent frame MUST start by resolving it. Then use `clone()` on the default component node. This creates an independent ComponentNode copy (NOT an instance) with all children, layout, and bindings intact.
 
 ```javascript
-const variant = figma.createComponent();
+const parentFrame = figma.getNodeById('{parentFrameId}');
+const defaultComp = figma.getNodeById('{defaultNodeId}');
+const variant = defaultComp.clone();
 variant.name = '{componentName}';
-// ... apply the same base structure from build-plan.md
-// ... same children, instances, text nodes
 ```
 
 **b) Apply property overrides**
@@ -104,7 +118,6 @@ After ALL remaining variants are built:
 ```javascript
 const defaultComp = figma.getNodeById('{defaultNodeId}');
 
-// Set variant names on all components before combining
 defaultComp.name = '{axisName1}={defaultValue1}, {axisName2}={defaultValue2}';
 // ... for each variant, set name per its combo
 
@@ -112,22 +125,85 @@ const allComponents = [defaultComp, variant1, variant2, ...];
 const componentSet = figma.combineAsVariants(allComponents, parentFrame);
 componentSet.name = '{componentName}';
 
-// Apply auto-layout to the set frame
+// Light gray fill + rounded corners on the component set (Figma best practice)
+componentSet.fills = [{ type: 'SOLID', color: { r: 0.95, g: 0.95, b: 0.98 } }];
+componentSet.cornerRadius = 8;
+```
+
+#### Layout the component set
+
+`combineAsVariants` stacks everything at (0,0). Use WRAP auto-layout with a calculated fixed width to create a grid:
+
+```javascript
+const SPACING = 40;
+const columns = Math.ceil(Math.sqrt(allComponents.length));
+const maxChildWidth = Math.max(...componentSet.children.map(c => c.width));
+const targetWidth = columns * (maxChildWidth + SPACING) + SPACING;
+
 componentSet.layoutMode = 'HORIZONTAL';
 componentSet.layoutWrap = 'WRAP';
-componentSet.itemSpacing = 40;
-componentSet.counterAxisSpacing = 40;
-componentSet.paddingTop = 40;
-componentSet.paddingBottom = 40;
-componentSet.paddingLeft = 40;
-componentSet.paddingRight = 40;
-componentSet.primaryAxisSizingMode = 'AUTO';
-componentSet.counterAxisSizingMode = 'AUTO';
+componentSet.itemSpacing = SPACING;
+componentSet.counterAxisSpacing = SPACING;
+componentSet.paddingTop = SPACING;
+componentSet.paddingBottom = SPACING;
+componentSet.paddingLeft = SPACING;
+componentSet.paddingRight = SPACING;
 
+// Fixed width forces wrapping at the correct column count
+componentSet.resize(targetWidth, componentSet.height);
+componentSet.primaryAxisSizingMode = 'FIXED';
+componentSet.counterAxisSizingMode = 'AUTO';
+```
+
+Do NOT use manual x/y positioning — it conflicts with auto-layout. Do NOT set `layoutSizingHorizontal` or `layoutSizingVertical` on the component set.
+
+Do NOT set `x` or `y` on the component set itself — the parent container frame uses WRAP auto-layout to position component sets automatically in rows.
+
+### 4. Wire component properties
+
+If `build-plan.md` or `variant-plans.md` includes a "Component Properties" section, wire them AFTER `combineAsVariants`:
+
+```javascript
+// BOOLEAN property (show/hide a child node)
+const boolKey = componentSet.addComponentProperty(
+  'Show left icon',
+  'BOOLEAN',
+  false
+);
+
+// Wire the BOOLEAN to control child visibility in EVERY variant
+for (const variant of componentSet.children) {
+  const slotNode = variant.findOne(n => n.name === 'leftIcon');
+  if (slotNode) {
+    slotNode.visible = false; // default state
+    slotNode.componentPropertyReferences = { visible: boolKey };
+  }
+}
+
+// INSTANCE_SWAP property (swap which component fills a slot)
+const swapKey = componentSet.addComponentProperty(
+  'Left icon',
+  'INSTANCE_SWAP',
+  placeholderComponentId
+);
+
+for (const variant of componentSet.children) {
+  const slotInstance = variant.findOne(n => n.name === 'leftIcon' && n.type === 'INSTANCE');
+  if (slotInstance) {
+    slotInstance.componentPropertyReferences = { mainComponent: swapKey };
+  }
+}
+```
+
+The base variant must already contain hidden placeholder nodes for all BOOLEAN-controlled children (built in the default variant step). `addComponentProperty` is only available on the component set, so this step must happen AFTER combining.
+
+Return the result:
+
+```javascript
 return JSON.stringify({
   setId: componentSet.id,
   setName: componentSet.name,
-  variants: allComponents.map(c => ({ id: c.id, name: c.name }))
+  variants: componentSet.children.map(c => ({ id: c.id, name: c.name }))
 });
 ```
 
@@ -165,6 +241,13 @@ Write to `{componentDir}/figma-result.md`:
 | default | fills[0] | VariableID:5:10 |
 | destructive | fills[0] | VariableID:5:20 |
 | ... | ... | ... |
+
+## Component Properties Wired
+
+| Property | Figma Type | Key | Controlled Node | Default |
+|----------|-----------|-----|----------------|---------|
+| Show left icon | BOOLEAN | {key} | leftIcon | false (hidden) |
+| Left icon | INSTANCE_SWAP | {key} | leftIcon instance | {placeholderId} |
 ```
 
 ## Splitting Large Builds

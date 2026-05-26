@@ -1,4 +1,8 @@
-# Analyze Figma Variants
+# 6 Get Component Context and Implement in Figma
+## 6.1 Get Component Context
+### 6.1.4 Analyze Figma Variants
+
+**Begin your response by outputting the heading lines above verbatim.**
 
 Compare captured variant screenshots to determine which code-level variants produce visually distinct results. Output a reduced set of Figma variant axes with bidirectional mappings between Figma variants and React props.
 
@@ -55,6 +59,16 @@ For each variant axis defined in `variants.md`, determine its visual impact:
 
 **Method**: Find screenshot pairs that differ on ONLY that axis (all other axes held constant). If no such pair exists, find the closest pairs and note the confounding axes.
 
+#### Independence verification
+
+If `variants.md` classified any axes as independent (in the "Component Properties" section), verify from the screenshots:
+
+1. Find the independent-axis screenshots (e.g., `WithLeftIcon`, `WithRightIcon`)
+2. Compare the structural delta (layout shift, padding change, child visibility) against the default
+3. Confirm the delta is consistent — it does not depend on which dependent-axis variant is active
+4. If the delta IS consistent → confirmed independent → keep as Component Property
+5. If the delta differs across dependent variants → reclassify as dependent → add to variant matrix
+
 #### Classification categories
 
 | Classification | Criteria | Figma treatment |
@@ -107,6 +121,22 @@ For each Visual axis:
 
 Prune values within a Visual axis if two values look identical (e.g., if `variant=outline` and `variant=ghost` render identically, merge them or pick one as the canonical value and note the alias).
 
+**Variant count check**: Count the total dependent combinations (cross-product of all Visual VARIANT axes). If >30, verify each axis is truly a Visual axis (not a State Enabler or Behavioral axis that could be removed). Complex components legitimately have 100+ variants when all axes are visual — do not force-convert visual axes to Component Properties just to reduce the count. Only convert axes that are genuinely independent.
+
+**CRITICAL RULE: BOOLEAN axes are NEVER variant axes.** They are ALWAYS Component Properties. BOOLEAN axes do NOT appear in the "Figma Variant Axes" table, do NOT contribute to the variant count, and do NOT multiply the cross-product. In Figma, BOOLEAN component properties can only toggle `visible` on a child node — auto-layout handles the reflow. If a React prop causes changes beyond show/hide (padding, colors, etc.), the classification system above will classify it as VARIANT type, not BOOLEAN.
+
+#### Component Properties
+
+For each axis confirmed as independent (from §3 independence verification), define a Component Property:
+
+| Axis type | Figma property type | Behavior |
+|-----------|--------------------|---------|
+| Show/hide toggle | BOOLEAN | Controls `visible` on a child node. Child exists in all variants (hidden by default). Auto-layout adjusts when toggled. |
+| Content swap | INSTANCE_SWAP | Controls which component instance fills a slot. |
+| Text content | TEXT | Controls editable text in a child node. |
+
+The base variant must include hidden placeholder nodes for all BOOLEAN-controlled children so that toggling works correctly.
+
 ### 6. Build bidirectional mapping
 
 #### React → Figma mapping
@@ -154,16 +184,35 @@ Write to `.temp/react-to-figma/components/{Name}/figma-variants.md`:
 - **Code variants analyzed**: {count from variants.md}
 - **Screenshots compared**: {count of successful captures}
 - **Visual groups found**: {count of equivalence classes}
-- **Figma variant axes**: {count}
-- **Total Figma variant combinations**: {count}
+- **Figma variant axes**: {count of VARIANT-type axes only — excludes Component Properties}
+- **Total Figma variant combinations**: {cross-product of VARIANT-type axes only — BOOLEAN/INSTANCE_SWAP/TEXT properties do NOT multiply}
 
 ## Figma Variant Axes
+
+Only VARIANT-type axes appear here. BOOLEAN axes are listed in Component Properties below.
 
 | Axis | Type | Values | Default | React Source |
 |------|------|--------|---------|-------------|
 | Size | VARIANT | sm, md, lg | md | prop: size |
 | State | VARIANT | default, hover, focus, disabled | default | CSS pseudo-classes + disabled prop |
 | Item State | VARIANT | first-open, all-closed, multiple-open, all-open | first-open | Composite: type + collapsible + defaultValue |
+
+## Component Properties
+
+| Property | Figma Type | Default | Controlled Node | Wiring |
+|----------|-----------|---------|----------------|--------|
+| Show left icon | BOOLEAN | false | leftIcon frame | `componentPropertyReferences = { visible: key }` |
+| Left icon | INSTANCE_SWAP | placeholder | leftIcon slot | `componentPropertyReferences = { mainComponent: key }` |
+
+## Axis Independence Evidence
+
+### {AxisName}: Independent (confirmed)
+**Code evidence**: No conditional classes combining {axis} with dependent axes.
+**Screenshot evidence**: Structural delta from adding {axis} is {N}px padding shift, consistent across all dependent variants.
+
+### {AxisName}: Dependent (confirmed)
+**Code evidence**: CVA compound variant `{ variant: 'outline', {axis}: true, class: '...' }`.
+**Screenshot evidence**: Layout change differs between variant=primary ({N}px) and variant=outline ({M}px).
 
 ## Visual Groups
 
@@ -217,9 +266,11 @@ Screenshots that are visually identical:
 ├── {Axis2} (variant property)
 │   ├── value1
 │   └── value2
-└── {Axis3} (boolean property)
-    ├── true
-    └── false
+├── {Axis3} (boolean property)
+│   ├── true
+│   └── false
+├── Show {slot} (BOOLEAN component property, default=false)
+└── {slot} (INSTANCE_SWAP component property)
 
 ## Behavioral Props (not in Figma)
 
@@ -238,7 +289,8 @@ Figma variant analysis complete: {ComponentName}
 - Code variants: {count from variants.md}
 - Visual groups: {count} (from {screenshot_count} screenshots)
 - Axes: {visual_count} visual, {behavioral_count} behavioral, {enabler_count} state enablers
-- Figma variant axes: {list}
-- Figma combinations: {count}
+- Component properties: {count} (BOOLEAN/INSTANCE_SWAP/TEXT — never multiply)
+- Figma variant axes: {list} (VARIANT-type only)
+- Figma combinations: {count} (VARIANT axes cross-product only — BOOLEANs excluded)
 - Output: .temp/react-to-figma/components/{Name}/figma-variants.md
 ```

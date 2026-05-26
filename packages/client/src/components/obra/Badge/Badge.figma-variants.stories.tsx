@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Badge } from './Badge';
-import { Check, AlertCircle, X } from 'lucide-react';
+import { Check, AlertCircle } from 'lucide-react';
 
 const meta = {
   title: 'Figma Variants/Badge',
@@ -13,133 +13,246 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/**
- * Primary variant with default roundness, no icons
- * Baseline configuration: variant=primary, roundness=default, state=default, icons=none
- */
-export const VariantPrimarySizeMdRoundDefault: Story = {
+// Dependent axis combinations (20 total)
+// variant × roundness × state
+
+// Primary variant, default roundness
+export const VariantPrimaryRoundnessDefaultStateDefault: Story = {
   args: {
     variant: 'primary',
     roundness: 'default',
-    children: 'Label',
+    children: 'Badge',
   },
 };
 
-/**
- * Primary variant with round (pill) shape, no icons
- * Tests roundness axis: variant=primary, roundness=round, state=default, icons=none
- */
-export const VariantPrimaryRoundShape: Story = {
+export const VariantPrimaryRoundnessDefaultStateFocus: Story = {
+  args: {
+    variant: 'primary',
+    roundness: 'default',
+    children: 'Badge',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.firstElementChild;
+    if (el) (el as HTMLElement).focus();
+  },
+};
+
+// Primary variant, round roundness
+export const VariantPrimaryRoundnessRoundStateDefault: Story = {
   args: {
     variant: 'primary',
     roundness: 'round',
-    children: 'Label',
+    children: 'Badge',
   },
 };
 
-/**
- * Secondary color variant with default settings
- * Tests variant axis: variant=secondary, roundness=default, state=default, icons=none
- */
-export const VariantSecondary: Story = {
+export const VariantPrimaryRoundnessRoundStateFocus: Story = {
+  args: {
+    variant: 'primary',
+    roundness: 'round',
+    children: 'Badge',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.firstElementChild;
+    if (el) (el as HTMLElement).focus();
+  },
+};
+
+// Secondary variant, default roundness
+export const VariantSecondaryRoundnessDefaultStateDefault: Story = {
   args: {
     variant: 'secondary',
     roundness: 'default',
-    children: 'Label',
+    children: 'Badge',
   },
 };
 
-/**
- * Outline variant with transparent background and border
- * Tests variant axis: variant=outline, roundness=default, state=default, icons=none
- */
-export const VariantOutline: Story = {
+export const VariantSecondaryRoundnessDefaultStateFocus: Story = {
+  args: {
+    variant: 'secondary',
+    roundness: 'default',
+    children: 'Badge',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.firstElementChild;
+    if (el) (el as HTMLElement).focus();
+  },
+};
+
+// Secondary variant, round roundness
+export const VariantSecondaryRoundnessRoundStateDefault: Story = {
+  args: {
+    variant: 'secondary',
+    roundness: 'round',
+    children: 'Badge',
+  },
+};
+
+export const VariantSecondaryRoundnessRoundStateFocus: Story = {
+  args: {
+    variant: 'secondary',
+    roundness: 'round',
+    children: 'Badge',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.firstElementChild;
+    if (el) (el as HTMLElement).focus();
+  },
+};
+
+// Outline variant, default roundness
+export const VariantOutlineRoundnessDefaultStateDefault: Story = {
   args: {
     variant: 'outline',
     roundness: 'default',
-    children: 'Label',
+    children: 'Badge',
   },
 };
 
-/**
- * Ghost variant with transparent background and text only
- * Tests variant axis: variant=ghost, roundness=default, state=default, icons=none
- */
-export const VariantGhost: Story = {
+export const VariantOutlineRoundnessDefaultStateFocus: Story = {
+  args: {
+    variant: 'outline',
+    roundness: 'default',
+    children: 'Badge',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.firstElementChild;
+    if (el) (el as HTMLElement).focus();
+  },
+};
+
+// Outline variant, round roundness
+export const VariantOutlineRoundnessRoundStateDefault: Story = {
+  args: {
+    variant: 'outline',
+    roundness: 'round',
+    children: 'Badge',
+  },
+};
+
+export const VariantOutlineRoundnessRoundStateFocus: Story = {
+  args: {
+    variant: 'outline',
+    roundness: 'round',
+    children: 'Badge',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.firstElementChild;
+    if (el) (el as HTMLElement).focus();
+  },
+};
+
+// Ghost variant, default roundness
+export const VariantGhostRoundnessDefaultStateDefault: Story = {
   args: {
     variant: 'ghost',
     roundness: 'default',
-    children: 'Label',
+    children: 'Badge',
   },
 };
 
-/**
- * Destructive variant with error colors
- * Tests variant axis: variant=destructive, roundness=default, state=default, icons=none
- */
-export const VariantDestructive: Story = {
+export const VariantGhostRoundnessDefaultStateFocus: Story = {
+  args: {
+    variant: 'ghost',
+    roundness: 'default',
+    children: 'Badge',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.firstElementChild;
+    if (el) (el as HTMLElement).focus();
+  },
+};
+
+// Ghost variant, round roundness
+export const VariantGhostRoundnessRoundStateDefault: Story = {
+  args: {
+    variant: 'ghost',
+    roundness: 'round',
+    children: 'Badge',
+  },
+};
+
+export const VariantGhostRoundnessRoundStateFocus: Story = {
+  args: {
+    variant: 'ghost',
+    roundness: 'round',
+    children: 'Badge',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.firstElementChild;
+    if (el) (el as HTMLElement).focus();
+  },
+};
+
+// Destructive variant, default roundness
+export const VariantDestructiveRoundnessDefaultStateDefault: Story = {
   args: {
     variant: 'destructive',
     roundness: 'default',
-    children: 'Label',
+    children: 'Badge',
   },
 };
 
-/**
- * Primary badge in default state with focus ring
- * Tests state axis: variant=primary, roundness=default, state=focus, icons=none
- */
-export const StateFocus: Story = {
+export const VariantDestructiveRoundnessDefaultStateFocus: Story = {
   args: {
-    variant: 'primary',
+    variant: 'destructive',
     roundness: 'default',
-    children: 'Label',
+    children: 'Badge',
   },
   play: async ({ canvasElement }) => {
-    const badge = canvasElement.querySelector('span');
-    if (badge) {
-      badge.setAttribute('tabindex', '0');
-      badge.focus();
-    }
+    const el = canvasElement.firstElementChild;
+    if (el) (el as HTMLElement).focus();
   },
 };
 
-/**
- * Primary badge with left icon only
- * Tests icon axis: variant=primary, roundness=default, state=default, icons=left
- */
+// Destructive variant, round roundness
+export const VariantDestructiveRoundnessRoundStateDefault: Story = {
+  args: {
+    variant: 'destructive',
+    roundness: 'round',
+    children: 'Badge',
+  },
+};
+
+export const VariantDestructiveRoundnessRoundStateFocus: Story = {
+  args: {
+    variant: 'destructive',
+    roundness: 'round',
+    children: 'Badge',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.firstElementChild;
+    if (el) (el as HTMLElement).focus();
+  },
+};
+
+// Independent axis combinations (3 total)
+// At default dependent values: variant=primary, roundness=default, state=default
+
 export const WithLeftIcon: Story = {
   args: {
     variant: 'primary',
     roundness: 'default',
-    children: 'Label',
+    children: 'Badge',
     iconLeft: <Check size={14} />,
   },
 };
 
-/**
- * Primary badge with right icon only
- * Tests icon axis: variant=primary, roundness=default, state=default, icons=right
- */
 export const WithRightIcon: Story = {
   args: {
     variant: 'primary',
     roundness: 'default',
-    children: 'Label',
+    children: 'Badge',
     iconRight: <AlertCircle size={14} />,
   },
 };
 
-/**
- * Primary badge with both left and right icons
- * Tests icon axis: variant=primary, roundness=default, state=default, icons=both
- */
 export const WithBothIcons: Story = {
   args: {
     variant: 'primary',
     roundness: 'default',
-    children: 'Label',
+    children: 'Badge',
     iconLeft: <Check size={14} />,
-    iconRight: <X size={14} />,
+    iconRight: <AlertCircle size={14} />,
   },
 };

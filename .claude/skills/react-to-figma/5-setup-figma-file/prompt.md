@@ -18,6 +18,7 @@ Create the Figma file structure, variable collections, and icon/asset components
 | `.temp/react-to-figma/figma-variables-map.json` | CSS var/class → Figma variable ID lookup |
 | `.temp/react-to-figma/figma-icons-map.json` | Icon name → Figma component node ID lookup |
 | `.temp/react-to-figma/figma-assets-map.json` | Asset name → Figma component node ID lookup |
+| `.temp/react-to-figma/figma-file-setup.json` | Machine-readable map of page and container frame node IDs |
 | `.temp/react-to-figma/figma-file-setup.md` | Human-readable summary of what was created |
 
 ## Prerequisites
@@ -40,6 +41,42 @@ Using the `use_figma` MCP tool, create the following pages in the Figma file (sk
 | **Screens** | Where Phase 7 composes full page frames |
 
 Check existing pages first. If pages already exist with these names, reuse them. Do not create duplicates.
+
+### Step 1b: Create container frames
+
+After creating (or locating) the pages, create a **WRAP auto-layout container frame** on the **Components** and **Screens** pages. These frames auto-position child elements so component sets and screen frames arrange in rows without manual x/y coordinates.
+
+For each of the **Components** and **Screens** pages:
+
+1. Check if a child frame named `_Components` (or `_Screens`) already exists. If so, reuse it.
+2. If not, create a frame and configure it:
+
+```javascript
+const page = figma.getNodeById(componentsPageId);
+const container = figma.createFrame();
+container.name = '_Components';
+
+container.layoutMode = 'HORIZONTAL';
+container.layoutWrap = 'WRAP';
+container.itemSpacing = 60;
+container.counterAxisSpacing = 80;
+container.paddingTop = 40;
+container.paddingBottom = 40;
+container.paddingLeft = 40;
+container.paddingRight = 40;
+
+container.resize(4000, container.height);
+container.primaryAxisSizingMode = 'FIXED';
+container.counterAxisSizingMode = 'AUTO';
+
+container.fills = [];
+
+page.appendChild(container);
+```
+
+The `_Screens` container uses the same pattern but with `container.name = '_Screens'`.
+
+Record the node IDs of both container frames for the output map.
 
 ### Step 2: Create variable collections
 
@@ -143,7 +180,25 @@ This step is nice-to-have. If context is getting large, skip it and note it in t
 
 ### Step 6: Write summary
 
-Write `.temp/react-to-figma/figma-file-setup.md`:
+Write `.temp/react-to-figma/figma-file-setup.json` (machine-readable, used by Phase 6 orchestrator):
+
+```json
+{
+  "fileKey": "{fileKey}",
+  "pages": {
+    "foundations": "{foundationsPageId}",
+    "icons": "{iconsPageId}",
+    "components": "{componentsPageId}",
+    "screens": "{screensPageId}"
+  },
+  "containerFrames": {
+    "componentsFrameId": "{componentsContainerNodeId}",
+    "screensFrameId": "{screensContainerNodeId}"
+  }
+}
+```
+
+Then write `.temp/react-to-figma/figma-file-setup.md`:
 
 ```markdown
 # Figma File Setup
@@ -156,6 +211,10 @@ Write `.temp/react-to-figma/figma-file-setup.md`:
 - Icons: {created | already existed}
 - Components: {created | already existed}
 - Screens: {created | already existed}
+
+## Container Frames
+- _Components: {nodeId} ({created | already existed})
+- _Screens: {nodeId} ({created | already existed})
 
 ## Variable Collections
 - Palette: {count} variables created
@@ -171,6 +230,7 @@ Write `.temp/react-to-figma/figma-file-setup.md`:
 - Non-SVG assets (manual import needed): {list}
 
 ## Output Files
+- figma-file-setup.json: page IDs + container frame IDs
 - figma-variables-map.json: {entryCount} entries
 - figma-icons-map.json: {entryCount} entries
 - figma-assets-map.json: {entryCount} entries
@@ -185,7 +245,7 @@ Before creating any item, check if it already exists:
 
 If items already exist, reuse their IDs for the output maps. Do not create duplicates.
 
-If all output files already exist (`figma-variables-map.json`, `figma-icons-map.json`, `figma-assets-map.json`), report that setup is already complete and skip.
+If all output files already exist (`figma-variables-map.json`, `figma-icons-map.json`, `figma-assets-map.json`, `figma-file-setup.json`), report that setup is already complete and skip.
 
 ## Error Handling
 

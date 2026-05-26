@@ -85,6 +85,12 @@ export interface BaseEditableProps<T> {
    * Defaults to true.
    */
   showSavingState?: boolean;
+
+  // === Story-Only Overrides (for Storybook variant screenshots) ===
+  /** @internal Story-only override — do not use in production */
+  __storyState?: 'rest' | 'interest' | 'edit' | 'saving';
+  /** @internal Story-only override — do not use in production */
+  __storyError?: string | null;
 }
 
 /**

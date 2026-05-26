@@ -1,4 +1,9 @@
-# Fix Default Variant
+# 6 Get Component Context and Implement in Figma
+## 6.2 Implement in Figma
+### 6.2.1 Implement First Variant
+#### 6.2.1.4 Fix Default Variant
+
+**Begin your response by outputting the heading lines above verbatim.**
 
 Apply targeted fixes to a Figma component based on verification results. This agent has **fresh context** — it never saw the original build. It diagnoses purely from verification data and applies fixes via `use_figma`.
 

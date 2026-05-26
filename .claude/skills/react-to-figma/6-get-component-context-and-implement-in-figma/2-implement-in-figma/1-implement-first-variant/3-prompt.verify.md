@@ -1,6 +1,11 @@
-# Verify Default Variant
+# 6 Get Component Context and Implement in Figma
+## 6.2 Implement in Figma
+### 6.2.1 Implement First Variant
+#### 6.2.1.3 Verify Default Variant
 
-Screenshot the built Figma component and compare it against the React reference screenshot. Determine if the component is visually correct.
+**Begin your response by outputting the heading lines above verbatim.**
+
+Screenshot the built Figma component, run a pixel diff against the React reference, then analyze all three images together to identify exactly what is different.
 
 ## Inputs
 
@@ -10,6 +15,7 @@ Screenshot the built Figma component and compare it against the React reference 
 | `screenshots/{defaultScreenshot}` | React reference PNG for the default variant |
 | `analysis.md` | Expected children list and component structure |
 | `builtComponents` | Map of `{componentName: nodeId}` for child components |
+| `componentDir` | Path to the component's `.temp/react-to-figma/components/{Name}/` directory |
 | `fileKey` | Figma file key |
 
 ## Output
@@ -22,108 +28,126 @@ Write `default-variant/verification.md` to the component directory.
 
 Read `default-variant/figma-result.md` → get the node ID.
 
-Use `get_screenshot` or `get_design_context` MCP tool to capture the Figma component:
+Use the Figma MCP `get_screenshot` tool to capture the Figma component:
 - `fileKey`: from input
 - `nodeId`: from figma-result.md
 - Get the screenshot at 2x scale
 
-### 2. View both screenshots
+The `get_screenshot` response includes an asset URL (e.g. `https://www.figma.com/api/mcp/asset/{id}`). Download it to disk:
 
-View the React reference screenshot and the Figma screenshot side-by-side (sequentially if tools don't support side-by-side).
+```bash
+curl -s -o "{componentDir}/default-variant/figma.png" "{assetUrl}"
+```
 
-### 3. Compare visual characteristics
+### 2. Check text content
 
-Check each category:
+Read `screenshots/{defaultScreenshot}.html.md` (the `.html.md` file matching the screenshot name, without the `.png` extension). Extract all text content from the HTML structure.
 
-**Layout & Spacing**:
-- Overall dimensions proportional to React reference?
-- Spacing between children matches?
-- Padding inside the container matches?
-- Flex direction correct?
+Use `use_figma` to read the Figma component's text nodes:
 
-**Colors & Fills**:
-- Background color correct?
-- Border/stroke color present and correct?
-- Text colors match?
-- No unintended white/black backgrounds?
+```javascript
+const node = figma.getNodeById('{nodeId}');
+const textNodes = node.findAll(n => n.type === 'TEXT');
+return JSON.stringify(textNodes.map(t => ({ name: t.name, characters: t.characters })));
+```
 
-**Typography**:
-- Font sizes proportionally correct?
-- Font weights match (bold vs regular vs medium)?
-- Text content matches?
-- Line heights not collapsed?
+Compare: for each text node in the React HTML, there should be a matching Figma text node with the same content. Record mismatches (e.g., Figma has "Label" but React has "Error").
 
-**Children & Instances**:
-- All expected children from `analysis.md` present?
-- Children in correct order?
-- Instance text overrides showing correct text?
-- Icons correct size and color?
+### 3. Run pixel diff
 
-**Sizing**:
-- Component not 0×0 or collapsed?
-- No HUG+FILL collapse issues (check if children are properly sized)?
-- Rectangles/dividers properly stretched?
+Run `compare.js` from the scripts directory with the React reference and Figma screenshot:
 
-### 4. Instance integrity check
+```bash
+node .claude/skills/react-to-figma/6-get-component-context-and-implement-in-figma/2-implement-in-figma/scripts/compare.js \
+  "{componentDir}/screenshots/{defaultScreenshot}" \
+  "{componentDir}/default-variant/figma.png" \
+  "{componentDir}/default-variant/diff"
+```
+
+This writes:
+- `default-variant/diff/diff.png` — red pixels highlight every difference
+- `default-variant/diff/comparison.json` — match %, border match %, verdict
+- `default-variant/diff/source-a.png` — copy of React reference
+- `default-variant/diff/source-b.png` — copy of Figma result
+
+Read `comparison.json` to get the pixel-level stats.
+
+### 4. Analyze all three images together
+
+View all three images:
+1. `screenshots/{defaultScreenshot}` — React reference
+2. `default-variant/figma.png` — Figma result
+3. `default-variant/diff/diff.png` — Pixel diff (red = different)
+
+Use the diff image as a guide: red regions tell you exactly **where** differences are. Then inspect the React reference and Figma result images at those regions to understand **what** is different.
+
+For each red region in the diff, identify:
+- Which visual element is it? (background, border, text, icon, spacing gap, shadow...)
+- What does the React reference show at that region? (color, shape, content)
+- What does the Figma result show instead?
+- Which Figma node is responsible? (from `analysis.md` children list or `figma-result.md`)
+
+### 5. Instance integrity check
 
 For each entry in `figma-result.md` instance manifest:
-1. Use `use_figma` to verify the instance still exists and points to the correct master:
-   ```javascript
-   const node = figma.getNodeById('{instanceNodeId}');
-   return JSON.stringify({
-     type: node.type,
-     masterComponentId: node.type === 'INSTANCE' ? node.mainComponent.id : null,
-     visible: node.visible,
-     width: node.width,
-     height: node.height
-   });
-   ```
-2. Compare master ID against `builtComponents` — should match
+```javascript
+const node = figma.getNodeById('{instanceNodeId}');
+return JSON.stringify({
+  type: node.type,
+  masterComponentId: node.type === 'INSTANCE' ? node.mainComponent.id : null,
+  visible: node.visible,
+  width: node.width,
+  height: node.height
+});
+```
+Compare master ID against `builtComponents` — should match.
 
-### 5. Write verification.md
+### 6. Write verification.md
 
 ```markdown
 # Verification: {componentName} (default variant)
 
 ## Verdict: {PASS | PARTIAL | FAIL}
 
-## Summary
+## Pixel Diff Stats
 
-{1-2 sentence summary of overall comparison}
+| Metric | Value |
+|--------|-------|
+| Overall match | {matchPct}% |
+| Border match | {borderMatchPct}% |
+| Diff pixels | {diffPixels} / {totalPixels} |
+| Script verdict | {verdict} |
 
-## Category Scores
+## Differences Found
 
-| Category | Status | Notes |
-|----------|--------|-------|
-| Layout & Spacing | {PASS/FAIL} | {what's wrong if FAIL} |
-| Colors & Fills | {PASS/FAIL} | {what's wrong if FAIL} |
-| Typography | {PASS/FAIL} | {what's wrong if FAIL} |
-| Children & Instances | {PASS/FAIL} | {what's wrong if FAIL} |
-| Sizing | {PASS/FAIL} | {what's wrong if FAIL} |
-| Instance Integrity | {PASS/FAIL} | {what's wrong if FAIL} |
+{Describe each difference identified from the three-image analysis. Be specific.}
 
-## Issues Found
+### Difference 1: {short title, e.g. "Background color wrong"}
+- **Where**: {region in the image — e.g., "entire background", "left border stripe", "icon area"}
+- **Figma node**: {node name or ID from analysis.md / figma-result.md}
+- **Expected** (React): {exact description — color hex, text content, size, shape}
+- **Actual** (Figma): {what Figma is rendering instead}
+- **Fix**: {specific actionable instruction — e.g., "Set fills[0] to variable VariableID:5:30" or "Set layoutMode to HORIZONTAL"}
 
-{Only if PARTIAL or FAIL}
+### Difference 2: ...
 
-### Issue 1: {title}
-- **Node ID**: {id of the problematic node}
-- **Expected**: {what it should look like / value}
-- **Actual**: {what it looks like / value}
-- **Fix**: {specific actionable instruction — e.g., "Set fills[0] to variable VariableID:5:30" or "Change layoutMode to HORIZONTAL"}
+## Instance Integrity
 
-### Issue 2: ...
+| Instance | Master ID | Status |
+|----------|-----------|--------|
+| {instanceName} | {masterComponentId} | {OK / WRONG_MASTER / MISSING} |
 
-## Screenshots
+## Images
 
-- **React reference**: screenshots/{filename}
-- **Figma result**: {describe what was captured}
+- React reference: `screenshots/{filename}`
+- Figma result: `default-variant/figma.png`
+- Pixel diff: `default-variant/diff/diff.png`
 ```
 
 ## Verdict Rules
 
 | Verdict | Criteria |
 |---------|----------|
-| **PASS** | All categories pass. Minor pixel-level differences acceptable (±2px, slight color difference from variable binding). |
-| **PARTIAL** | 1-2 categories fail with fixable issues (wrong color, missing text override, sizing off). No structural problems. |
-| **FAIL** | 3+ categories fail, OR structural issue (missing children, wrong layout direction, component is empty/collapsed). |
+| **PASS** | No meaningful differences. Minor pixel-level noise acceptable (±2px anti-aliasing, slight color shift from variable binding). match% ≥ 90. |
+| **PARTIAL** | 1-2 fixable differences (wrong color, missing text override, sizing off by >4px). No structural problems. match% ≥ 75. |
+| **FAIL** | 3+ differences, OR any structural issue (missing children, wrong layout direction, component is empty/collapsed, wrong component instanced). match% < 75. |
