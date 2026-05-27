@@ -14,6 +14,12 @@ const path = require('path');
 const { chromium } = require('playwright');
 const https = require('https');
 const http = require('http');
+const {
+  buildFiberDomMap,
+  captureDomStructure,
+  captureFiberData,
+  capturePortalContent,
+} = require('./capture-dom-core');
 
 async function fetchUrl(url) {
   return new Promise((resolve, reject) => {
@@ -43,10 +49,20 @@ async function main() {
   const storybookUrl = extractArg(args, '--storybook-url') || 'http://localhost:6006';
   const outputDir = extractArg(args, '--output-dir');
   const storiesFile = extractArg(args, '--stories-file');
+  const captureBaseline = args.includes('--capture-baseline');
+  const baselineFile = extractArg(args, '--baseline');
 
   if (!componentName || !outputDir) {
-    console.error('Usage: node capture-dom.js --component NAME --output-dir PATH [--storybook-url URL] [--stories-file PATH]');
+    console.error('Usage: node capture-dom.js --component NAME --output-dir PATH [--storybook-url URL] [--stories-file PATH] [--capture-baseline] [--baseline PATH]');
     process.exit(1);
+  }
+
+  // Load baseline fingerprints if provided
+  let baselineFingerprints = null;
+  if (baselineFile && fs.existsSync(baselineFile)) {
+    const baseline = JSON.parse(fs.readFileSync(baselineFile, 'utf-8'));
+    baselineFingerprints = new Set(baseline.fingerprints);
+    console.log(`📋 Loaded ${baselineFingerprints.size} baseline fingerprint(s) from ${baselineFile}`);
   }
 
   const variantsDir = outputDir.replace('/screenshots$', '/variants');
@@ -97,6 +113,49 @@ async function main() {
   // Launch browser
   const browser = await chromium.launch();
 
+  // ── Baseline capture mode ─────────────────────────────────────────────
+  if (captureBaseline) {
+    console.log('📋 Capturing baseline fingerprints...');
+    const page = await browser.newPage();
+    await page.setViewportSize({ width: 1280, height: 800 });
+
+    const baselineStoryId = stories[0]?.id || `figma-variants-${componentName.toLowerCase()}--blank`;
+    const storyUrl = `${storybookUrl}/iframe.html?id=${baselineStoryId}`;
+    await page.goto(storyUrl, { waitUntil: 'networkidle' });
+    await page.waitForSelector('#storybook-root', { timeout: 5000 }).catch(() => null);
+
+    const fingerprints = await page.evaluate(() => {
+      const fps = [];
+      for (const child of document.body.children) {
+        const tag = child.tagName.toLowerCase();
+        if (child.id === 'storybook-root') continue;
+        if (['script', 'style', 'link'].includes(tag)) continue;
+        const classes = child.classList.length
+          ? '.' + [...child.classList].sort().join('.')
+          : '';
+        fps.push(tag + classes);
+      }
+      return fps;
+    });
+
+    await page.close();
+
+    const baselineOutput = path.join(path.dirname(variantsDir), 'baseline-body.json');
+    const baselineData = {
+      fingerprints,
+      timestamp: new Date().toISOString(),
+      storybookUrl
+    };
+    fs.writeFileSync(baselineOutput, JSON.stringify(baselineData, null, 2));
+
+    console.log(`✅ Baseline captured: ${fingerprints.length} fingerprint(s)`);
+    fingerprints.forEach(fp => console.log(`   ${fp}`));
+    console.log(`📄 Output: ${baselineOutput}\n`);
+
+    await browser.close();
+    process.exit(0);
+  }
+
   const manifest = {
     component: componentName,
     timestamp: new Date().toISOString(),
@@ -123,345 +182,46 @@ async function main() {
       // Wait for component to render
       await page.waitForSelector('[role="main"], .sb-show-main, .docs-story', { timeout: 5000 }).catch(() => null);
       
-      // Extract React Fiber data
-      const fiberData = await page.evaluate(() => {
-        // Find the React root element
-        // For Storybook: prioritize the actual component inside #storybook-root, NOT the body
-        let rootElement = null;
-        
-        // Strategy 1: Storybook - get component inside #storybook-root
-        const storyRoot = document.querySelector('#storybook-root');
-        if (storyRoot && storyRoot.children.length > 0) {
-          rootElement = storyRoot.children[0];
-        }
-        
-        // Strategy 2: Standard React mount points
-        if (!rootElement) {
-          const selectors = [
-            '[data-reactroot]',
-            '#root',
-            '.docs-story'
-          ];
-          
-          for (const selector of selectors) {
-            const el = document.querySelector(selector);
-            if (el && el.tagName !== 'BODY') {
-              rootElement = el;
-              break;
-            }
-          }
-        }
-        
-        if (!rootElement) return [];
+      // Check for Storybook error display before capturing
+      const storybookError = await page.evaluate(() => {
+        const errorDisplay = document.querySelector('.sb-errordisplay, #error-message');
+        const bodyHasError = document.body.classList.contains('sb-show-errordisplay');
 
-        // Try to access React Fiber from multiple possible keys
-        let fiber = null;
-        let fiberKey = null;
-        
-        // Method 1: Direct fiber key on element
-        const keys = Object.keys(rootElement).filter(key => key.startsWith('__'));
-        for (const key of keys) {
-          const value = rootElement[key];
-          if (value && typeof value === 'object' && (value._owner || value.memoizedProps || value.child)) {
-            fiberKey = key;
-            fiber = value;
-            break;
-          }
-        }
-        
-        // Method 2: Search for fiber in element's property chain
-        if (!fiber && rootElement._reactRootContainer) {
-          fiber = rootElement._reactRootContainer._internalRoot.current;
-        }
-        
-        // Method 3: Look for React DevTools hook
-        if (!fiber && window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
-          const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-          if (hook.getFiber) {
-            fiber = hook.getFiber(rootElement);
-          }
-        }
-        
-        // If still no fiber, try all children
-        if (!fiber && rootElement.children.length > 0) {
-          for (const child of rootElement.children) {
-            const childKeys = Object.keys(child).filter(key => key.startsWith('__'));
-            for (const key of childKeys) {
-              const value = child[key];
-              if (value && typeof value === 'object' && (value._owner || value.memoizedProps || value.child)) {
-                fiber = value;
-                break;
-              }
-            }
-            if (fiber) break;
-          }
-        }
-        
-        if (!fiber) return [];
-
-        // Traverse Fiber tree and extract component instances
-        const components = [];
-        const visited = new Set();
-        let rtfIdCounter = 0;
-
-        function traverseFiber(f, depth = 0) {
-          if (!f || visited.has(f) || depth > 20) return;
-          visited.add(f);
-
-          // Store both component-level and DOM element fibers with useful data
-          if (f.type) {
-            let name = 'Unknown';
-            let elementType = 'Element';
-            
-            if (typeof f.type === 'function') {
-              name = f.type.name || f.type.displayName || 'Component';
-              elementType = 'Component';
-            } else if (typeof f.type === 'string') {
-              elementType = f.type.toUpperCase();
-              name = f.type;
-            }
-            
-            const domNode = f.stateNode;
-            if (domNode && domNode.getBoundingClientRect && domNode.nodeType === 1) {
-              const rect = domNode.getBoundingClientRect();
-              const styles = window.getComputedStyle(domNode);
-
-              // Tag DOM elements with React component names for icon resolution
-              // PascalCase names = React components (Check, X, Loader2, etc.)
-              if (elementType === 'Component' && /^[A-Z]/.test(name) && !domNode.getAttribute('data-rtf-component')) {
-                const rtfId = 'rtf-dom-' + (rtfIdCounter++);
-                domNode.setAttribute('data-rtf-component', name);
-                domNode.setAttribute('data-rtf-id', rtfId);
-              }
-
-              components.push({
-                name,
-                type: elementType,
-                tag: f.type.toString ? f.type : elementType,
-                props: f.memoizedProps ? Object.keys(f.memoizedProps) : [],
-                bounds: {
-                  x: Math.round(rect.x),
-                  y: Math.round(rect.y),
-                  width: Math.round(rect.width),
-                  height: Math.round(rect.height)
-                },
-                styles: {
-                  'display': styles.display,
-                  'position': styles.position,
-                  'background-color': styles.backgroundColor,
-                  'color': styles.color,
-                  'font-size': styles.fontSize,
-                  'flex-direction': styles.flexDirection,
-                  'align-items': styles.alignItems,
-                  'justify-content': styles.justifyContent,
-                  'gap': styles.gap
-                }
-              });
-            }
-          }
-
-          // Traverse child fibers
-          if (f.child) traverseFiber(f.child, depth + 1);
-          if (f.sibling) traverseFiber(f.sibling, depth);
-        }
-
-        traverseFiber(fiber);
-        return components.length > 0 ? components : [];
-      });
-
-      // Extract DOM structure and styles
-      const domStructure = await page.evaluate(() => {
-        // Look for the main component container
-        // For Storybook: prioritize #storybook-root > first child (the actual component)
-        // NOT the body/iframe wrapper
-        let main = null;
-        
-        // Strategy 1: Storybook - get the actual component inside #storybook-root
-        const storyRoot = document.querySelector('#storybook-root');
-        if (storyRoot && storyRoot.children.length > 0) {
-          main = storyRoot.children[0];
-        }
-        
-        // Strategy 2: Standard React mount points
-        if (!main) {
-          const selectors = [
-            '[data-reactroot]',
-            '#root',
-            '.docs-story',
-            'body > div:not(.sb-preparing-story):not(.sb-wrapper)'
-          ];
-          
-          for (const selector of selectors) {
-            const el = document.querySelector(selector);
-            if (el && el.offsetHeight > 0 && el.tagName !== 'BODY') {
-              main = el;
-              break;
-            }
-          }
-        }
-        
-        if (!main) main = document.body;
-
-        function getElement(el, depth = 0) {
-          if (depth > 15) return null; // Limit depth
-
-          // Skip display:none elements
-          const styles = window.getComputedStyle(el);
-          if (styles.display === 'none' || styles.visibility === 'hidden') {
-            return null;
-          }
-
+        // Storybook keeps a hidden error container in the iframe template.
+        // Only treat it as a real error when the element is visible.
+        const isVisible = (el) => {
+          if (!el) return false;
+          const style = window.getComputedStyle(el);
           const rect = el.getBoundingClientRect();
-          
-          // Skip elements with zero size (unless they're container-type)
-          if (rect.width === 0 && rect.height === 0 && el.children.length === 0) {
-            return null;
-          }
+          return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+        };
 
-          const children = [];
-          for (const child of Array.from(el.childNodes).slice(0, 30)) {
-            if (child.nodeType === 3) {
-              const text = child.textContent.trim();
-              if (text) children.push({ type: 'TEXT_NODE', text: text.substring(0, 200) });
-            } else if (child.nodeType === 1) {
-              const mapped = getElement(child, depth + 1);
-              if (mapped) children.push(mapped);
-            }
-          }
-
-          // Capture SVG-specific attributes (d, viewBox, fill, etc.)
-          const tagLower = el.tagName.toLowerCase();
-          const svgAttrMap = {
-            svg: ['viewBox', 'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin'],
-            path: ['d'],
-            circle: ['cx', 'cy', 'r'],
-            line: ['x1', 'y1', 'x2', 'y2'],
-            rect: ['x', 'y', 'width', 'height', 'rx', 'ry'],
-            polyline: ['points'],
-            polygon: ['points']
-          };
-          const svgAttrsToCapture = svgAttrMap[tagLower];
-          const svgAttrs = {};
-          if (svgAttrsToCapture) {
-            for (const attr of svgAttrsToCapture) {
-              const val = el.getAttribute(attr);
-              if (val) svgAttrs[attr] = val;
-            }
-          }
-
-          // Handle SVG className (SVGAnimatedString serializes as {} — use baseVal)
-          const rawClassName = el.className;
-          const classNameStr = typeof rawClassName === 'string'
-            ? rawClassName
-            : (rawClassName && rawClassName.baseVal ? rawClassName.baseVal : '');
-
-          // Capture data-rtf-component from fiber walker
-          const rtfComponent = el.getAttribute('data-rtf-component');
-          const rtfId = el.getAttribute('data-rtf-id');
-
-          return {
-            type: 'ELEMENT',
-            tag: tagLower,
-            id: el.id || undefined,
-            className: classNameStr || undefined,
-            attrs: Object.keys(svgAttrs).length > 0 ? svgAttrs : undefined,
-            'data-rtf-component': rtfComponent || undefined,
-            'data-rtf-id': rtfId || undefined,
-            role: el.getAttribute('role') || undefined,
-            dataState: el.getAttribute('data-state') || undefined,
-            aria: Object.fromEntries(
-              Array.from(el.attributes)
-                .filter(a => a.name.startsWith('aria-'))
-                .map(a => [a.name, a.value])
-            ),
-            text: el.childNodes.length === 1 && el.childNodes[0].nodeType === 3
-              ? el.textContent.trim().substring(0, 200)
-              : (children.length === 0 && el.textContent.trim() ? el.textContent.trim().substring(0, 200) : null),
-            bounds: {
-              x: Math.round(rect.x),
-              y: Math.round(rect.y),
-              width: Math.round(rect.width),
-              height: Math.round(rect.height)
-            },
-            styles: {
-              'display': styles.display,
-              'position': styles.position,
-              'visibility': styles.visibility,
-              'opacity': styles.opacity,
-              'pointer-events': styles.pointerEvents,
-              'overflow-x': styles.overflowX,
-              'overflow-y': styles.overflowY,
-
-              'flex-direction': styles.flexDirection,
-              'flex-wrap': styles.flexWrap,
-              'flex-grow': styles.flexGrow,
-              'flex-shrink': styles.flexShrink,
-              'flex-basis': styles.flexBasis,
-              'align-items': styles.alignItems,
-              'align-self': styles.alignSelf,
-              'justify-content': styles.justifyContent,
-              'gap': styles.gap,
-              'row-gap': styles.rowGap,
-              'column-gap': styles.columnGap,
-
-              'width': styles.width,
-              'height': styles.height,
-              'min-width': styles.minWidth,
-              'max-width': styles.maxWidth,
-              'min-height': styles.minHeight,
-              'max-height': styles.maxHeight,
-
-              'padding-top': styles.paddingTop,
-              'padding-right': styles.paddingRight,
-              'padding-bottom': styles.paddingBottom,
-              'padding-left': styles.paddingLeft,
-              'margin': styles.margin,
-
-              'background-color': styles.backgroundColor,
-              'color': styles.color,
-
-              'font-family': styles.fontFamily,
-              'font-size': styles.fontSize,
-              'font-weight': styles.fontWeight,
-              'font-style': styles.fontStyle,
-              'line-height': styles.lineHeight,
-              'letter-spacing': styles.letterSpacing,
-              'text-align': styles.textAlign,
-              'text-decoration': styles.textDecoration,
-              'text-overflow': styles.textOverflow,
-              'white-space': styles.whiteSpace,
-
-              'border-top-width': styles.borderTopWidth,
-              'border-right-width': styles.borderRightWidth,
-              'border-bottom-width': styles.borderBottomWidth,
-              'border-left-width': styles.borderLeftWidth,
-              'border-top-color': styles.borderTopColor,
-              'border-right-color': styles.borderRightColor,
-              'border-bottom-color': styles.borderBottomColor,
-              'border-left-color': styles.borderLeftColor,
-              'border-top-left-radius': styles.borderTopLeftRadius,
-              'border-top-right-radius': styles.borderTopRightRadius,
-              'border-bottom-right-radius': styles.borderBottomRightRadius,
-              'border-bottom-left-radius': styles.borderBottomLeftRadius,
-
-              'box-shadow': styles.boxShadow
-            },
-            children: children.length > 0 ? children : undefined
-          };
+        if (bodyHasError || isVisible(errorDisplay)) {
+          const text = (errorDisplay || document.body).textContent || '';
+          return text.trim().slice(0, 300);
         }
-
-        return getElement(main);
+        return null;
       });
 
-      // Generate fiber-DOM mapping
-      const fiberDomMap = fiberData && fiberData.length > 0
-        ? fiberData.map((comp, idx) => ({
-            index: idx,
-            component: comp.name,
-            bounds: comp.bounds,
-            type: comp.type
-          }))
-        : [];
+      if (storybookError) {
+        await page.close();
+        const reason = `Storybook error: ${storybookError.split('\n')[0]}`;
+        console.error(`❌ ${story.exportName} — ${reason}`);
+        manifest.failed.push({
+          exportName: story.exportName,
+          error: reason,
+          timestamp: new Date().toISOString()
+        });
+        continue;
+      }
+
+      const fiberData = await captureFiberData(page, { rootSelector: '#storybook-root > *' });
+      const domStructure = await captureDomStructure(page, { rootSelector: '#storybook-root > *' });
+      const baselineFPs = baselineFingerprints ? [...baselineFingerprints] : [];
+      const portalContent = await capturePortalContent(page, baselineFPs, {
+        excludeRootSelectors: ['#storybook-root'],
+      });
+      const fiberDomMap = buildFiberDomMap(fiberData);
 
       // Capture screenshot
       const variantDir = path.join(variantsDir, story.exportName);
@@ -475,6 +235,7 @@ async function main() {
       // Save DOM data - use domStructure as primary data with fiberData as enrichment
       const domData = {
         structure: domStructure,
+        portalContent: portalContent.length > 0 ? portalContent : undefined,
         fibers: fiberData && fiberData.length > 0 ? fiberData : null,
         timestamp: new Date().toISOString(),
         viewport: { width: 1280, height: 800 }
@@ -492,13 +253,45 @@ async function main() {
 
       await page.close();
 
-      manifest.captured.push({
-        exportName: story.exportName,
-        variant: story.exportName,
-        timestamp: new Date().toISOString()
-      });
+      const domChildCount = countChildren(domStructure);
+      const screenshotBytes = fs.statSync(screenshotPath).size;
+      const quality = validateCaptureQuality(domChildCount, screenshotBytes, domStructure);
 
-      console.log(`✅ ${story.exportName}`);
+      if (quality.status === 'failed') {
+        console.error(`❌ ${story.exportName} — ${quality.reason}`);
+        fs.rmSync(path.join(variantDir, 'dom.json'), { force: true });
+        fs.rmSync(path.join(variantDir, 'fiber-dom-map.json'), { force: true });
+        fs.rmSync(screenshotPath, { force: true });
+        manifest.failed.push({
+          exportName: story.exportName,
+          error: quality.reason,
+          domChildCount,
+          screenshotBytes,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        const warning = quality.warning || undefined;
+        const parts = [];
+        parts.push(`${domChildCount} children`);
+        parts.push(`${formatBytes(screenshotBytes)} screenshot`);
+        if (portalContent.length > 0) parts.push(`${portalContent.length} portal(s)`);
+
+        if (warning) {
+          console.log(`⚠️  ${story.exportName} (${parts.join(', ')}) — warning: ${warning}`);
+        } else {
+          console.log(`✅ ${story.exportName} (${parts.join(', ')})`);
+        }
+
+        manifest.captured.push({
+          exportName: story.exportName,
+          variant: story.exportName,
+          portalNodes: portalContent.length,
+          domChildCount,
+          screenshotBytes,
+          warning,
+          timestamp: new Date().toISOString()
+        });
+      }
     } catch (err) {
       console.error(`❌ ${story.exportName}: ${err.message}`);
       manifest.failed.push({
@@ -512,9 +305,10 @@ async function main() {
   // Save manifest
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
 
-  console.log(`\n✅ Capture complete!`);
-  console.log(`📊 Results:`);
+  const warningCount = manifest.captured.filter(c => c.warning).length;
+  console.log(`\n📊 Capture complete: ${componentName}`);
   console.log(`   Captured: ${manifest.captured.length}/${manifest.total}`);
+  if (warningCount > 0) console.log(`   Warnings: ${warningCount}`);
   console.log(`   Failed: ${manifest.failed.length}`);
   console.log(`   Output: ${variantsDir}`);
   console.log(`   Manifest: ${manifestPath}\n`);
@@ -522,6 +316,36 @@ async function main() {
   await browser.close();
 
   process.exit(manifest.failed.length > 0 ? 1 : 0);
+}
+
+function countChildren(domStructure) {
+  if (!domStructure) return 0;
+  const children = domStructure.children || [];
+  return children.length;
+}
+
+function validateCaptureQuality(domChildCount, screenshotBytes, domStructure) {
+  if (domChildCount === 0) {
+    return { status: 'failed', reason: 'empty content (0 DOM children)' };
+  }
+  if (domStructure && domStructure.className && /sb-errordisplay|sb-show-errordisplay/.test(domStructure.className)) {
+    return { status: 'failed', reason: 'captured Storybook error display instead of component' };
+  }
+  if (domStructure && domStructure.children) {
+    const firstChild = domStructure.children[0];
+    if (firstChild && firstChild.className && /sb-errordisplay/.test(firstChild.className)) {
+      return { status: 'failed', reason: 'captured Storybook error display instead of component' };
+    }
+  }
+  if (screenshotBytes < 1024) {
+    return { status: 'ok', warning: 'small screenshot (<1KB)' };
+  }
+  return { status: 'ok' };
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return `${bytes}B`;
+  return `${Math.round(bytes / 1024)}KB`;
 }
 
 function extractArg(args, flag) {

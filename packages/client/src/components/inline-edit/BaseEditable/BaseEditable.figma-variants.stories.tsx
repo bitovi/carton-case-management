@@ -13,15 +13,13 @@ const meta = {
   decorators: [],
   parameters: {
     layout: 'centered',
+    chromatic: { disableSnapshot: true },
   },
 } satisfies Meta<typeof BaseEditable>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/**
- * Edit mode component - proper React component that can use hooks
- */
 function EditModeInput({
   value,
   onSave,
@@ -72,15 +70,10 @@ const renderEditMode = (props: RenderEditModeProps<string>) => (
   <EditModeInput {...props} />
 );
 
-/**
- * DEPENDENT VARIANT AXES (5 stories)
- * Combinations of State × Readonly at their base values
- */
+const defaultOnSave = async () => {
+  await new Promise((resolve) => globalThis.setTimeout(resolve, 500));
+};
 
-/**
- * Variant 1: state=rest, readonly=false
- * Default display state (interactive, no background)
- */
 export const StateRestReadonlyFalse: Story = {
   args: {
     label: 'Field label',
@@ -90,16 +83,10 @@ export const StateRestReadonlyFalse: Story = {
     __storyState: 'rest',
     __storyError: null,
     renderEditMode: renderEditMode,
-    onSave: async () => {
-      await new Promise((resolve) => globalThis.setTimeout(resolve, 500));
-    },
+    onSave: defaultOnSave,
   },
 };
 
-/**
- * Variant 2: state=interest, readonly=false
- * Hover/focus state with gray background
- */
 export const StateInterestReadonlyFalse: Story = {
   args: {
     label: 'Field label',
@@ -109,16 +96,10 @@ export const StateInterestReadonlyFalse: Story = {
     __storyState: 'interest',
     __storyError: null,
     renderEditMode: renderEditMode,
-    onSave: async () => {
-      await new Promise((resolve) => globalThis.setTimeout(resolve, 500));
-    },
+    onSave: defaultOnSave,
   },
 };
 
-/**
- * Variant 3: state=edit, readonly=false
- * Active editing mode with input field
- */
 export const StateEditReadonlyFalse: Story = {
   args: {
     label: 'Field label',
@@ -128,16 +109,10 @@ export const StateEditReadonlyFalse: Story = {
     __storyState: 'edit',
     __storyError: null,
     renderEditMode: renderEditMode,
-    onSave: async () => {
-      await new Promise((resolve) => globalThis.setTimeout(resolve, 500));
-    },
+    onSave: defaultOnSave,
   },
 };
 
-/**
- * Variant 4: state=saving, readonly=false
- * Async save in progress with spinner
- */
 export const StateSavingReadonlyFalse: Story = {
   args: {
     label: 'Field label',
@@ -148,16 +123,10 @@ export const StateSavingReadonlyFalse: Story = {
     __storyError: null,
     renderEditMode: renderEditMode,
     showSavingState: true,
-    onSave: async () => {
-      await new Promise((resolve) => globalThis.setTimeout(resolve, 500));
-    },
+    onSave: defaultOnSave,
   },
 };
 
-/**
- * Variant 5: state=rest, readonly=true
- * Non-interactive/read-only state
- */
 export const StateRestReadonlyTrue: Story = {
   args: {
     label: 'Field label',
@@ -167,111 +136,19 @@ export const StateRestReadonlyTrue: Story = {
     __storyState: 'rest',
     __storyError: null,
     renderEditMode: renderEditMode,
-    onSave: async () => {
-      await new Promise((resolve) => globalThis.setTimeout(resolve, 500));
-    },
+    onSave: defaultOnSave,
   },
 };
 
-/**
- * INDEPENDENT AXIS: Label Variations (at state=rest, readonly=false)
- */
-
-/**
- * Long label variant - tests text wrapping and layout
- */
-export const WithLongLabel: Story = {
-  args: {
-    label: 'Long field label with multiple words to test wrapping and layout',
-    value: 'Display value',
-    displayValue: 'Display value',
-    readonly: false,
-    __storyState: 'rest',
-    __storyError: null,
-    renderEditMode: renderEditMode,
-    onSave: async () => {
-      await new Promise((resolve) => globalThis.setTimeout(resolve, 500));
-    },
-  },
-};
-
-/**
- * INDEPENDENT AXIS: Display Value Variations (at state=rest, readonly=false)
- */
-
-/**
- * Short display value variant
- */
-export const WithShortDisplayValue: Story = {
-  args: {
-    label: 'Field label',
-    value: 'Short value',
-    displayValue: 'Short value',
-    readonly: false,
-    __storyState: 'rest',
-    __storyError: null,
-    renderEditMode: renderEditMode,
-    onSave: async () => {
-      await new Promise((resolve) => globalThis.setTimeout(resolve, 500));
-    },
-  },
-};
-
-/**
- * Long display value variant - tests text wrapping and flow
- */
-export const WithLongDisplayValue: Story = {
-  args: {
-    label: 'Field label',
-    value: 'A longer value to test text wrapping and how content flows',
-    displayValue: 'A longer value to test text wrapping and how content flows',
-    readonly: false,
-    __storyState: 'rest',
-    __storyError: null,
-    renderEditMode: renderEditMode,
-    onSave: async () => {
-      await new Promise((resolve) => globalThis.setTimeout(resolve, 500));
-    },
-  },
-};
-
-/**
- * INDEPENDENT AXIS: Error State Variations
- */
-
-/**
- * Error in edit mode - displays error message below edit UI
- */
-export const StateEditReadonlyFalseWithError: Story = {
+export const StateEditWithError: Story = {
   args: {
     label: 'Field label',
     value: 'Display value',
     displayValue: 'Display value',
     readonly: false,
     __storyState: 'edit',
-    __storyError: 'Validation error message',
+    __storyError: 'Validation error',
     renderEditMode: renderEditMode,
-    onSave: async () => {
-      await new Promise((resolve) => globalThis.setTimeout(resolve, 500));
-    },
-  },
-};
-
-/**
- * Error during saving state - displays error message with spinner
- */
-export const StateSavingReadonlyFalseWithError: Story = {
-  args: {
-    label: 'Field label',
-    value: 'Display value',
-    displayValue: 'Display value',
-    readonly: false,
-    __storyState: 'saving',
-    __storyError: 'Save failed: network error',
-    renderEditMode: renderEditMode,
-    showSavingState: true,
-    onSave: async () => {
-      await new Promise((resolve) => globalThis.setTimeout(resolve, 500));
-    },
+    onSave: defaultOnSave,
   },
 };

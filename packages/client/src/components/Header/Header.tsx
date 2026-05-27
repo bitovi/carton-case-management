@@ -4,7 +4,7 @@ import { Button } from '@/components/obra/Button';
 import CartonLogoSvg from '@/assets/carton-logo.svg';
 import type { HeaderProps } from './types';
 
-function CartonLogo({ size = 34 }: { size?: number }) {
+export function CartonLogo({ size = 34 }: { size?: number }) {
   return <img src={CartonLogoSvg} alt="Carton Case Management" width={size} height={size} />;
 }
 

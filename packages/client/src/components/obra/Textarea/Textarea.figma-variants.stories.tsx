@@ -4,255 +4,196 @@ import { Textarea } from './Textarea';
 const meta: Meta<typeof Textarea> = {
   component: Textarea,
   title: 'Figma Variants/Textarea',
-  tags: ['autodocs'],
   parameters: {
-    design: {
-      type: 'figma',
-      url: 'https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-id=0-0',
-    },
+    layout: 'centered',
+    chromatic: { disableSnapshot: true },
   },
+  render: (args) => (
+    <div className="w-[400px]">
+      <Textarea {...args} />
+    </div>
+  ),
 };
 
 export default meta;
-type Story = StoryObj<typeof Textarea>;
+type Story = StoryObj<typeof meta>;
 
-// ============================================================================
-// REPRESENTATIVE SET — Core Variants (one value per axis)
-// ============================================================================
+/**
+ * Dependent variants matrix (12 total from variants.md)
+ * Axes: Roundness (2) × Error (2) × Disabled (2) × State (2, pruned when disabled=true)
+ */
 
-// Baseline (all defaults)
-export const DefaultRoundnessFalseErrorFalseDisabledFalseResizable: Story = {
+// Roundness: default, Error: false, Disabled: false, State: default
+export const RoundnessDefaultErrorFalseDisabledFalseStateDefault: Story = {
   args: {
     roundness: 'default',
     error: false,
     disabled: false,
     showResizable: true,
-    placeholder: 'Enter your message...',
+    placeholder: 'Placeholder text',
   },
-  name: 'Roundness: Default | Error: False | Disabled: False | Resizable: True',
 };
 
-// Roundness axis variant
-export const RoundRoundnessFalseErrorFalseDisabledFalseResizable: Story = {
-  args: {
-    roundness: 'round',
-    error: false,
-    disabled: false,
-    showResizable: true,
-    placeholder: 'Enter your message...',
-  },
-  name: 'Roundness: Round | Error: False | Disabled: False | Resizable: True',
-};
-
-// Error axis variant
-export const DefaultRoundnessTrueErrorFalseDisabledFalseResizable: Story = {
-  args: {
-    roundness: 'default',
-    error: true,
-    disabled: false,
-    showResizable: true,
-    placeholder: 'Enter your message...',
-  },
-  name: 'Roundness: Default | Error: True | Disabled: False | Resizable: True',
-};
-
-// Disabled axis variant
-export const DefaultRoundnessFalseErrorFalseTrueDisabledFalseResizable: Story = {
-  args: {
-    roundness: 'default',
-    error: false,
-    disabled: true,
-    showResizable: true,
-    placeholder: 'Enter your message...',
-  },
-  name: 'Roundness: Default | Error: False | Disabled: True | Resizable: True',
-};
-
-// Resizable axis variant
-export const DefaultRoundnessFalseErrorFalseDisabledFalseNoResizable: Story = {
-  args: {
-    roundness: 'default',
-    error: false,
-    disabled: false,
-    showResizable: false,
-    placeholder: 'Enter your message...',
-  },
-  name: 'Roundness: Default | Error: False | Disabled: False | Resizable: False',
-};
-
-// ============================================================================
-// FOCUS STATE
-// ============================================================================
-
-export const DefaultRoundnessFalseErrorFalseDisabledFalseResizableFocus: Story = {
+// Roundness: default, Error: false, Disabled: false, State: focus
+export const RoundnessDefaultErrorFalseDisabledFalseStateFocus: Story = {
   args: {
     roundness: 'default',
     error: false,
     disabled: false,
     showResizable: true,
-    placeholder: 'Enter your message...',
+    placeholder: 'Placeholder text',
     autoFocus: true,
   },
-  name: 'Roundness: Default | Error: False | Disabled: False | Resizable: True | State: Focus',
-  decorators: [
-    (Story) => (
-      <div className="p-4 bg-slate-50 rounded-lg">
-        <Story />
-      </div>
-    ),
-  ],
-};
-
-// ============================================================================
-// ERROR STATE COMBINATIONS
-// ============================================================================
-
-export const RoundRoundnessTrueErrorFalseDisabledFalseResizable: Story = {
-  args: {
-    roundness: 'round',
-    error: true,
-    disabled: false,
-    showResizable: true,
-    placeholder: 'Enter your message...',
+  play: async ({ canvasElement }) => {
+    const textarea = canvasElement.querySelector('textarea');
+    if (textarea) {
+      textarea.focus();
+    }
   },
-  name: 'Roundness: Round | Error: True | Disabled: False | Resizable: True',
 };
 
-export const DefaultRoundnessTrueErrorTrueDisabledFalseNoResizable: Story = {
+// Roundness: default, Error: false, Disabled: true, State: default
+export const RoundnessDefaultErrorFalseDisabledTrueStateDefault: Story = {
+  args: {
+    roundness: 'default',
+    error: false,
+    disabled: true,
+    showResizable: true,
+    placeholder: 'Placeholder text',
+  },
+};
+
+// Roundness: default, Error: true, Disabled: false, State: default
+export const RoundnessDefaultErrorTrueDisabledFalseStateDefault: Story = {
   args: {
     roundness: 'default',
     error: true,
     disabled: false,
-    showResizable: false,
-    placeholder: 'Enter your message...',
+    showResizable: true,
+    placeholder: 'Placeholder text',
   },
-  name: 'Roundness: Default | Error: True | Disabled: False | Resizable: False',
 };
 
-// ============================================================================
-// DISABLED STATE COMBINATIONS
-// ============================================================================
+// Roundness: default, Error: true, Disabled: false, State: focus
+export const RoundnessDefaultErrorTrueDisabledFalseStateFocus: Story = {
+  args: {
+    roundness: 'default',
+    error: true,
+    disabled: false,
+    showResizable: true,
+    placeholder: 'Placeholder text',
+    autoFocus: true,
+  },
+  play: async ({ canvasElement }) => {
+    const textarea = canvasElement.querySelector('textarea');
+    if (textarea) {
+      textarea.focus();
+    }
+  },
+};
 
-export const RoundRoundnessFalseErrorFalseTrueDisabledFalseResizable: Story = {
+// Roundness: default, Error: true, Disabled: true, State: default
+export const RoundnessDefaultErrorTrueDisabledTrueStateDefault: Story = {
+  args: {
+    roundness: 'default',
+    error: true,
+    disabled: true,
+    showResizable: true,
+    placeholder: 'Placeholder text',
+  },
+};
+
+// Roundness: round, Error: false, Disabled: false, State: default
+export const RoundnessRoundErrorFalseDisabledFalseStateDefault: Story = {
+  args: {
+    roundness: 'round',
+    error: false,
+    disabled: false,
+    showResizable: true,
+    placeholder: 'Placeholder text',
+  },
+};
+
+// Roundness: round, Error: false, Disabled: false, State: focus
+export const RoundnessRoundErrorFalseDisabledFalseStateFocus: Story = {
+  args: {
+    roundness: 'round',
+    error: false,
+    disabled: false,
+    showResizable: true,
+    placeholder: 'Placeholder text',
+    autoFocus: true,
+  },
+  play: async ({ canvasElement }) => {
+    const textarea = canvasElement.querySelector('textarea');
+    if (textarea) {
+      textarea.focus();
+    }
+  },
+};
+
+// Roundness: round, Error: false, Disabled: true, State: default
+export const RoundnessRoundErrorFalseDisabledTrueStateDefault: Story = {
   args: {
     roundness: 'round',
     error: false,
     disabled: true,
     showResizable: true,
-    placeholder: 'Enter your message...',
+    placeholder: 'Placeholder text',
   },
-  name: 'Roundness: Round | Error: False | Disabled: True | Resizable: True',
 };
 
-export const DefaultRoundnessTrueErrorTrueTrueDisabledFalseResizable: Story = {
+// Roundness: round, Error: true, Disabled: false, State: default
+export const RoundnessRoundErrorTrueDisabledFalseStateDefault: Story = {
   args: {
-    roundness: 'default',
+    roundness: 'round',
+    error: true,
+    disabled: false,
+    showResizable: true,
+    placeholder: 'Placeholder text',
+  },
+};
+
+// Roundness: round, Error: true, Disabled: false, State: focus
+export const RoundnessRoundErrorTrueDisabledFalseStateFocus: Story = {
+  args: {
+    roundness: 'round',
+    error: true,
+    disabled: false,
+    showResizable: true,
+    placeholder: 'Placeholder text',
+    autoFocus: true,
+  },
+  play: async ({ canvasElement }) => {
+    const textarea = canvasElement.querySelector('textarea');
+    if (textarea) {
+      textarea.focus();
+    }
+  },
+};
+
+// Roundness: round, Error: true, Disabled: true, State: default
+export const RoundnessRoundErrorTrueDisabledTrueStateDefault: Story = {
+  args: {
+    roundness: 'round',
     error: true,
     disabled: true,
     showResizable: true,
-    placeholder: 'Enter your message...',
+    placeholder: 'Placeholder text',
   },
-  name: 'Roundness: Default | Error: True | Disabled: True | Resizable: True',
 };
 
-// ============================================================================
-// RESIZABLE STATE COMBINATIONS
-// ============================================================================
+/**
+ * Independent axis: ShowResizable=false (at default dependent values)
+ */
 
-export const RoundRoundnessFalseErrorFalseDisabledFalseNoResizable: Story = {
-  args: {
-    roundness: 'round',
-    error: false,
-    disabled: false,
-    showResizable: false,
-    placeholder: 'Enter your message...',
-  },
-  name: 'Roundness: Round | Error: False | Disabled: False | Resizable: False',
-};
-
-export const RoundRoundnessTrueErrorTrueDisabledFalseNoResizable: Story = {
-  args: {
-    roundness: 'round',
-    error: true,
-    disabled: false,
-    showResizable: false,
-    placeholder: 'Enter your message...',
-  },
-  name: 'Roundness: Round | Error: True | Disabled: False | Resizable: False',
-};
-
-// ============================================================================
-// CONTENT VARIATIONS
-// ============================================================================
-
-export const DefaultRoundnessFalseErrorFalseDisabledFalseResizableWithValue: Story = {
-  args: {
-    roundness: 'default',
-    error: false,
-    disabled: false,
-    showResizable: true,
-    placeholder: 'Enter your message...',
-    value: 'This is some sample text that was already entered into the textarea.',
-  },
-  name: 'Roundness: Default | Error: False | Disabled: False | Resizable: True | With: Value',
-};
-
-export const DefaultRoundnessFalseErrorFalseDisabledFalseResizableWithRows: Story = {
+// ShowResizable: false (at roundness=default, error=false, disabled=false, state=default)
+export const ShowResizableFalse: Story = {
   args: {
     roundness: 'default',
     error: false,
     disabled: false,
-    showResizable: true,
-    placeholder: 'Enter your message...',
-    rows: 5,
-  },
-  name: 'Roundness: Default | Error: False | Disabled: False | Resizable: True | With: Custom Rows',
-};
-
-// ============================================================================
-// ADDITIONAL IMPORTANT COMBINATIONS
-// ============================================================================
-
-export const RoundRoundnessTrueErrorTrueTrueDisabledFalseNoResizable: Story = {
-  args: {
-    roundness: 'round',
-    error: true,
-    disabled: true,
     showResizable: false,
-    placeholder: 'Enter your message...',
+    placeholder: 'Placeholder text',
   },
-  name: 'Roundness: Round | Error: True | Disabled: True | Resizable: False',
-};
-
-export const RoundRoundnessTrueErrorTrueTrueDisabledFalseResizable: Story = {
-  args: {
-    roundness: 'round',
-    error: true,
-    disabled: true,
-    showResizable: true,
-    placeholder: 'Enter your message...',
-  },
-  name: 'Roundness: Round | Error: True | Disabled: True | Resizable: True',
-};
-
-export const DefaultRoundnessTrueErrorFalseTrueDisabledFalseResizable: Story = {
-  args: {
-    roundness: 'default',
-    error: true,
-    disabled: true,
-    showResizable: true,
-    placeholder: 'Enter your message...',
-  },
-  name: 'Roundness: Default | Error: True | Disabled: True | Resizable: True',
-};
-
-export const DefaultRoundnessTrueErrorFalseTrueDisabledFalseNoResizable: Story = {
-  args: {
-    roundness: 'default',
-    error: true,
-    disabled: true,
-    showResizable: false,
-    placeholder: 'Enter your message...',
-  },
-  name: 'Roundness: Default | Error: True | Disabled: True | Resizable: False',
 };

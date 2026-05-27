@@ -16,8 +16,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Unchecked, No Error
-export const UncheckedDefault: Story = {
+export const CheckedUncheckedErrorFalseStateDefault: Story = {
   args: {
     checked: false,
     error: false,
@@ -25,50 +24,19 @@ export const UncheckedDefault: Story = {
   },
 };
 
-export const UncheckedHover: Story = {
-  args: {
-    checked: false,
-    error: false,
-    disabled: false,
-  },
-  play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
-      (checkbox as HTMLElement).classList.add('hover');
-    }
-  },
-};
-
-export const UncheckedFocus: Story = {
+export const CheckedUncheckedErrorFalseStateFocus: Story = {
   args: {
     checked: false,
     error: false,
     disabled: false,
   },
   play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).focus();
-    }
+    const el = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
+    if (el) (el as HTMLElement).focus();
   },
 };
 
-export const UncheckedActive: Story = {
-  args: {
-    checked: false,
-    error: false,
-    disabled: false,
-  },
-  play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-    }
-  },
-};
-
-export const UncheckedDisabled: Story = {
+export const CheckedUncheckedErrorFalseStateDisabled: Story = {
   args: {
     checked: false,
     error: false,
@@ -76,8 +44,7 @@ export const UncheckedDisabled: Story = {
   },
 };
 
-// Unchecked, Error
-export const UncheckedErrorDefault: Story = {
+export const CheckedUncheckedErrorTrueStateDefault: Story = {
   args: {
     checked: false,
     error: true,
@@ -85,50 +52,19 @@ export const UncheckedErrorDefault: Story = {
   },
 };
 
-export const UncheckedErrorHover: Story = {
-  args: {
-    checked: false,
-    error: true,
-    disabled: false,
-  },
-  play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
-      (checkbox as HTMLElement).classList.add('hover');
-    }
-  },
-};
-
-export const UncheckedErrorFocus: Story = {
+export const CheckedUncheckedErrorTrueStateFocus: Story = {
   args: {
     checked: false,
     error: true,
     disabled: false,
   },
   play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).focus();
-    }
+    const el = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
+    if (el) (el as HTMLElement).focus();
   },
 };
 
-export const UncheckedErrorActive: Story = {
-  args: {
-    checked: false,
-    error: true,
-    disabled: false,
-  },
-  play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-    }
-  },
-};
-
-export const UncheckedErrorDisabled: Story = {
+export const CheckedUncheckedErrorTrueStateDisabled: Story = {
   args: {
     checked: false,
     error: true,
@@ -136,8 +72,7 @@ export const UncheckedErrorDisabled: Story = {
   },
 };
 
-// Checked, No Error
-export const CheckedDefault: Story = {
+export const CheckedCheckedErrorFalseStateDefault: Story = {
   args: {
     checked: true,
     error: false,
@@ -145,50 +80,19 @@ export const CheckedDefault: Story = {
   },
 };
 
-export const CheckedHover: Story = {
-  args: {
-    checked: true,
-    error: false,
-    disabled: false,
-  },
-  play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
-      (checkbox as HTMLElement).classList.add('hover');
-    }
-  },
-};
-
-export const CheckedFocus: Story = {
+export const CheckedCheckedErrorFalseStateFocus: Story = {
   args: {
     checked: true,
     error: false,
     disabled: false,
   },
   play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).focus();
-    }
+    const el = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
+    if (el) (el as HTMLElement).focus();
   },
 };
 
-export const CheckedActive: Story = {
-  args: {
-    checked: true,
-    error: false,
-    disabled: false,
-  },
-  play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-    }
-  },
-};
-
-export const CheckedDisabled: Story = {
+export const CheckedCheckedErrorFalseStateDisabled: Story = {
   args: {
     checked: true,
     error: false,
@@ -196,8 +100,7 @@ export const CheckedDisabled: Story = {
   },
 };
 
-// Checked, Error
-export const CheckedErrorDefault: Story = {
+export const CheckedCheckedErrorTrueStateDefault: Story = {
   args: {
     checked: true,
     error: true,
@@ -205,50 +108,19 @@ export const CheckedErrorDefault: Story = {
   },
 };
 
-export const CheckedErrorHover: Story = {
-  args: {
-    checked: true,
-    error: true,
-    disabled: false,
-  },
-  play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
-      (checkbox as HTMLElement).classList.add('hover');
-    }
-  },
-};
-
-export const CheckedErrorFocus: Story = {
+export const CheckedCheckedErrorTrueStateFocus: Story = {
   args: {
     checked: true,
     error: true,
     disabled: false,
   },
   play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).focus();
-    }
+    const el = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
+    if (el) (el as HTMLElement).focus();
   },
 };
 
-export const CheckedErrorActive: Story = {
-  args: {
-    checked: true,
-    error: true,
-    disabled: false,
-  },
-  play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-    }
-  },
-};
-
-export const CheckedErrorDisabled: Story = {
+export const CheckedCheckedErrorTrueStateDisabled: Story = {
   args: {
     checked: true,
     error: true,
@@ -256,121 +128,57 @@ export const CheckedErrorDisabled: Story = {
   },
 };
 
-// Indeterminate, No Error
-export const IndeterminateDefault: Story = {
+export const CheckedIndeterminateErrorFalseStateDefault: Story = {
   args: {
-    checked: 'indeterminate',
+    checked: 'indeterminate' as const,
     error: false,
     disabled: false,
   },
 };
 
-export const IndeterminateHover: Story = {
+export const CheckedIndeterminateErrorFalseStateFocus: Story = {
   args: {
-    checked: 'indeterminate',
-    error: false,
-    disabled: false,
-  },
-  play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
-      (checkbox as HTMLElement).classList.add('hover');
-    }
-  },
-};
-
-export const IndeterminateFocus: Story = {
-  args: {
-    checked: 'indeterminate',
+    checked: 'indeterminate' as const,
     error: false,
     disabled: false,
   },
   play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).focus();
-    }
+    const el = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
+    if (el) (el as HTMLElement).focus();
   },
 };
 
-export const IndeterminateActive: Story = {
+export const CheckedIndeterminateErrorFalseStateDisabled: Story = {
   args: {
-    checked: 'indeterminate',
-    error: false,
-    disabled: false,
-  },
-  play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-    }
-  },
-};
-
-export const IndeterminateDisabled: Story = {
-  args: {
-    checked: 'indeterminate',
+    checked: 'indeterminate' as const,
     error: false,
     disabled: true,
   },
 };
 
-// Indeterminate, Error
-export const IndeterminateErrorDefault: Story = {
+export const CheckedIndeterminateErrorTrueStateDefault: Story = {
   args: {
-    checked: 'indeterminate',
+    checked: 'indeterminate' as const,
     error: true,
     disabled: false,
   },
 };
 
-export const IndeterminateErrorHover: Story = {
+export const CheckedIndeterminateErrorTrueStateFocus: Story = {
   args: {
-    checked: 'indeterminate',
-    error: true,
-    disabled: false,
-  },
-  play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
-      (checkbox as HTMLElement).classList.add('hover');
-    }
-  },
-};
-
-export const IndeterminateErrorFocus: Story = {
-  args: {
-    checked: 'indeterminate',
+    checked: 'indeterminate' as const,
     error: true,
     disabled: false,
   },
   play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).focus();
-    }
+    const el = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
+    if (el) (el as HTMLElement).focus();
   },
 };
 
-export const IndeterminateErrorActive: Story = {
+export const CheckedIndeterminateErrorTrueStateDisabled: Story = {
   args: {
-    checked: 'indeterminate',
-    error: true,
-    disabled: false,
-  },
-  play: async ({ canvasElement }) => {
-    const checkbox = canvasElement.querySelector('[role="checkbox"]') || canvasElement.firstElementChild;
-    if (checkbox) {
-      (checkbox as HTMLElement).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-    }
-  },
-};
-
-export const IndeterminateErrorDisabled: Story = {
-  args: {
-    checked: 'indeterminate',
+    checked: 'indeterminate' as const,
     error: true,
     disabled: true,
   },

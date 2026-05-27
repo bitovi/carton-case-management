@@ -1,460 +1,398 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { HoverCard } from './HoverCard';
-import * as React from 'react';
 
-const meta: Meta<typeof HoverCard> = {
-  component: HoverCard,
+const meta = {
   title: 'Figma Variants/HoverCard',
-  tags: ['autodocs'],
+  component: HoverCard,
   parameters: {
-    design: {
-      type: 'figma',
-      url: 'https://www.figma.com/design/MQUbIrlfuM8qnr9XZ7jc82/Obra-shadcn-ui--Carton-?node-id=303-246487',
-    },
+    layout: 'centered',
+    chromatic: { disableSnapshot: true },
   },
-};
+} satisfies Meta<typeof HoverCard>;
 
 export default meta;
-type Story = StoryObj<typeof HoverCard>;
+type Story = StoryObj<typeof meta>;
 
-// ============================================================================
-// Dependent Variants (24 total): side × align × state
-// ============================================================================
+// Helper components for trigger and content
+const SimpleButton = () => (
+  <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>
+);
 
-// TOP variants
-export const TopStartClosed: Story = {
+const SimpleContent = () => <div className="text-sm">Simple text content</div>;
+
+const RichContent = () => (
+  <div className="flex flex-col gap-2">
+    <div className="font-semibold text-sm">Alex Morgan</div>
+    <div className="text-xs text-slate-600">Software Engineer</div>
+    <div className="text-xs text-slate-500">Joined 2 years ago</div>
+  </div>
+);
+
+const CustomButton = () => (
+  <button className="px-4 py-2 bg-purple-500 text-white rounded">Custom</button>
+);
+
+const LinkTrigger = () => (
+  <a href="#" className="text-blue-600 underline hover:text-blue-800">
+    Link trigger
+  </a>
+);
+
+const SpanTrigger = () => (
+  <span className="px-4 py-2 bg-gray-500 text-white inline-block rounded cursor-pointer">
+    Span trigger
+  </span>
+);
+
+// Dependent axis combinations: Side × Align × State
+
+// TOP/START
+export const SideTopAlignStartStateClosed: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'top',
     align: 'start',
-    children: 'Hover card content',
   },
-  name: 'Top/Start/Closed',
 };
 
-export const TopStartOpen: Story = {
+export const SideTopAlignStartStateOpen: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'top',
     align: 'start',
-    children: 'Hover card content',
   },
-  name: 'Top/Start/Open',
-  decorators: [
-    (Story) => {
-      const [isOpen, setIsOpen] = React.useState(true);
-      return (
-        <div className="flex items-center justify-center min-h-screen">
-          <div onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
-            <Story />
-          </div>
-        </div>
-      );
-    },
-  ],
+  play: async ({ canvasElement }) => {
+    const trigger = canvasElement.querySelector('[role="button"], button') as HTMLElement;
+    if (trigger) {
+      trigger.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  },
 };
 
-export const TopCenterClosed: Story = {
+// TOP/CENTER
+export const SideTopAlignCenterStateClosed: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'top',
     align: 'center',
-    children: 'Hover card content',
   },
-  name: 'Top/Center/Closed',
 };
 
-export const TopCenterOpen: Story = {
+export const SideTopAlignCenterStateOpen: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'top',
     align: 'center',
-    children: 'Hover card content',
   },
-  name: 'Top/Center/Open',
-  decorators: [
-    (Story) => {
-      return (
-        <div className="flex items-center justify-center min-h-screen hover:block">
-          <Story />
-        </div>
-      );
-    },
-  ],
+  play: async ({ canvasElement }) => {
+    const trigger = canvasElement.querySelector('[role="button"], button') as HTMLElement;
+    if (trigger) {
+      trigger.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  },
 };
 
-export const TopEndClosed: Story = {
+// TOP/END
+export const SideTopAlignEndStateClosed: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'top',
     align: 'end',
-    children: 'Hover card content',
   },
-  name: 'Top/End/Closed',
 };
 
-export const TopEndOpen: Story = {
+export const SideTopAlignEndStateOpen: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'top',
     align: 'end',
-    children: 'Hover card content',
   },
-  name: 'Top/End/Open',
-  decorators: [
-    (Story) => (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="group">
-          <Story />
-        </div>
-      </div>
-    ),
-  ],
+  play: async ({ canvasElement }) => {
+    const trigger = canvasElement.querySelector('[role="button"], button') as HTMLElement;
+    if (trigger) {
+      trigger.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  },
 };
 
-// RIGHT variants
-export const RightStartClosed: Story = {
+// RIGHT/START
+export const SideRightAlignStartStateClosed: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'right',
     align: 'start',
-    children: 'Hover card content',
   },
-  name: 'Right/Start/Closed',
 };
 
-export const RightStartOpen: Story = {
+export const SideRightAlignStartStateOpen: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'right',
     align: 'start',
-    children: 'Hover card content',
   },
-  name: 'Right/Start/Open',
-  decorators: [
-    (Story) => (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="group">
-          <Story />
-        </div>
-      </div>
-    ),
-  ],
+  play: async ({ canvasElement }) => {
+    const trigger = canvasElement.querySelector('[role="button"], button') as HTMLElement;
+    if (trigger) {
+      trigger.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  },
 };
 
-export const RightCenterClosed: Story = {
+// RIGHT/CENTER
+export const SideRightAlignCenterStateClosed: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'right',
     align: 'center',
-    children: 'Hover card content',
   },
-  name: 'Right/Center/Closed',
 };
 
-export const RightCenterOpen: Story = {
+export const SideRightAlignCenterStateOpen: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'right',
     align: 'center',
-    children: 'Hover card content',
   },
-  name: 'Right/Center/Open',
-  decorators: [
-    (Story) => (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="group">
-          <Story />
-        </div>
-      </div>
-    ),
-  ],
+  play: async ({ canvasElement }) => {
+    const trigger = canvasElement.querySelector('[role="button"], button') as HTMLElement;
+    if (trigger) {
+      trigger.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  },
 };
 
-export const RightEndClosed: Story = {
+// RIGHT/END
+export const SideRightAlignEndStateClosed: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'right',
     align: 'end',
-    children: 'Hover card content',
   },
-  name: 'Right/End/Closed',
 };
 
-export const RightEndOpen: Story = {
+export const SideRightAlignEndStateOpen: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'right',
     align: 'end',
-    children: 'Hover card content',
   },
-  name: 'Right/End/Open',
-  decorators: [
-    (Story) => (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="group">
-          <Story />
-        </div>
-      </div>
-    ),
-  ],
+  play: async ({ canvasElement }) => {
+    const trigger = canvasElement.querySelector('[role="button"], button') as HTMLElement;
+    if (trigger) {
+      trigger.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  },
 };
 
-// BOTTOM variants
-export const BottomStartClosed: Story = {
+// BOTTOM/START
+export const SideBottomAlignStartStateClosed: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'bottom',
     align: 'start',
-    children: 'Hover card content',
   },
-  name: 'Bottom/Start/Closed',
 };
 
-export const BottomStartOpen: Story = {
+export const SideBottomAlignStartStateOpen: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'bottom',
     align: 'start',
-    children: 'Hover card content',
   },
-  name: 'Bottom/Start/Open',
-  decorators: [
-    (Story) => (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="group">
-          <Story />
-        </div>
-      </div>
-    ),
-  ],
+  play: async ({ canvasElement }) => {
+    const trigger = canvasElement.querySelector('[role="button"], button') as HTMLElement;
+    if (trigger) {
+      trigger.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  },
 };
 
-export const BottomCenterClosed: Story = {
+// BOTTOM/CENTER
+export const SideBottomAlignCenterStateClosed: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'bottom',
     align: 'center',
-    children: 'Hover card content',
   },
-  name: 'Bottom/Center/Closed',
 };
 
-export const BottomCenterOpen: Story = {
+export const SideBottomAlignCenterStateOpen: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'bottom',
     align: 'center',
-    children: 'Hover card content',
   },
-  name: 'Bottom/Center/Open',
-  decorators: [
-    (Story) => (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="group">
-          <Story />
-        </div>
-      </div>
-    ),
-  ],
+  play: async ({ canvasElement }) => {
+    const trigger = canvasElement.querySelector('[role="button"], button') as HTMLElement;
+    if (trigger) {
+      trigger.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  },
 };
 
-export const BottomEndClosed: Story = {
+// BOTTOM/END
+export const SideBottomAlignEndStateClosed: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'bottom',
     align: 'end',
-    children: 'Hover card content',
   },
-  name: 'Bottom/End/Closed',
 };
 
-export const BottomEndOpen: Story = {
+export const SideBottomAlignEndStateOpen: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'bottom',
     align: 'end',
-    children: 'Hover card content',
   },
-  name: 'Bottom/End/Open',
-  decorators: [
-    (Story) => (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="group">
-          <Story />
-        </div>
-      </div>
-    ),
-  ],
+  play: async ({ canvasElement }) => {
+    const trigger = canvasElement.querySelector('[role="button"], button') as HTMLElement;
+    if (trigger) {
+      trigger.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  },
 };
 
-// LEFT variants
-export const LeftStartClosed: Story = {
+// LEFT/START
+export const SideLeftAlignStartStateClosed: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'left',
     align: 'start',
-    children: 'Hover card content',
   },
-  name: 'Left/Start/Closed',
 };
 
-export const LeftStartOpen: Story = {
+export const SideLeftAlignStartStateOpen: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'left',
     align: 'start',
-    children: 'Hover card content',
   },
-  name: 'Left/Start/Open',
-  decorators: [
-    (Story) => (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="group">
-          <Story />
-        </div>
-      </div>
-    ),
-  ],
+  play: async ({ canvasElement }) => {
+    const trigger = canvasElement.querySelector('[role="button"], button') as HTMLElement;
+    if (trigger) {
+      trigger.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  },
 };
 
-export const LeftCenterClosed: Story = {
+// LEFT/CENTER
+export const SideLeftAlignCenterStateClosed: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'left',
     align: 'center',
-    children: 'Hover card content',
   },
-  name: 'Left/Center/Closed',
 };
 
-export const LeftCenterOpen: Story = {
+export const SideLeftAlignCenterStateOpen: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'left',
     align: 'center',
-    children: 'Hover card content',
   },
-  name: 'Left/Center/Open',
-  decorators: [
-    (Story) => (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="group">
-          <Story />
-        </div>
-      </div>
-    ),
-  ],
+  play: async ({ canvasElement }) => {
+    const trigger = canvasElement.querySelector('[role="button"], button') as HTMLElement;
+    if (trigger) {
+      trigger.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  },
 };
 
-export const LeftEndClosed: Story = {
+// LEFT/END
+export const SideLeftAlignEndStateClosed: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'left',
     align: 'end',
-    children: 'Hover card content',
   },
-  name: 'Left/End/Closed',
 };
 
-export const LeftEndOpen: Story = {
+export const SideLeftAlignEndStateOpen: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <SimpleContent />,
     side: 'left',
     align: 'end',
-    children: 'Hover card content',
   },
-  name: 'Left/End/Open',
-  decorators: [
-    (Story) => (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="group">
-          <Story />
-        </div>
-      </div>
-    ),
-  ],
+  play: async ({ canvasElement }) => {
+    const trigger = canvasElement.querySelector('[role="button"], button') as HTMLElement;
+    if (trigger) {
+      trigger.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  },
 };
 
-// ============================================================================
-// Independent Axis Variations (6 total)
-// ============================================================================
+// Independent axis variations (at default dependent values: side=bottom, align=center, state=closed)
 
-// Trigger variations (at side=bottom, align=center, state=closed)
-export const TriggerButtonElement: Story = {
+export const TriggerLink: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <LinkTrigger />,
+    children: <SimpleContent />,
     side: 'bottom',
     align: 'center',
-    children: 'Hover card content',
   },
-  name: 'Trigger/Button',
 };
 
-export const TriggerLinkElement: Story = {
+export const TriggerSpan: Story = {
   args: {
-    trigger: <a href="#" className="px-4 py-2 text-blue-500 underline">Hover link</a>,
+    trigger: <SpanTrigger />,
+    children: <SimpleContent />,
     side: 'bottom',
     align: 'center',
-    children: 'Hover card content',
   },
-  name: 'Trigger/Link',
-};
-
-export const TriggerSpanElement: Story = {
-  args: {
-    trigger: <span className="px-4 py-2 text-foreground cursor-help">Hover text</span>,
-    side: 'bottom',
-    align: 'center',
-    children: 'Hover card content',
-  },
-  name: 'Trigger/Span',
-};
-
-// Content variations (at side=bottom, align=center, state=closed)
-export const ContentSimpleText: Story = {
-  args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
-    side: 'bottom',
-    align: 'center',
-    children: 'Simple text',
-  },
-  name: 'Content/SimpleText',
 };
 
 export const ContentRichFormatted: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <SimpleButton />,
+    children: <RichContent />,
     side: 'bottom',
     align: 'center',
-    children: (
-      <div className="flex flex-col gap-2">
-        <div className="font-semibold text-sm">Rich Content</div>
-        <div className="text-xs text-slate-600">Multiple lines</div>
-        <div className="text-xs text-slate-500">With formatting</div>
-      </div>
-    ),
   },
-  name: 'Content/RichFormatted',
 };
 
-// Custom styling variation (at side=bottom, align=center, state=open)
 export const CustomStyling: Story = {
   args: {
-    trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
+    trigger: <CustomButton />,
+    children: <SimpleContent />,
+    className: 'bg-purple-50 border-purple-200',
     side: 'bottom',
     align: 'center',
-    children: 'Custom styled content',
-    className: 'bg-purple-50 border-purple-200',
   },
-  name: 'Styling/CustomColors',
-  decorators: [
-    (Story) => (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="group">
-          <Story />
-        </div>
-      </div>
-    ),
-  ],
 };

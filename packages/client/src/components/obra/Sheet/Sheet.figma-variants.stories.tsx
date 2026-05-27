@@ -69,14 +69,6 @@ export const StateClosed: Story = {
   },
 };
 
-export const StateClosedScrollableFalse: Story = {
-  args: {
-    open: false,
-    scrollable: false,
-    children: <DefaultContent />,
-  },
-};
-
 export const StateOpen: Story = {
   args: {
     open: true,
@@ -147,25 +139,4 @@ export const StateOpenWithHeaderAndFooter: Story = {
   },
 };
 
-// Independent axis: Scrollable=false with header to show structural difference
 
-export const StateOpenScrollableFalseWithHeader: Story = {
-  args: {
-    open: true,
-    scrollable: false,
-    header: (
-      <DialogHeader
-        title="Non-Scrollable Sheet"
-        onClose={() => {}}
-      />
-    ),
-    children: (
-      <div className="space-y-4">
-        <p>This sheet has scrollable=false, so content maintains fixed height.</p>
-        <p className="text-sm text-muted-foreground">
-          The content area will not scroll even if content exceeds the panel height.
-        </p>
-      </div>
-    ),
-  },
-};

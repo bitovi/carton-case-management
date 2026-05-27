@@ -1,0 +1,133 @@
+# Figma Plugin API Gotchas
+
+Critical gotchas when building components with `use_figma`. Each one causes silent visual bugs if ignored.
+
+## 1. `resize()` Resets Sizing Modes
+
+`resize(w, h)` silently sets BOTH `primaryAxisSizingMode` and `counterAxisSizingMode` to `'FIXED'`. 
+
+**Fix:** Always call `resize()` FIRST, then set sizing modes:
+```javascript
+comp.resize(200, 40);
+comp.primaryAxisSizingMode = 'AUTO';
+comp.counterAxisSizingMode = 'AUTO';
+```
+
+## 2. HUG Parent + FILL Child = Collapse
+
+A parent with `primaryAxisSizingMode = 'AUTO'` (HUG) will collapse a child that uses `layoutSizingHorizontal = 'FILL'`. The child needs the parent to have a fixed or fill size to stretch against.
+
+**Fix:** Parent must be FIXED or FILL for FILL children to work.
+
+## 3. FILL Only Works Inside Auto-Layout
+
+Setting `layoutSizingHorizontal = 'FILL'` on a node that is NOT inside an auto-layout parent throws an error.
+
+**Fix:** Always `appendChild()` to an auto-layout parent BEFORE setting FILL.
+
+## 4. Font Must Be Loaded Before Text Operations
+
+Any operation on text (`characters`, `fontSize`, `fontName`, etc.) requires the font to be loaded first.
+
+**Fix:** Load all needed fonts at the top of every `use_figma` call:
+```javascript
+await figma.loadFontAsync({ family: 'Inter', style: 'Regular' });
+```
+
+## 5. Paint Color Has No Alpha
+
+Fill/stroke `color` is `{r, g, b}` — adding `a` throws. For opacity, use the paint's `opacity` field:
+```javascript
+comp.fills = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0 }, opacity: 0.5 }];
+```
+
+**Exception:** Variable-bound colors use `{r, g, b, a}` — this is a different API path.
+
+## 6. `combineAsVariants` Stacks at (0,0)
+
+After `combineAsVariants()`, all variant components overlap at position (0,0) inside the set. The set has no automatic grid layout.
+
+**Fix:** Set WRAP layout with a calculated fixed width to create a grid:
+```javascript
+const set = figma.combineAsVariants(variants, parentFrame);
+
+const SPACING = 40;
+const columns = Math.ceil(Math.sqrt(variants.length));
+const maxChildWidth = Math.max(...set.children.map(c => c.width));
+const targetWidth = columns * (maxChildWidth + SPACING) + SPACING;
+
+set.layoutMode = 'HORIZONTAL';
+set.layoutWrap = 'WRAP';
+set.itemSpacing = SPACING;
+set.counterAxisSpacing = SPACING;
+set.paddingTop = SPACING;
+set.paddingBottom = SPACING;
+set.paddingLeft = SPACING;
+set.paddingRight = SPACING;
+
+// CRITICAL: Fixed width forces wrapping. HUG/AUTO never wraps.
+set.resize(targetWidth, set.height);
+set.primaryAxisSizingMode = 'FIXED';
+set.counterAxisSizingMode = 'AUTO';
+```
+
+**Warning:** Do NOT use `primaryAxisSizingMode = 'AUTO'` with WRAP — auto/HUG sizing means infinite width, so wrapping never triggers. You MUST set a fixed width.
+
+Do NOT use manual x/y positioning — it conflicts with auto-layout and produces unpredictable results.
+
+## 7. `addComponentProperty` Before `combineAsVariants`
+
+Component properties must be added BEFORE calling `combineAsVariants`. The returned key is a string — never hardcode it, always use the returned value.
+
+## 8. `counterAxisAlignItems` Has No STRETCH
+
+Unlike CSS `align-items: stretch`, Figma has no `'STRETCH'` value for `counterAxisAlignItems`.
+
+**Fix:** Use `'MIN'` on the parent + `layoutSizingHorizontal = 'FILL'` on children.
+
+## 9. Text Padding
+
+Text nodes do NOT support padding properties directly.
+
+**Fix:** Wrap text in a zero-fill auto-layout frame:
+```javascript
+const wrapper = figma.createFrame();
+wrapper.layoutMode = 'HORIZONTAL';
+wrapper.primaryAxisSizingMode = 'AUTO';
+wrapper.counterAxisSizingMode = 'AUTO';
+wrapper.paddingLeft = 4;
+wrapper.fills = [];
+wrapper.appendChild(textNode);
+```
+
+## 10. x/y Inside Auto-Layout
+
+Setting `x` or `y` on a node inside an auto-layout parent is silently ignored. Auto-layout manages all positioning.
+
+**Fix:** Use padding, spacing, and alignment to position children. Remove all x/y assignments inside auto-layout frames.
+
+## 11. `lineHeight` and `letterSpacing` Must Be Objects
+
+```javascript
+// WRONG
+text.lineHeight = 20;
+
+// CORRECT
+text.lineHeight = { value: 20, unit: 'PIXELS' };
+text.letterSpacing = { value: 0, unit: 'PIXELS' };
+```
+
+## 12. Colors Are 0–1 Range
+
+Figma uses 0–1 for RGB, not 0–255. Always divide:
+```javascript
+const color = { r: 226/255, g: 232/255, b: 240/255 };
+```
+
+## 13. `strokeAlign` Must Be OUTSIDE
+
+CSS borders are outside the box by default. Always use:
+```javascript
+comp.strokeAlign = 'OUTSIDE';
+```
+Using `'INSIDE'` causes double-border visual artifacts.

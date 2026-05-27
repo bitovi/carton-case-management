@@ -54,7 +54,11 @@ function loadVariants(variantsDir) {
     const domPath = path.join(variantsDir, entry.name, 'dom.json');
     if (!fs.existsSync(domPath)) continue;
     const raw = JSON.parse(fs.readFileSync(domPath, 'utf-8'));
-    variants.push({ name: entry.name, structure: raw.structure });
+    variants.push({
+      name: entry.name,
+      structure: raw.structure,
+      portalContent: raw.portalContent || []
+    });
   }
   return variants.sort((a, b) => a.name.localeCompare(b.name));
 }
@@ -339,6 +343,21 @@ function main() {
         opts.tolerance,
         variants[i].structure.tag || 'root'
       );
+
+      const portalA = variants[i].portalContent || [];
+      const portalB = variants[j].portalContent || [];
+      if (portalA.length !== portalB.length) {
+        diff.structureMatch = false;
+      } else {
+        for (let p = 0; p < portalA.length; p++) {
+          const portalDiff = diffNodes(portalA[p], portalB[p], opts.tolerance, `portal[${p}]`);
+          if (!portalDiff.structureMatch) diff.structureMatch = false;
+          diff.styleDiffs.push(...portalDiff.styleDiffs);
+          diff.boundsDiffs.push(...portalDiff.boundsDiffs);
+          diff.textDiffs.push(...portalDiff.textDiffs);
+        }
+      }
+
       const verdict = classifyDiff(diff);
       pairResults.push({
         a: variants[i].name,

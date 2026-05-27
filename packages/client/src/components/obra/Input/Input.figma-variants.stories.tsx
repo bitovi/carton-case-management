@@ -1,352 +1,195 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import * as React from 'react';
 import { Input } from './Input';
-import { Search, AlertCircle } from 'lucide-react';
 
-const meta: Meta<typeof Input> = {
-  component: Input,
+const meta = {
   title: 'Figma Variants/Input',
-  tags: ['autodocs'],
+  component: Input,
   parameters: {
-    design: {
-      type: 'figma',
-      url: 'https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-id=0-0',
-    },
+    layout: 'centered',
+    chromatic: { disableSnapshot: true },
   },
-};
+} satisfies Meta<typeof Input>;
 
 export default meta;
-type Story = StoryObj<typeof Input>;
+type Story = StoryObj<typeof meta>;
 
-// ============================================================================
-// REPRESENTATIVE SET — 10 Core Variants (one value per axis)
-// ============================================================================
+// =========== REPRESENTATIVE SET (11 dependent combinations) ===========
 
-// Baseline (all defaults)
-export const RegularDefaultNoErrorResting: Story = {
+// Core baseline
+export const SizeRegularRoundnessDefaultErrorFalseStateDefault: Story = {
   args: {
     size: 'regular',
     roundness: 'default',
     error: false,
     placeholder: 'Enter text...',
   },
-  name: 'Size: Regular | Roundness: Default | Error: No | State: Default',
 };
 
-// Size axis variants
-export const MiniDefaultNoErrorResting: Story = {
+// Size variants
+export const SizeMiniRoundnessDefaultErrorFalseStateDefault: Story = {
   args: {
     size: 'mini',
     roundness: 'default',
     error: false,
     placeholder: 'Enter text...',
   },
-  name: 'Size: Mini | Roundness: Default | Error: No | State: Default',
 };
 
-export const SmallDefaultNoErrorResting: Story = {
+export const SizeSmallRoundnessDefaultErrorFalseStateDefault: Story = {
   args: {
     size: 'small',
     roundness: 'default',
     error: false,
     placeholder: 'Enter text...',
   },
-  name: 'Size: Small | Roundness: Default | Error: No | State: Default',
 };
 
-export const LargeDefaultNoErrorResting: Story = {
+export const SizeLargeRoundnessDefaultErrorFalseStateDefault: Story = {
   args: {
     size: 'large',
     roundness: 'default',
     error: false,
     placeholder: 'Enter text...',
   },
-  name: 'Size: Large | Roundness: Default | Error: No | State: Default',
 };
 
-// Roundness axis variant
-export const RegularRoundNoErrorResting: Story = {
+// Roundness variant
+export const SizeRegularRoundnessRoundErrorFalseStateDefault: Story = {
   args: {
     size: 'regular',
     roundness: 'round',
     error: false,
     placeholder: 'Enter text...',
   },
-  name: 'Size: Regular | Roundness: Round | Error: No | State: Default',
 };
 
-// Error axis variant
-export const RegularDefaultWithErrorResting: Story = {
+// Error variant
+export const SizeRegularRoundnessDefaultErrorTrueStateDefault: Story = {
   args: {
     size: 'regular',
     roundness: 'default',
     error: true,
-    placeholder: 'Enter text...',
+    placeholder: 'Invalid input',
   },
-  name: 'Size: Regular | Roundness: Default | Error: Yes | State: Default',
 };
 
-// State axis variants
-export const RegularDefaultNoErrorDisabled: Story = {
+// State variants - Focus
+export const SizeRegularRoundnessDefaultErrorFalseStateFocus: Story = {
   args: {
     size: 'regular',
     roundness: 'default',
     error: false,
     placeholder: 'Enter text...',
+  },
+  play: async ({ canvasElement }) => {
+    const input = canvasElement.querySelector('input');
+    if (input) {
+      input.focus();
+    }
+  },
+};
+
+// State variants - Disabled
+export const SizeRegularRoundnessDefaultErrorFalseStateDisabled: Story = {
+  args: {
+    size: 'regular',
+    roundness: 'default',
+    error: false,
     disabled: true,
+    placeholder: 'Disabled input',
   },
-  name: 'Size: Regular | Roundness: Default | Error: No | State: Disabled',
 };
 
-export const RegularDefaultNoErrorFocus: Story = {
+// Cross-axis: Error + Focus
+export const SizeRegularRoundnessDefaultErrorTrueStateFocus: Story = {
+  args: {
+    size: 'regular',
+    roundness: 'default',
+    error: true,
+    placeholder: 'Invalid input',
+  },
+  play: async ({ canvasElement }) => {
+    const input = canvasElement.querySelector('input');
+    if (input) {
+      input.focus();
+    }
+  },
+};
+
+// Cross-axis: Roundness + Error
+export const SizeRegularRoundnessRoundErrorTrueStateDefault: Story = {
+  args: {
+    size: 'regular',
+    roundness: 'round',
+    error: true,
+    placeholder: 'Invalid input',
+  },
+};
+
+// Cross-axis: Error + Disabled
+export const SizeRegularRoundnessDefaultErrorTrueStateDisabled: Story = {
+  args: {
+    size: 'regular',
+    roundness: 'default',
+    error: true,
+    disabled: true,
+    placeholder: 'Disabled with error',
+  },
+};
+
+// =========== INDEPENDENT COMPONENT PROPERTIES ===========
+
+// Left decoration
+export const WithLeftDecoration: Story = {
   args: {
     size: 'regular',
     roundness: 'default',
     error: false,
-    placeholder: 'Enter text...',
-    autoFocus: true,
-  },
-  name: 'Size: Regular | Roundness: Default | Error: No | State: Focus',
-  decorators: [
-    (Story) => (
-      <div className="p-4 bg-slate-50 rounded-lg">
-        <Story />
-      </div>
+    placeholder: 'With left decoration',
+    leftDecoration: (
+      <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
     ),
-  ],
+  },
 };
 
-export const RegularDefaultNoErrorHover: Story = {
+// Right decoration
+export const WithRightDecoration: Story = {
   args: {
     size: 'regular',
     roundness: 'default',
     error: false,
-    placeholder: 'Enter text...',
-  },
-  name: 'Size: Regular | Roundness: Default | Error: No | State: Hover',
-  decorators: [
-    (Story) => (
-      <style>{`
-        [data-testid="input-hover"] {
-          opacity: 1;
-        }
-        [data-testid="input-hover"] input {
-          border-color: hsl(var(--foreground));
-          background-color: hsl(var(--background));
-        }
-      `}</style>
+    placeholder: 'With right decoration',
+    rightDecoration: (
+      <button type="button" className="text-muted-foreground hover:text-foreground">
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
     ),
-  ],
+  },
 };
 
-// ============================================================================
-// INDEPENDENT AXES — Decoration and Content Variations
-// ============================================================================
-
-export const RegularDefaultNoErrorWithLeftDecoration: Story = {
+// Both decorations
+export const WithBothDecorations: Story = {
   args: {
     size: 'regular',
     roundness: 'default',
     error: false,
-    placeholder: 'Search...',
-    leftDecoration: <Search className="w-4 h-4 text-muted-foreground" />,
-  },
-  name: 'Size: Regular | Roundness: Default | Error: No | With: Left Decoration',
-};
-
-export const RegularDefaultNoErrorWithRightDecoration: Story = {
-  args: {
-    size: 'regular',
-    roundness: 'default',
-    error: false,
-    placeholder: 'Enter text...',
-    rightDecoration: <AlertCircle className="w-4 h-4 text-muted-foreground" />,
-  },
-  name: 'Size: Regular | Roundness: Default | Error: No | With: Right Decoration',
-};
-
-export const RegularDefaultNoErrorWithBothDecorations: Story = {
-  args: {
-    size: 'regular',
-    roundness: 'default',
-    error: false,
-    placeholder: 'Search...',
-    leftDecoration: <Search className="w-4 h-4 text-muted-foreground" />,
-    rightDecoration: <AlertCircle className="w-4 h-4 text-muted-foreground" />,
-  },
-  name: 'Size: Regular | Roundness: Default | Error: No | With: Both Decorations',
-};
-
-export const RegularDefaultNoErrorWithCustomPlaceholder: Story = {
-  args: {
-    size: 'regular',
-    roundness: 'default',
-    error: false,
-    placeholder: 'Email address',
-  },
-  name: 'Size: Regular | Roundness: Default | Error: No | With: Custom Placeholder',
-};
-
-// ============================================================================
-// ADDITIONAL COMBINATIONS — Important State + Property Combinations
-// ============================================================================
-
-export const MiniRoundWithErrorDisabled: Story = {
-  args: {
-    size: 'mini',
-    roundness: 'round',
-    error: true,
-    placeholder: 'Enter text...',
-    disabled: true,
-  },
-  name: 'Size: Mini | Roundness: Round | Error: Yes | State: Disabled',
-};
-
-export const LargeRoundWithErrorResting: Story = {
-  args: {
-    size: 'large',
-    roundness: 'round',
-    error: true,
-    placeholder: 'Enter text...',
-  },
-  name: 'Size: Large | Roundness: Round | Error: Yes | State: Default',
-};
-
-export const SmallDefaultWithErrorAndLeftDecoration: Story = {
-  args: {
-    size: 'small',
-    roundness: 'default',
-    error: true,
-    placeholder: 'Enter text...',
-    leftDecoration: <AlertCircle className="w-4 h-4 text-destructive" />,
-  },
-  name: 'Size: Small | Roundness: Default | Error: Yes | With: Left Decoration',
-};
-
-// ============================================================================
-// COMPREHENSIVE STATE MATRIX — Key Size × Roundness × Error × State
-// ============================================================================
-
-export const MiniDefaultNoErrorDisabled: Story = {
-  args: {
-    size: 'mini',
-    roundness: 'default',
-    error: false,
-    placeholder: 'Enter text...',
-    disabled: true,
-  },
-  name: 'Size: Mini | Roundness: Default | Error: No | State: Disabled',
-};
-
-export const SmallRoundWithErrorDisabled: Story = {
-  args: {
-    size: 'small',
-    roundness: 'round',
-    error: true,
-    placeholder: 'Enter text...',
-    disabled: true,
-  },
-  name: 'Size: Small | Roundness: Round | Error: Yes | State: Disabled',
-};
-
-export const LargeDefaultWithErrorDisabled: Story = {
-  args: {
-    size: 'large',
-    roundness: 'default',
-    error: true,
-    placeholder: 'Enter text...',
-    disabled: true,
-  },
-  name: 'Size: Large | Roundness: Default | Error: Yes | State: Disabled',
-};
-
-export const RegularRoundWithErrorFocus: Story = {
-  args: {
-    size: 'regular',
-    roundness: 'round',
-    error: true,
-    placeholder: 'Enter text...',
-    autoFocus: true,
-  },
-  name: 'Size: Regular | Roundness: Round | Error: Yes | State: Focus',
-  decorators: [
-    (Story) => (
-      <div className="p-4 bg-slate-50 rounded-lg">
-        <Story />
-      </div>
+    placeholder: 'With both decorations',
+    leftDecoration: (
+      <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
     ),
-  ],
-};
-
-// ============================================================================
-// TYPE VARIATIONS
-// ============================================================================
-
-export const TypePassword: Story = {
-  args: {
-    size: 'regular',
-    roundness: 'default',
-    error: false,
-    placeholder: 'Enter password...',
-    type: 'password',
+    rightDecoration: (
+      <button type="button" className="text-muted-foreground hover:text-foreground">
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    ),
   },
-  name: 'Size: Regular | Roundness: Default | Error: No | Type: Password',
-};
-
-export const TypeEmail: Story = {
-  args: {
-    size: 'regular',
-    roundness: 'default',
-    error: false,
-    placeholder: 'Enter email...',
-    type: 'email',
-  },
-  name: 'Size: Regular | Roundness: Default | Error: No | Type: Email',
-};
-
-// ============================================================================
-// INTERACTIVE STATES
-// ============================================================================
-
-export const InteractiveDefault: Story = {
-  args: {
-    size: 'regular',
-    roundness: 'default',
-    error: false,
-    placeholder: 'Enter text...',
-  },
-  name: 'Interactive: Default',
-};
-
-export const InteractiveWithValue: Story = {
-  args: {
-    size: 'regular',
-    roundness: 'default',
-    error: false,
-    placeholder: 'Enter text...',
-    defaultValue: 'Sample text',
-  },
-  name: 'Interactive: With Value',
-};
-
-export const InteractiveError: Story = {
-  args: {
-    size: 'regular',
-    roundness: 'default',
-    error: true,
-    placeholder: 'Enter text...',
-    defaultValue: 'Invalid input',
-  },
-  name: 'Interactive: Error State',
-};
-
-export const InteractiveDisabled: Story = {
-  args: {
-    size: 'regular',
-    roundness: 'default',
-    error: false,
-    placeholder: 'Enter text...',
-    disabled: true,
-    defaultValue: 'Disabled',
-  },
-  name: 'Interactive: Disabled',
 };

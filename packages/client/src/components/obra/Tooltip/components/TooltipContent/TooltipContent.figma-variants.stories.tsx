@@ -4,8 +4,8 @@ import {
   TooltipTrigger,
   TooltipProvider,
   TooltipContent,
-} from '../../../../index';
-import { Button } from '../../../Button';
+} from '@/components/obra/Tooltip';
+import { Button } from '@/components/obra/Button';
 
 const meta = {
   title: 'Figma Variants/TooltipContent',

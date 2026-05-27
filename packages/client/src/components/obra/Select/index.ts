@@ -4,9 +4,11 @@ export {
   SelectContent,
   SelectItem,
   SelectLabel,
+  SelectGroup,
   SelectSeparator,
   SelectOverflowIndicator,
   SelectValue,
+  SelectViewport,
 } from './Select';
 
 export type {
