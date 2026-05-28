@@ -1,8 +1,3 @@
----
-name: figma-from-code-validator
-description: Validate a figma-from-code run by listing all Figma components, screenshotting each component from the live app using Playwright element screenshots, and comparing them against the Figma counterpart. Reports components not visible in the app and structural checks (variables, pages, screens). Use after running figma-from-code to audit correctness. Produces a report at .temp/figma-validation/report.md.
----
-
 # Skill: Figma Rebuild Validator
 
 Validates the output of `figma-from-code` by navigating the live app, screenshotting each component in its natural context, and comparing against the **matching Figma variant** — not the entire component set. Produces a structured report with side-by-side screenshots.
@@ -10,13 +5,13 @@ Validates the output of `figma-from-code` by navigating the live app, screenshot
 This skill can be used two ways:
 
 - **Standalone:** Run directly to validate a completed rebuild (all phases below)
-- **As a reference for Phase 5 subagents:** The orchestrator's Phase 5 dispatches per-tier validation agents that read this skill for the Component App Map, variant resolution logic, and structural QA scripts
+- **As a reference for Phase 5:** The orchestrator's Phase 5 agent reads this skill for the Component App Map, variant resolution logic, and structural QA scripts
 
 ## When to Use
 
 - After running `figma-from-code` to verify the output (standalone)
 - When auditing whether Figma components match their React implementations
-- When the orchestrator's Phase 5 agents need the Component App Map or comparison scripts
+- When the orchestrator's Phase 5 agent needs the Component App Map or comparison scripts
 
 ## Prerequisites
 
@@ -30,7 +25,7 @@ This skill can be used two ways:
 ```
 Phase 1: Inventory        → list all Figma components + classify app visibility
 Phase 1e: Variant Resolve → for each component set, find the specific variant used in the app
-Phase 2: Screenshots      → dispatch 7 parallel subagents (one per tier) to capture app + Figma screenshots and run pixel diffs
+Phase 2: Screenshots      → process each tier sequentially to capture app + Figma screenshots and run pixel diffs
 Phase 3: Structural       → check variables, pages, screen sizes
 Phase 4: Report           → merge tier results, write .temp/figma-validation/report.md
 ```
@@ -165,7 +160,7 @@ The Component App Map assigns each Figma component a URL, Playwright CSS selecto
 
 **This map is built dynamically during Phase 1c** from the `component-map.json` output (Phase 0a). It is NOT hardcoded.
 
-The screenshot script is: `.claude/skills/figma-from-code-validator/screenshot.js`
+The screenshot script is: `.claude/skills/figma-from-code/10-validator/screenshot.js`
 
 Usage:
 
@@ -197,91 +192,55 @@ For each component discovered in `component-map.json`:
 
 ### Selector Strategy by Component Type
 
-| Component Type | Selector Strategy | Example |
-|---------------|-------------------|---------|
-| Always visible (nav, header, sidebar) | `aria-label` or semantic HTML | `header[aria-label="Main navigation"]` |
-| List panels | Class-based width selectors | `[class*="w-[200px]"]` |
-| Detail panels | Flex layout selectors | `[class*="flex-1"][class*="flex-col"]` |
-| Form inputs | Input type + placeholder | `input[placeholder="..."]`, `textarea` |
-| Buttons | Type or role selectors | `button[type="submit"]`, `a[href="..."]` |
-| Inline editing | Click to enter edit mode | `--click "h1"` then screenshot the input |
-| Overlays/dialogs | Click trigger, screenshot overlay | `--click "button[aria-label='...']"` then `[role="dialog"]` |
-| Embedded components | Parent context selectors | `[class*="ComponentName"]` |
+| Component Type                        | Selector Strategy                 | Example                                                     |
+| ------------------------------------- | --------------------------------- | ----------------------------------------------------------- |
+| Always visible (nav, header, sidebar) | `aria-label` or semantic HTML     | `header[aria-label="Main navigation"]`                      |
+| List panels                           | Class-based width selectors       | `[class*="w-[200px]"]`                                      |
+| Detail panels                         | Flex layout selectors             | `[class*="flex-1"][class*="flex-col"]`                      |
+| Form inputs                           | Input type + placeholder          | `input[placeholder="..."]`, `textarea`                      |
+| Buttons                               | Type or role selectors            | `button[type="submit"]`, `a[href="..."]`                    |
+| Inline editing                        | Click to enter edit mode          | `--click "h1"` then screenshot the input                    |
+| Overlays/dialogs                      | Click trigger, screenshot overlay | `--click "button[aria-label='...']"` then `[role="dialog"]` |
+| Embedded components                   | Parent context selectors          | `[class*="ComponentName"]`                                  |
 
 ### Components Not Directly Visible in App
 
 Some components are not rendered by default and require special handling:
 
-| Type | Reason | Capture Strategy |
-|------|--------|-----------------|
-| Loading states (e.g., Skeleton) | Only visible during data fetch | Capture during initial page load before data arrives |
-| Error states (e.g., Alert) | Only visible on errors | Simulate a network error |
-| Hover components (Tooltip, HoverCard) | Requires hover | Use `--hover "trigger-selector"` |
-| Click-to-reveal (Calendar, Popover) | Requires interaction | Use `--click "trigger-selector"` |
-| Embedded primitives (Badge, Checkbox) | Only inside parent components | Screenshot parent, or open container first |
-| Not used in UI | Component exists but not rendered | Skip — note as `not_visible` in report |
+| Type                                  | Reason                            | Capture Strategy                                     |
+| ------------------------------------- | --------------------------------- | ---------------------------------------------------- |
+| Loading states (e.g., Skeleton)       | Only visible during data fetch    | Capture during initial page load before data arrives |
+| Error states (e.g., Alert)            | Only visible on errors            | Simulate a network error                             |
+| Hover components (Tooltip, HoverCard) | Requires hover                    | Use `--hover "trigger-selector"`                     |
+| Click-to-reveal (Calendar, Popover)   | Requires interaction              | Use `--click "trigger-selector"`                     |
+| Embedded primitives (Badge, Checkbox) | Only inside parent components     | Screenshot parent, or open container first           |
+| Not used in UI                        | Component exists but not rendered | Skip — note as `not_visible` in report               |
 
 For hover-only components, use Playwright's `.hover()` API in a custom script rather than the `--click` flag.
 
 ---
 
-## Phase 2: Screenshot Pairs (Parallel by Tier)
+## Phase 2: Screenshot Pairs (Sequential by Tier)
 
-Dispatch one subagent per tier so all tiers run concurrently. Each subagent handles every component in its tier: check for pre-built screenshots, capture app + Figma screenshots, run the pixel diff. Components within a tier share URLs, so each subagent can reuse a single Playwright page load per URL.
+Process all tiers sequentially inline. For each tier, handle every component: check for pre-built screenshots, capture app + Figma screenshots, run the pixel diff. Components within a tier share URLs, so reuse a single Playwright page load per URL where possible.
 
-### Dispatch Strategy
+### Per-Tier Process
 
-Launch all tier subagents in a **single message** with multiple Agent tool calls so they run in parallel. Use `model: "sonnet"` — these agents execute a well-defined capture+compare script, not creative work.
+For each tier in `state.json -> buildOrder.tiers`, process all components using Steps 2a–2e below. After completing a tier, write results to `.temp/figma-validation/tier-{N}-results.json`:
 
-| Subagent | Tier | Components | Notes |
-| -------- | ---- | ---------- | ----- |
-| tier-{N}-{label} | Tier {N} | Components from `component-map.json` tier {N} | Group by shared URL for efficiency |
-
-Dispatch one subagent per tier from `state.json -> buildOrder.tiers`. Name each subagent after its tier number and label.
-
-### Subagent Prompt Template
-
-Each subagent prompt must include:
-
-1. The **fileKey** from state.json
-2. The **resolved variantNodeId** for each component (from Phase 1e)
-3. The **Component App Map rows** for that tier (URL, selector, click selector, figmaVariant)
-4. The **per-component steps** below (2a–2e)
-5. Instruction to write results as JSON to `.temp/figma-validation/tier-{N}-results.json`
-
-```
-You are validating Figma components for Tier {N}. For each component listed below,
-run Steps 2a through 2e from the screenshot-comparison workflow.
-
-File key: {fileKey}
-Output dir: .temp/figma-validation/screenshots/
-
-Components:
-- {ComponentName}: url={url}, selector={selector}, variantNodeId={nodeId}
-  [click={clickSelector}] [hover={hoverSelector}]
-...
-
-For each component, run these steps in order:
-1. Check .temp/figma-from-code/screenshots/{ComponentName}/app.png — copy if exists, else capture
-2. Capture app screenshot using screenshot.js
-3. Check text.json — extract+inject if missing
-4. Run structural QA on the Figma node (use_figma auditNode)
-5. Capture Figma screenshot: get_screenshot(fileKey, variantNodeId), save with curl
-6. Pixel diff: node .claude/skills/screenshot-comparison/compare.js app.png figma.png outputDir/
-
-Write a JSON summary to .temp/figma-validation/tier-{N}-results.json:
-[{ "name": "...", "matchPct": N, "borderMatchPct": N, "verdict": "...", "issues": [...] }, ...]
+```json
+[{ "name": "...", "matchPct": 94.2, "borderMatchPct": 91.0, "verdict": "match", "issues": [] }, ...]
 ```
 
 ### Collecting Results
 
-After all subagents complete, read each `tier-{N}-results.json` and merge into a single component list for Phase 3/4. Components with `verdict: "mismatch"` or `verdict: "minor_diff"` are candidates for Phase 5 fixes.
+After all tiers are processed, read each `tier-{N}-results.json` and merge into a single component list for Phase 3/4. Components with `verdict: "mismatch"` or `verdict: "minor_diff"` are candidates for Phase 5 fixes.
 
 ---
 
-### Per-Component Steps (executed by each subagent)
+### Per-Component Steps
 
-Each subagent runs these steps for every component in its tier.
+Run these steps for every component in each tier.
 
 #### Step 2a — Check for pre-build app screenshot and text
 
@@ -308,7 +267,7 @@ ls .temp/figma-from-code/screenshots/{ComponentName}/text.json 2>/dev/null && ec
 Run the screenshot script with `--selector`:
 
 ```bash
-node .claude/skills/figma-from-code-validator/screenshot.js \
+node .claude/skills/figma-from-code/10-validator/screenshot.js \
   "http://localhost:5173{url}" \
   ".temp/figma-validation/screenshots/{ComponentName}/app.png" \
   --selector "{selector}" \
@@ -318,7 +277,7 @@ node .claude/skills/figma-from-code-validator/screenshot.js \
 If the component requires a click first, use `--click`:
 
 ```bash
-node .claude/skills/figma-from-code-validator/screenshot.js \
+node .claude/skills/figma-from-code/10-validator/screenshot.js \
   "http://localhost:5173{url}" \
   ".temp/figma-validation/screenshots/{ComponentName}/app.png" \
   --selector "{screenshot-selector}" \
@@ -333,7 +292,7 @@ If `text.json` was not produced during the rebuild, run the extractor now and up
 **Extract:**
 
 ```bash
-node .claude/skills/figma-from-code-validator/extract-text.js \
+node .claude/skills/figma-from-code/10-validator/extract-text.js \
   "http://localhost:5173{url}" \
   --selector "{selector}" \
   [--click "{click-selector}"] \
@@ -601,7 +560,7 @@ Update the summary counter: `Fixed after validation: {total fixed so far}`.
 
 | Error                                  | Action                                                                      |
 | -------------------------------------- | --------------------------------------------------------------------------- |
-| Dev server not running                 | Halt, tell user to run `the dev server`                                        |
+| Dev server not running                 | Halt, tell user to run `the dev server`                                     |
 | Component set has no matching variant  | Log resolved variant + all available props; use first child; note in report |
 | Selector not found on page             | Log as `selector_not_found`, skip; note in report                           |
 | Element exists but empty/zero-size     | Log as `element_empty`, try broader selector                                |

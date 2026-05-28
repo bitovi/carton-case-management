@@ -1,9 +1,9 @@
 {
-  "fileKey": "o3eOcCYZWvOpie7ZYRonPO",
-  "nodeId": "1236:328",
-  "url": "https://figma.com/design/o3eOcCYZWvOpie7ZYRonPO?node-id=1236-328",
-  "screenName": "CustomerPage",
-  "route": "/customers/:id",
-  "createdAt": "2026-05-18T00:00:00Z",
-  "updatedAt": "2026-05-19T15:00:00Z"
+  "fileKey": "memZlC4A1XxR5lDuDaGdbR",
+  "nodeId": "1035:741",
+  "url": "https://figma.com/design/memZlC4A1XxR5lDuDaGdbR?node-id=1035-741",
+  "screenName": "CustomersPage",
+  "route": "/customers/",
+  "createdAt": "2026-05-26T00:00:00Z",
+  "updatedAt": "2026-05-26T00:00:00Z"
 }

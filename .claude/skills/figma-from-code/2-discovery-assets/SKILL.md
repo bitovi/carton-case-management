@@ -1,8 +1,3 @@
----
-name: figma-from-code-discovery-assets
-description: Discover all Lucide icons and SVG assets used in the codebase, extract their SVG data, and map which components use which icons. Produces icons.json. This is Phase 0b of figma-from-code.
----
-
 # Skill: Icon & Asset Discovery
 
 Discovers all Lucide icons and SVG file assets imported across the codebase, extracts their SVG markup, and maps which components use which icons. This is pure static analysis — no dev server or Figma access needed.
@@ -20,16 +15,16 @@ Discovers all Lucide icons and SVG file assets imported across the codebase, ext
 
 ## Required Inputs
 
-| Input | Description |
-|-------|-------------|
+| Input       | Description                                                                 |
+| ----------- | --------------------------------------------------------------------------- |
 | `sourceDir` | Path to the source directory to scan (e.g., `src/`, `packages/client/src/`) |
 
 ## Output Files
 
 Written to `.temp/figma-from-code/`:
 
-| File | Contents |
-|------|----------|
+| File         | Contents                                                       |
+| ------------ | -------------------------------------------------------------- |
 | `icons.json` | Icon/asset manifest with SVG strings and per-component mapping |
 
 ### `icons.json` structure
@@ -39,7 +34,7 @@ Written to `.temp/figma-from-code/`:
   "icons": [
     {
       "name": "Check",
-      "elements": [["path", {"d": "M20 6 9 17l-5-5"}]],
+      "elements": [["path", { "d": "M20 6 9 17l-5-5" }]],
       "svgString": "<svg ...>...</svg>",
       "usedBy": ["Button", "Checkbox"]
     }
@@ -76,12 +71,13 @@ mkdir -p .temp/figma-from-code/
 ### 2. Run the icon extraction script
 
 ```bash
-node .claude/skills/figma-from-code-validator/extract-icons.js \
+node .claude/skills/figma-from-code/10-validator/extract-icons.js \
   --scan {sourceDir} \
   --output .temp/figma-from-code/icons.json
 ```
 
 The script:
+
 - Recursively finds all `.tsx?` files (excludes `node_modules`, test files)
 - Parses static imports from `lucide-react`
 - Resolves each icon's SVG from `node_modules/lucide-react/dist/esm/icons/`
@@ -98,7 +94,26 @@ Read `.temp/figma-from-code/icons.json` and extract:
 - `icons[].name` — list of icon names
 - `assets[].name` — list of asset names
 
-### 4. Report
+### 4. Write icons summary for the orchestrator
+
+Extract the data the orchestrator needs into a small summary file so it never has to read the full `icons.json` (which contains SVG strings):
+
+```bash
+node -e "
+  const data = JSON.parse(require('fs').readFileSync('.temp/figma-from-code/icons.json','utf-8'));
+  const summary = {
+    iconCount: data.summary.totalIcons,
+    icons: data.icons.map(i => i.name),
+    assetCount: data.summary.totalAssets,
+    assets: data.assets.map(a => a.name)
+  };
+  require('fs').writeFileSync('.temp/figma-from-code/icons-summary.json', JSON.stringify(summary, null, 2));
+"
+```
+
+Write to `.temp/figma-from-code/icons-summary.json`. The orchestrator reads only this file (~500 bytes) instead of the full icons.json.
+
+### 5. Report
 
 ```
 Icon & Asset Discovery complete:
@@ -109,9 +124,9 @@ Icon & Asset Discovery complete:
 
 ## Scripts Reference
 
-| Script | Location | Purpose |
-|--------|----------|---------|
-| `extract-icons.js` | `.claude/skills/figma-from-code-validator/extract-icons.js` | Static analysis of imports to find icons/assets and extract SVG data |
+| Script             | Location                                                       | Purpose                                                              |
+| ------------------ | -------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `extract-icons.js` | `.claude/skills/figma-from-code/10-validator/extract-icons.js` | Static analysis of imports to find icons/assets and extract SVG data |
 
 Do NOT modify this script.
 
@@ -121,8 +136,8 @@ If called with `resume: true`, check whether `.temp/figma-from-code/icons.json` 
 
 ## Error Handling
 
-| Scenario | Action |
-|----------|--------|
-| `extract-icons.js` fails | Verify the source directory exists and `node_modules/lucide-react` is installed |
-| Icon SVG resolution fails | Script logs warnings per-icon; other icons still extracted |
-| SVG file asset not found on disk | Script logs warning; asset entry created without `svgString` |
+| Scenario                         | Action                                                                          |
+| -------------------------------- | ------------------------------------------------------------------------------- |
+| `extract-icons.js` fails         | Verify the source directory exists and `node_modules/lucide-react` is installed |
+| Icon SVG resolution fails        | Script logs warnings per-icon; other icons still extracted                      |
+| SVG file asset not found on disk | Script logs warning; asset entry created without `svgString`                    |

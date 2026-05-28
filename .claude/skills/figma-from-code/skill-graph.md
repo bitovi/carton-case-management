@@ -5,52 +5,63 @@ Recursive set of all skills called (directly or transitively) by `figma-from-cod
 ## Recursive tree
 
 ```
-figma-from-code (orchestrator)
-├── figma-from-code-discovery-components       (Phase 0a)
+figma-from-code (orchestrator — thin dispatcher, never calls use_figma)
+├── 1-discovery-components                     (Phase 0a, subagent)
 │   ├── site-component-map                     (provides map-components.js)
 │   └── figma-component-dependency-map         (build-order reference)
 │       └── figma:figma-generate-library       (plugin skill)
-├── figma-from-code-discovery-assets           (Phase 0b)
-├── figma-setup-variables                      (Phase 1)
-│   ├── figma:figma-generate-library           (plugin)
-│   └── figma:figma-use                        (plugin — for use_figma)
-├── figma-setup-file-structure                 (Phase 2)
-│   ├── figma:figma-generate-library           (plugin)
-│   └── figma:figma-use                        (plugin)
-├── figma-from-code-precapture                 (Phase 2.5)
+├── 2-discovery-assets                         (Phase 0b, subagent)
+├── 3-setup-tokens                             (Phase 1, subagent)
+│   ├── figma-setup-variables                  (variable collection creation)
+│   │   ├── figma:figma-generate-library       (plugin)
+│   │   └── figma:figma-use                    (plugin — for use_figma)
+│   └── resolve-colors.js                      (CSS color resolution)
+├── 4-setup-structure                          (Phase 2, subagent)
+│   ├── figma-setup-file-structure             (pages + foundations)
+│   │   ├── figma:figma-generate-library       (plugin)
+│   │   └── figma:figma-use                    (plugin)
+│   └── use_figma (tier frames, screens frame) (inline in subagent)
+├── 5-precapture                               (Phase 2.5, haiku subagents)
 │   └── site-component-map                     (script source)
-├── figma-from-code-build-tier                 (Phase 3)
-│   ├── figma-from-code-build-component        (per component)
+├── 6-build-tier                               (Phase 3, opus subagents)
+│   ├── icon preamble subagent                 (sonnet)
+│   ├── 7-build-component                      (per component, opus)
 │   │   └── screenshot-comparison              (pixel diff)
-│   └── site-component-map                     (build-order reference)
-├── figma-from-code-build-screens              (Phase 4)
-│   └── site-component-map                     (route reference)
-└── figma-from-code-validator                  (Phase 5 / standalone)
-    ├── screenshot-comparison
-    └── site-component-map                     (component app map)
+│   └── collect-tier-results.js                (result aggregation)
+├── 8-build-screens                            (Phase 4, opus subagents)
+│   ├── site-component-map                     (route reference)
+│   └── collect-screen-results.js              (result aggregation)
+└── 9-validate                                 (Phase 5, subagent)
+    ├── 10-validator                           (full validation workflow)
+    │   ├── screenshot-comparison
+    │   └── site-component-map                 (component app map)
+    └── cleanup use_figma                      (inline in subagent)
 ```
 
-## Flat deduplicated list (14 skills)
+## Flat deduplicated list (17 skills)
 
-### Project-local (12)
+### Project-local (15)
 
-1. `figma-from-code-discovery-components`
-2. `figma-from-code-discovery-assets`
-3. `figma-setup-variables`
-4. `figma-setup-file-structure`
-5. `figma-from-code-precapture`
-6. `figma-from-code-build-tier`
-7. `figma-from-code-build-component`
-8. `figma-from-code-build-screens`
-9. `figma-from-code-validator`
-10. `figma-component-dependency-map`
-11. `screenshot-comparison`
-12. `site-component-map`
+1. `1-discovery-components`
+2. `2-discovery-assets`
+3. `3-setup-tokens`
+4. `4-setup-structure`
+5. `figma-setup-variables`
+6. `figma-setup-file-structure`
+7. `5-precapture`
+8. `6-build-tier`
+9. `7-build-component`
+10. `8-build-screens`
+11. `9-validate`
+12. `10-validator`
+13. `figma-component-dependency-map`
+14. `screenshot-comparison`
+15. `site-component-map`
 
 ### Plugin skills (2)
 
-13. `figma:figma-generate-library`
-14. `figma:figma-use`
+16. `figma:figma-generate-library`
+17. `figma:figma-use`
 
 ## Convergence points
 
@@ -61,4 +72,15 @@ Shared utility skills with the highest fan-in:
 - `screenshot-comparison` — pulled in by 2 skills (build-component, validator)
 - `figma:figma-use` — pulled in by 2 skills (setup-variables, setup-file-structure)
 
-These are the load-bearing dependencies — changes here cascade widely.
+## Context optimization
+
+The orchestrator never reads files larger than ~3KB. Large files are read only by the subagents that need them:
+
+| File                   | Size  | Read by                                                   |
+| ---------------------- | ----- | --------------------------------------------------------- |
+| `component-map.json`   | ~48KB | discovery-components, build-tier, build-screens subagents |
+| `icons.json`           | ~18KB | discovery-assets, icon preamble subagent                  |
+| `variables.json`       | ~17KB | Phase 3 build subagents                                   |
+| `resolved-colors.json` | ~63KB | Phase 3 build subagents                                   |
+
+The orchestrator reads only summary files (~500B–3KB each).
