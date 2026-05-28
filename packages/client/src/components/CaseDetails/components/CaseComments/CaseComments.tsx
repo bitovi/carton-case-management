@@ -3,21 +3,43 @@ import type { FormEvent } from 'react';
 import { trpc } from '@/lib/trpc';
 import { VoteButton } from '@/components/common';
 import { Textarea } from '@/components/obra';
-import type { CaseCommentsProps } from './types';
-
-type VoteType = 'up' | 'down';
-
-type CommentReaction = {
-  upvotes: number;
-  downvotes: number;
-  userVote: VoteType | 'none';
-};
+import type { CaseCommentsProps, VoteType, CommentReaction } from './types';
 
 const DEFAULT_REACTION: CommentReaction = {
-  upvotes: 1,
-  downvotes: 1,
+  upvotes: 0,
+  downvotes: 0,
   userVote: 'none',
 };
+
+function calculateNextReaction(current: CommentReaction, voteType: VoteType): CommentReaction {
+  const next = { ...current };
+
+  if (current.userVote === voteType) {
+    next.userVote = 'none';
+    if (voteType === 'up') {
+      next.upvotes = Math.max(0, current.upvotes - 1);
+    } else {
+      next.downvotes = Math.max(0, current.downvotes - 1);
+    }
+    return next;
+  }
+
+  if (voteType === 'up') {
+    next.userVote = 'up';
+    next.upvotes = current.upvotes + 1;
+    if (current.userVote === 'down') {
+      next.downvotes = Math.max(0, current.downvotes - 1);
+    }
+    return next;
+  }
+
+  next.userVote = 'down';
+  next.downvotes = current.downvotes + 1;
+  if (current.userVote === 'up') {
+    next.upvotes = Math.max(0, current.upvotes - 1);
+  }
+  return next;
+}
 
 export function CaseComments({ caseData }: CaseCommentsProps) {
   const [newComment, setNewComment] = useState('');
@@ -95,28 +117,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
   const handleVote = (commentId: string, voteType: VoteType) => {
     setReactions((previous) => {
       const current = previous[commentId] ?? DEFAULT_REACTION;
-      const next = { ...current };
-
-      if (current.userVote === voteType) {
-        next.userVote = 'none';
-        if (voteType === 'up') {
-          next.upvotes = Math.max(0, current.upvotes - 1);
-        } else {
-          next.downvotes = Math.max(0, current.downvotes - 1);
-        }
-      } else if (voteType === 'up') {
-        next.userVote = 'up';
-        next.upvotes = current.upvotes + 1;
-        if (current.userVote === 'down') {
-          next.downvotes = Math.max(0, current.downvotes - 1);
-        }
-      } else {
-        next.userVote = 'down';
-        next.downvotes = current.downvotes + 1;
-        if (current.userVote === 'up') {
-          next.upvotes = Math.max(0, current.upvotes - 1);
-        }
-      }
+      const next = calculateNextReaction(current, voteType);
 
       return {
         ...previous,
@@ -172,7 +173,6 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
                   active={getReaction(comment.id).userVote === 'up'}
                   showCount
                   count={getReaction(comment.id).upvotes}
-                  voters={[`${comment.author.firstName} ${comment.author.lastName}`]}
                   onClick={() => handleVote(comment.id, 'up')}
                 />
                 <VoteButton
@@ -180,7 +180,6 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
                   active={getReaction(comment.id).userVote === 'down'}
                   showCount
                   count={getReaction(comment.id).downvotes}
-                  voters={[`${comment.author.firstName} ${comment.author.lastName}`]}
                   onClick={() => handleVote(comment.id, 'down')}
                 />
               </div>

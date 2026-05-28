@@ -1,3 +1,11 @@
+export type VoteType = 'up' | 'down';
+
+export type CommentReaction = {
+  upvotes: number;
+  downvotes: number;
+  userVote: VoteType | 'none';
+};
+
 export type CaseCommentsProps = {
   caseData: {
     id: string;

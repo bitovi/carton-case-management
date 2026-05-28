@@ -41,16 +41,18 @@ describe('CaseComments', () => {
 
     expect(upvoteButton).toHaveAttribute('aria-pressed', 'false');
     expect(downvoteButton).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getAllByText('1')).toHaveLength(2);
+    expect(screen.getAllByText('0')).toHaveLength(2);
 
     await user.click(upvoteButton);
     expect(upvoteButton).toHaveAttribute('aria-pressed', 'true');
     expect(downvoteButton).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getAllByText('0')).toHaveLength(1);
+    expect(screen.getByText('1')).toBeInTheDocument();
 
     await user.click(downvoteButton);
     expect(upvoteButton).toHaveAttribute('aria-pressed', 'false');
     expect(downvoteButton).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getAllByText('0')).toHaveLength(1);
+    expect(screen.getByText('1')).toBeInTheDocument();
   });
 });
