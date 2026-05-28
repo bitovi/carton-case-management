@@ -1,11 +1,27 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { trpc } from '@/lib/trpc';
+import { VoteButton } from '@/components/common';
 import { Textarea } from '@/components/obra';
 import type { CaseCommentsProps } from './types';
 
+type VoteType = 'up' | 'down';
+
+type CommentReaction = {
+  upvotes: number;
+  downvotes: number;
+  userVote: VoteType | 'none';
+};
+
+const DEFAULT_REACTION: CommentReaction = {
+  upvotes: 1,
+  downvotes: 1,
+  userVote: 'none',
+};
+
 export function CaseComments({ caseData }: CaseCommentsProps) {
   const [newComment, setNewComment] = useState('');
+  const [reactions, setReactions] = useState<Record<string, CommentReaction>>({});
   const utils = trpc.useUtils();
 
   // Fetch first user to use as current user (in production this would come from auth)
@@ -74,6 +90,41 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
     });
   };
 
+  const getReaction = (commentId: string): CommentReaction => reactions[commentId] ?? DEFAULT_REACTION;
+
+  const handleVote = (commentId: string, voteType: VoteType) => {
+    setReactions((previous) => {
+      const current = previous[commentId] ?? DEFAULT_REACTION;
+      const next = { ...current };
+
+      if (current.userVote === voteType) {
+        next.userVote = 'none';
+        if (voteType === 'up') {
+          next.upvotes = Math.max(0, current.upvotes - 1);
+        } else {
+          next.downvotes = Math.max(0, current.downvotes - 1);
+        }
+      } else if (voteType === 'up') {
+        next.userVote = 'up';
+        next.upvotes = current.upvotes + 1;
+        if (current.userVote === 'down') {
+          next.downvotes = Math.max(0, current.downvotes - 1);
+        }
+      } else {
+        next.userVote = 'down';
+        next.downvotes = current.downvotes + 1;
+        if (current.userVote === 'up') {
+          next.upvotes = Math.max(0, current.upvotes - 1);
+        }
+      }
+
+      return {
+        ...previous,
+        [commentId]: next,
+      };
+    });
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-base font-semibold">Comments</h2>
@@ -115,6 +166,24 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
                 </div>
               </div>
               <p className="text-sm text-gray-700">{comment.content}</p>
+              <div className="flex items-center gap-3">
+                <VoteButton
+                  type="up"
+                  active={getReaction(comment.id).userVote === 'up'}
+                  showCount
+                  count={getReaction(comment.id).upvotes}
+                  voters={[`${comment.author.firstName} ${comment.author.lastName}`]}
+                  onClick={() => handleVote(comment.id, 'up')}
+                />
+                <VoteButton
+                  type="down"
+                  active={getReaction(comment.id).userVote === 'down'}
+                  showCount
+                  count={getReaction(comment.id).downvotes}
+                  voters={[`${comment.author.firstName} ${comment.author.lastName}`]}
+                  onClick={() => handleVote(comment.id, 'down')}
+                />
+              </div>
             </div>
           ))
         ) : (
