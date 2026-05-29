@@ -1,10 +1,15 @@
 import { useParams } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
-import { formatTaskNumber } from '@carton/shared/client';
+import { TaskInformation } from './components/TaskInformation';
+import { TaskEssentialDetails } from './components/TaskEssentialDetails';
+import { TaskComments } from './components/TaskComments';
 
 export function TaskDetails() {
   const { id } = useParams<{ id: string }>();
-  const { data: taskData, isLoading } = trpc.task.getById.useQuery({ id: id! }, { enabled: !!id });
+  const { data: taskData, isLoading } = trpc.task.getById.useQuery(
+    { id: id! },
+    { enabled: !!id }
+  );
 
   if (isLoading) {
     return (
@@ -21,30 +26,27 @@ export function TaskDetails() {
     return (
       <div className="flex flex-1 items-center justify-center">
         <div className="text-center text-gray-500">
-          <p className="text-lg font-medium mb-2">Task not found</p>
-          <p className="text-sm">This task may have been deleted or does not exist</p>
+          <p className="text-lg font-medium mb-2">No task selected</p>
+          <p className="text-sm">Select a task from the list or create a new one to get started</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-white rounded-lg shadow-sm p-6 h-full flex-1 overflow-auto">
-      <p className="text-sm text-gray-600 mb-2">{formatTaskNumber(taskData.id, taskData.createdAt)}</p>
-      <h1 className="text-2xl font-bold mb-4">{taskData.title}</h1>
-      <p className="text-gray-800 whitespace-pre-wrap mb-6">{taskData.description}</p>
+    <div className="flex flex-1 flex-col">
+      <div className="flex flex-col w-full lg:hidden gap-4 pb-6">
+        <TaskInformation taskId={taskData.id} taskData={taskData} />
+        <TaskEssentialDetails taskId={taskData.id} taskData={taskData} />
+      </div>
 
-      <div className="space-y-2 text-sm text-gray-700">
-        <p>
-          <span className="font-semibold">Assigned Case:</span> {taskData.case.title}
-        </p>
-        <p>
-          <span className="font-semibold">Assigned Employee:</span>{' '}
-          {taskData.assignee ? `${taskData.assignee.firstName} ${taskData.assignee.lastName}` : 'Unassigned'}
-        </p>
-        <p>
-          <span className="font-semibold">Priority:</span> {taskData.priority}
-        </p>
+      <div className="hidden lg:flex flex-1 gap-4">
+        <div className="flex flex-col px-1 flex-1 gap-6">
+          <TaskInformation taskId={taskData.id} taskData={taskData} />
+          <TaskComments taskData={taskData} />
+        </div>
+        <div className="h-[9px]" />
+        <TaskEssentialDetails taskId={taskData.id} taskData={taskData} />
       </div>
     </div>
   );

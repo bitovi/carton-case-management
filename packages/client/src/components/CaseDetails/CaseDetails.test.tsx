@@ -35,7 +35,8 @@ const mockCaseData = {
   tasks: [
     {
       id: 'task-1',
-      title: 'Follow up with customer',
+      summary: 'Follow up with customer',
+      status: 'TO_DO',
       createdAt: new Date(2024, 0, 3).toISOString(),
     },
   ],

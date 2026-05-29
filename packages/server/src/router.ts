@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { router, publicProcedure } from './trpc.js';
-import { formatDate, casePrioritySchema, caseStatusSchema, taskPrioritySchema } from '@carton/shared';
+import { formatDate, casePrioritySchema, caseStatusSchema, taskStatusSchema } from '@carton/shared';
 import { TRPCError } from '@trpc/server';
 
 export const appRouter = router({
@@ -321,8 +321,11 @@ export const appRouter = router({
           tasks: {
             select: {
               id: true,
-              title: true,
+              summary: true,
+              description: true,
+              status: true,
               createdAt: true,
+              updatedAt: true,
             },
             orderBy: {
               createdAt: 'desc',
@@ -406,16 +409,6 @@ export const appRouter = router({
                 createdAt: 'desc',
               },
             },
-            tasks: {
-              select: {
-                id: true,
-                title: true,
-                createdAt: true,
-              },
-              orderBy: {
-                createdAt: 'desc',
-              },
-            },
           },
         });
       }),
@@ -427,38 +420,52 @@ export const appRouter = router({
   }),
 
   task: router({
-    list: publicProcedure.query(async ({ ctx }) => {
-      return ctx.prisma.task.findMany({
-        include: {
-          case: {
-            select: {
-              id: true,
-              title: true,
-              createdAt: true,
+    list: publicProcedure
+      .input(
+        z
+          .object({
+            status: taskStatusSchema.optional(),
+            assignedTo: z.string().optional(),
+            caseId: z.string().optional(),
+          })
+          .optional()
+      )
+      .query(async ({ ctx, input }) => {
+        return ctx.prisma.task.findMany({
+          where: {
+            ...(input?.status ? { status: input.status } : {}),
+            ...(input?.assignedTo ? { assignedTo: input.assignedTo } : {}),
+            ...(input?.caseId ? { caseId: input.caseId } : {}),
+          },
+          include: {
+            case: {
+              select: {
+                id: true,
+                title: true,
+              },
+            },
+            creator: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+            assignee: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
             },
           },
-          assignee: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              email: true,
-            },
+          orderBy: {
+            createdAt: 'desc',
           },
-          creator: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              email: true,
-            },
-          },
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
-    }),
+        });
+      }),
     getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
       return ctx.prisma.task.findUnique({
         where: { id: input.id },
@@ -467,15 +474,6 @@ export const appRouter = router({
             select: {
               id: true,
               title: true,
-              createdAt: true,
-            },
-          },
-          assignee: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              email: true,
             },
           },
           creator: {
@@ -486,18 +484,40 @@ export const appRouter = router({
               email: true,
             },
           },
+          assignee: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+          comments: {
+            include: {
+              author: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  email: true,
+                },
+              },
+            },
+            orderBy: {
+              createdAt: 'desc',
+            },
+          },
         },
       });
     }),
     create: publicProcedure
       .input(
         z.object({
-          title: z.string().min(1),
+          summary: z.string().min(1),
           description: z.string().min(1),
-          priority: taskPrioritySchema.optional(),
-          dueDate: z.coerce.date().optional(),
           caseId: z.string(),
           assignedTo: z.string().optional(),
+          status: taskStatusSchema.optional(),
           createdBy: z.string(),
         })
       )
@@ -506,6 +526,57 @@ export const appRouter = router({
           data: input,
         });
       }),
+    update: publicProcedure
+      .input(
+        z.object({
+          id: z.string(),
+          summary: z.string().optional(),
+          description: z.string().optional(),
+          status: taskStatusSchema.optional(),
+          caseId: z.string().optional(),
+          assignedTo: z.string().nullable().optional(),
+          dueDate: z.string().nullable().optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        return ctx.prisma.task.update({
+          where: { id },
+          data: {
+            ...data,
+            updatedAt: new Date(),
+          },
+          include: {
+            case: {
+              select: {
+                id: true,
+                title: true,
+              },
+            },
+            creator: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+            assignee: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+          },
+        });
+      }),
+    delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+      return ctx.prisma.task.delete({
+        where: { id: input.id },
+      });
+    }),
   }),
 
   // Comment routes
@@ -513,7 +584,8 @@ export const appRouter = router({
     create: publicProcedure
       .input(
         z.object({
-          caseId: z.string(),
+          caseId: z.string().optional(),
+          taskId: z.string().optional(),
           content: z.string().min(1),
         })
       )

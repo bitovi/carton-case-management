@@ -71,7 +71,8 @@ const mockCase: NonNullable<CaseByIdOutput> = {
   tasks: [
     {
       id: 'task-1',
-      title: 'Follow up with customer',
+      summary: 'Follow up with customer',
+      status: 'TO_DO',
       createdAt: new Date('2024-01-16T12:00:00Z'),
     },
   ],

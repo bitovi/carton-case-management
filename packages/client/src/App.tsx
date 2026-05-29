@@ -58,12 +58,12 @@ function App() {
             <Route path="/" element={<CasePage />} />
             <Route path="/cases/" element={<CasePage />} />
             <Route path="/cases/:id" element={<CasePage />} />
+            <Route path="/tasks/" element={<TaskPage />} />
+            <Route path="/tasks/:id" element={<TaskPage />} />
             <Route path="/users/" element={<UserPage />} />
             <Route path="/users/:id" element={<UserPage />} />
             <Route path="/customers/" element={<CustomerPage />} />
             <Route path="/customers/:id" element={<CustomerPage />} />
-            <Route path="/tasks/" element={<TaskPage />} />
-            <Route path="/tasks/:id" element={<TaskPage />} />
           </Routes>
         </main>
       </div>

@@ -93,7 +93,7 @@ export function TaskList({ onTaskClick }: TaskListProps) {
               }`}
             >
               <div className="flex flex-col items-start text-sm leading-[21px] w-full lg:w-[167px]">
-                <p className="font-semibold text-[#00848b] w-full truncate">{taskItem.title}</p>
+                <p className="font-semibold text-[#00848b] w-full truncate">{taskItem.summary}</p>
                 <p className="font-normal text-[#192627] w-full truncate">
                   {taskItem.case.title}
                 </p>

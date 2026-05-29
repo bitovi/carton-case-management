@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatDate, formatCaseNumber, formatTaskNumber } from './utils.js';
+import { formatDate, formatCaseNumber } from './utils.js';
 
 describe('formatDate', () => {
   it('formats a date to readable string', () => {
@@ -45,24 +45,6 @@ describe('formatCaseNumber', () => {
     const result = formatCaseNumber(id, date);
 
     expect(result).toBe('#CAS-251231-OPQRSTUV');
-  });
-
-  describe('formatTaskNumber', () => {
-    it('formats task number with Date object', () => {
-      const id = 'abcd1234-5678-90ef-ghij-klmnopqrstuv';
-      const date = new Date('2025-12-31T10:30:00Z');
-      const result = formatTaskNumber(id, date);
-
-      expect(result).toBe('#TSK-251231-OPQRSTUV');
-    });
-
-    it('formats task number with string date', () => {
-      const id = 'test-id-12345678';
-      const date = new Date(2026, 0, 15);
-      const result = formatTaskNumber(id, date.toISOString());
-
-      expect(result).toBe('#TSK-260115-12345678');
-    });
   });
 
   it('formats case number with string date', () => {

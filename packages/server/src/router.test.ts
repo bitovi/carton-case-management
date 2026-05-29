@@ -31,6 +31,8 @@ describe('appRouter', () => {
         findMany: vi.fn(),
         findUnique: vi.fn(),
         create: vi.fn(),
+        update: vi.fn(),
+        delete: vi.fn(),
       },
     };
 
@@ -374,8 +376,11 @@ describe('appRouter', () => {
             tasks: {
               select: {
                 id: true,
-                title: true,
+                summary: true,
+                description: true,
+                status: true,
                 createdAt: true,
+                updatedAt: true,
               },
               orderBy: {
                 createdAt: 'desc',
@@ -390,22 +395,22 @@ describe('appRouter', () => {
     describe('task', () => {
       describe('list', () => {
         it('returns all tasks', async () => {
-          const mockTasks = [{ id: 'task-1', title: 'Task 1' }];
+          const mockTasks = [{ id: 'task-1', summary: 'Task 1' }];
           mockPrisma.task.findMany.mockResolvedValue(mockTasks);
 
           const caller = appRouter.createCaller(mockContext);
           const result = await caller.task.list();
 
           expect(mockPrisma.task.findMany).toHaveBeenCalledWith({
+            where: {},
             include: {
               case: {
                 select: {
                   id: true,
                   title: true,
-                  createdAt: true,
                 },
               },
-              assignee: {
+              creator: {
                 select: {
                   id: true,
                   firstName: true,
@@ -413,7 +418,7 @@ describe('appRouter', () => {
                   email: true,
                 },
               },
-              creator: {
+              assignee: {
                 select: {
                   id: true,
                   firstName: true,
@@ -432,7 +437,7 @@ describe('appRouter', () => {
 
       describe('getById', () => {
         it('returns task by id', async () => {
-          const mockTask = { id: 'task-1', title: 'Task 1' };
+          const mockTask = { id: 'task-1', summary: 'Task 1' };
           mockPrisma.task.findUnique.mockResolvedValue(mockTask);
 
           const caller = appRouter.createCaller(mockContext);
@@ -445,7 +450,14 @@ describe('appRouter', () => {
                 select: {
                   id: true,
                   title: true,
-                  createdAt: true,
+                },
+              },
+              creator: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  email: true,
                 },
               },
               assignee: {
@@ -456,12 +468,19 @@ describe('appRouter', () => {
                   email: true,
                 },
               },
-              creator: {
-                select: {
-                  id: true,
-                  firstName: true,
-                  lastName: true,
-                  email: true,
+              comments: {
+                include: {
+                  author: {
+                    select: {
+                      id: true,
+                      firstName: true,
+                      lastName: true,
+                      email: true,
+                    },
+                  },
+                },
+                orderBy: {
+                  createdAt: 'desc',
                 },
               },
             },
@@ -473,11 +492,10 @@ describe('appRouter', () => {
       describe('create', () => {
         it('creates a task with required fields', async () => {
           const input = {
-            title: 'New Task',
+            summary: 'New Task',
             description: 'Task description',
             caseId: 'case-1',
             createdBy: 'user-1',
-            priority: 'MEDIUM' as const,
           };
 
           mockPrisma.task.create.mockResolvedValue({ id: 'task-1', ...input });
@@ -610,16 +628,6 @@ describe('appRouter', () => {
                 createdAt: 'desc',
               },
             },
-            tasks: {
-              select: {
-                id: true,
-                title: true,
-                createdAt: true,
-              },
-              orderBy: {
-                createdAt: 'desc',
-              },
-            },
           },
         });
         expect(result).toEqual(mockUpdatedCase);
@@ -675,16 +683,6 @@ describe('appRouter', () => {
                     email: true,
                   },
                 },
-              },
-              orderBy: {
-                createdAt: 'desc',
-              },
-            },
-            tasks: {
-              select: {
-                id: true,
-                title: true,
-                createdAt: true,
               },
               orderBy: {
                 createdAt: 'desc',

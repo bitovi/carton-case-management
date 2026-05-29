@@ -27,18 +27,3 @@ export function formatCaseNumber(id: string, createdAt: Date | string): string {
 
   return `#CAS-${year}${month}${day}-${idSuffix}`;
 }
-
-/**
- * Generates a task number from task ID and creation date
- * Format: #TSK-YYMMDD-{last 8 digits of id}
- */
-export function formatTaskNumber(id: string, createdAt: Date | string): string {
-  const date = typeof createdAt === 'string' ? new Date(createdAt) : createdAt;
-
-  const year = date.getFullYear().toString().slice(-2);
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const day = date.getDate().toString().padStart(2, '0');
-  const idSuffix = id.slice(-8).toUpperCase();
-
-  return `#TSK-${year}${month}${day}-${idSuffix}`;
-}

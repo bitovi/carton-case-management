@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/obra/Button';
 import { Input } from '@/components/obra/Input';
@@ -12,23 +12,33 @@ import {
   SelectValue,
 } from '@/components/obra/Select';
 import { Label } from '@/components/obra/Label';
-import { TASK_PRIORITY_OPTIONS, type TaskPriority } from '@carton/shared/client';
+
+type ValidationErrors = {
+  summary?: string;
+  description?: string;
+  caseId?: string;
+};
 
 export function CreateTaskPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const utils = trpc.useUtils();
-  const [title, setTitle] = useState('');
+
+  const presetCaseId = searchParams.get('caseId') || '';
+
+  const [summary, setSummary] = useState('');
   const [description, setDescription] = useState('');
-  const [priority, setPriority] = useState<TaskPriority>('MEDIUM');
-  const [dueDate, setDueDate] = useState('');
-  const [caseId, setCaseId] = useState('');
+  const [caseId, setCaseId] = useState(presetCaseId);
   const [assignedTo, setAssignedTo] = useState('');
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const [touched, setTouched] = useState<Set<string>>(new Set());
 
-  const { data: users } = trpc.user.list.useQuery();
   const { data: cases } = trpc.case.list.useQuery();
-  const { data: currentUser } = trpc.auth.me.useQuery();
+  const { data: users } = trpc.user.list.useQuery();
 
-  const canSubmit = Boolean(title.trim() && description.trim());
+  const defaultUser = users?.find(
+    (user) => user.firstName === 'Alex' && user.lastName === 'Morgan'
+  );
 
   const createTask = trpc.task.create.useMutation({
     onSuccess: (data) => {
@@ -38,21 +48,50 @@ export function CreateTaskPage() {
     },
   });
 
+  const validateForm = (): boolean => {
+    const errors: ValidationErrors = {};
+
+    if (!summary.trim()) {
+      errors.summary = 'Task summary is required';
+    }
+
+    if (!description.trim()) {
+      errors.description = 'Task description is required';
+    }
+
+    if (!caseId) {
+      errors.caseId = 'Case selection is required';
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleBlur = (field: string) => {
+    setTouched((prev) => new Set(prev).add(field));
+    validateForm();
+  };
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    if (!canSubmit || !caseId || !currentUser) {
+    setTouched(new Set(['summary', 'description', 'caseId']));
+
+    if (!validateForm()) {
+      return;
+    }
+
+    if (!defaultUser) {
+      alert('Default user (Alex Morgan) not found. Please ensure the database is seeded correctly.');
       return;
     }
 
     createTask.mutate({
-      title: title.trim(),
-      description: description.trim(),
-      priority,
-      dueDate: dueDate ? new Date(`${dueDate}T00:00:00`) : undefined,
+      summary,
+      description,
       caseId,
       assignedTo: assignedTo || undefined,
-      createdBy: currentUser.id,
+      createdBy: defaultUser.id,
     });
   };
 
@@ -62,15 +101,23 @@ export function CreateTaskPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
         <div className="space-y-2">
-          <Label htmlFor="title" className="text-sm font-medium">
-            Task Title *
+          <Label htmlFor="summary" className="text-sm font-medium">
+            Task Summary *
           </Label>
           <Input
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter task title"
+            id="summary"
+            value={summary}
+            onChange={(e) => {
+              setSummary(e.target.value);
+              if (touched.has('summary')) validateForm();
+            }}
+            onBlur={() => handleBlur('summary')}
+            placeholder="Enter task summary"
+            error={touched.has('summary') && !!validationErrors.summary}
           />
+          {touched.has('summary') && validationErrors.summary && (
+            <p className="text-sm text-red-600">{validationErrors.summary}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -80,41 +127,62 @@ export function CreateTaskPage() {
           <Textarea
             id="description"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => {
+              setDescription(e.target.value);
+              if (touched.has('description')) validateForm();
+            }}
+            onBlur={() => handleBlur('description')}
             placeholder="Enter task description"
             rows={5}
+            className={
+              touched.has('description') && validationErrors.description ? 'border-red-500' : ''
+            }
           />
+          {touched.has('description') && validationErrors.description && (
+            <p className="text-sm text-red-600">{validationErrors.description}</p>
+          )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="priority" className="text-sm font-medium">
-            Priority
+          <Label htmlFor="case" className="text-sm font-medium">
+            Assigned Case *
           </Label>
-          <Select value={priority} onValueChange={(value) => setPriority(value as TaskPriority)}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
+          <Select
+            value={caseId}
+            onValueChange={(value) => {
+              setCaseId(value);
+              setTouched((prev) => new Set(prev).add('caseId'));
+              if (value) {
+                setValidationErrors((prev) => {
+                  const newErrors = { ...prev };
+                  delete newErrors.caseId;
+                  return newErrors;
+                });
+              }
+            }}
+          >
+            <SelectTrigger
+              className={`w-full ${touched.has('caseId') && validationErrors.caseId ? 'border-red-500' : ''}`}
+            >
+              <SelectValue placeholder="Select a case" />
             </SelectTrigger>
             <SelectContent>
-              {[...TASK_PRIORITY_OPTIONS].map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
+              {cases?.map((caseItem: { id: string; title: string }) => (
+                <SelectItem key={caseItem.id} value={caseItem.id}>
+                  {caseItem.title}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+          {touched.has('caseId') && validationErrors.caseId && (
+            <p className="text-sm text-red-600">{validationErrors.caseId}</p>
+          )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="dueDate" className="text-sm font-medium">
-            Due Date
-          </Label>
-          <Input id="dueDate" type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="assignedTo" className="text-sm font-medium">
-            Assigned Employee
-          </Label>
+          <label htmlFor="assignedTo" className="text-sm font-medium">
+            Assign To (Optional)
+          </label>
           <Select
             value={assignedTo || '__EMPTY__'}
             onValueChange={(value) => setAssignedTo(value === '__EMPTY__' ? '' : value)}
@@ -124,27 +192,9 @@ export function CreateTaskPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="__EMPTY__">Unassigned</SelectItem>
-              {(users || []).map((user) => (
+              {users?.map((user: { id: string; firstName: string; lastName: string }) => (
                 <SelectItem key={user.id} value={user.id}>
                   {user.firstName} {user.lastName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="caseId" className="text-sm font-medium">
-            Assigned Case
-          </Label>
-          <Select value={caseId} onValueChange={setCaseId}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a case" />
-            </SelectTrigger>
-            <SelectContent>
-              {(cases || []).map((caseItem) => (
-                <SelectItem key={caseItem.id} value={caseItem.id}>
-                  {caseItem.title}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -154,7 +204,7 @@ export function CreateTaskPage() {
         <div className="flex gap-3 pt-4">
           <Button
             type="submit"
-            disabled={!canSubmit || !caseId || !currentUser || createTask.isPending}
+            disabled={createTask.isPending}
             className="bg-[#00848b] hover:bg-[#006d73] text-white"
           >
             {createTask.isPending ? 'Creating...' : 'Create Task'}
@@ -163,6 +213,12 @@ export function CreateTaskPage() {
             Cancel
           </Button>
         </div>
+
+        {createTask.isError && (
+          <div className="text-red-600 text-sm p-3 bg-red-50 rounded border border-red-200">
+            Failed to create task. Please ensure all required fields are filled correctly.
+          </div>
+        )}
       </form>
     </div>
   );
