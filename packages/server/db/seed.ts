@@ -5,8 +5,8 @@ async function main() {
   console.log('Clearing existing data...');
 
   // Delete all existing data in correct order (respecting foreign keys)
-  await prisma.task.deleteMany();
   await prisma.comment.deleteMany();
+  await prisma.task.deleteMany();
   await prisma.case.deleteMany();
   await prisma.customer.deleteMany();
   await prisma.user.deleteMany();
