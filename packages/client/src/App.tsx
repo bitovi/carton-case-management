@@ -1,5 +1,5 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { FolderClosed, Users, Bot } from 'lucide-react';
+import { FolderClosed, Users, Bot, CheckSquare } from 'lucide-react';
 import { Header } from './components/Header';
 import { MenuList } from './components/MenuList';
 import { CasePage } from './pages/CasePage';
@@ -13,6 +13,7 @@ function App() {
   
   const menuItems = [
     { id: 'home', label: 'Cases', path: '/cases/', icon: <FolderClosed size={20} />, isActive: location.pathname === '/' || location.pathname.startsWith('/cases') },
+    { id: 'tasks', label: 'Tasks', path: '/tasks/', icon: <CheckSquare size={20} />, isActive: location.pathname.startsWith('/tasks') },
     { id: 'users', label: 'Users', path: '/users/', icon: <Bot size={20} />, isActive: location.pathname.startsWith('/users') },
     { id: 'customers', label: 'Customers', path: '/customers/', icon: <Users size={20} />, isActive: location.pathname.startsWith('/customers') },
   ];
@@ -61,6 +62,7 @@ function App() {
             <Route path="/users/:id" element={<UserPage />} />
             <Route path="/customers/" element={<CustomerPage />} />
             <Route path="/customers/:id" element={<CustomerPage />} />
+            <Route path="/tasks/" element={<TaskPage />} />
             <Route path="/tasks/:id" element={<TaskPage />} />
           </Routes>
         </main>
