@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { router, publicProcedure } from './trpc.js';
-import { formatDate, casePrioritySchema, caseStatusSchema } from '@carton/shared';
+import { formatDate, casePrioritySchema, caseStatusSchema, taskPrioritySchema } from '@carton/shared';
 import { TRPCError } from '@trpc/server';
 
 export const appRouter = router({
@@ -318,6 +318,16 @@ export const appRouter = router({
               createdAt: 'desc',
             },
           },
+          tasks: {
+            select: {
+              id: true,
+              title: true,
+              createdAt: true,
+            },
+            orderBy: {
+              createdAt: 'desc',
+            },
+          },
         },
       });
     }),
@@ -396,6 +406,16 @@ export const appRouter = router({
                 createdAt: 'desc',
               },
             },
+            tasks: {
+              select: {
+                id: true,
+                title: true,
+                createdAt: true,
+              },
+              orderBy: {
+                createdAt: 'desc',
+              },
+            },
           },
         });
       }),
@@ -404,6 +424,88 @@ export const appRouter = router({
         where: { id: input.id },
       });
     }),
+  }),
+
+  task: router({
+    list: publicProcedure.query(async ({ ctx }) => {
+      return ctx.prisma.task.findMany({
+        include: {
+          case: {
+            select: {
+              id: true,
+              title: true,
+              createdAt: true,
+            },
+          },
+          assignee: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+          creator: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+    }),
+    getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+      return ctx.prisma.task.findUnique({
+        where: { id: input.id },
+        include: {
+          case: {
+            select: {
+              id: true,
+              title: true,
+              createdAt: true,
+            },
+          },
+          assignee: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+          creator: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+        },
+      });
+    }),
+    create: publicProcedure
+      .input(
+        z.object({
+          title: z.string().min(1),
+          description: z.string().min(1),
+          priority: taskPrioritySchema.optional(),
+          dueDate: z.coerce.date().optional(),
+          caseId: z.string(),
+          assignedTo: z.string().optional(),
+          createdBy: z.string(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        return ctx.prisma.task.create({
+          data: input,
+        });
+      }),
   }),
 
   // Comment routes

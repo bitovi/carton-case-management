@@ -32,6 +32,13 @@ const mockCaseData = {
       createdAt: new Date(2024, 0, 1).toISOString(),
     },
   ],
+  tasks: [
+    {
+      id: 'task-1',
+      title: 'Follow up with customer',
+      createdAt: new Date(2024, 0, 3).toISOString(),
+    },
+  ],
 };
 
 const renderCaseDetailsWithRouter = (caseId = '1', element?: ReactElement) => {
@@ -156,6 +163,21 @@ describe('CaseDetails', () => {
 
     const desktopLayout = container.querySelector('.lg\\:flex');
     expect(desktopLayout).toBeInTheDocument();
+  });
+
+  it('renders related tasks with links', async () => {
+    setupMockHandlers();
+
+    renderCaseDetailsWithRouter();
+
+    await waitFor(() => {
+      expect(screen.queryByText(/Loading case details/i)).not.toBeInTheDocument();
+    });
+
+    const relatedTaskLinks = screen.getAllByRole('link', { name: 'Follow up with customer' });
+    expect(relatedTaskLinks[0]).toHaveAttribute('href', '/tasks/task-1');
+    expect(screen.getAllByText('Related Tasks').length).toBeGreaterThan(0);
+    expect(screen.getAllByRole('button', { name: /add/i }).length).toBeGreaterThan(0);
   });
 
   it('does not fetch case data when id is not provided', () => {

@@ -6,6 +6,7 @@ async function main() {
 
   // Delete all existing data in correct order (respecting foreign keys)
   await prisma.comment.deleteMany();
+  await prisma.task.deleteMany();
   await prisma.case.deleteMany();
   await prisma.customer.deleteMany();
   await prisma.user.deleteMany();
@@ -294,12 +295,56 @@ async function main() {
     },
   });
 
+  await prisma.task.createMany({
+    data: [
+      {
+        title: 'Call housing coordinator',
+        description: 'Contact Housing First program coordinator to confirm eligibility timeline.',
+        priority: 'HIGH',
+        dueDate: new Date('2025-12-31T17:00:00'),
+        caseId: case1.id,
+        assignedTo: sarahJohnson.id,
+        createdBy: alexMorgan.id,
+        createdAt: new Date('2025-12-28T10:00:00'),
+      },
+      {
+        title: 'Collect customer documents',
+        description: 'Gather income verification and temporary housing receipts for submission.',
+        priority: 'MEDIUM',
+        caseId: case1.id,
+        assignedTo: johnSorenson.id,
+        createdBy: alexMorgan.id,
+        createdAt: new Date('2025-12-28T10:30:00'),
+      },
+      {
+        title: 'Confirm deductible details',
+        description: 'Verify deductible language and send summary to customer.',
+        priority: 'LOW',
+        dueDate: new Date('2025-12-27T12:00:00'),
+        caseId: case2.id,
+        assignedTo: emilyBrown.id,
+        createdBy: sarahJohnson.id,
+        createdAt: new Date('2025-12-25T15:00:00'),
+      },
+      {
+        title: 'Schedule vehicle inspection',
+        description: 'Coordinate inspection appointment and update case notes.',
+        priority: 'HIGH',
+        caseId: case4.id,
+        assignedTo: bobWilliams.id,
+        createdBy: alexMorgan.id,
+        createdAt: new Date('2025-12-30T09:00:00'),
+      },
+    ],
+  });
+
 
   console.log('Seeding completed!');
   console.log(`Created ${await prisma.user.count()} users`);
   console.log(`Created ${await prisma.customer.count()} customers`);
   console.log(`Created ${await prisma.case.count()} cases`);
   console.log(`Created ${await prisma.comment.count()} comments`);
+  console.log(`Created ${await prisma.task.count()} tasks`);
 }
 
 main()

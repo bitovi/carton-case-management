@@ -41,6 +41,12 @@ enum CasePriority {
   URGENT
 }
 
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
 model User {
   id         String   @id @default(uuid())
   firstName  String
@@ -55,6 +61,8 @@ model User {
   comments      Comment[]
   createdCases  Case[]    @relation("UserCreatedBy")
   assignedCases Case[]    @relation("UserAssignedTo")
+  createdTasks  Task[]    @relation("UserCreatedTasks")
+  assignedTasks Task[]    @relation("UserAssignedTasks")
 }
 
 model Customer {
@@ -87,10 +95,32 @@ model Case {
   creator  User     @relation("UserCreatedBy", fields: [createdBy], references: [id], onDelete: Cascade)
   assignee User?    @relation("UserAssignedTo", fields: [assignedTo], references: [id], onDelete: Cascade)
   comments Comment[]
+  tasks    Task[]
 
   @@index([customerId])
   @@index([createdBy])
   @@index([assignedTo])
+}
+
+model Task {
+  id          String       @id @default(uuid())
+  title       String
+  description String
+  priority    TaskPriority @default(MEDIUM)
+  dueDate     DateTime?
+  caseId      String
+  assignedTo  String?
+  createdBy   String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  case     Case  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  assignee User? @relation("UserAssignedTasks", fields: [assignedTo], references: [id], onDelete: SetNull)
+  creator  User  @relation("UserCreatedTasks", fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@index([caseId])
+  @@index([assignedTo])
+  @@index([createdBy])
 }
 
 model Comment {

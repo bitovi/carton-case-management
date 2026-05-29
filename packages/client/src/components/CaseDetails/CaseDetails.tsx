@@ -1,11 +1,14 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { CaseInformation } from './components/CaseInformation';
 import { CaseComments } from './components/CaseComments';
 import { CaseEssentialDetails } from './components/CaseEssentialDetails';
+import { RelationshipManagerAccordion } from '@/components/common';
+import { formatTaskNumber } from '@carton/shared/client';
 
 export function CaseDetails() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { data: caseData, isLoading } = trpc.case.getById.useQuery({ id: id! }, { enabled: !!id });
 
   if (isLoading) {
@@ -30,12 +33,26 @@ export function CaseDetails() {
     );
   }
 
+  const relatedTaskItems = (caseData.tasks || []).map((task) => ({
+    id: task.id,
+    title: task.title,
+    subtitle: formatTaskNumber(task.id, task.createdAt),
+    to: `/tasks/${task.id}`,
+  }));
+
   return (
     <div className="flex flex-1 flex-col">
       {/* Mobile Layout */}
       <div className="flex flex-col w-full lg:hidden gap-4 pb-6">
         <CaseInformation caseId={caseData.id} caseData={caseData} />
         <CaseEssentialDetails caseId={caseData.id} caseData={caseData} />
+        <RelationshipManagerAccordion
+          accordionTitle="Related Tasks"
+          items={relatedTaskItems}
+          defaultOpen={true}
+          onAddClick={() => navigate('/tasks/new')}
+          className="w-full"
+        />
         <CaseComments caseData={caseData} />
       </div>
 
@@ -46,8 +63,15 @@ export function CaseDetails() {
           <div className="h-[9px]" />
           <CaseComments caseData={caseData} />
         </div>
-        <div className="h-[9px]" />
-        <CaseEssentialDetails caseId={caseData.id} caseData={caseData} />
+        <div className="flex flex-col gap-4">
+          <CaseEssentialDetails caseId={caseData.id} caseData={caseData} />
+          <RelationshipManagerAccordion
+            accordionTitle="Related Tasks"
+            items={relatedTaskItems}
+            defaultOpen={true}
+            onAddClick={() => navigate('/tasks/new')}
+          />
+        </div>
       </div>
     </div>
   );

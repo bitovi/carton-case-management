@@ -68,6 +68,13 @@ const mockCase: NonNullable<CaseByIdOutput> = {
       updatedAt: new Date('2024-01-16T09:15:00Z'),
     },
   ],
+  tasks: [
+    {
+      id: 'task-1',
+      title: 'Follow up with customer',
+      createdAt: new Date('2024-01-16T12:00:00Z'),
+    },
+  ],
 };
 
 const mockCustomers = [
