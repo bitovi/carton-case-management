@@ -20,7 +20,7 @@
     "@types/cookie-parser": "^1.4.10",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "express": "^4.21.2",
+    "express": "^4.22.2",
     "tsx": "^4.21.0",
     "zod": "^3.23.8"
   },
