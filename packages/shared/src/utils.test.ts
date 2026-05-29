@@ -55,6 +55,14 @@ describe('formatCaseNumber', () => {
 
       expect(result).toBe('#TSK-251231-OPQRSTUV');
     });
+
+    it('formats task number with string date', () => {
+      const id = 'test-id-12345678';
+      const date = new Date(2026, 0, 15);
+      const result = formatTaskNumber(id, date.toISOString());
+
+      expect(result).toBe('#TSK-260115-12345678');
+    });
   });
 
   it('formats case number with string date', () => {
