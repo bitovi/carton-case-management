@@ -5,7 +5,7 @@ import CartonLogoSvg from '@/assets/carton-logo.svg';
 import type { HeaderProps } from './types';
 
 function CartonLogo({ size = 34 }: { size?: number }) {
-  return <img src={CartonLogoSvg} alt="Carton Case Management" width={size} height={size} />;
+  return <img src={CartonLogoSvg} alt="Bitovi Case Management" width={size} height={size} />;
 }
 
 export function Header({ className, userInitials = 'AM', onAvatarClick }: HeaderProps) {
@@ -21,7 +21,7 @@ export function Header({ className, userInitials = 'AM', onAvatarClick }: Header
       >
         <CartonLogo />
         <span className="text-white text-xl font-semibold">
-          Carton<span className="hidden lg:inline"> Case Management</span>
+          Bitovi<span className="hidden lg:inline"> Case Management</span>
         </span>
       </Link>
 
