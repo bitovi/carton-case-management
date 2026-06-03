@@ -1,6 +1,6 @@
 ﻿---
 name: fix-tests
-description: "Systematically find and fix failing unit tests for carton-case-management. Use when tests are failing and you need to identify root causes and fix them one at a time. Activates automatically when tests fail, or invoke with slash command."
+description: "Systematically find and fix failing unit tests for carton-case-management. Use when tests are failing and you need to identify root causes and fix them one at a time."
 argument-hint: "Which tests to fix? (e.g. all failing tests, client unit tests, server tests, shared tests)"
 ---
 

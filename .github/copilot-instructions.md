@@ -8,6 +8,8 @@ Use the following skills in the `.github/skills/` directory when needed:
 
 - `.github/skills/security-review/SKILL.md` — Perform a thorough security review of the codebase using the OWASP Top 10 (2021) as the primary framework.
 
+- `.github/skills/fix-tests/SKILL.md` - Systematically find and fix failing unit tests for carton-case-management. Use when tests are failing and you need to identify root causes and fix them one at a time.
+
 ## Architecture
 
 npm workspaces monorepo with three packages:
