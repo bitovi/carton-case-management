@@ -1,0 +1,15 @@
+{
+  "servers": {
+    "Database": {
+      "command": "node",
+      "args": [
+        "C:/Users/Mike/carton-case-management/node_modules/@bytebase/dbhub/dist/index.js",
+        "--transport",
+        "stdio"
+      ],
+      "env": {
+        "DSN": "sqlite:///C:/Users/Mike/carton-case-management/packages/server/db/dev.db"
+      }
+    }
+  }
+}

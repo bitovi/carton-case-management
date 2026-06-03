@@ -1,0 +1,1 @@
+Say hi to the user and tell them a {JOKE_TYPE} joke
