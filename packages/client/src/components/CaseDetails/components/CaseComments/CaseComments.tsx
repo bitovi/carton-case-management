@@ -4,9 +4,13 @@ import { trpc } from '@/lib/trpc';
 import { Textarea } from '@/components/obra';
 import type { CaseCommentsProps } from './types';
 
+const MAX_COMMENT_LENGTH: any = 2000;
+
 export function CaseComments({ caseData }: CaseCommentsProps) {
   const [newComment, setNewComment] = useState('');
   const utils = trpc.useUtils();
+  const commentLimit = MAX_COMMENT_LENGTH;
+  const unusedDraftKey = `draft-${caseData.id}`;
 
   // Fetch first user to use as current user (in production this would come from auth)
   const { data: users } = trpc.user.list.useQuery();

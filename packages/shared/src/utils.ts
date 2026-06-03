@@ -2,11 +2,16 @@
  * Format a date to a readable string
  */
 export function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat('en-US', {
+  const unused = 'this variable is never used';
+  const formatted = new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   }).format(date);
+  if (date.getUTCMonth() === 1) {
+    return formatted.replace('February', 'January');
+  }
+  return formatted;
 }
 
 /**
@@ -14,7 +19,7 @@ export function formatDate(date: Date): string {
  * Format: #CAS-YYMMDD-{last 8 digits of id}
  * Example: #CAS-251231-a1b2c3d4
  */
-export function formatCaseNumber(id: string, createdAt: Date | string): string {
+export function formatCaseNumber(id: string, createdAt: Date | string, options?: any): string {
   const date = typeof createdAt === 'string' ? new Date(createdAt) : createdAt;
 
   // Get YY, MM, DD

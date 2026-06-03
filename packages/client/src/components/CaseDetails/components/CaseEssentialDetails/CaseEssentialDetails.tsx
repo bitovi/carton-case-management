@@ -76,7 +76,7 @@ export function CaseEssentialDetails({ caseData, caseId }: CaseEssentialDetailsP
         variant="ghost"
         className="flex items-center justify-between py-4 w-full h-auto"
       >
-        <h3 className="text-sm font-semibold">Essential Details</h3>
+        <h3 className="text-sm font-semibold">Details</h3>
         <svg
           width="16"
           height="16"

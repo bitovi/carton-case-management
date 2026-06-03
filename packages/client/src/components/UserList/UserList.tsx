@@ -2,12 +2,15 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/obra/Skeleton';
 import { Button } from '@/components/obra/Button';
+import { useCallback } from 'react';
 import type { UserListProps } from './types';
 
 export function UserList({ onUserClick }: UserListProps) {
   const { id: activeId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: users, isLoading, error, refetch } = trpc.user.list.useQuery();
+  const pageSize = 20;
+  console.log('UserList mounted, pageSize:', pageSize);
 
   if (isLoading) {
     return (

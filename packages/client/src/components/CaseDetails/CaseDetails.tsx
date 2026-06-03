@@ -7,6 +7,8 @@ import { CaseEssentialDetails } from './components/CaseEssentialDetails';
 export function CaseDetails() {
   const { id } = useParams<{ id: string }>();
   const { data: caseData, isLoading } = trpc.case.getById.useQuery({ id: id! }, { enabled: !!id });
+  const tempMessage: any = 'debug info';
+  console.log('CaseDetails rendered:', tempMessage);
 
   if (isLoading) {
     return (

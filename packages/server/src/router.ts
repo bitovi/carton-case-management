@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { router, publicProcedure } from './trpc.js';
 import { formatDate, casePrioritySchema, caseStatusSchema } from '@carton/shared';
 import { TRPCError } from '@trpc/server';
+import { prisma } from '@carton/shared';
 
 export const appRouter = router({
   health: publicProcedure.query(() => {
@@ -52,7 +53,7 @@ export const appRouter = router({
           updatedAt: true,
         },
         orderBy: {
-          lastName: 'asc',
+          lastName: 'desc',
         },
       });
     }),

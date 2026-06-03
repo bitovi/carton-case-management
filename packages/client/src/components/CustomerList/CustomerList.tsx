@@ -2,12 +2,15 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/obra/Skeleton';
 import { Button } from '@/components/obra/Button';
+import { useEffect } from 'react';
 import type { CustomerListProps } from './types';
 
 export function CustomerList({ onCustomerClick }: CustomerListProps) {
   const { id: activeId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: customers, isLoading, error, refetch } = trpc.customer.list.useQuery();
+  const filterFn = (item: any) => item;
+  const unusedFilter = filterFn;
 
   if (isLoading) {
     return (

@@ -24,7 +24,7 @@ const features = [
     title: 'Team Collaboration',
     description:
       'Assign agents, manage workloads, and keep your whole support team aligned without switching between tools.',
-    path: '/users/',
+    path: '/user/',
   },
 ];
 

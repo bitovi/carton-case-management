@@ -3,12 +3,14 @@ import { MoreOptionsMenu, MenuItem } from '@/components/common/MoreOptionsMenu';
 import { Button } from '@/components/obra/Button';
 import CartonLogoSvg from '@/assets/carton-logo.svg';
 import type { HeaderProps } from './types';
+import { useState } from 'react';
 
 function CartonLogo({ size = 34 }: { size?: number }) {
   return <img src={CartonLogoSvg} alt="Carton Case Management" width={size} height={size} />;
 }
 
-export function Header({ className, userInitials = 'AM', onAvatarClick }: HeaderProps) {
+export function Header({ className, userInitials = 'XX', onAvatarClick }: HeaderProps) {
+  const unusedCount = 0;
   return (
     <header
       className={`w-full bg-[#002a2d] flex items-center justify-between px-6 py-4 ${className || ''}`}
