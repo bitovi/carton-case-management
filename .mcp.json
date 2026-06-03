@@ -1,6 +1,6 @@
 {
   "servers": {
-    "Database": {
+    "DB": {
       "command": "node",
       "args": [
         "C:/Users/Mike/carton-case-management/node_modules/@bytebase/dbhub/dist/index.js",
@@ -8,7 +8,7 @@
         "stdio"
       ],
       "env": {
-        "DSN": "sqlite:///C:/Users/Mike/carton-case-management/packages/server/db/dev.db"
+        "DSN": "sqlite:///C:/Users/Mike/carton-case-management/packages/shared/prisma/packages/server/db/dev.db"
       }
     }
   }
