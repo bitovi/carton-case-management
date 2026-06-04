@@ -1,0 +1,24 @@
+{
+  "name": "figma-file-setup",
+  "description": "Figma file structure: page IDs and container frame IDs",
+  "required": {
+    "fileKey": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$" },
+    "pages": {
+      "type": "object",
+      "requiredKeys": {
+        "foundations": { "type": "string", "pattern": "^\\d+:\\d+$" },
+        "icons": { "type": "string", "pattern": "^\\d+:\\d+$" },
+        "components": { "type": "string", "pattern": "^\\d+:\\d+$" },
+        "screens": { "type": "string", "pattern": "^\\d+:\\d+$" }
+      }
+    },
+    "containerFrames": {
+      "type": "object",
+      "requiredKeys": {
+        "componentsFrameId": { "type": "string", "pattern": "^\\d+:\\d+$" },
+        "screensFrameId": { "type": "string", "pattern": "^\\d+:\\d+$" },
+        "iconsFrameId": { "type": "string", "pattern": "^\\d+:\\d+$" }
+      }
+    }
+  }
+}

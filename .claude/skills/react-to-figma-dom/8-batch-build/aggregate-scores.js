@@ -2,16 +2,16 @@
 /**
  * aggregate-verification.js
  *
- * Reads all verification-results.json files from .temp/react-to-figma/components/
+ * Reads all verification-results.json files from .temp/react-to-figma-dom/components/
  * and produces a ranked scoreboard of worst components + common failure patterns.
  *
  * Usage:
  *   node aggregate-verification.js
- *   node aggregate-verification.js --components-dir .temp/react-to-figma/components
- *   node aggregate-verification.js --output .temp/react-to-figma/verification-scoreboard.md
+ *   node aggregate-verification.js --components-dir .temp/react-to-figma-dom/components
+ *   node aggregate-verification.js --output .temp/react-to-figma-dom/verification-scoreboard.md
  *
  * Output:
- *   .temp/react-to-figma/verification-scoreboard.md  — human-readable scoreboard
+ *   .temp/react-to-figma-dom/verification-scoreboard.md  — human-readable scoreboard
  *
  * Exit codes:
  *   0 = all components pass
@@ -44,8 +44,8 @@ function parseArgs() {
 const opts = parseArgs();
 
 const projectRoot = path.resolve(__dirname, '../../../../');
-const componentsDir = path.resolve(opts.componentsDir || path.join(projectRoot, '.temp/react-to-figma/components'));
-const outputPath = path.resolve(opts.output || path.join(projectRoot, '.temp/react-to-figma/verification-scoreboard.md'));
+const componentsDir = path.resolve(opts.componentsDir || path.join(projectRoot, '.temp/react-to-figma-dom/components'));
+const outputPath = path.resolve(opts.output || path.join(projectRoot, '.temp/react-to-figma-dom/verification-scoreboard.md'));
 
 // ---------------------------------------------------------------------------
 // Collect all verification-results.json files
@@ -304,7 +304,7 @@ if (problemComponents.length > 0) {
     lines.push(`### ${comp.componentName}`);
     lines.push('');
     lines.push(`- **Overall**: ${comp.overallVerdict}`);
-    lines.push(`- **Dir**: \`.temp/react-to-figma/components/${comp.componentName}/\``);
+    lines.push(`- **Dir**: \`.temp/react-to-figma-dom/components/${comp.componentName}/\``);
     lines.push('');
     lines.push('| Variant | Match% | Status | Border% | DiffPx / TotalPx |');
     lines.push('|---------|--------|--------|---------|-----------------|');
@@ -316,7 +316,7 @@ if (problemComponents.length > 0) {
       lines.push(`| ${v.name} | ${(v.matchPct || 0).toFixed(1)}% | ${statusIcon} ${v.status} | ${border} | ${diff} |`);
     }
     lines.push('');
-    lines.push(`View composites: \`.temp/react-to-figma/components/${comp.componentName}/variants/*/composite.png\``);
+    lines.push(`View composites: \`.temp/react-to-figma-dom/components/${comp.componentName}/variants/*/composite.png\``);
     lines.push('');
   }
 }

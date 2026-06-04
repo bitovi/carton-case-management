@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { useState } from 'react';
 import { fn } from '@storybook/test';
 import { EditableNumber } from './EditableNumber';
 import { Label } from '@/components/obra/Label/Label';
 
-const meta: Meta<typeof EditableNumber> = {
+const meta = {
   title: 'Components/inline-edit/EditableNumber',
   component: EditableNumber,
   parameters: {
@@ -69,13 +69,13 @@ const meta: Meta<typeof EditableNumber> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof EditableNumber>;
+
 
 /**
  * Default number field with basic value.
  * Wrapped in a bordered container to demonstrate container-filling behavior.
  */
-export const Default: Story = {
+export const Default = {
   render: (args) => (
     <div className="w-96 p-4 border border-dashed border-gray-300 rounded-lg">
       <EditableNumber {...args} />
@@ -94,7 +94,7 @@ export const Default: Story = {
 /**
  * Interactive example with stateful value.
  */
-export const Interactive: Story = {
+export const Interactive = {
   args: {
     label: 'Quantity',
     value: 0,
@@ -124,7 +124,7 @@ export const Interactive: Story = {
 /**
  * Empty value with placeholder.
  */
-export const WithPlaceholder: Story = {
+export const WithPlaceholder = {
   args: {
     label: 'Age',
     value: null,
@@ -138,7 +138,7 @@ export const WithPlaceholder: Story = {
 /**
  * With min/max constraints.
  */
-export const WithMinMax: Story = {
+export const WithMinMax = {
   args: {
     label: 'Score',
     value: 0,
@@ -170,7 +170,7 @@ export const WithMinMax: Story = {
 /**
  * Decimal values with precision control.
  */
-export const DecimalValues: Story = {
+export const DecimalValues = {
   args: {
     label: 'Price',
     value: 0,
@@ -202,7 +202,7 @@ export const DecimalValues: Story = {
 /**
  * Large numbers with grouping separators.
  */
-export const WithGrouping: Story = {
+export const WithGrouping = {
   args: {
     label: 'Population',
     value: 0,
@@ -233,7 +233,7 @@ export const WithGrouping: Story = {
 /**
  * With custom display value.
  */
-export const CustomDisplayValue: Story = {
+export const CustomDisplayValue = {
   args: {
     label: 'Progress',
     value: 75,
@@ -252,7 +252,7 @@ export const CustomDisplayValue: Story = {
 /**
  * Read-only mode - no interaction possible.
  */
-export const ReadOnly: Story = {
+export const ReadOnly = {
   args: {
     label: 'Total Items',
     value: 42,
@@ -266,7 +266,7 @@ export const ReadOnly: Story = {
 /**
  * With custom validation function.
  */
-export const WithValidation: Story = {
+export const WithValidation = {
   args: {
     label: 'Even Number',
     value: 0,
@@ -304,7 +304,7 @@ export const WithValidation: Story = {
 /**
  * Simulating a slow save operation.
  */
-export const SlowSave: Story = {
+export const SlowSave = {
   args: {
     label: 'Quantity',
     value: 100,
@@ -318,7 +318,7 @@ export const SlowSave: Story = {
 /**
  * Simulating a save error.
  */
-export const SaveError: Story = {
+export const SaveError = {
   args: {
     label: 'Amount',
     value: 0,
@@ -360,7 +360,7 @@ export const SaveError: Story = {
 /**
  * Controlled editing mode - externally manage edit state.
  */
-export const ControlledMode: Story = {
+export const ControlledMode = {
   args: {
     label: 'Value',
     value: 0,
@@ -409,7 +409,7 @@ export const ControlledMode: Story = {
 /**
  * Multiple number fields in a form layout.
  */
-export const FormExample: Story = {
+export const FormExample = {
   args: {
     label: 'Value',
     value: 0,

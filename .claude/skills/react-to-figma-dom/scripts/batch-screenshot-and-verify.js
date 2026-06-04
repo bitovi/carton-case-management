@@ -13,10 +13,10 @@
  *
  * Usage:
  *   node batch-screenshot-and-verify.js \
- *     --component-dir .temp/react-to-figma/components/Badge \
+ *     --component-dir .temp/react-to-figma-dom/components/Badge \
  *     --file-key K185dncc0RbBmFGFxA1iyY \
  *     [--token <figma-pat>] \
- *     [--scale 2] \
+ *     [--scale 1] \
  *     [--concurrency 10] \
  *     [--match-threshold 90]
  *
@@ -28,6 +28,11 @@ const fs = require('fs');
 const { execSync } = require('child_process');
 const https = require('https');
 const http = require('http');
+
+const CONTAINER_NODE_TYPES = new Set([
+  'FRAME', 'COMPONENT', 'COMPONENT_SET', 'INSTANCE', 'GROUP', 'SECTION',
+  'BOOLEAN_OPERATION', 'PAGE', 'DOCUMENT',
+]);
 
 function loadEnvFile() {
   const candidates = [
@@ -63,8 +68,8 @@ function parseArgs(argv) {
 
 function loadFigmaResultJSON(jsonPath) {
   const data = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
-  const variants = (data.variantsBuilt || []).map(v => ({
-    name: v.name || v.variantName,
+  const variants = (data.variantsBuilt || data.variants || []).map(v => ({
+    name: v.variant || v.name || v.variantName,
     nodeId: v.nodeId || v.rootNodeId,
   }));
   return { variants, fileKey: data.fileKey || null };
@@ -109,6 +114,44 @@ function fetchJSON(url, token) {
       });
     }).on('error', reject);
   });
+}
+
+function pruneNode(node) {
+  if (!node) return null;
+  const pruned = { id: node.id, name: node.name, type: node.type };
+
+  if (node.absoluteBoundingBox) {
+    pruned.width = node.absoluteBoundingBox.width;
+    pruned.height = node.absoluteBoundingBox.height;
+  }
+
+  if (node.type === 'TEXT') {
+    if (node.characters) pruned.characters = node.characters;
+  }
+
+  if (CONTAINER_NODE_TYPES.has(node.type)) {
+    if (node.layoutMode) pruned.layoutMode = node.layoutMode;
+    if (node.primaryAxisSizingMode) pruned.primaryAxisSizingMode = node.primaryAxisSizingMode;
+    if (node.counterAxisSizingMode) pruned.counterAxisSizingMode = node.counterAxisSizingMode;
+    if (node.itemSpacing != null) pruned.itemSpacing = node.itemSpacing;
+    if (node.counterAxisSpacing != null) pruned.counterAxisSpacing = node.counterAxisSpacing;
+    if (node.layoutSizingHorizontal) pruned.layoutSizingHorizontal = node.layoutSizingHorizontal;
+    if (node.layoutSizingVertical) pruned.layoutSizingVertical = node.layoutSizingVertical;
+
+    if (node.children && node.children.length > 0) {
+      pruned.children = node.children.map(pruneNode).filter(Boolean);
+    }
+  }
+
+  return pruned;
+}
+
+async function fetchNodeTrees(fileKey, nodeIds, token) {
+  const idsParam = nodeIds.map(id => encodeURIComponent(id)).join(',');
+  const url = `https://api.figma.com/v1/files/${fileKey}/nodes?ids=${idsParam}`;
+  const resp = await fetchJSON(url, token);
+  if (resp.err) throw new Error(resp.err);
+  return resp.nodes || {};
 }
 
 function downloadFile(url, destPath) {
@@ -156,7 +199,7 @@ async function main() {
   const componentDir = flags['component-dir'];
   let fileKey = flags['file-key'];
   const token = flags['token'] || process.env.FIGMA_ACCESS_TOKEN;
-  const scale = flags['scale'] || '2';
+  const scale = flags['scale'] || '1';
   const concurrency = parseInt(flags['concurrency'] || '10', 10);
   const matchThreshold = flags['match-threshold'];
 
@@ -196,19 +239,43 @@ async function main() {
   }
 
   const componentName = path.basename(absComponentDir);
-  console.log(`\n${componentName}: ${variants.length} variants — fetching screenshots via REST API...\n`);
+  console.log(`\n${componentName}: ${variants.length} variants — fetching screenshots and node trees via REST API...\n`);
 
-  const nodeIds = variants.map(v => v.nodeId).join(',');
-  const apiUrl = `https://api.figma.com/v1/images/${fileKey}?ids=${encodeURIComponent(nodeIds)}&format=png&scale=${scale}`;
+  const nodeIds = variants.map(v => v.nodeId);
+  const nodeIdsStr = nodeIds.join(',');
+  const apiUrl = `https://api.figma.com/v1/images/${fileKey}?ids=${encodeURIComponent(nodeIdsStr)}&format=png&scale=${scale}`;
 
-  let imageMap;
-  try {
-    const resp = await fetchJSON(apiUrl, token);
-    if (resp.err) throw new Error(resp.err);
-    imageMap = resp.images || {};
-  } catch (err) {
-    console.error(`Figma REST API error: ${err.message}`);
+  const [imageResult, nodesResult] = await Promise.all([
+    fetchJSON(apiUrl, token).catch(err => ({ _error: err.message })),
+    fetchNodeTrees(fileKey, nodeIds, token).catch(err => ({ _error: err.message })),
+  ]);
+
+  if (imageResult._error) {
+    console.error(`Figma images API error: ${imageResult._error}`);
     process.exit(3);
+  }
+  if (imageResult.err) {
+    console.error(`Figma images API error: ${imageResult.err}`);
+    process.exit(3);
+  }
+  const imageMap = imageResult.images || {};
+
+  if (nodesResult._error) {
+    console.warn(`  WARNING: Node tree fetch failed (non-fatal): ${nodesResult._error}`);
+  } else {
+    const variantsDir2 = path.join(absComponentDir, 'variants');
+    for (const v of variants) {
+      const nodeData = nodesResult[v.nodeId];
+      if (nodeData && nodeData.document) {
+        const pruned = pruneNode(nodeData.document);
+        if (pruned) {
+          const dest = path.join(variantsDir2, v.name, 'figma-nodes.json');
+          fs.mkdirSync(path.dirname(dest), { recursive: true });
+          fs.writeFileSync(dest, JSON.stringify(pruned, null, 2));
+        }
+      }
+    }
+    console.log(`  Node trees saved for ${variants.length} variants.`);
   }
 
   const variantsWithUrls = variants.map(v => ({

@@ -1,16 +1,16 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { RichCheckboxGroup } from './RichCheckboxGroup';
 
-const meta: Meta<typeof RichCheckboxGroup> = {
+const meta = {
   component: RichCheckboxGroup,
   title: 'Obra/RichCheckboxGroup',
   tags: ['autodocs'],
 };
 
 export default meta;
-type Story = StoryObj<typeof RichCheckboxGroup>;
 
-export const UncheckedNormal: Story = {
+
+export const UncheckedNormal = {
   args: {
     checked: false,
     flipped: false,
@@ -24,7 +24,7 @@ export const UncheckedNormal: Story = {
   },
 };
 
-export const CheckedNormal: Story = {
+export const CheckedNormal = {
   args: {
     checked: true,
     flipped: false,
@@ -38,7 +38,7 @@ export const CheckedNormal: Story = {
   },
 };
 
-export const UncheckedFlipped: Story = {
+export const UncheckedFlipped = {
   args: {
     checked: false,
     flipped: true,
@@ -52,7 +52,7 @@ export const UncheckedFlipped: Story = {
   },
 };
 
-export const CheckedFlipped: Story = {
+export const CheckedFlipped = {
   args: {
     checked: true,
     flipped: true,
@@ -66,7 +66,7 @@ export const CheckedFlipped: Story = {
   },
 };
 
-export const UncheckedNormalWithSecondary: Story = {
+export const UncheckedNormalWithSecondary = {
   args: {
     checked: false,
     flipped: false,
@@ -82,7 +82,7 @@ export const UncheckedNormalWithSecondary: Story = {
   },
 };
 
-export const CheckedNormalWithSecondary: Story = {
+export const CheckedNormalWithSecondary = {
   args: {
     checked: true,
     flipped: false,
@@ -98,7 +98,7 @@ export const CheckedNormalWithSecondary: Story = {
   },
 };
 
-export const UncheckedFlippedWithSecondary: Story = {
+export const UncheckedFlippedWithSecondary = {
   args: {
     checked: false,
     flipped: true,
@@ -114,7 +114,7 @@ export const UncheckedFlippedWithSecondary: Story = {
   },
 };
 
-export const CheckedFlippedWithSecondary: Story = {
+export const CheckedFlippedWithSecondary = {
   args: {
     checked: true,
     flipped: true,

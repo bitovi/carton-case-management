@@ -438,6 +438,24 @@ function mapOpacity(styles) {
   return isNaN(val) ? 1 : val;
 }
 
+function extractRing(effects) {
+  const ring = [];
+  const remaining = [];
+  for (const e of effects) {
+    const isRing = e.type === 'DROP_SHADOW'
+      && e.offset.x === 0 && e.offset.y === 0
+      && e.radius === 0
+      && e.spread > 0
+      && e.opacity > 0;
+    if (isRing) {
+      ring.push(e);
+    } else {
+      remaining.push(e);
+    }
+  }
+  return { ring, remaining };
+}
+
 module.exports = {
   parsePixels,
   parseRgb,
@@ -451,5 +469,6 @@ module.exports = {
   mapTypography,
   mapCornerRadius,
   mapEffects,
+  extractRing,
   mapOpacity,
 };

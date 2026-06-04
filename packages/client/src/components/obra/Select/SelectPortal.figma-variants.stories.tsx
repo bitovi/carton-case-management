@@ -34,7 +34,7 @@ const meta = {
     },
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof SelectPortalPreview>;
+} as Meta<typeof SelectPortalPreview>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

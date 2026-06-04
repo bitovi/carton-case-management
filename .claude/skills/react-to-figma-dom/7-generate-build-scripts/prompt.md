@@ -7,9 +7,10 @@ Iterate over ALL components and run the offline processing pipeline: diff DOM tr
 You are a **pure orchestrator**. You do NOT read sub-prompt files or gather context yourself. Your only job is:
 
 1. Read `build-order.md` to get the component list
-2. For each component, launch 2 subagents in sequence (diff-and-classify → preprocess)
-3. After all components are processed, launch 1 subagent for page-variant prioritization
-4. Track progress and report completion
+2. For each component, launch 1 subagent for diff-and-classify
+3. After all components are classified, run the batch build-script generator
+4. After build scripts are generated, launch 1 subagent for page-variant prioritization
+5. Track progress and report completion
 
 Do NOT read sub-prompt files, variant data, or JSON maps yourself.
 
@@ -24,7 +25,7 @@ Do NOT read sub-prompt files, variant data, or JSON maps yourself.
 
 | Variable | Source | Description |
 |----------|--------|-------------|
-| `pipelineDir` | `.temp/react-to-figma/` | Root output directory |
+| `pipelineDir` | `.temp/react-to-figma-dom/` | Root output directory |
 | `skillDir` | `.claude/skills/react-to-figma-dom/7-generate-build-scripts/` | This phase's directory |
 
 Auto-discovered:
@@ -46,21 +47,20 @@ Phase 6 (Capture DOM from Stories) must be complete:
 
 Read `{pipelineDir}/component-hierarchy/build-order.md`. Extract the component list in build order.
 
-### 1. Per-component: Diff, classify, and preprocess
+### 1. Per-component: Diff and classify
 
 For each component in the build order:
 
 #### Check for existing outputs (idempotent)
 
-Check if this component already has all outputs:
+Check if this component already has `figma-variants.json`:
 ```
-{componentDir}/figma-variants.json       ← from sub-step 1
-{componentDir}/preprocess-status.json    ← from sub-step 2
+{componentDir}/figma-variants.json       ← from diff-and-classify
 ```
 
-If all outputs exist, skip this component.
+If it exists, skip this component.
 
-#### Sub-step 1: Diff and classify
+#### Diff and classify
 
 Launch a **subagent** with:
 - **Prompt**: `{skillDir}/1-prompt.diff-and-classify-for-a-component.md`
@@ -71,17 +71,6 @@ Tell the subagent: "Read your prompt at `{skillDir}/1-prompt.diff-and-classify-f
 
 Verify `figma-variants.json` was created.
 
-#### Sub-step 2: Preprocess (IR + build scripts)
-
-Launch a **subagent** with:
-- **Prompt**: `{skillDir}/2-prompt.preprocess-for-a-component.md`
-- **Context**: component name, `{componentDir}`, `{pipelineDir}`
-- **Output**: `{componentDir}/preprocess-status.json`, per-variant `figma-ir.json` and `build-script.js`
-
-Tell the subagent: "Read your prompt at `{skillDir}/2-prompt.preprocess-for-a-component.md`. Component name is `{componentName}`, componentDir is `{componentDir}`, pipelineDir is `{pipelineDir}`."
-
-Verify `preprocess-status.json` was created.
-
 #### Log per-component completion
 
 ```
@@ -90,7 +79,24 @@ Verify `preprocess-status.json` was created.
   Build scripts: {count}
 ```
 
-### 2. Prioritize page variants (whole-set)
+### 2. Generate build scripts (batch — all components at once)
+
+After ALL components have been diff-classified, run the batch build-script generator:
+
+```bash
+node {skillDir}/../scripts/generate-variant-build-scripts.js \
+  --all \
+  --pipeline-dir {pipelineDir} \
+  --skill-dir {skillDir}/..
+```
+
+Add `--force` to regenerate existing IR and build scripts.
+
+This script processes every component in `{pipelineDir}/components/`, generates Figma IR and build scripts for each variant, and writes `preprocess-status.json` per component.
+
+Verify that every component in build-order has a `preprocess-status.json`.
+
+### 3. Prioritize page variants (whole-set)
 
 After ALL components have been processed, launch a **subagent** with:
 - **Prompt**: `{skillDir}/3-prompt.prioritize-page-variants.md`
@@ -101,7 +107,7 @@ Tell the subagent: "Read your prompt at `{skillDir}/3-prompt.prioritize-page-var
 
 Verify `page-priority-manifest.json` was created.
 
-### 3. Phase summary
+### 4. Phase summary
 
 ```
 Phase 7 Complete: Generate Build Scripts

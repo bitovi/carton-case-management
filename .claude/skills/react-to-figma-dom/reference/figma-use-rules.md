@@ -5,10 +5,16 @@ Distilled rules for using the `use_figma` MCP tool effectively. Read before ever
 ## Call Structure
 
 1. Each `use_figma` call runs JavaScript in the Figma Plugin sandbox
-2. The sandbox has NO filesystem access — inline all data as JSON literals
-3. Keep each call to ~10 operations max (create/modify nodes). Split larger builds across multiple calls
-4. Return ALL created node IDs from every call — you cannot recover IDs later
+2. The sandbox has NO filesystem access — `require('fs')` throws `ReferenceError`. Inline all data as JSON literals
+3. Keep each call to ~10 operations max (create/modify nodes). For variable creation, ~30 per call is safe
+4. `return` is the ONLY output channel — NOT `console.log()`. Return ALL created node IDs from every call — you cannot recover IDs later
 5. Calls are sequential — never issue parallel `use_figma` calls
+6. Code is auto-wrapped in an async function — do NOT use IIFE wrappers like `(async () => { ... })()`
+7. `getPluginData()` / `setPluginData()` are NOT supported — use `getSharedPluginData()` / `setSharedPluginData()` instead
+8. `figma.notify()` throws in the sandbox — do not use it
+9. Page context resets between `use_figma` calls — always re-navigate to the target page at the start of each call via `figma.currentPage = figma.getNodeById(pageId)`
+10. `figma.variables.createVariable(name, collection, type)` — pass a collection **object**, not an ID string (ID strings are deprecated)
+11. `figma.variables.setBoundVariableForPaint(paint, field, variable)` returns a **NEW paint** — you must reassign: `node.fills = [boundPaint]`
 
 ## Pre-Flight Checklist
 
@@ -21,6 +27,23 @@ Before every `use_figma` call, verify:
 - [ ] No `x`/`y` positioning inside auto-layout parents
 - [ ] `strokeAlign` is `'OUTSIDE'` (never `'INSIDE'`)
 - [ ] Paint `color` uses `{r, g, b}` only — no `a` field on paint colors
+- [ ] Variable COLOR values use `{r, g, b, a}` (WITH alpha) — different from paint colors
+- [ ] No `require()`, `import`, `fs`, `path`, or Node.js APIs — sandbox only
+- [ ] No `console.log()` as output — use `return { ... }` instead
+- [ ] No `figma.notify()` — throws in sandbox
+- [ ] No `getPluginData()` — use `getSharedPluginData()` instead
+- [ ] `setBoundVariableForPaint` return value is captured: `const newPaint = figma.variables.setBoundVariableForPaint(...)`
+- [ ] `createVariable` gets a collection object, not an ID string
+- [ ] Page is set at start of call: `figma.currentPage = figma.getNodeById(pageId)`
+- [ ] All data is inlined as JSON literals — no file reads
+
+## Efficient APIs
+
+Prefer these over manual property setting when available:
+
+```javascript
+figma.createAutoLayout()  // FrameNode with auto-layout pre-enabled
+```
 
 ## Font Loading
 

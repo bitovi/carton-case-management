@@ -8,7 +8,7 @@ const meta = {
     layout: 'centered',
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof SelectViewport>;
+} as Meta<typeof SelectViewport>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

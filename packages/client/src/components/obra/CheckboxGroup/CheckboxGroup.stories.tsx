@@ -1,17 +1,17 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { CheckboxGroup } from './CheckboxGroup';
 
-const meta: Meta<typeof CheckboxGroup> = {
+const meta = {
   component: CheckboxGroup,
   title: 'Obra/CheckboxGroup',
   tags: ['autodocs'],
 };
 
 export default meta;
-type Story = StoryObj<typeof CheckboxGroup>;
+
 
 // Inline Layout
-export const InlineUnchecked: Story = {
+export const InlineUnchecked = {
   args: {
     layout: 'inline',
     checked: false,
@@ -25,7 +25,7 @@ export const InlineUnchecked: Story = {
   },
 };
 
-export const InlineChecked: Story = {
+export const InlineChecked = {
   args: {
     layout: 'inline',
     checked: true,
@@ -40,7 +40,7 @@ export const InlineChecked: Story = {
 };
 
 // Block Layout
-export const BlockUnchecked: Story = {
+export const BlockUnchecked = {
   args: {
     layout: 'block',
     checked: false,
@@ -54,7 +54,7 @@ export const BlockUnchecked: Story = {
   },
 };
 
-export const BlockChecked: Story = {
+export const BlockChecked = {
   args: {
     layout: 'block',
     checked: true,

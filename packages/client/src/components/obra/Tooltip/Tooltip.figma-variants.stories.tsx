@@ -23,7 +23,7 @@ const meta = {
     layout: 'centered',
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof Tooltip>;
+} as Meta<typeof Tooltip>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

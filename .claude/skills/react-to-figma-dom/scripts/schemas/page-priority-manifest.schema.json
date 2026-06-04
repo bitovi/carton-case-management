@@ -1,0 +1,11 @@
+{
+  "name": "page-priority-manifest",
+  "description": "Component → page variant priority data for build ordering",
+  "type": "non-empty-object",
+  "valueShape": {
+    "required": {
+      "pageVariants": { "type": "array" },
+      "usedOnRoutes": { "type": "array" }
+    }
+  }
+}

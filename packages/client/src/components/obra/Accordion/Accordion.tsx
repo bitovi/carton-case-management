@@ -20,7 +20,7 @@ export const Accordion = React.forwardRef<
       {...(restProps as React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Root>)}
     >
       {items.map((item) => (
-        <AccordionPrimitive.Item key={item.value} value={item.value}>
+        <AccordionPrimitive.Item key={item.value} value={item.value} disabled={item.disabled}>
           <AccordionTrigger {...item.triggerProps}>{item.trigger}</AccordionTrigger>
           <AccordionContent {...item.contentProps}>{item.content}</AccordionContent>
         </AccordionPrimitive.Item>

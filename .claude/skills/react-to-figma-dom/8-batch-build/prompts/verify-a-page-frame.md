@@ -6,7 +6,7 @@ Compare a composed Figma page frame against a full-page screenshot of the live a
 
 - **Route**: The route to verify (e.g., `/cases/1`)
 - **Dev server URL**: The running dev server (e.g., `http://localhost:5173`)
-- **Page Figma result**: Path to `page-figma-result.md` containing the Figma frame node ID
+- **Page Figma result**: Path to `page-figma-result.json` containing the Figma frame node ID
 
 ## Output
 
@@ -22,15 +22,15 @@ Using the Playwright MCP tool:
 2. Wait for network idle.
 3. Set viewport to 1440×900 (matching the Figma frame).
 4. Take a full-page screenshot.
-5. Save as `.temp/react-to-figma/pages/{RouteName}/screenshot-app.png`.
+5. Save as `.temp/react-to-figma-dom/pages/{RouteName}/screenshot-app.png`.
 
 ### 2. Export Figma frame screenshot
 
 Using the `use_figma` MCP tool:
 
-1. Read `page-figma-result.md` to get the frame node ID.
+1. Read `page-figma-result.json` to get the frame node ID.
 2. Export the frame as PNG at 1x scale.
-3. Save as `.temp/react-to-figma/pages/{RouteName}/screenshot-figma.png`.
+3. Save as `.temp/react-to-figma-dom/pages/{RouteName}/screenshot-figma.png`.
 
 ### 3. Compare
 

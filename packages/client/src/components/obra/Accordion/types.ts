@@ -7,6 +7,7 @@ export type AccordionItem = {
   value: string;
   trigger: React.ReactNode;
   content: React.ReactNode;
+  disabled?: boolean;
   triggerProps?: Omit<AccordionTriggerProps, 'children'>;
   contentProps?: Omit<AccordionContentProps, 'children'>;
 };

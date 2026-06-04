@@ -11,7 +11,7 @@ const meta = {
     },
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof SelectOverflowIndicator>;
+} as Meta<typeof SelectOverflowIndicator>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

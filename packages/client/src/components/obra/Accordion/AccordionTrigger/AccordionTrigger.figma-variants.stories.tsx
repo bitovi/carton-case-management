@@ -17,33 +17,35 @@ const meta = {
       className="w-[480px]"
     >
       <AccordionPrimitive.Item value="item-1">
-        <AccordionTrigger>{args.children || 'Trigger Label'}</AccordionTrigger>
+        <AccordionTrigger disabled={args.disabled}>
+          {args.children || 'Trigger Label'}
+        </AccordionTrigger>
         <AccordionPrimitive.Content className="p-4">
           Content placeholder
         </AccordionPrimitive.Content>
       </AccordionPrimitive.Item>
     </AccordionPrimitive.Root>
   ),
-} satisfies Meta<typeof AccordionTrigger>;
+} as Meta<typeof AccordionTrigger>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const StateClosed: Story = {
+export const DataStateClosedInteractionStateDefault: Story = {
   args: {
     children: 'Trigger Label',
     defaultValue: undefined,
   },
 };
 
-export const StateOpen: Story = {
+export const DataStateOpenInteractionStateDefault: Story = {
   args: {
     children: 'Trigger Label',
     defaultValue: 'item-1',
   },
 };
 
-export const WithFocusRing: Story = {
+export const DataStateClosedInteractionStateFocus: Story = {
   args: {
     children: 'Trigger Label',
     defaultValue: undefined,
@@ -53,5 +55,26 @@ export const WithFocusRing: Story = {
     if (trigger) {
       trigger.focus();
     }
+  },
+};
+
+export const DataStateOpenInteractionStateFocus: Story = {
+  args: {
+    children: 'Trigger Label',
+    defaultValue: 'item-1',
+  },
+  play: async ({ canvasElement }) => {
+    const trigger = canvasElement.querySelector('button') as HTMLElement;
+    if (trigger) {
+      trigger.focus();
+    }
+  },
+};
+
+export const DataStateClosedInteractionStateDisabled: Story = {
+  args: {
+    children: 'Trigger Label',
+    defaultValue: undefined,
+    disabled: true,
   },
 };

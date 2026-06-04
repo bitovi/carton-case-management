@@ -22,7 +22,7 @@ This applies to:
 ## Inputs
 
 - **Source root**: The project source root path (e.g., `src/` or `packages/client/src/`)
-- **Output directory**: `.temp/react-to-figma/`
+- **Output directory**: `.temp/react-to-figma-dom/`
 - **Strategy**: `"files"`, `"app"`, or `"both"` (default: `"both"`)
 - **Dev server URL** (required when strategy includes `"app"`): e.g., `http://localhost:5173`
 
@@ -50,12 +50,12 @@ runSubagent({
 
     ## Context
     - Source root: ${sourceRoot}
-    - Output directory: .temp/react-to-figma/
+    - Output directory: .temp/react-to-figma-dom/
 
     ## Important
     Write outputs to strategy-specific paths:
-    - Components: .temp/react-to-figma/component-hierarchy/from-files/components.json
-    - Barrel map: .temp/react-to-figma/component-hierarchy/from-files/barrel-map.md
+    - Components: .temp/react-to-figma-dom/component-hierarchy/from-files/components.json
+    - Barrel map: .temp/react-to-figma-dom/component-hierarchy/from-files/barrel-map.md
   `
 })
 ```
@@ -64,16 +64,16 @@ runSubagent({
 - Run the merge script with `--from-files` and a synthetic empty `--from-app` JSON, or run:
   ```bash
   node .claude/skills/react-to-figma-dom/1-find-hierarchy/merge-discoveries.js \
-    --from-files .temp/react-to-figma/component-hierarchy/from-files/components.json \
+    --from-files .temp/react-to-figma-dom/component-hierarchy/from-files/components.json \
     --from-app /dev/null \
-    --output-dir .temp/react-to-figma/component-hierarchy
+    --output-dir .temp/react-to-figma-dom/component-hierarchy
   ```
   Note: If only files strategy was used, create a minimal from-app JSON first:
   ```bash
-  echo '{"schemaVersion":"react-to-figma-components@1","discoveryMethod":"app-crawl","componentCount":0,"components":[]}' > .temp/react-to-figma/component-hierarchy/from-app/components.json
+  echo '{"schemaVersion":"react-to-figma-components@1","discoveryMethod":"app-crawl","componentCount":0,"components":[]}' > .temp/react-to-figma-dom/component-hierarchy/from-app/components.json
   ```
   Then run the merge script. This produces the final `components-todo.md`.
-- Copy `from-files/barrel-map.md` → `.temp/react-to-figma/component-hierarchy/barrel-map.md`
+- Copy `from-files/barrel-map.md` → `.temp/react-to-figma-dom/component-hierarchy/barrel-map.md`
 
 Then skip to Phase 2.
 
@@ -94,13 +94,13 @@ runSubagent({
     ## Context
     - Dev server URL: ${devServerUrl}
     - Source root: ${sourceRoot}
-    - Output directory: .temp/react-to-figma/
+    - Output directory: .temp/react-to-figma-dom/
 
     ## Important
     Write outputs to strategy-specific paths:
-    - Components: .temp/react-to-figma/component-hierarchy/from-app/components.json
-    - Barrel map: .temp/react-to-figma/component-hierarchy/from-app/barrel-map.md
-    - Component map JSON: .temp/react-to-figma/component-hierarchy/component-map.json
+    - Components: .temp/react-to-figma-dom/component-hierarchy/from-app/components.json
+    - Barrel map: .temp/react-to-figma-dom/component-hierarchy/from-app/barrel-map.md
+    - Component map JSON: .temp/react-to-figma-dom/component-hierarchy/component-map.json
     ## Captures
     Pass --captures-dir .temp/react-to-figma to enable live app context captures.
     The script will capture viewport screenshots per route and element screenshots + HTML + computed CSS per component.
@@ -111,11 +111,11 @@ runSubagent({
 **If strategy is `"app"` only**: After the subagent completes, copy the outputs to the main location:
 - Create an empty from-files JSON:
   ```bash
-  mkdir -p .temp/react-to-figma/component-hierarchy/from-files
-  echo '{"schemaVersion":"react-to-figma-components@1","discoveryMethod":"static-analysis","componentCount":0,"components":[]}' > .temp/react-to-figma/component-hierarchy/from-files/components.json
+  mkdir -p .temp/react-to-figma-dom/component-hierarchy/from-files
+  echo '{"schemaVersion":"react-to-figma-components@1","discoveryMethod":"static-analysis","componentCount":0,"components":[]}' > .temp/react-to-figma-dom/component-hierarchy/from-files/components.json
   ```
 - Run the merge script to produce `components-todo.md`.
-- Copy `from-app/barrel-map.md` → `.temp/react-to-figma/component-hierarchy/barrel-map.md`
+- Copy `from-app/barrel-map.md` → `.temp/react-to-figma-dom/component-hierarchy/barrel-map.md`
 
 Then skip to Phase 2.
 
@@ -135,15 +135,15 @@ runSubagent({
 
     ## Context
     - Source root: ${sourceRoot}
-    - From-files output: .temp/react-to-figma/component-hierarchy/from-files/components.json
-    - From-app output: .temp/react-to-figma/component-hierarchy/from-app/components.json
-    - Component map JSON: .temp/react-to-figma/component-hierarchy/component-map.json
-    - Output directory: .temp/react-to-figma/component-hierarchy/
+    - From-files output: .temp/react-to-figma-dom/component-hierarchy/from-files/components.json
+    - From-app output: .temp/react-to-figma-dom/component-hierarchy/from-app/components.json
+    - Component map JSON: .temp/react-to-figma-dom/component-hierarchy/component-map.json
+    - Output directory: .temp/react-to-figma-dom/component-hierarchy/
   `
 })
 ```
 
-After reconciliation, verify that `.temp/react-to-figma/component-hierarchy/components-todo.md` exists and contains at least one component.
+After reconciliation, verify that `.temp/react-to-figma-dom/component-hierarchy/components-todo.md` exists and contains at least one component.
 
 ### Phase 2: Extract Children Graph (fast static analysis)
 
@@ -151,14 +151,14 @@ Run the `extract-children.js` script to build the parent-child dependency graph.
 
 ```bash
 node .claude/skills/react-to-figma-dom/1-find-hierarchy/extract-children.js \
-  --components-todo .temp/react-to-figma/component-hierarchy/components-todo.md \
+  --components-todo .temp/react-to-figma-dom/component-hierarchy/components-todo.md \
   --output-dir .temp/react-to-figma \
   --source-root {sourceRoot}
 ```
 
 Verify:
-1. `.temp/react-to-figma/component-hierarchy/children-graph.json` exists
-2. Per-component `analysis.md` files were written to `.temp/react-to-figma/components/*/`
+1. `.temp/react-to-figma-dom/component-hierarchy/children-graph.json` exists
+2. Per-component `analysis.md` files were written to `.temp/react-to-figma-dom/components/*/`
 
 Note: Props extraction (`props.md`) is deferred to Phase C step 6.1 (identify-variants). That prompt generates `props.md` on-the-fly when it reads the source file for variant classification.
 
@@ -177,9 +177,9 @@ runSubagent({
     ${buildOrderPrompt}
 
     ## Context
-    - Component analyses: .temp/react-to-figma/components/*/analysis.md
-    - Barrel map: .temp/react-to-figma/component-hierarchy/barrel-map.md
-    - Output directory: .temp/react-to-figma/component-hierarchy/
+    - Component analyses: .temp/react-to-figma-dom/components/*/analysis.md
+    - Barrel map: .temp/react-to-figma-dom/component-hierarchy/barrel-map.md
+    - Output directory: .temp/react-to-figma-dom/component-hierarchy/
   `
 })
 ```
@@ -188,40 +188,10 @@ runSubagent({
 
 After Phase 3 completes, read and verify the outputs:
 
-1. **`.temp/react-to-figma/component-hierarchy/build-order.md`** — Confirm it exists and has at least Level 0
-2. **`.temp/react-to-figma/component-hierarchy/hierarchy.md`** — Confirm the Mermaid diagram is present
+1. **`.temp/react-to-figma-dom/component-hierarchy/build-order.md`** — Confirm it exists and has at least Level 0
+2. **`.temp/react-to-figma-dom/component-hierarchy/hierarchy.md`** — Confirm the Mermaid diagram is present
 
-### Phase 5: Generate Pages Manifest
-
-**Only when strategy includes `"app"`** (requires `pages.json` from the browser crawl).
-
-Check if `.temp/react-to-figma/component-hierarchy/pages.md` already exists — if so, skip this phase.
-
-Check if `.temp/react-to-figma/component-hierarchy/pages.json` exists — if not, skip this phase (means `from-app` was not used or produced no page trees).
-
-Read the full contents of `.claude/skills/react-to-figma-dom/1-find-hierarchy/6-prompt.generate-pages-manifest.md`.
-
-Launch via `runSubagent` (do NOT execute inline):
-
-```typescript
-const pagesPrompt = readFile('.claude/skills/react-to-figma-dom/1-find-hierarchy/6-prompt.generate-pages-manifest.md')
-
-runSubagent({
-  description: "Generate pages manifest from runtime page trees",
-  prompt: `
-    ${pagesPrompt}
-
-    ## Context
-    - Pages JSON: .temp/react-to-figma/component-hierarchy/pages.json
-    - Component analyses: .temp/react-to-figma/components/*/analysis.md
-    - Output: .temp/react-to-figma/component-hierarchy/pages.md
-  `
-})
-```
-
-**Verify**: `pages.md` exists and contains at least one route heading (`## /`).
-
-### Phase 6: Final Report
+### Phase 5: Final Report
 
 Return a summary to the parent:
 
@@ -241,12 +211,12 @@ Warnings:
 - Unresolved references: {count or "none"}
 
 Output files:
-- .temp/react-to-figma/component-hierarchy/components-todo.md (discovery checklist)
-- .temp/react-to-figma/component-hierarchy/barrel-map.md (re-export map)
-- .temp/react-to-figma/component-hierarchy/children-graph.json (parent-child dependency graph)
-- .temp/react-to-figma/component-hierarchy/build-order.md (build order — leaves first)
-- .temp/react-to-figma/component-hierarchy/hierarchy.md (Mermaid diagram)
-- .temp/react-to-figma/components/{Name}/analysis.md (per-component children — from extract-children.js)
-- .temp/react-to-figma/components/{Name}/app-variants/ (live app variant captures — from-app only)
-- .temp/react-to-figma/pages/{RouteName}/screenshot-app.png (page screenshots — from-app only)
+- .temp/react-to-figma-dom/component-hierarchy/components-todo.md (discovery checklist)
+- .temp/react-to-figma-dom/component-hierarchy/barrel-map.md (re-export map)
+- .temp/react-to-figma-dom/component-hierarchy/children-graph.json (parent-child dependency graph)
+- .temp/react-to-figma-dom/component-hierarchy/build-order.md (build order — leaves first)
+- .temp/react-to-figma-dom/component-hierarchy/hierarchy.md (Mermaid diagram)
+- .temp/react-to-figma-dom/components/{Name}/analysis.md (per-component children — from extract-children.js)
+- .temp/react-to-figma-dom/components/{Name}/app-variants/ (live app variant captures — from-app only)
+- .temp/react-to-figma-dom/pages/{RouteName}/screenshot-app.png (page screenshots — from-app only)
 ```

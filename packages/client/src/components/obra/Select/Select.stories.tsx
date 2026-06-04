@@ -18,7 +18,7 @@ const meta = {
     layout: 'centered',
   },
   tags: ['autodocs'],
-} satisfies Meta<typeof Select>;
+} as Meta<typeof Select>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

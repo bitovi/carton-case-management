@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { VoteButton } from './VoteButton';
 
-const meta: Meta<typeof VoteButton> = {
+const meta = {
   component: VoteButton,
   title: 'Components/Common/VoteButton',
   tags: ['autodocs'],
@@ -14,9 +14,9 @@ const meta: Meta<typeof VoteButton> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof VoteButton>;
 
-export const UpDefaultNoCount: Story = {
+
+export const UpDefaultNoCount = {
   args: {
     type: 'up',
     active: false,
@@ -25,7 +25,7 @@ export const UpDefaultNoCount: Story = {
   name: 'Up - Default - Icon Only',
 };
 
-export const UpDefaultWithCount: Story = {
+export const UpDefaultWithCount = {
   args: {
     type: 'up',
     active: false,
@@ -35,7 +35,7 @@ export const UpDefaultWithCount: Story = {
   name: 'Up - Default - With Count',
 };
 
-export const UpActiveNoCount: Story = {
+export const UpActiveNoCount = {
   args: {
     type: 'up',
     active: true,
@@ -44,7 +44,7 @@ export const UpActiveNoCount: Story = {
   name: 'Up - Active - Icon Only',
 };
 
-export const UpActiveWithCount: Story = {
+export const UpActiveWithCount = {
   args: {
     type: 'up',
     active: true,
@@ -54,7 +54,7 @@ export const UpActiveWithCount: Story = {
   name: 'Up - Active - With Count',
 };
 
-export const DownDefaultNoCount: Story = {
+export const DownDefaultNoCount = {
   args: {
     type: 'down',
     active: false,
@@ -63,7 +63,7 @@ export const DownDefaultNoCount: Story = {
   name: 'Down - Default - Icon Only',
 };
 
-export const DownDefaultWithCount: Story = {
+export const DownDefaultWithCount = {
   args: {
     type: 'down',
     active: false,
@@ -73,7 +73,7 @@ export const DownDefaultWithCount: Story = {
   name: 'Down - Default - With Count',
 };
 
-export const DownActiveNoCount: Story = {
+export const DownActiveNoCount = {
   args: {
     type: 'down',
     active: true,
@@ -82,7 +82,7 @@ export const DownActiveNoCount: Story = {
   name: 'Down - Active - Icon Only',
 };
 
-export const DownActiveWithCount: Story = {
+export const DownActiveWithCount = {
   args: {
     type: 'down',
     active: true,
@@ -92,7 +92,7 @@ export const DownActiveWithCount: Story = {
   name: 'Down - Active - With Count',
 };
 
-export const Default: Story = {
+export const Default = {
   args: {
     type: 'up',
     active: false,
@@ -102,7 +102,7 @@ export const Default: Story = {
   name: 'Default (Up, Inactive, Count 0)',
 };
 
-export const HighCount: Story = {
+export const HighCount = {
   args: {
     type: 'up',
     active: true,
@@ -112,7 +112,7 @@ export const HighCount: Story = {
   name: 'High Count Example',
 };
 
-export const WithVoters: Story = {
+export const WithVoters = {
   args: {
     type: 'up',
     active: true,
@@ -123,7 +123,7 @@ export const WithVoters: Story = {
   name: 'With Voters Tooltip',
 };
 
-export const WithManyVoters: Story = {
+export const WithManyVoters = {
   args: {
     type: 'up',
     active: true,
@@ -134,7 +134,7 @@ export const WithManyVoters: Story = {
   name: 'With Many Voters (Truncated)',
 };
 
-export const DownWithVoters: Story = {
+export const DownWithVoters = {
   args: {
     type: 'down',
     active: true,

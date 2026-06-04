@@ -12,7 +12,7 @@ import { Input } from '@/components/obra/Input';
 import { BaseEditable } from '../BaseEditable';
 import { EditControls } from '../EditControls';
 import type { ZodSchema } from 'zod';
-import type { RenderEditModeProps } from '../types';
+import type { EditableState, RenderEditModeProps } from '../types';
 
 export interface EditableTextProps {
   /** Label text displayed above the value */
@@ -39,6 +39,10 @@ export interface EditableTextProps {
   onSave: (newValue: string) => Promise<void>;
   /** Zod schema or validation function */
   validate?: ZodSchema<string> | ((value: string) => string | null);
+  /** @internal Story-only override — do not use in production */
+  __storyState?: EditableState;
+  /** @internal Story-only override — do not use in production */
+  __storyError?: string | null;
 }
 
 /**
@@ -137,6 +141,8 @@ export function EditableText({
   onEditingChange,
   onSave,
   validate,
+  __storyState,
+  __storyError,
 }: EditableTextProps) {
   // Compute display value with placeholder support
   const computedDisplayValue =
@@ -159,6 +165,8 @@ export function EditableText({
       onEditingChange={onEditingChange}
       onSave={onSave}
       validate={validate}
+      __storyState={__storyState}
+      __storyError={__storyError}
       renderEditMode={(props) => (
         <EditModeRenderer
           {...props}

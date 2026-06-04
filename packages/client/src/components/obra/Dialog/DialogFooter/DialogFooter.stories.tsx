@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { DialogFooter } from './DialogFooter';
 import { Button } from '../../Button';
 
-const meta: Meta<typeof DialogFooter> = {
+const meta = {
   component: DialogFooter,
   title: 'Obra/DialogFooter',
   tags: ['autodocs'],
@@ -15,9 +15,9 @@ const meta: Meta<typeof DialogFooter> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof DialogFooter>;
 
-export const TwoButtonsRight: Story = {
+
+export const TwoButtonsRight = {
   args: {
     type: '2 Buttons Right',
     children: (
@@ -29,7 +29,7 @@ export const TwoButtonsRight: Story = {
   },
 };
 
-export const TwoFullWidthButtons: Story = {
+export const TwoFullWidthButtons = {
   args: {
     type: '2 Full-width Buttons',
     children: (
@@ -41,14 +41,14 @@ export const TwoFullWidthButtons: Story = {
   },
 };
 
-export const SingleFullWidthButton: Story = {
+export const SingleFullWidthButton = {
   args: {
     type: 'Single Full-width Button',
     children: <Button variant="primary" className="w-full">Label</Button>,
   },
 };
 
-export const DestructiveAction: Story = {
+export const DestructiveAction = {
   args: {
     type: '2 Buttons Right',
     children: (

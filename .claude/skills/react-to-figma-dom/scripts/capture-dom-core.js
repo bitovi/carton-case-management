@@ -98,6 +98,18 @@ async function captureFiberData(page, options = {}) {
       const visited = new Set();
       let rtfIdCounter = 0;
 
+      function findFirstHostNode(fiber) {
+        if (!fiber) return null;
+        if (
+          fiber.stateNode &&
+          fiber.stateNode.getBoundingClientRect &&
+          fiber.stateNode.nodeType === 1
+        ) {
+          return fiber.stateNode;
+        }
+        return findFirstHostNode(fiber.child);
+      }
+
       function traverseFiber(f, depth = 0) {
         if (!f || visited.has(f) || depth > maxD) {
           return;
@@ -109,23 +121,35 @@ async function captureFiberData(page, options = {}) {
           let elementType = "Element";
 
           if (typeof f.type === "function") {
-            name = f.type.name || f.type.displayName || "Component";
+            name = f.type.displayName || f.type.name || "Component";
             elementType = "Component";
           } else if (typeof f.type === "string") {
             elementType = f.type.toUpperCase();
             name = f.type;
+          } else if (f.type && typeof f.type === "object") {
+            // Handle forwardRef: { $$typeof, render }
+            if (f.type.render) {
+              name = f.type.displayName || f.type.render.displayName || f.type.render.name || "Component";
+              elementType = "Component";
+            // Handle memo: { $$typeof, type }
+            } else if (f.type.type) {
+              name = f.type.displayName || f.type.type.displayName || f.type.type.name || "Component";
+              elementType = "Component";
+            }
+          }
+
+          if (elementType === "Component" && /^[A-Z]/.test(name)) {
+            const firstHostNode = findFirstHostNode(f.child);
+            if (firstHostNode && !firstHostNode.getAttribute("data-rtf-component")) {
+              firstHostNode.setAttribute("data-rtf-component", name);
+              firstHostNode.setAttribute("data-rtf-id", "rtf-dom-" + rtfIdCounter++);
+            }
           }
 
           const domNode = f.stateNode;
           if (domNode && domNode.getBoundingClientRect && domNode.nodeType === 1) {
             const rect = domNode.getBoundingClientRect();
             const styles = window.getComputedStyle(domNode);
-
-            if (elementType === "Component" && /^[A-Z]/.test(name) && !domNode.getAttribute("data-rtf-component")) {
-              const rtfId = "rtf-dom-" + rtfIdCounter++;
-              domNode.setAttribute("data-rtf-component", name);
-              domNode.setAttribute("data-rtf-id", rtfId);
-            }
 
             components.push({
               name,
@@ -275,6 +299,7 @@ async function captureDomStructure(page, options = {}) {
           "data-rtf-id": rtfId || undefined,
           role: el.getAttribute("role") || undefined,
           dataState: el.getAttribute("data-state") || undefined,
+          placeholder: (tagLower === 'input' || tagLower === 'textarea') ? (el.getAttribute('placeholder') || el.placeholder || undefined) : undefined,
           aria: Object.fromEntries(
             Array.from(el.attributes)
               .filter((a) => a.name.startsWith("aria-"))
@@ -454,6 +479,7 @@ async function capturePortalContent(page, baselineFingerprints = [], options = {
           "data-rtf-id": rtfId || undefined,
           role: el.getAttribute("role") || undefined,
           dataState: el.getAttribute("data-state") || undefined,
+          placeholder: (tagLower === 'input' || tagLower === 'textarea') ? (el.getAttribute('placeholder') || el.placeholder || undefined) : undefined,
           aria: Object.fromEntries(
             Array.from(el.attributes)
               .filter((a) => a.name.startsWith("aria-"))

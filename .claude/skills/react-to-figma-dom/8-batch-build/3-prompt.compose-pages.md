@@ -6,7 +6,7 @@ Build page frames from `pages.json`, instancing built components with resolved p
 
 | Variable | Source | Description |
 |----------|--------|-------------|
-| `pipelineDir` | `.temp/react-to-figma/` | Root output directory |
+| `pipelineDir` | `.temp/react-to-figma-dom/` | Root output directory |
 | `skillDir` | `.claude/skills/react-to-figma-dom/8-batch-build/` | This phase's directory |
 | `fileKey` | env/config | Figma file key |
 | `devServerUrl` | `http://localhost:5173` | Dev server for live screenshots |

@@ -20,7 +20,7 @@ import {
 import { format, parse, isValid } from 'date-fns';
 import { BaseEditable } from '../BaseEditable';
 import type { ZodSchema } from 'zod';
-import type { RenderEditModeProps } from '../types';
+import type { EditableState, RenderEditModeProps } from '../types';
 
 export interface EditableDateProps {
   /** Label text displayed above the date field */
@@ -45,6 +45,10 @@ export interface EditableDateProps {
   onSave: (newValue: string) => Promise<void>;
   /** Zod schema or validation function */
   validate?: ZodSchema<string> | ((value: string) => string | null);
+  /** @internal Story-only override for visual state */
+  __storyState?: EditableState;
+  /** @internal Story-only override for error display */
+  __storyError?: string | null;
 }
 
 /**
@@ -222,6 +226,8 @@ export function EditableDate({
   onEditingChange,
   onSave,
   validate,
+  __storyState,
+  __storyError,
 }: EditableDateProps) {
   // Normalize value to string for BaseEditable
   const normalizedValue = React.useMemo(() => {
@@ -268,8 +274,10 @@ export function EditableDate({
       onEditingChange={onEditingChange}
       onSave={onSave}
       validate={validate}
-      exitOnBlur={false} // Date picker uses popover, blur happens when clicking calendar
+      exitOnBlur={false}
       formatValue={formatValue}
+      __storyState={__storyState}
+      __storyError={__storyError}
       renderEditMode={(props) => (
         <EditModeRenderer
           {...props}

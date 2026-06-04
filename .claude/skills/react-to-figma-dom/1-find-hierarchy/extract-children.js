@@ -12,7 +12,7 @@
  *
  * Usage:
  *   node extract-children.js \
- *     --components-todo .temp/react-to-figma/component-hierarchy/components-todo.md \
+ *     --components-todo .temp/react-to-figma-dom/component-hierarchy/components-todo.md \
  *     --output-dir .temp/react-to-figma \
  *     [--source-root packages/client/src]
  *

@@ -1,24 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import type { RefObject } from 'react';
-import { useState } from 'react';
+import { useState, type RefObject } from 'react';
 import { BaseEditable } from './BaseEditable';
 import { Input } from '@/components/obra/Input';
 import { Button } from '@/components/obra/Button';
 import { Check, X } from 'lucide-react';
 import type { RenderEditModeProps } from '../types';
-
-const meta = {
-  title: 'Figma Variants/BaseEditable',
-  component: BaseEditable,
-  decorators: [],
-  parameters: {
-    layout: 'centered',
-    chromatic: { disableSnapshot: true },
-  },
-} satisfies Meta<typeof BaseEditable>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
 
 function EditModeInput({
   value,
@@ -70,85 +56,104 @@ const renderEditMode = (props: RenderEditModeProps<string>) => (
   <EditModeInput {...props} />
 );
 
-const defaultOnSave = async () => {
-  await new Promise((resolve) => globalThis.setTimeout(resolve, 500));
-};
+const meta = {
+  title: 'Figma Variants/BaseEditable',
+  component: BaseEditable,
+  parameters: {
+    layout: 'centered',
+    chromatic: { disableSnapshot: true },
+  },
+} as Meta<typeof BaseEditable<string>>;
 
-export const StateRestReadonlyFalse: Story = {
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const StateRest: Story = {
   args: {
-    label: 'Field label',
-    value: 'Display value',
-    displayValue: 'Display value',
-    readonly: false,
     __storyState: 'rest',
     __storyError: null,
+    label: 'Name',
+    value: 'John Doe',
+    readonly: false,
     renderEditMode: renderEditMode,
-    onSave: defaultOnSave,
+    onSave: async (newValue) => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      console.log('Saved:', newValue);
+    },
   },
 };
 
-export const StateInterestReadonlyFalse: Story = {
+export const StateInterest: Story = {
   args: {
-    label: 'Field label',
-    value: 'Display value',
-    displayValue: 'Display value',
-    readonly: false,
     __storyState: 'interest',
     __storyError: null,
+    label: 'Name',
+    value: 'John Doe',
+    readonly: false,
     renderEditMode: renderEditMode,
-    onSave: defaultOnSave,
+    onSave: async (newValue) => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      console.log('Saved:', newValue);
+    },
   },
 };
 
-export const StateEditReadonlyFalse: Story = {
+export const StateEditNoError: Story = {
   args: {
-    label: 'Field label',
-    value: 'Display value',
-    displayValue: 'Display value',
-    readonly: false,
     __storyState: 'edit',
     __storyError: null,
-    renderEditMode: renderEditMode,
-    onSave: defaultOnSave,
-  },
-};
-
-export const StateSavingReadonlyFalse: Story = {
-  args: {
-    label: 'Field label',
-    value: 'Display value',
-    displayValue: 'Display value',
+    label: 'Name',
+    value: 'John Doe',
     readonly: false,
-    __storyState: 'saving',
-    __storyError: null,
     renderEditMode: renderEditMode,
-    showSavingState: true,
-    onSave: defaultOnSave,
-  },
-};
-
-export const StateRestReadonlyTrue: Story = {
-  args: {
-    label: 'Field label',
-    value: 'Display value',
-    displayValue: 'Display value',
-    readonly: true,
-    __storyState: 'rest',
-    __storyError: null,
-    renderEditMode: renderEditMode,
-    onSave: defaultOnSave,
+    onSave: async (newValue) => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      console.log('Saved:', newValue);
+    },
   },
 };
 
 export const StateEditWithError: Story = {
   args: {
-    label: 'Field label',
-    value: 'Display value',
-    displayValue: 'Display value',
-    readonly: false,
     __storyState: 'edit',
-    __storyError: 'Validation error',
+    __storyError: 'Validation failed',
+    label: 'Name',
+    value: 'John Doe',
+    readonly: false,
     renderEditMode: renderEditMode,
-    onSave: defaultOnSave,
+    onSave: async (newValue) => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      console.log('Saved:', newValue);
+    },
+  },
+};
+
+export const StateSaving: Story = {
+  args: {
+    __storyState: 'saving',
+    __storyError: null,
+    label: 'Name',
+    value: 'John Doe',
+    readonly: false,
+    renderEditMode: renderEditMode,
+    onSave: async (newValue) => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      console.log('Saved:', newValue);
+    },
+  },
+};
+
+export const StateRestReadonly: Story = {
+  args: {
+    __storyState: 'rest',
+    __storyError: null,
+    label: 'Name',
+    value: 'John Doe',
+    readonly: true,
+    renderEditMode: renderEditMode,
+    onSave: async (newValue) => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      console.log('Saved:', newValue);
+    },
   },
 };

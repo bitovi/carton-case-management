@@ -11,7 +11,7 @@ const meta = {
     },
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof Routes>;
+} as Meta<typeof Routes>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

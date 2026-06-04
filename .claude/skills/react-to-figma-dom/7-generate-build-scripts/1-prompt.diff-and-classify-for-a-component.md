@@ -8,7 +8,7 @@ Compare captured DOM trees across all variants of a single component to determin
 |----------|--------|-------------|
 | `componentName` | orchestrator | PascalCase name (e.g., `Badge`) |
 | `componentDir` | `{pipelineDir}/components/{componentName}/` | Component output directory |
-| `pipelineDir` | `.temp/react-to-figma/` | Root output directory |
+| `pipelineDir` | `.temp/react-to-figma-dom/` | Root output directory |
 | `skillDir` | `.claude/skills/react-to-figma-dom/7-generate-build-scripts/` | This phase's directory |
 
 Required files in `{componentDir}`:

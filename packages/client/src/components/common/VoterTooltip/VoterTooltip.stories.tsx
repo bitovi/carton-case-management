@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { VoterTooltip } from './VoterTooltip';
 
-const meta: Meta<typeof VoterTooltip> = {
+const meta = {
   component: VoterTooltip,
   title: 'Components/Common/VoterTooltip',
   tags: ['autodocs'],
@@ -14,9 +14,9 @@ const meta: Meta<typeof VoterTooltip> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof VoterTooltip>;
 
-export const UpVariant: Story = {
+
+export const UpVariant = {
   args: {
     type: 'up',
     trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
@@ -25,7 +25,7 @@ export const UpVariant: Story = {
   name: 'Type: Up',
 };
 
-export const DownVariant: Story = {
+export const DownVariant = {
   args: {
     type: 'down',
     trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
@@ -34,7 +34,7 @@ export const DownVariant: Story = {
   name: 'Type: Down',
 };
 
-export const Default: Story = {
+export const Default = {
   args: {
     trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
     children: <span className="text-sm font-semibold">Alex Morgan</span>,
@@ -42,7 +42,7 @@ export const Default: Story = {
   name: 'Default (Type: Up)',
 };
 
-export const CustomContent: Story = {
+export const CustomContent = {
   args: {
     type: 'up',
     trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
@@ -56,7 +56,7 @@ export const CustomContent: Story = {
   name: 'Custom Content',
 };
 
-export const MultipleVoters: Story = {
+export const MultipleVoters = {
   args: {
     type: 'up',
     trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,

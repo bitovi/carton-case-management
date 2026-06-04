@@ -1,14 +1,14 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { http, HttpResponse } from 'msw';
 import { TrpcProvider } from '@/lib/trpc';
 import { CaseDetails } from './CaseDetails';
-import type { inferProcedureOutput } from '@trpc/server';
-import type { AppRouter } from '@carton/server/src/router';
+// type import removed:  inferProcedureOutput  from '@trpc/server';
+// type import removed:  AppRouter  from '@carton/server/src/router';
 
-type CaseByIdOutput = inferProcedureOutput<AppRouter['case']['getById']>;
 
-const mockCase: NonNullable<CaseByIdOutput> = {
+
+const mockCase = {
   id: '1',
   title: 'Customer Login Issue',
   description:
@@ -129,7 +129,7 @@ const mockUsers = [
   },
 ];
 
-const meta: Meta<typeof CaseDetails> = {
+const meta = {
   title: 'Components/CaseDetails',
   component: CaseDetails,
   parameters: {
@@ -187,11 +187,11 @@ const meta: Meta<typeof CaseDetails> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof CaseDetails>;
 
-export const Default: Story = {};
 
-export const Loading: Story = {
+export const Default = {};
+
+export const Loading = {
   parameters: {
     msw: {
       handlers: [
@@ -216,7 +216,7 @@ export const Loading: Story = {
   },
 };
 
-export const NotFound: Story = {
+export const NotFound = {
   parameters: {
     msw: {
       handlers: [
@@ -239,7 +239,7 @@ export const NotFound: Story = {
   },
 };
 
-export const WithManyComments: Story = {
+export const WithManyComments = {
   parameters: {
     msw: {
       handlers: [

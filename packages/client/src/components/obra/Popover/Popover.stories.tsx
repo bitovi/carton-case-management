@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { useState } from 'react';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Popover, PopoverTrigger, PopoverContent } from './Popover';
 import { Button } from '@/components/obra/Button';
 
-const meta: Meta<typeof Popover> = {
+const meta = {
   component: Popover,
   title: 'Obra/Popover',
   argTypes: {
@@ -29,7 +29,7 @@ const meta: Meta<typeof Popover> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Popover>;
+
 
 function InteractivePopover() {
   const [open, setOpen] = useState(false);
@@ -58,11 +58,11 @@ function InteractivePopover() {
   );
 }
 
-export const Default: Story = {
+export const Default = {
   render: () => <InteractivePopover />,
 };
 
-export const WithCustomAlignment: Story = {
+export const WithCustomAlignment = {
   render: () => (
     <Popover>
       <PopoverTrigger asChild>
@@ -77,7 +77,7 @@ export const WithCustomAlignment: Story = {
   ),
 };
 
-export const DifferentSides: Story = {
+export const DifferentSides = {
   render: () => (
     <div className="flex gap-4 items-center">
       <Popover>
@@ -122,7 +122,7 @@ export const DifferentSides: Story = {
   },
 };
 
-export const MenuVariant: Story = {
+export const MenuVariant = {
   render: () => (
     <Popover>
       <PopoverTrigger asChild>
@@ -153,7 +153,7 @@ export const MenuVariant: Story = {
   },
 };
 
-export const WithHeader: Story = {
+export const WithHeader = {
   render: () => (
     <Popover>
       <PopoverTrigger asChild>

@@ -8,7 +8,7 @@ const meta = {
   parameters: {
     layout: 'centered',
   },
-} satisfies Meta<typeof DialogFooter>;
+} as Meta<typeof DialogFooter>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

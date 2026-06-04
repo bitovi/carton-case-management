@@ -12,102 +12,64 @@ const meta = {
     layout: 'fullscreen',
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof Sheet>;
+} as Meta<typeof Sheet>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Content components for consistent story rendering
-const DefaultContent = () => (
+const PlaceholderContent = () => (
   <div className="space-y-4">
     <p>Sheet content area</p>
     <p className="text-sm text-muted-foreground">
-      This demonstrates the sheet panel rendering.
+      This demonstrates the sheet panel rendering with placeholder content.
     </p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
   </div>
 );
 
-const FormContent = () => (
-  <div className="space-y-6">
-    <div className="space-y-2">
-      <label className="text-sm font-medium">Email</label>
-      <input
-        type="email"
-        className="w-full rounded-lg border border-border bg-background px-3 py-2"
-        placeholder="email@example.com"
-        defaultValue="user@example.com"
-      />
-    </div>
-    <div className="space-y-2">
-      <label className="text-sm font-medium">Username</label>
-      <input
-        type="text"
-        className="w-full rounded-lg border border-border bg-background px-3 py-2"
-        placeholder="username"
-        defaultValue="johndoe"
-      />
-    </div>
-    <div className="space-y-2">
-      <label className="text-sm font-medium">Description</label>
-      <textarea
-        className="w-full rounded-lg border border-border bg-background px-3 py-2"
-        placeholder="Enter description"
-        defaultValue="This is a sample description for the sheet content."
-        rows={4}
-      />
-    </div>
+const LongContent = () => (
+  <div className="space-y-4">
+    {Array.from({ length: 20 }, (_, i) => (
+      <p key={i}>Paragraph {i + 1}: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    ))}
   </div>
 );
 
-// Dependent axis: State + Scrollable combinations
-
-export const StateClosed: Story = {
-  args: {
-    open: false,
-    scrollable: true,
-    children: <DefaultContent />,
-  },
-};
-
-export const StateOpen: Story = {
+export const ScrollableTrue: Story = {
   args: {
     open: true,
     scrollable: true,
-    children: <DefaultContent />,
+    children: <LongContent />,
   },
 };
 
-export const StateOpenScrollableFalse: Story = {
+export const ScrollableFalse: Story = {
   args: {
     open: true,
     scrollable: false,
-    children: <DefaultContent />,
+    children: <PlaceholderContent />,
   },
 };
 
-// Independent axis: Header slot (at default dependent values: state=open, scrollable=true)
-
-export const StateOpenWithHeader: Story = {
+export const WithHeader: Story = {
   args: {
     open: true,
     scrollable: true,
     header: (
       <DialogHeader
-        title="Edit Settings"
+        title="Sheet Title"
         onClose={() => {}}
       />
     ),
-    children: <DefaultContent />,
+    children: <PlaceholderContent />,
   },
 };
 
-// Independent axis: Footer slot
-
-export const StateOpenWithFooter: Story = {
+export const WithFooter: Story = {
   args: {
     open: true,
     scrollable: true,
-    children: <DefaultContent />,
+    children: <PlaceholderContent />,
     footer: (
       <DialogFooter>
         <Button variant="outline">Cancel</Button>
@@ -117,26 +79,23 @@ export const StateOpenWithFooter: Story = {
   },
 };
 
-// Independent axis: Header + Footer combined
-
-export const StateOpenWithHeaderAndFooter: Story = {
+export const WithHeaderAndFooter: Story = {
   args: {
     open: true,
     scrollable: true,
     header: (
       <DialogHeader
-        title="Create New Item"
+        title="Edit Settings"
         onClose={() => {}}
       />
     ),
-    children: <FormContent />,
+    children: <PlaceholderContent />,
     footer: (
       <DialogFooter>
         <Button variant="outline">Cancel</Button>
-        <Button variant="primary">Create</Button>
+        <Button variant="primary">Save Changes</Button>
       </DialogFooter>
     ),
   },
 };
-
 

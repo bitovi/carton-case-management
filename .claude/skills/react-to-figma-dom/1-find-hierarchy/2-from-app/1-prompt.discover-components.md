@@ -6,7 +6,7 @@ Crawl a running React application using Playwright to discover components as the
 
 - **Dev server URL**: The URL of the running dev server (e.g., `http://localhost:5173`)
 - **Source root**: The project source root path (for resolving component file paths)
-- **Output directory**: `.temp/react-to-figma/` (passed by parent)
+- **Output directory**: `.temp/react-to-figma-dom/` (passed by parent)
 
 ## Prerequisites
 
@@ -22,10 +22,10 @@ Execute the `map-components.js` script from this skill directory:
 ```bash
 node .claude/skills/react-to-figma-dom/1-find-hierarchy/2-from-app/map-components.js \
   --url "{devServerUrl}" \
-  --output ".temp/react-to-figma/component-hierarchy/component-map.json" \
-  --pages-output ".temp/react-to-figma/component-hierarchy/pages.json" \
+  --output ".temp/react-to-figma-dom/component-hierarchy/component-map.json" \
+  --pages-output ".temp/react-to-figma-dom/component-hierarchy/pages.json" \
   --captures-dir ".temp/react-to-figma" \
-  --prop-classification ".temp/react-to-figma/component-hierarchy/from-files/prop-classification.json" \
+  --prop-classification ".temp/react-to-figma-dom/component-hierarchy/from-files/prop-classification.json" \
   --max-routes 50
 ```
 
@@ -64,9 +64,9 @@ The script produces all output files — do NOT write additional scripts or file
 
 Check that the script succeeded by verifying these files exist and are non-empty:
 
-1. `.temp/react-to-figma/component-hierarchy/component-map.json` — has a `components` array with at least one entry
-2. `.temp/react-to-figma/component-hierarchy/pages.json` — has a `pages` object with at least one route key
-3. `.temp/react-to-figma/component-hierarchy/from-app/components.json` — has a `components` array with at least one entry
+1. `.temp/react-to-figma-dom/component-hierarchy/component-map.json` — has a `components` array with at least one entry
+2. `.temp/react-to-figma-dom/component-hierarchy/pages.json` — has a `pages` object with at least one route key
+3. `.temp/react-to-figma-dom/component-hierarchy/from-app/components.json` — has a `components` array with at least one entry
 4. At least one `pages/{route-slug}/screenshot-app.png` exists
 5. At least one `components/{Name}/app-variants/` directory exists with `dom.json` and `screenshot.png`
 

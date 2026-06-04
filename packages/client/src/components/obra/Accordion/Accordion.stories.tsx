@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { Accordion } from './Accordion';
 
-const meta: Meta<typeof Accordion> = {
+const meta = {
   component: Accordion,
   title: 'Obra/Accordion',
   tags: ['autodocs'],
@@ -14,9 +14,9 @@ const meta: Meta<typeof Accordion> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Accordion>;
 
-export const Default: Story = {
+
+export const Default = {
   args: {
     type: 'single',
     collapsible: true,
@@ -42,7 +42,7 @@ export const Default: Story = {
   },
 };
 
-export const SingleOpen: Story = {
+export const SingleOpen = {
   args: {
     type: 'single',
     collapsible: true,
@@ -68,7 +68,7 @@ export const SingleOpen: Story = {
   },
 };
 
-export const MultipleOpen: Story = {
+export const MultipleOpen = {
   args: {
     type: 'multiple',
     defaultValue: ['item-1', 'item-3'],
@@ -93,7 +93,7 @@ export const MultipleOpen: Story = {
   },
 };
 
-export const WithRichContent: Story = {
+export const WithRichContent = {
   args: {
     type: 'single',
     collapsible: true,

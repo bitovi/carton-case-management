@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { BrowserRouter } from 'react-router-dom';
 import { Header } from './Header';
 
-const meta: Meta<typeof Header> = {
+const meta = {
   component: Header,
   tags: ['autodocs'],
   decorators: [
@@ -15,9 +15,9 @@ const meta: Meta<typeof Header> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Header>;
 
-export const Desktop: Story = {
+
+export const Desktop = {
   parameters: {
     viewport: {
       defaultViewport: 'responsive',
@@ -25,7 +25,7 @@ export const Desktop: Story = {
   },
 };
 
-export const Mobile: Story = {
+export const Mobile = {
   parameters: {
     viewport: {
       defaultViewport: 'mobile1',
@@ -33,13 +33,13 @@ export const Mobile: Story = {
   },
 };
 
-export const CustomInitials: Story = {
+export const CustomInitials = {
   args: {
     userInitials: 'JD',
   },
 };
 
-export const WithCallback: Story = {
+export const WithCallback = {
   args: {
     onAvatarClick: () => console.log('Avatar clicked'),
   },

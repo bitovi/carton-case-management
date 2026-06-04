@@ -23,4 +23,7 @@ export interface VoterTooltipProps {
    * Additional CSS classes for root element
    */
   className?: string;
+
+  /** @internal Story-only override — do not use in production */
+  __storyDefaultOpen?: boolean;
 }

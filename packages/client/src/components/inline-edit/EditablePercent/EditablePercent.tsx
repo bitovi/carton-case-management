@@ -15,7 +15,7 @@ import { Input } from '@/components/obra/Input';
 import { BaseEditable } from '../BaseEditable';
 import { EditControls } from '../EditControls';
 import type { ZodSchema } from 'zod';
-import type { RenderEditModeProps } from '../types';
+import type { EditableState, RenderEditModeProps } from '../types';
 
 export interface EditablePercentProps {
   /** Label text displayed above the value */
@@ -46,6 +46,10 @@ export interface EditablePercentProps {
   validate?: ZodSchema<number | null> | ((value: number | null) => string | null);
   /** Number of decimal places to display (defaults to 0) */
   decimalPlaces?: number;
+  /** @internal Story-only override — do not use in production */
+  __storyState?: EditableState;
+  /** @internal Story-only override — do not use in production */
+  __storyError?: string | null;
 }
 
 /**
@@ -195,6 +199,8 @@ export function EditablePercent({
   onSave,
   validate,
   decimalPlaces = 0,
+  __storyState,
+  __storyError,
 }: EditablePercentProps) {
   // Combined validation: user-provided + min/max constraints
   const combinedValidate = useCallback(
@@ -255,6 +261,8 @@ export function EditablePercent({
       onSave={onSave}
       validate={combinedValidate}
       formatValue={formatValue}
+      __storyState={__storyState}
+      __storyError={__storyError}
       renderEditMode={(props) => (
         <EditModeRenderer
           {...props}

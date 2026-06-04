@@ -8,19 +8,16 @@ const meta = {
   component: PopoverTrigger,
   parameters: {
     layout: 'centered',
-    viewport: {
-      defaultViewport: 'responsive',
-    },
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof PopoverTrigger>;
+} as Meta<typeof PopoverTrigger>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function TriggerVariant({ children }: { children: ReactNode }) {
+function PopoverTriggerPreview({ children }: { children: ReactNode }) {
   return (
-    <div className="h-[220px] w-[420px] flex items-center justify-center">
+    <div className="flex min-h-[200px] items-center justify-center">
       <Popover>
         <PopoverTrigger asChild>{children}</PopoverTrigger>
         <PopoverContent>
@@ -31,20 +28,52 @@ function TriggerVariant({ children }: { children: ReactNode }) {
   );
 }
 
-export const RenderModeAsChildTrue: Story = {
+export const StateDefault: Story = {
   render: () => (
-    <TriggerVariant>
+    <PopoverTriggerPreview>
       <Button variant="outline">Trigger</Button>
-    </TriggerVariant>
+    </PopoverTriggerPreview>
   ),
 };
 
-export const TriggerContentCustomButton: Story = {
+export const StateHover: Story = {
   render: () => (
-    <TriggerVariant>
-      <Button variant="primary" className="min-w-[140px]">
-        Open Popover
-      </Button>
-    </TriggerVariant>
+    <PopoverTriggerPreview>
+      <Button variant="outline">Trigger</Button>
+    </PopoverTriggerPreview>
   ),
+  play: async ({ canvasElement }) => {
+    const button = canvasElement.querySelector('button');
+    if (button) {
+      button.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+    }
+  },
+};
+
+export const StateFocus: Story = {
+  render: () => (
+    <PopoverTriggerPreview>
+      <Button variant="outline">Trigger</Button>
+    </PopoverTriggerPreview>
+  ),
+  play: async ({ canvasElement }) => {
+    const button = canvasElement.querySelector('button');
+    if (button && button instanceof HTMLElement) {
+      button.focus();
+    }
+  },
+};
+
+export const StateActive: Story = {
+  render: () => (
+    <PopoverTriggerPreview>
+      <Button variant="outline">Trigger</Button>
+    </PopoverTriggerPreview>
+  ),
+  play: async ({ canvasElement }) => {
+    const button = canvasElement.querySelector('button');
+    if (button) {
+      button.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+    }
+  },
 };

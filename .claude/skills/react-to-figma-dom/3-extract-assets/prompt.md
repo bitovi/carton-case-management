@@ -13,8 +13,8 @@ Adopted from figma-from-code patterns:
 
 - **Source root**: The project source root path (passed by parent), e.g. `packages/client/src`
 - **Client directory**: The client package root, e.g. `packages/client`
-- **Output directory**: `.temp/react-to-figma/`
-- **Component analyses**: `.temp/react-to-figma/components/*/analysis.md` (to cross-reference icon usage)
+- **Output directory**: `.temp/react-to-figma-dom/`
+- **Component analyses**: `.temp/react-to-figma-dom/components/*/analysis.md` (to cross-reference icon usage)
 
 ## Procedure
 
@@ -74,9 +74,9 @@ Asset extraction complete.
 - Components with icons: {count}
 - Static assets found: {count}
 - SVG files written: {count}
-- Output: .temp/react-to-figma/icons.json
-- Output: .temp/react-to-figma/assets/icons/
-- Output: .temp/react-to-figma/assets/static-assets.json
+- Output: .temp/react-to-figma-dom/icons.json
+- Output: .temp/react-to-figma-dom/assets/icons/
+- Output: .temp/react-to-figma-dom/assets/static-assets.json
 ```
 
 ## JSON Schema

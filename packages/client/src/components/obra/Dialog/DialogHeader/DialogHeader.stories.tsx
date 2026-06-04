@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { fn } from '@storybook/test';
 import { DialogHeader } from './DialogHeader';
 
-const meta: Meta<typeof DialogHeader> = {
+const meta = {
   component: DialogHeader,
   title: 'Obra/DialogHeader',
   tags: ['autodocs'],
@@ -18,28 +18,28 @@ const meta: Meta<typeof DialogHeader> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof DialogHeader>;
 
-export const Header: Story = {
+
+export const Header = {
   args: {
     type: 'Header',
     title: 'Dialog Title',
   },
 };
 
-export const CloseOnly: Story = {
+export const CloseOnly = {
   args: {
     type: 'Close Only',
   },
 };
 
-export const IconButtonClose: Story = {
+export const IconButtonClose = {
   args: {
     type: 'Icon Button Close',
   },
 };
 
-export const LongTitle: Story = {
+export const LongTitle = {
   args: {
     type: 'Header',
     title: 'This is a longer title that demonstrates how the header handles extended text content',

@@ -15,7 +15,7 @@
  *   - A markdown summary written to the component directory
  *
  * Usage:
- *   node diff-variants.js --variants-dir .temp/react-to-figma/components/Badge/variants
+ *   node diff-variants.js --variants-dir .temp/react-to-figma-dom/components/Badge/variants
  *
  * Options:
  *   --variants-dir <path>   Path to the variants/ directory (required)

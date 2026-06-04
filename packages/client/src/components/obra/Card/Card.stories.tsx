@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { Card } from './Card';
 
-const meta: Meta<typeof Card> = {
+const meta = {
   component: Card,
   title: 'Obra/Card',
   tags: ['autodocs'],
@@ -14,7 +14,7 @@ const meta: Meta<typeof Card> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Card>;
+
 
 const HeaderContent = () => (
   <div className="flex items-center justify-between">
@@ -43,20 +43,20 @@ const FooterContent = () => (
   </div>
 );
 
-export const OneSlot: Story = {
+export const OneSlot = {
   args: {
     main: <MainContent />,
   },
 };
 
-export const TwoSlots: Story = {
+export const TwoSlots = {
   args: {
     header: <HeaderContent />,
     main: <MainContent />,
   },
 };
 
-export const ThreeSlots: Story = {
+export const ThreeSlots = {
   args: {
     header: <HeaderContent />,
     main: <MainContent />,
@@ -64,7 +64,7 @@ export const ThreeSlots: Story = {
   },
 };
 
-export const AllVariants: Story = {
+export const AllVariants = {
   render: () => (
     <div className="grid gap-6 md:grid-cols-3">
       <Card main={<MainContent />} />

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { useState } from 'react';
 import { EditableSelect } from './EditableSelect';
 import { z } from 'zod';
@@ -24,7 +24,7 @@ const customerOptions = [
   { value: 'cust4', label: 'Initech', disabled: true },
 ];
 
-const meta: Meta<typeof EditableSelect> = {
+const meta = {
   title: 'Components/inline-edit/EditableSelect',
   component: EditableSelect,
   parameters: {
@@ -68,13 +68,13 @@ const meta: Meta<typeof EditableSelect> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof EditableSelect>;
+
 
 /**
  * Default select with status options.
  * Wrapped in a bordered container to demonstrate container-filling behavior.
  */
-export const Default: Story = {
+export const Default = {
   render: (args) => (
     <div className="w-96 p-4 border border-dashed border-gray-300 rounded-lg">
       <EditableSelect {...args} />
@@ -94,7 +94,7 @@ export const Default: Story = {
 /**
  * Interactive example with stateful value
  */
-export const Interactive: Story = {
+export const Interactive = {
   render: function InteractiveStory() {
     const [value, setValue] = useState('IN_PROGRESS');
 
@@ -120,7 +120,7 @@ export const Interactive: Story = {
 /**
  * Customer selection dropdown
  */
-export const CustomerSelect: Story = {
+export const CustomerSelect = {
   render: function CustomerStory() {
     const [value, setValue] = useState('cust1');
 
@@ -143,7 +143,7 @@ export const CustomerSelect: Story = {
 /**
  * Empty value with placeholder
  */
-export const WithPlaceholder: Story = {
+export const WithPlaceholder = {
   args: {
     label: 'Assignee',
     value: '',
@@ -162,7 +162,7 @@ export const WithPlaceholder: Story = {
 /**
  * Priority selection with colored indicators
  */
-export const PriorityWithColors: Story = {
+export const PriorityWithColors = {
   render: function PriorityStory() {
     const [value, setValue] = useState('MEDIUM');
 
@@ -212,7 +212,7 @@ export const PriorityWithColors: Story = {
 /**
  * With disabled options
  */
-export const WithDisabledOptions: Story = {
+export const WithDisabledOptions = {
   args: {
     label: 'Customer',
     value: 'cust1',
@@ -226,7 +226,7 @@ export const WithDisabledOptions: Story = {
 /**
  * Read-only mode - no interaction possible
  */
-export const ReadOnly: Story = {
+export const ReadOnly = {
   args: {
     label: 'Category',
     value: 'support',
@@ -243,7 +243,7 @@ export const ReadOnly: Story = {
 /**
  * With validation
  */
-export const WithValidation: Story = {
+export const WithValidation = {
   render: function ValidationStory() {
     const [value, setValue] = useState('');
 
@@ -280,7 +280,7 @@ export const WithValidation: Story = {
 /**
  * Simulating save error
  */
-export const SaveError: Story = {
+export const SaveError = {
   args: {
     label: 'Status',
     value: 'TO_DO',
@@ -295,7 +295,7 @@ export const SaveError: Story = {
 /**
  * Controlled editing state
  */
-export const ControlledEditing: Story = {
+export const ControlledEditing = {
   render: function ControlledStory() {
     const [value, setValue] = useState('IN_PROGRESS');
     const [isEditing, setIsEditing] = useState(false);
@@ -338,7 +338,7 @@ export const ControlledEditing: Story = {
 /**
  * Long option list
  */
-export const LongOptionList: Story = {
+export const LongOptionList = {
   args: {
     label: 'Country',
     value: 'US',
@@ -368,7 +368,7 @@ export const LongOptionList: Story = {
 /**
  * Multiple select fields example
  */
-export const MultipleFields: Story = {
+export const MultipleFields = {
   render: function MultipleFieldsStory() {
     const [data, setData] = useState({
       status: 'IN_PROGRESS',

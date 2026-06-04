@@ -31,7 +31,7 @@ const meta = {
     },
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof SelectItemTextPreview>;
+} as Meta<typeof SelectItemTextPreview>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

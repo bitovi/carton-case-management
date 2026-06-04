@@ -34,7 +34,7 @@ const PROP_CLASSIFICATION_PATH =
   args["prop-classification"] ||
   path.join(
     process.cwd(),
-    ".temp/react-to-figma/component-hierarchy/prop-classification.json"
+    ".temp/react-to-figma-dom/component-hierarchy/prop-classification.json"
   );
 
 function loadPropClassification() {

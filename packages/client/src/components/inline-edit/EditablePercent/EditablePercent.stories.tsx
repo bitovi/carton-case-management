@@ -71,7 +71,7 @@ const meta = {
       description: 'Called when editing state changes',
     },
   },
-} satisfies Meta<typeof EditablePercent>;
+} as Meta<typeof EditablePercent>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

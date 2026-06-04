@@ -5,14 +5,14 @@ Scan a React source tree to find every component — project-defined, UI library
 ## Inputs
 
 - **Source root**: The root directory containing React source files (passed by parent)
-- **Output directory**: `.temp/react-to-figma/component-hierarchy/from-files/` (passed by parent)
+- **Output directory**: `.temp/react-to-figma-dom/component-hierarchy/from-files/` (passed by parent)
 
 ## Run
 
 ```bash
 node .claude/skills/react-to-figma-dom/1-find-hierarchy/1-from-files/discover-components.js \
   --source-root {sourceRoot} \
-  --output-dir .temp/react-to-figma/component-hierarchy/from-files
+  --output-dir .temp/react-to-figma-dom/component-hierarchy/from-files
 ```
 
 ## Outputs

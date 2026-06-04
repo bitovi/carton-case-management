@@ -48,6 +48,10 @@ export interface EditableSelectProps {
    * Defaults to true.
    */
   showSavingState?: boolean;
+  /** @internal Story-only override — do not use in production */
+  __storyState?: 'rest' | 'interest' | 'edit' | 'saving';
+  /** @internal Story-only override — do not use in production */
+  __storyError?: string | null;
 }
 
 /**
@@ -186,6 +190,8 @@ export function EditableSelect({
   onSave,
   validate,
   showSavingState = true,
+  __storyState,
+  __storyError,
 }: EditableSelectProps) {
   // Find the label for the current value
   const selectedOption = options.find((opt) => opt.value === value);
@@ -223,6 +229,8 @@ export function EditableSelect({
       exitOnBlur={false} // Select uses portal, blur happens when clicking dropdown
       showSavingState={showSavingState}
       formatValue={formatValue}
+      __storyState={__storyState}
+      __storyError={__storyError}
       renderEditMode={(props) => (
         <EditModeRenderer
           {...props}

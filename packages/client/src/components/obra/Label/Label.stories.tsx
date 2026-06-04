@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { Label } from './Label';
 
-const meta: Meta<typeof Label> = {
+const meta = {
   component: Label,
   title: 'Obra/Label',
   tags: ['autodocs'],
@@ -14,15 +14,15 @@ const meta: Meta<typeof Label> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Label>;
 
-export const Default: Story = {
+
+export const Default = {
   args: {
     children: 'Label',
   },
 };
 
-export const WithInput: Story = {
+export const WithInput = {
   args: {
     layout: 'block',
     children: 'Email address',
@@ -41,7 +41,7 @@ export const WithInput: Story = {
   ),
 };
 
-export const Required: Story = {
+export const Required = {
   args: {
     layout: 'block',
     htmlFor: 'password',
@@ -61,7 +61,7 @@ export const Required: Story = {
   ),
 };
 
-export const Disabled: Story = {
+export const Disabled = {
   args: {
     layout: 'block',
     children: 'Disabled field',

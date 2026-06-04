@@ -22,6 +22,8 @@ export const SelectGroup = SelectPrimitive.Group;
 
 export const SelectViewport = SelectPrimitive.Viewport;
 
+export const SelectItemIndicator = SelectPrimitive.ItemIndicator;
+
  
 const selectTriggerVariants = cva(
   [

@@ -8,6 +8,7 @@ import { appRouter } from './router.js';
 import { createContext } from './context.js';
 import { autoLoginMiddleware } from './middleware/autoLogin.js';
 
+export { appRouter };
 export type { AppRouter } from './router.js';
 
 const __filename = fileURLToPath(import.meta.url);

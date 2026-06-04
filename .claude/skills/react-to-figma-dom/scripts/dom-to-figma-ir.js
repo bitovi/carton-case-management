@@ -9,14 +9,14 @@
  *
  * Usage:
  *   node dom-to-figma-ir.js \
- *     --dom-file .temp/react-to-figma/components/Badge/variants/PrimaryDefault/dom.json \
- *     --fiber-map .temp/react-to-figma/components/Badge/variants/PrimaryDefault/fiber-dom-map.json \
- *     --variables-map .temp/react-to-figma/figma-variables-map.json \
- *     --design-tokens .temp/react-to-figma/design-tokens.json \
- *     --icons-map .temp/react-to-figma/figma-icons-map.json \
- *     --built-components .temp/react-to-figma/built-components.json \
+ *     --dom-file .temp/react-to-figma-dom/components/Badge/variants/PrimaryDefault/dom.json \
+ *     --fiber-map .temp/react-to-figma-dom/components/Badge/variants/PrimaryDefault/fiber-dom-map.json \
+ *     --variables-map .temp/react-to-figma-dom/figma-variables-map.json \
+ *     --design-tokens .temp/react-to-figma-dom/design-tokens.json \
+ *     --icons-map .temp/react-to-figma-dom/figma-icons-map.json \
+ *     --built-components .temp/react-to-figma-dom/built-components.json \
  *     --component-name Badge \
- *     --output .temp/react-to-figma/components/Badge/variants/PrimaryDefault/figma-ir.json
+ *     --output .temp/react-to-figma-dom/components/Badge/variants/PrimaryDefault/figma-ir.json
  */
 
 const fs = require('fs');
@@ -24,8 +24,14 @@ const path = require('path');
 const {
   mapLayout, mapSizing, mapFills, mapStrokes, mapTypography,
   mapCornerRadius, mapEffects, mapOpacity, buildReverseColorMap,
-  resolveColor,
+  resolveColor, extractRing,
 } = require('./css-to-figma');
+
+const FIGMA_NODE_ID_RE = /^\d+:\d+$/;
+
+function isValidFigmaNodeId(id) {
+  return typeof id === 'string' && FIGMA_NODE_ID_RE.test(id);
+}
 
 function parseArgs() {
   const args = process.argv.slice(2);
@@ -162,8 +168,11 @@ function findIconName(node, iconsMap) {
   const svgHeight = node.bbox ? Math.round(node.bbox.height) : null;
 
   for (const [iconName, iconData] of Object.entries(iconsMap)) {
-    if (iconData && typeof iconData === 'object' && (iconData.componentId || iconData.nodeId)) {
-      return { name: iconName, nodeId: iconData.componentId || iconData.nodeId, width: svgWidth, height: svgHeight };
+    const candidateId = iconData && typeof iconData === 'object'
+      ? (iconData.componentId || iconData.nodeId)
+      : null;
+    if (candidateId && isValidFigmaNodeId(candidateId)) {
+      return { name: iconName, nodeId: candidateId, width: svgWidth, height: svgHeight };
     }
   }
   return null;
@@ -209,9 +218,9 @@ function translateNode(domNode, context, isRoot, parentStyles) {
 
   // Check both old format (top-level property) and new format (inside attrs)
   const rtfComponent = attrs['data-rtf-component'] || domNode['data-rtf-component'];
-  if (rtfComponent && !isRoot) {
+  if (rtfComponent && !isRoot && rtfComponent !== componentName) {
     const masterNodeId = builtComponents ? builtComponents[rtfComponent] : null;
-    if (masterNodeId) {
+    if (masterNodeId && isValidFigmaNodeId(masterNodeId)) {
       return {
         type: 'INSTANCE',
         name: rtfComponent,
@@ -223,14 +232,18 @@ function translateNode(domNode, context, isRoot, parentStyles) {
     if (iconsMap) {
       iconEntry = iconsMap[`Icon/${rtfComponent}`] || iconsMap[rtfComponent];
     }
-    if (iconEntry && (iconEntry.componentId || iconEntry.nodeId)) {
+    const iconNodeId = iconEntry ? (iconEntry.componentId || iconEntry.nodeId) : null;
+    if (iconNodeId && isValidFigmaNodeId(iconNodeId)) {
       return {
         type: 'INSTANCE',
         name: `Icon/${rtfComponent}`,
-        masterNodeId: iconEntry.componentId || iconEntry.nodeId,
+        masterNodeId: iconNodeId,
         resize: bbox.width && bbox.height ? [Math.round(bbox.width), Math.round(bbox.height)] : null,
         iconColor: resolveIconColor(styles, variablesMap, reverseColorMap),
       };
+    }
+    if (iconNodeId && !isValidFigmaNodeId(iconNodeId)) {
+      warnings.push(`Icon "${rtfComponent}" has invalid Figma node ID "${iconNodeId}" — processing children inline`);
     }
     // Component not found in builtComponents or iconsMap — fall through and
     // process its children normally instead of creating an unresolvable INSTANCE
@@ -304,14 +317,18 @@ function translateNode(domNode, context, isRoot, parentStyles) {
 
     if (inferredIconName && iconsMap) {
       const iconEntry = iconsMap[inferredIconName] || iconsMap[`Icon/${inferredIconName}`];
-      if (iconEntry && (iconEntry.componentId || iconEntry.nodeId)) {
+      const entryId = iconEntry ? (iconEntry.componentId || iconEntry.nodeId) : null;
+      if (entryId && isValidFigmaNodeId(entryId)) {
         return {
           type: 'INSTANCE',
           name: `Icon/${inferredIconName}`,
-          masterNodeId: iconEntry.componentId || iconEntry.nodeId,
+          masterNodeId: entryId,
           resize: [w, h],
           iconColor: resolveIconColor(styles, variablesMap, reverseColorMap),
         };
+      }
+      if (entryId && !isValidFigmaNodeId(entryId)) {
+        warnings.push(`Icon "${inferredIconName}" has invalid Figma node ID "${entryId}" — using SVG placeholder`);
       }
     }
 
@@ -392,12 +409,14 @@ function translateNode(domNode, context, isRoot, parentStyles) {
     const effects = mapEffects(styles);
     const opacity = mapOpacity(styles);
 
-    // Extract text from children (capture-dom.js may have added a TEXT_NODE from el.value/placeholder)
-    let inputText = '';
-    for (const child of (domNode.children || [])) {
-      if (child.type === 'TEXT_NODE' && child.text) {
-        inputText = child.text;
-        break;
+    // Extract text: first from captured placeholder attribute, then from TEXT_NODE children
+    let inputText = domNode.placeholder || '';
+    if (!inputText) {
+      for (const child of (domNode.children || [])) {
+        if (child.type === 'TEXT_NODE' && child.text) {
+          inputText = child.text;
+          break;
+        }
       }
     }
     // Fallback: use a generic placeholder if no text was captured
@@ -529,7 +548,22 @@ function translateNode(domNode, context, isRoot, parentStyles) {
   if (fills.length > 0) figmaNode.fills = fills;
   if (strokes) figmaNode.strokes = strokes;
   if (cornerRadius.value > 0 || !cornerRadius.uniform) figmaNode.cornerRadius = cornerRadius;
-  if (effects.length > 0) figmaNode.effects = effects;
+  if (effects.length > 0) {
+    if (isRoot) {
+      const { ring, remaining } = extractRing(effects);
+      if (ring.length > 0) {
+        const largest = ring.reduce((a, b) => b.spread > a.spread ? b : a, ring[0]);
+        figmaNode.ring = {
+          color: largest.color,
+          opacity: largest.opacity,
+          spread: largest.spread,
+        };
+      }
+      if (remaining.length > 0) figmaNode.effects = remaining;
+    } else {
+      figmaNode.effects = effects;
+    }
+  }
   if (opacity < 1) figmaNode.opacity = opacity;
 
   if (children.length > 0) figmaNode.children = children;
@@ -566,6 +600,26 @@ function countNodes(irNode) {
     }
   }
   return count;
+}
+
+function detectPortalDirection(rawDom) {
+  const struct = rawDom.structure || rawDom;
+  const portal = (rawDom.portalContent || [])[0];
+  if (!portal) return 'RIGHT';
+  let trigBounds = struct.bounds || struct.bbox;
+  for (const c of (struct.children || [])) {
+    const b = c.bounds || c.bbox;
+    if (b) { trigBounds = b; break; }
+  }
+  const portBounds = portal.bounds || portal.bbox;
+  if (!trigBounds || !portBounds) return 'RIGHT';
+  const dx = (portBounds.x + portBounds.width / 2) - (trigBounds.x + trigBounds.width / 2);
+  const dy = (portBounds.y + portBounds.height / 2) - (trigBounds.y + trigBounds.height / 2);
+  if (Math.abs(dy) > Math.abs(dx)) {
+    return dy < 0 ? 'TOP' : 'BOTTOM';
+  } else {
+    return dx < 0 ? 'LEFT' : 'RIGHT';
+  }
 }
 
 function main() {
@@ -673,8 +727,18 @@ function main() {
 
       if (portalGroup.children.length > 0) {
         if (!ir.children) ir.children = [];
-        ir.children.push(portalGroup);
-        warnings.push(`Portal content detected: ${portalGroup.children.length} portal node(s) appended as "Portal Content" group`);
+        const portalDirection = detectPortalDirection(rawDom);
+        if (portalDirection === 'TOP' || portalDirection === 'BOTTOM') {
+          ir.layoutMode = 'VERTICAL';
+        } else {
+          ir.layoutMode = 'HORIZONTAL';
+        }
+        if (portalDirection === 'TOP' || portalDirection === 'LEFT') {
+          ir.children.unshift(portalGroup);
+        } else {
+          ir.children.push(portalGroup);
+        }
+        warnings.push(`Portal content detected: direction=${portalDirection}, ${portalGroup.children.length} portal node(s) positioned ${portalDirection}`);
       }
     }
   }
@@ -689,6 +753,7 @@ function main() {
     nodeCount,
     fonts,
     warnings,
+    variantProps: rawDom.variantProps || null,
     root: ir,
   };
 

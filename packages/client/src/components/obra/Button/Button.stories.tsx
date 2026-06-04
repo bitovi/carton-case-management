@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { Plus, Trash2, Download } from 'lucide-react';
 import { Button } from './Button';
 
-const meta: Meta<typeof Button> = {
+const meta = {
   component: Button,
   title: 'Obra/Button',
   tags: ['autodocs'],
@@ -15,15 +15,15 @@ const meta: Meta<typeof Button> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Button>;
 
-export const Default: Story = {
+
+export const Default = {
   args: {
     children: 'Label',
   },
 };
 
-export const AllVariants: Story = {
+export const AllVariants = {
   render: () => (
     <div className="space-y-4">
       <div className="space-x-2">
@@ -38,7 +38,7 @@ export const AllVariants: Story = {
   ),
 };
 
-export const WithIcons: Story = {
+export const WithIcons = {
   render: () => (
     <div className="space-y-2">
       <div className="space-x-2">
@@ -53,14 +53,14 @@ export const WithIcons: Story = {
   ),
 };
 
-export const Disabled: Story = {
+export const Disabled = {
   args: {
     disabled: true,
     children: 'Disabled',
   },
 };
 
-export const VariantMatrix: Story = {
+export const VariantMatrix = {
   render: () => (
     <div className="space-y-4">
       <div>

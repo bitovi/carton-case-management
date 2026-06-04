@@ -7,12 +7,9 @@ const meta = {
   component: AlertDialog,
   parameters: {
     layout: 'centered',
-    viewport: {
-      defaultViewport: 'responsive',
-    },
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof AlertDialog>;
+} as Meta<typeof AlertDialog>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -20,9 +17,9 @@ type Story = StoryObj<typeof meta>;
 export const TypeMobile: Story = {
   args: {
     type: 'mobile',
-    title: 'Delete this?',
-    description: 'Are you sure you want to delete this item?',
     open: true,
+    title: 'Dialog Title',
+    description: 'Description text',
     actionButton: <Button variant="destructive" className="w-full">Delete</Button>,
     cancelButton: <Button variant="outline" className="w-full">Cancel</Button>,
   },
@@ -31,30 +28,30 @@ export const TypeMobile: Story = {
 export const TypeDesktop: Story = {
   args: {
     type: 'desktop',
-    title: 'Delete this?',
-    description: 'Are you sure you want to delete this item?',
     open: true,
+    title: 'Dialog Title',
+    description: 'Description text',
     actionButton: <Button variant="destructive">Delete</Button>,
     cancelButton: <Button variant="outline">Cancel</Button>,
   },
 };
 
-export const WithActionButtonOnly: Story = {
+export const TypeMobileActionButtonOnly: Story = {
   args: {
     type: 'mobile',
-    title: 'Delete this?',
-    description: 'Are you sure you want to delete this item?',
     open: true,
+    title: 'Dialog Title',
+    description: 'Description text',
     actionButton: <Button variant="destructive" className="w-full">Delete</Button>,
   },
 };
 
-export const WithCancelButtonOnly: Story = {
+export const TypeMobileCancelButtonOnly: Story = {
   args: {
     type: 'mobile',
-    title: 'Delete this?',
-    description: 'Are you sure you want to delete this item?',
     open: true,
+    title: 'Dialog Title',
+    description: 'Description text',
     cancelButton: <Button variant="outline" className="w-full">Cancel</Button>,
   },
 };

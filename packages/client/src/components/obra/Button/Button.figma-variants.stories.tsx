@@ -1,191 +1,294 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { Plus, Download } from 'lucide-react';
 import { Button } from './Button';
-import { Check, ChevronRight } from 'lucide-react';
 
 const meta = {
   title: 'Figma Variants/Button',
   component: Button,
   parameters: {
     layout: 'centered',
+    chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof Button>;
+} as Meta<typeof Button>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ============================================================================
-// Baseline and Variant Axis (6 stories)
-// ============================================================================
+// ---------------------------------------------------------------------------
+// Core variants — all variant × state at size=regular, roundness=default
+// ---------------------------------------------------------------------------
 
-export const VariantPrimarySizeRegularRoundnessDefaultStateDefault: Story = {
-  args: {
-    variant: 'primary',
-    size: 'regular',
-    roundness: 'default',
-    children: 'Button',
-  },
+export const VariantPrimaryStateDefault: Story = {
+  args: { variant: 'primary', size: 'regular', roundness: 'default', children: 'Label' },
 };
 
-export const VariantSecondarySizeRegularRoundnessDefaultStateDefault: Story = {
-  args: {
-    variant: 'secondary',
-    size: 'regular',
-    roundness: 'default',
-    children: 'Button',
-  },
-};
-
-export const VariantOutlineSizeRegularRoundnessDefaultStateDefault: Story = {
-  args: {
-    variant: 'outline',
-    size: 'regular',
-    roundness: 'default',
-    children: 'Button',
-  },
-};
-
-export const VariantGhostSizeRegularRoundnessDefaultStateDefault: Story = {
-  args: {
-    variant: 'ghost',
-    size: 'regular',
-    roundness: 'default',
-    children: 'Button',
-  },
-};
-
-export const VariantGhostMutedSizeRegularRoundnessDefaultStateDefault: Story = {
-  args: {
-    variant: 'ghost-muted',
-    size: 'regular',
-    roundness: 'default',
-    children: 'Button',
-  },
-};
-
-export const VariantDestructiveSizeRegularRoundnessDefaultStateDefault: Story = {
-  args: {
-    variant: 'destructive',
-    size: 'regular',
-    roundness: 'default',
-    children: 'Button',
-  },
-};
-
-// ============================================================================
-// Size Axis (3 stories, variant=primary)
-// ============================================================================
-
-export const VariantPrimarySizeLargeRoundnessDefaultStateDefault: Story = {
-  args: {
-    variant: 'primary',
-    size: 'large',
-    roundness: 'default',
-    children: 'Button',
-  },
-};
-
-export const VariantPrimarySizeSmallRoundnessDefaultStateDefault: Story = {
-  args: {
-    variant: 'primary',
-    size: 'small',
-    roundness: 'default',
-    children: 'Button',
-  },
-};
-
-export const VariantPrimarySizeMiniRoundnessDefaultStateDefault: Story = {
-  args: {
-    variant: 'primary',
-    size: 'mini',
-    roundness: 'default',
-    children: 'Button',
-  },
-};
-
-// ============================================================================
-// Roundness Axis (1 story, variant=primary, size=regular)
-// ============================================================================
-
-export const VariantPrimarySizeRegularRoundnessRoundStateDefault: Story = {
-  args: {
-    variant: 'primary',
-    size: 'regular',
-    roundness: 'round',
-    children: 'Button',
-  },
-};
-
-// ============================================================================
-// State Axis (4 stories, variant=primary, size=regular, roundness=default)
-// ============================================================================
-
-export const VariantPrimarySizeRegularRoundnessDefaultStateHover: Story = {
-  args: {
-    variant: 'primary',
-    size: 'regular',
-    roundness: 'default',
-    children: 'Button',
-  },
+export const VariantPrimaryStateHover: Story = {
+  args: { variant: 'primary', size: 'regular', roundness: 'default', children: 'Label' },
   play: async ({ canvasElement }) => {
-    const button = canvasElement.querySelector('button');
-    if (button) {
-      button.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
-      button.classList.add('hover');
-    }
+    const el = canvasElement.querySelector('button');
+    if (el) el.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
   },
 };
 
-export const VariantPrimarySizeRegularRoundnessDefaultStateFocus: Story = {
-  args: {
-    variant: 'primary',
-    size: 'regular',
-    roundness: 'default',
-    children: 'Button',
-  },
+export const VariantPrimaryStateFocus: Story = {
+  args: { variant: 'primary', size: 'regular', roundness: 'default', children: 'Label' },
   play: async ({ canvasElement }) => {
-    const button = canvasElement.querySelector('button') as HTMLButtonElement;
-    if (button) {
-      button.focus();
-    }
+    const el = canvasElement.querySelector('button');
+    if (el) (el as HTMLElement).focus();
   },
 };
 
-export const VariantPrimarySizeRegularRoundnessDefaultStateActive: Story = {
-  args: {
-    variant: 'primary',
-    size: 'regular',
-    roundness: 'default',
-    children: 'Button',
-  },
+export const VariantPrimaryStateDisabled: Story = {
+  args: { variant: 'primary', size: 'regular', roundness: 'default', children: 'Label', disabled: true },
+};
+
+export const VariantSecondaryStateDefault: Story = {
+  args: { variant: 'secondary', size: 'regular', roundness: 'default', children: 'Label' },
+};
+
+export const VariantSecondaryStateHover: Story = {
+  args: { variant: 'secondary', size: 'regular', roundness: 'default', children: 'Label' },
   play: async ({ canvasElement }) => {
-    const button = canvasElement.querySelector('button');
-    if (button) {
-      button.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-    }
+    const el = canvasElement.querySelector('button');
+    if (el) el.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
   },
 };
 
-export const VariantPrimarySizeRegularRoundnessDefaultStateDisabled: Story = {
-  args: {
-    variant: 'primary',
-    size: 'regular',
-    roundness: 'default',
-    disabled: true,
-    children: 'Button',
+export const VariantSecondaryStateFocus: Story = {
+  args: { variant: 'secondary', size: 'regular', roundness: 'default', children: 'Label' },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('button');
+    if (el) (el as HTMLElement).focus();
   },
 };
 
-// ============================================================================
-// Independent Axis: Icons (3 stories)
-// ============================================================================
+export const VariantSecondaryStateDisabled: Story = {
+  args: { variant: 'secondary', size: 'regular', roundness: 'default', children: 'Label', disabled: true },
+};
+
+export const VariantOutlineStateDefault: Story = {
+  args: { variant: 'outline', size: 'regular', roundness: 'default', children: 'Label' },
+};
+
+export const VariantOutlineStateHover: Story = {
+  args: { variant: 'outline', size: 'regular', roundness: 'default', children: 'Label' },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('button');
+    if (el) el.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+  },
+};
+
+export const VariantOutlineStateFocus: Story = {
+  args: { variant: 'outline', size: 'regular', roundness: 'default', children: 'Label' },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('button');
+    if (el) (el as HTMLElement).focus();
+  },
+};
+
+export const VariantOutlineStateDisabled: Story = {
+  args: { variant: 'outline', size: 'regular', roundness: 'default', children: 'Label', disabled: true },
+};
+
+export const VariantGhostStateDefault: Story = {
+  args: { variant: 'ghost', size: 'regular', roundness: 'default', children: 'Label' },
+};
+
+export const VariantGhostStateHover: Story = {
+  args: { variant: 'ghost', size: 'regular', roundness: 'default', children: 'Label' },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('button');
+    if (el) el.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+  },
+};
+
+export const VariantGhostStateFocus: Story = {
+  args: { variant: 'ghost', size: 'regular', roundness: 'default', children: 'Label' },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('button');
+    if (el) (el as HTMLElement).focus();
+  },
+};
+
+export const VariantGhostStateDisabled: Story = {
+  args: { variant: 'ghost', size: 'regular', roundness: 'default', children: 'Label', disabled: true },
+};
+
+export const VariantGhostMutedStateDefault: Story = {
+  args: { variant: 'ghost-muted', size: 'regular', roundness: 'default', children: 'Label' },
+};
+
+export const VariantGhostMutedStateHover: Story = {
+  args: { variant: 'ghost-muted', size: 'regular', roundness: 'default', children: 'Label' },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('button');
+    if (el) el.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+  },
+};
+
+export const VariantGhostMutedStateFocus: Story = {
+  args: { variant: 'ghost-muted', size: 'regular', roundness: 'default', children: 'Label' },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('button');
+    if (el) (el as HTMLElement).focus();
+  },
+};
+
+export const VariantGhostMutedStateDisabled: Story = {
+  args: { variant: 'ghost-muted', size: 'regular', roundness: 'default', children: 'Label', disabled: true },
+};
+
+export const VariantDestructiveStateDefault: Story = {
+  args: { variant: 'destructive', size: 'regular', roundness: 'default', children: 'Label' },
+};
+
+export const VariantDestructiveStateHover: Story = {
+  args: { variant: 'destructive', size: 'regular', roundness: 'default', children: 'Label' },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('button');
+    if (el) el.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+  },
+};
+
+export const VariantDestructiveStateFocus: Story = {
+  args: { variant: 'destructive', size: 'regular', roundness: 'default', children: 'Label' },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('button');
+    if (el) (el as HTMLElement).focus();
+  },
+};
+
+export const VariantDestructiveStateDisabled: Story = {
+  args: { variant: 'destructive', size: 'regular', roundness: 'default', children: 'Label', disabled: true },
+};
+
+// ---------------------------------------------------------------------------
+// Size variants — all sizes at variant=primary, roundness=default, state=default
+// (primary/regular already covered by VariantPrimaryStateDefault)
+// ---------------------------------------------------------------------------
+
+export const SizeLarge: Story = {
+  args: { variant: 'primary', size: 'large', roundness: 'default', children: 'Label' },
+};
+
+export const SizeSmall: Story = {
+  args: { variant: 'primary', size: 'small', roundness: 'default', children: 'Label' },
+};
+
+export const SizeMini: Story = {
+  args: { variant: 'primary', size: 'mini', roundness: 'default', children: 'Label' },
+};
+
+// ---------------------------------------------------------------------------
+// Roundness variants — at variant=primary, size=regular, state=default
+// (roundness=default already covered by VariantPrimaryStateDefault)
+// ---------------------------------------------------------------------------
+
+export const RoundnessRound: Story = {
+  args: { variant: 'primary', size: 'regular', roundness: 'round', children: 'Label' },
+};
+
+// ---------------------------------------------------------------------------
+// Cross-axis spot checks — each variant at each non-regular size, state=default, roundness=default
+// (primary sizes already covered above)
+// ---------------------------------------------------------------------------
+
+export const VariantSecondarySizeLarge: Story = {
+  args: { variant: 'secondary', size: 'large', roundness: 'default', children: 'Label' },
+};
+
+export const VariantSecondarySizeSmall: Story = {
+  args: { variant: 'secondary', size: 'small', roundness: 'default', children: 'Label' },
+};
+
+export const VariantSecondarySizeMini: Story = {
+  args: { variant: 'secondary', size: 'mini', roundness: 'default', children: 'Label' },
+};
+
+export const VariantOutlineSizeLarge: Story = {
+  args: { variant: 'outline', size: 'large', roundness: 'default', children: 'Label' },
+};
+
+export const VariantOutlineSizeSmall: Story = {
+  args: { variant: 'outline', size: 'small', roundness: 'default', children: 'Label' },
+};
+
+export const VariantOutlineSizeMini: Story = {
+  args: { variant: 'outline', size: 'mini', roundness: 'default', children: 'Label' },
+};
+
+export const VariantGhostSizeLarge: Story = {
+  args: { variant: 'ghost', size: 'large', roundness: 'default', children: 'Label' },
+};
+
+export const VariantGhostSizeSmall: Story = {
+  args: { variant: 'ghost', size: 'small', roundness: 'default', children: 'Label' },
+};
+
+export const VariantGhostSizeMini: Story = {
+  args: { variant: 'ghost', size: 'mini', roundness: 'default', children: 'Label' },
+};
+
+export const VariantGhostMutedSizeLarge: Story = {
+  args: { variant: 'ghost-muted', size: 'large', roundness: 'default', children: 'Label' },
+};
+
+export const VariantGhostMutedSizeSmall: Story = {
+  args: { variant: 'ghost-muted', size: 'small', roundness: 'default', children: 'Label' },
+};
+
+export const VariantGhostMutedSizeMini: Story = {
+  args: { variant: 'ghost-muted', size: 'mini', roundness: 'default', children: 'Label' },
+};
+
+export const VariantDestructiveSizeLarge: Story = {
+  args: { variant: 'destructive', size: 'large', roundness: 'default', children: 'Label' },
+};
+
+export const VariantDestructiveSizeSmall: Story = {
+  args: { variant: 'destructive', size: 'small', roundness: 'default', children: 'Label' },
+};
+
+export const VariantDestructiveSizeMini: Story = {
+  args: { variant: 'destructive', size: 'mini', roundness: 'default', children: 'Label' },
+};
+
+// ---------------------------------------------------------------------------
+// Roundness cross-checks — each variant at roundness=round, size=regular, state=default
+// (primary/round already covered by RoundnessRound)
+// ---------------------------------------------------------------------------
+
+export const VariantSecondaryRoundnessRound: Story = {
+  args: { variant: 'secondary', size: 'regular', roundness: 'round', children: 'Label' },
+};
+
+export const VariantOutlineRoundnessRound: Story = {
+  args: { variant: 'outline', size: 'regular', roundness: 'round', children: 'Label' },
+};
+
+export const VariantGhostRoundnessRound: Story = {
+  args: { variant: 'ghost', size: 'regular', roundness: 'round', children: 'Label' },
+};
+
+export const VariantGhostMutedRoundnessRound: Story = {
+  args: { variant: 'ghost-muted', size: 'regular', roundness: 'round', children: 'Label' },
+};
+
+export const VariantDestructiveRoundnessRound: Story = {
+  args: { variant: 'destructive', size: 'regular', roundness: 'round', children: 'Label' },
+};
+
+// ---------------------------------------------------------------------------
+// Independent axis screenshots — at baseline (primary/regular/default/default)
+// ---------------------------------------------------------------------------
 
 export const WithLeftIcon: Story = {
   args: {
     variant: 'primary',
     size: 'regular',
     roundness: 'default',
-    leftIcon: <Check className="w-4 h-4" />,
-    children: 'Button',
+    leftIcon: <Plus size={16} />,
+    children: 'Label',
   },
 };
 
@@ -194,8 +297,8 @@ export const WithRightIcon: Story = {
     variant: 'primary',
     size: 'regular',
     roundness: 'default',
-    rightIcon: <ChevronRight className="w-4 h-4" />,
-    children: 'Button',
+    rightIcon: <Download size={16} />,
+    children: 'Label',
   },
 };
 
@@ -204,8 +307,8 @@ export const WithBothIcons: Story = {
     variant: 'primary',
     size: 'regular',
     roundness: 'default',
-    leftIcon: <Check className="w-4 h-4" />,
-    rightIcon: <ChevronRight className="w-4 h-4" />,
-    children: 'Button',
+    leftIcon: <Plus size={16} />,
+    rightIcon: <Download size={16} />,
+    children: 'Label',
   },
 };

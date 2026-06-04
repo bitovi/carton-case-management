@@ -1,14 +1,14 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import type { RefObject } from 'react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
+// type import removed:  RefObject  from 'react';
 import { useState } from 'react';
 import { BaseEditable } from './BaseEditable';
 import { z } from 'zod';
 import { Input } from '@/components/obra/Input';
 import { Button } from '@/components/obra/Button';
 import { Check, X } from 'lucide-react';
-import type { RenderEditModeProps } from '../types';
+// type import removed:  RenderEditModeProps  from '../types';
 
-const meta: Meta<typeof BaseEditable<string>> = {
+const meta = {
   title: 'Components/inline-edit/BaseEditable',
   component: BaseEditable,
   parameters: {
@@ -48,7 +48,7 @@ const meta: Meta<typeof BaseEditable<string>> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof BaseEditable<string>>;
+
 
 /**
  * Edit mode component - proper React component that can use hooks
@@ -110,7 +110,7 @@ const renderEditMode = (props: RenderEditModeProps<string>) => (
  * Default state - displays value with hover interaction.
  * Wrapped in a bordered container to demonstrate container-filling behavior.
  */
-export const Default: Story = {
+export const Default = {
   render: (args) => (
     <div className="w-96 p-4 border border-dashed border-gray-300 rounded-lg">
       <BaseEditable {...args} />
@@ -131,7 +131,7 @@ export const Default: Story = {
 /**
  * Interactive example with stateful value
  */
-export const Interactive: Story = {
+export const Interactive = {
   render: function InteractiveStory() {
     const [value, setValue] = useState('John Doe');
 
@@ -157,7 +157,7 @@ export const Interactive: Story = {
 /**
  * Custom display value rendering
  */
-export const CustomDisplayValue: Story = {
+export const CustomDisplayValue = {
   args: {
     label: 'Status',
     value: 'active',
@@ -177,7 +177,7 @@ export const CustomDisplayValue: Story = {
 /**
  * Empty/placeholder state
  */
-export const EmptyValue: Story = {
+export const EmptyValue = {
   args: {
     label: 'Description',
     value: '',
@@ -192,7 +192,7 @@ export const EmptyValue: Story = {
 /**
  * Read-only mode - no interaction possible
  */
-export const ReadOnly: Story = {
+export const ReadOnly = {
   args: {
     label: 'Created By',
     value: 'System Admin',
@@ -205,7 +205,7 @@ export const ReadOnly: Story = {
 /**
  * With Zod validation
  */
-export const WithZodValidation: Story = {
+export const WithZodValidation = {
   render: function ValidationStory() {
     const [value, setValue] = useState('');
 
@@ -230,7 +230,7 @@ export const WithZodValidation: Story = {
 /**
  * With custom validation function
  */
-export const WithCustomValidation: Story = {
+export const WithCustomValidation = {
   render: function CustomValidationStory() {
     const [value, setValue] = useState('hello');
 
@@ -258,7 +258,7 @@ export const WithCustomValidation: Story = {
 /**
  * Simulating save error
  */
-export const SaveError: Story = {
+export const SaveError = {
   args: {
     label: 'Title',
     value: 'Original Title',
@@ -273,7 +273,7 @@ export const SaveError: Story = {
 /**
  * Controlled editing state
  */
-export const ControlledEditing: Story = {
+export const ControlledEditing = {
   render: function ControlledStory() {
     const [value, setValue] = useState('Controlled Value');
     const [isEditing, setIsEditing] = useState(false);
@@ -314,7 +314,7 @@ export const ControlledEditing: Story = {
 /**
  * Long saving delay to demonstrate loading state
  */
-export const LongSave: Story = {
+export const LongSave = {
   args: {
     label: 'Slow Save Field',
     value: 'Click to edit',
@@ -329,7 +329,7 @@ export const LongSave: Story = {
 /**
  * Multiple fields example
  */
-export const MultipleFields: Story = {
+export const MultipleFields = {
   render: function MultipleFieldsStory() {
     const [data, setData] = useState({
       firstName: 'John',

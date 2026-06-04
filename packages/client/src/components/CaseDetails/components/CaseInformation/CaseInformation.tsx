@@ -16,8 +16,13 @@ import { ConfirmationDialog } from '@/components/common/ConfirmationDialog';
 import { useNavigate } from 'react-router-dom';
 import type { CaseInformationProps } from './types';
 
-export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+export function CaseInformation({ caseId, caseData, __storyPending, __storyDeleteDialogOpen }: CaseInformationProps & {
+  /** @internal Story-only override — do not use in production */
+  __storyPending?: boolean;
+  /** @internal Story-only override — do not use in production */
+  __storyDeleteDialogOpen?: boolean;
+}) {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(__storyDeleteDialogOpen ?? false);
   const navigate = useNavigate();
 
   const utils = trpc.useUtils();
@@ -90,6 +95,8 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
     });
   };
 
+  const isPending = __storyPending ?? updateCase.isPending;
+
   return (
     <>
       <div className="flex flex-col gap-4">
@@ -99,7 +106,7 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
             value={caseData.title}
             onSave={handleTitleSave}
             className="text-xl font-semibold truncate"
-            readonly={updateCase.isPending}
+            readonly={isPending}
           />
           <p className="text-base font-semibold text-gray-600">
             {formatCaseNumber(caseData.id, caseData.createdAt)}
@@ -111,7 +118,7 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
           <Select
             value={caseData.status}
             onValueChange={handleStatusChange}
-            disabled={updateCase.isPending}
+            disabled={isPending}
           >
             <SelectTrigger className="px-3 py-1.5 rounded-full text-sm font-semibold bg-secondary hover:bg-secondary/80 border-0 h-auto w-auto flex-shrink-0 gap-2 focus:ring-0 focus:ring-offset-0">
               <SelectValue />
@@ -133,7 +140,7 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
               value={caseData.title}
               onSave={handleTitleSave}
               className="text-3xl font-semibold"
-              readonly={updateCase.isPending}
+              readonly={isPending}
             />
             <p className="text-xl text-gray-600">
               {formatCaseNumber(caseData.id, caseData.createdAt)}
@@ -143,7 +150,7 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
             <Select
               value={caseData.status}
               onValueChange={handleStatusChange}
-              disabled={updateCase.isPending}
+              disabled={isPending}
             >
               <SelectTrigger className="px-3 py-1.5 rounded-full text-sm font-semibold bg-secondary hover:bg-secondary/80 border-0 h-auto w-auto flex-shrink-0 gap-2 focus:ring-0 focus:ring-offset-0">
                 <SelectValue />
@@ -180,7 +187,7 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
           label="Case Description"
           value={caseData.description}
           onSave={handleDescriptionSave}
-          readonly={updateCase.isPending}
+          readonly={isPending}
           placeholder="Enter case description..."
           validate={(value) => {
             if (value.trim() === '') return 'Description cannot be empty';

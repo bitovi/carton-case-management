@@ -24,7 +24,7 @@ Do NOT read sub-prompt files, component source files, screenshots, or JSON maps 
 
 | Variable | Source | Description |
 |----------|--------|-------------|
-| `pipelineDir` | `.temp/react-to-figma/` | Root output directory |
+| `pipelineDir` | `.temp/react-to-figma-dom/` | Root output directory |
 | `skillDir` | `.claude/skills/react-to-figma-dom/6-capture-dom-from-stories/` | This phase's directory |
 | `storybookUrl` | `http://localhost:6006` | Storybook base URL (must be running) |
 
@@ -43,8 +43,7 @@ These must exist before this phase runs:
 Note: `props.md` is generated on-the-fly by step 6.1 (identify-variants) if not already present.
 
 Optional (from Phase 1 `from-app` strategy):
-- `{pipelineDir}/component-hierarchy/pages.md`
-- `{pipelineDir}/component-hierarchy/pages.json`
+- `{pipelineDir}/component-hierarchy/pages.json` (queried on demand via `query-pages.js`)
 - `{componentDir}/app-variants/`
 
 ## Procedure

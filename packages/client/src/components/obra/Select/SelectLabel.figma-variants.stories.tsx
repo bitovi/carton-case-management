@@ -18,7 +18,7 @@ const meta = {
     },
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof SelectLabel>;
+} as Meta<typeof SelectLabel>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -42,14 +42,18 @@ function SelectLabelPreview({ size = 'small', indented = false }: { size?: 'smal
   );
 }
 
-export const SizeSmall: Story = {
+export const SizeSmallIndentedFalse: Story = {
   render: () => <SelectLabelPreview size="small" indented={false} />,
 };
 
-export const SizeRegular: Story = {
+export const SizeRegularIndentedFalse: Story = {
   render: () => <SelectLabelPreview size="regular" indented={false} />,
 };
 
-export const IndentedTrue: Story = {
+export const SizeSmallIndentedTrue: Story = {
   render: () => <SelectLabelPreview size="small" indented={true} />,
+};
+
+export const SizeRegularIndentedTrue: Story = {
+  render: () => <SelectLabelPreview size="regular" indented={true} />,
 };

@@ -8,15 +8,15 @@ Create a viewport-sized Figma frame that composes built component instances into
 - **Page tree**: The resolved component tree from `pages.json` — `{ name, props, selector, sourceFile, children }` nodes
 - **Layout components**: Array of component names that persist across all routes
 - **Component → Figma node ID map**: Maps component names to their Phase 6 Figma component node IDs
-- **Figma variable map**: `.temp/react-to-figma/figma-variables-map.json` — CSS var → Figma variable ID (from Phase 5)
-- **Design tokens**: `.temp/react-to-figma/design-tokens.json`
-- **CSS-Figma map**: `.temp/react-to-figma/css-figma-map.json`
+- **Figma variable map**: `.temp/react-to-figma-dom/figma-variables-map.json` — CSS var → Figma variable ID (from Phase 5)
+- **Design tokens**: `.temp/react-to-figma-dom/design-tokens.json`
+- **CSS-Figma map**: `.temp/react-to-figma-dom/css-figma-map.json`
 - **Figma page**: The name of the Figma page to build on (e.g., "Screens")
 - **Viewport**: Frame dimensions (default: 1440×900)
 
 ## Output
 
-- **`page-figma-result.md`**: Written to the output path provided by the parent orchestrator
+- **`page-figma-result.json`**: Written to the output path provided by the parent orchestrator
 
 ## Procedure
 
@@ -92,29 +92,24 @@ After all components are placed:
 
 ### 7. Write output
 
-Write `page-figma-result.md`:
+Write `page-figma-result.json`:
 
-```markdown
-# Page Figma Result: {route}
-
-**Frame node ID**: {nodeId}
-**Frame name**: Page / {route}
-**Viewport**: {width}×{height}
-**Figma page**: Screens
-
-## Components placed
-| Component | Figma Instance ID | Props Applied | Status |
-|-----------|------------------|---------------|--------|
-| Header | {instanceId} | — | ✅ placed |
-| MenuList | {instanceId} | activeItem="cases" | ✅ placed |
-| CaseList | {instanceId} | selectedId="1" | ✅ placed |
-| CaseDetails | {instanceId} | caseId="1" | ✅ placed |
-
-## Missing components
-| Component | Reason |
-|-----------|--------|
-| (none) | — |
-
-## Notes
-{any layout decisions, warnings, or deviations}
+```json
+{
+  "route": "{route}",
+  "frameNodeId": "{nodeId}",
+  "frameName": "Page / {route}",
+  "viewport": { "width": 1440, "height": 900 },
+  "figmaPage": "Screens",
+  "componentsPlaced": [
+    {
+      "component": "Header",
+      "instanceId": "{instanceId}",
+      "propsApplied": {},
+      "status": "placed"
+    }
+  ],
+  "missingComponents": [],
+  "notes": "{any layout decisions, warnings, or deviations}"
+}
 ```

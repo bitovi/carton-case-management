@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { Badge } from './Badge';
 import { Check, X, AlertCircle } from 'lucide-react';
 
-const meta: Meta<typeof Badge> = {
+const meta = {
   component: Badge,
   title: 'Obra/Badge',
   tags: ['autodocs'],
@@ -25,44 +25,44 @@ const meta: Meta<typeof Badge> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Badge>;
 
-export const Primary: Story = {
+
+export const Primary = {
   args: {
     variant: 'primary',
     children: 'Label',
   },
 };
 
-export const Secondary: Story = {
+export const Secondary = {
   args: {
     variant: 'secondary',
     children: 'Label',
   },
 };
 
-export const Outline: Story = {
+export const Outline = {
   args: {
     variant: 'outline',
     children: 'Label',
   },
 };
 
-export const Ghost: Story = {
+export const Ghost = {
   args: {
     variant: 'ghost',
     children: 'Label',
   },
 };
 
-export const Destructive: Story = {
+export const Destructive = {
   args: {
     variant: 'destructive',
     children: 'Label',
   },
 };
 
-export const RoundPrimary: Story = {
+export const RoundPrimary = {
   args: {
     variant: 'primary',
     roundness: 'round',
@@ -70,7 +70,7 @@ export const RoundPrimary: Story = {
   },
 };
 
-export const RoundSecondary: Story = {
+export const RoundSecondary = {
   args: {
     variant: 'secondary',
     roundness: 'round',
@@ -78,7 +78,7 @@ export const RoundSecondary: Story = {
   },
 };
 
-export const RoundOutline: Story = {
+export const RoundOutline = {
   args: {
     variant: 'outline',
     roundness: 'round',
@@ -86,7 +86,7 @@ export const RoundOutline: Story = {
   },
 };
 
-export const RoundGhost: Story = {
+export const RoundGhost = {
   args: {
     variant: 'ghost',
     roundness: 'round',
@@ -94,7 +94,7 @@ export const RoundGhost: Story = {
   },
 };
 
-export const RoundDestructive: Story = {
+export const RoundDestructive = {
   args: {
     variant: 'destructive',
     roundness: 'round',
@@ -102,7 +102,7 @@ export const RoundDestructive: Story = {
   },
 };
 
-export const WithIconLeft: Story = {
+export const WithIconLeft = {
   args: {
     variant: 'primary',
     children: 'Label',
@@ -110,7 +110,7 @@ export const WithIconLeft: Story = {
   },
 };
 
-export const WithIconRight: Story = {
+export const WithIconRight = {
   args: {
     variant: 'secondary',
     children: 'Label',
@@ -118,7 +118,7 @@ export const WithIconRight: Story = {
   },
 };
 
-export const DestructiveWithIcon: Story = {
+export const DestructiveWithIcon = {
   args: {
     variant: 'destructive',
     roundness: 'round',
@@ -127,7 +127,7 @@ export const DestructiveWithIcon: Story = {
   },
 };
 
-export const AllVariants: Story = {
+export const AllVariants = {
   render: () => (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap gap-2">

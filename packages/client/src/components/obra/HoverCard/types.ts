@@ -45,4 +45,7 @@ export interface HoverCardProps {
    * Additional CSS class for the content
    */
   className?: string;
+
+  /** @internal Story-only override — forces the hover card open without hover interaction */
+  __storyDefaultOpen?: boolean;
 }

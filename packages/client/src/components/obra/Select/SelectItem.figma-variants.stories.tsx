@@ -19,7 +19,7 @@ const meta = {
     },
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof SelectItem>;
+} as Meta<typeof SelectItem>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -329,23 +329,12 @@ export const WithRightDecoration: Story = {
   }
 };
 
-export const WithLeftAndRightDecoration: Story = {
-  render: SelectItemPreview,
-  args: {
-    size: 'regular',
-    type: 'default',
-    leftDecoration: <User className="w-4 h-4" />,
-    rightDecoration: <Mail className="w-4 h-4" />,
-    children: 'Item'
-  }
-};
-
 export const WithDescription: Story = {
   render: SelectItemPreview,
   args: {
     size: 'regular',
     type: 'default',
-    description: 'Description',
+    description: 'Description text',
     children: 'Item'
   }
 };

@@ -17,7 +17,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-} satisfies Meta<typeof Calendar>;
+} as Meta<typeof Calendar>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

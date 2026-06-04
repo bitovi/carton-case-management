@@ -8,9 +8,9 @@
  *
  * Usage:
  *   node merge-discoveries.js \
- *     --from-files .temp/react-to-figma/component-hierarchy/from-files/components.json \
- *     --from-app   .temp/react-to-figma/component-hierarchy/from-app/components.json \
- *     --output-dir .temp/react-to-figma/component-hierarchy \
+ *     --from-files .temp/react-to-figma-dom/component-hierarchy/from-files/components.json \
+ *     --from-app   .temp/react-to-figma-dom/component-hierarchy/from-app/components.json \
+ *     --output-dir .temp/react-to-figma-dom/component-hierarchy \
  *     [--source-root packages/client/src]
  *
  * Outputs (written to --output-dir):

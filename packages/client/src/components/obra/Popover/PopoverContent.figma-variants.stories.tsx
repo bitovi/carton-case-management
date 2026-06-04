@@ -13,19 +13,17 @@ const meta = {
     },
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof PopoverContent>;
+} as Meta<typeof PopoverContent>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 function VariantPopoverContent({
-  open,
   content,
   headerTitle,
   headerDescription,
   children,
 }: {
-  open: boolean;
   content?: 'Menu';
   headerTitle?: string;
   headerDescription?: string;
@@ -33,7 +31,7 @@ function VariantPopoverContent({
 }) {
   return (
     <div className="h-[280px] w-[520px] flex items-center justify-center">
-      <Popover open={open}>
+      <Popover open={true}>
         <PopoverTrigger asChild>
           <Button variant="outline">Popover Trigger</Button>
         </PopoverTrigger>
@@ -43,34 +41,29 @@ function VariantPopoverContent({
           headerDescription={headerDescription}
           className="w-80"
         >
-          {children ?? <p className="text-sm text-slate-700">Popover content</p>}
+          {children ?? <p className="text-sm text-slate-700">Popover content goes here with sample text.</p>}
         </PopoverContent>
       </Popover>
     </div>
   );
 }
 
-export const StateClosedContentDefaultHeaderWithoutHeader: Story = {
-  render: () => <VariantPopoverContent open={false} />,
+export const ContentDefaultHeaderWithoutHeader: Story = {
+  render: () => <VariantPopoverContent />,
 };
 
-export const StateOpenContentDefaultHeaderWithoutHeader: Story = {
-  render: () => <VariantPopoverContent open />,
-};
-
-export const StateOpenContentDefaultHeaderWithHeader: Story = {
+export const ContentDefaultHeaderWithHeader: Story = {
   render: () => (
     <VariantPopoverContent
-      open
       headerTitle="Popover Title"
-      headerDescription="Optional description"
+      headerDescription="Optional description text"
     />
   ),
 };
 
-export const StateOpenContentMenuHeaderWithoutHeader: Story = {
+export const ContentMenuHeaderWithoutHeader: Story = {
   render: () => (
-    <VariantPopoverContent open content="Menu">
+    <VariantPopoverContent content="Menu">
       <div className="flex flex-col gap-1">
         <Button variant="ghost" size="small" className="w-full justify-start">
           Action One
@@ -82,18 +75,6 @@ export const StateOpenContentMenuHeaderWithoutHeader: Story = {
           Action Three
         </Button>
       </div>
-    </VariantPopoverContent>
-  ),
-};
-
-export const BodyContentCustomMenuList: Story = {
-  render: () => (
-    <VariantPopoverContent open>
-      <ul className="space-y-1 text-sm text-slate-700">
-        <li className="rounded px-2 py-1 hover:bg-slate-100">Menu Item One</li>
-        <li className="rounded px-2 py-1 hover:bg-slate-100">Menu Item Two</li>
-        <li className="rounded px-2 py-1 hover:bg-slate-100">Menu Item Three</li>
-      </ul>
     </VariantPopoverContent>
   ),
 };

@@ -74,7 +74,7 @@ The `use_figma` sandbox has no filesystem access. Read `figma-variables-map.json
 
 ```javascript
 // Outside use_figma: read and filter
-const fullMap = JSON.parse(fs.readFileSync('.temp/react-to-figma/figma-variables-map.json'));
+const fullMap = JSON.parse(fs.readFileSync('.temp/react-to-figma-dom/figma-variables-map.json'));
 const relevantVars = {};
 for (const cls of componentTailwindClasses) {
   if (fullMap[cls]) relevantVars[cls] = fullMap[cls];

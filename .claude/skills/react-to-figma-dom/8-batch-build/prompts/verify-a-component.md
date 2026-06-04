@@ -18,7 +18,7 @@ ERROR: get_screenshot unavailable — {error details}
 
 - Do NOT fix any issues — this prompt only verifies. The fix prompt handles corrections.
 - Do NOT hand-write `verification-results.json` — only the `verify-variants.js` script may create it.
-- Do NOT skip variants. Every variant in `figma-result.md` must be screenshotted and compared.
+- Do NOT skip variants. Every variant in `figma-result.json` must be screenshotted and compared.
 - Do NOT report PASS without running the pixel-diff script.
 
 ## Inputs
@@ -26,7 +26,7 @@ ERROR: get_screenshot unavailable — {error details}
 | Variable | Description |
 |----------|-------------|
 | `componentName` | Component being verified (e.g., `Badge`) |
-| `componentDir` | Component directory (e.g., `.temp/react-to-figma/components/Badge/`) |
+| `componentDir` | Component directory (e.g., `.temp/react-to-figma-dom/components/Badge/`) |
 | `skillDir` | Skill directory (e.g., `.claude/skills/react-to-figma-dom/6-get-component-context-and-implement-in-figma/2-implement-in-figma/`) |
 | `fileKey` | Figma file key |
 
@@ -43,16 +43,16 @@ ERROR: get_screenshot unavailable — {error details}
 
 ## Procedure
 
-### 1. Parse figma-result.md
+### 1. Parse figma-result.json
 
-Read `{componentDir}/figma-result.md`. Extract every variant from the **Variants Built** table:
+Read `{componentDir}/figma-result.json`. Extract every variant from the **variants** array:
 - **Variant Name** (e.g., `State=rest`)
 - **Node ID** (e.g., `340:2`)
 - **Screenshot Source** (e.g., `variants/State Rest Readonly False Error None/screenshot.png`)
 
 The variant folder name is derived from the Screenshot Source path. For example, if the screenshot source is `variants/State Rest Readonly False Error None/screenshot.png`, the variant folder name is `State Rest Readonly False Error None`.
 
-If `figma-result.md` doesn't exist, STOP and report the error.
+If `figma-result.json` doesn't exist, STOP and report the error.
 
 ### 2. Screenshot every variant from Figma
 
@@ -144,7 +144,7 @@ Variant verification: {componentName}
 
 | Scenario | Action |
 |----------|--------|
-| `figma-result.md` missing | STOP — build step hasn't run |
+| `figma-result.json` missing | STOP — build step hasn't run |
 | `get_screenshot` fails | STOP — Figma MCP unavailable |
 | `verify-variants.js` exit code 3 | Report script error, check stderr |
 | React screenshot missing for a variant | Report which variant is missing its `screenshot.png` |

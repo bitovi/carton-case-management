@@ -9,7 +9,7 @@ const meta = {
     layout: 'centered',
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof SelectValue>;
+} as Meta<typeof SelectValue>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

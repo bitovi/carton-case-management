@@ -22,7 +22,7 @@ const meta = {
       </TooltipProvider>
     ),
   ],
-} satisfies Meta<typeof TooltipContent>;
+} as Meta<typeof TooltipContent>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

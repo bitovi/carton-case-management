@@ -131,3 +131,19 @@ CSS borders are outside the box by default. Always use:
 comp.strokeAlign = 'OUTSIDE';
 ```
 Using `'INSIDE'` causes double-border visual artifacts.
+
+## 14. Node Type Safety — No `.children` on TEXT/VECTOR
+
+Accessing `.children`, `.layoutMode`, `.itemSpacing`, or any layout property on a TEXT or VECTOR node **throws a TypeError** — it does not return `undefined`.
+
+```javascript
+// WRONG — throws "no such property 'children' on TEXT node"
+const child = someNode.children[0];
+
+// CORRECT — check type first, or use getNodeById with known IDs
+if (someNode.type === 'FRAME' || someNode.type === 'COMPONENT' || someNode.type === 'INSTANCE' || someNode.type === 'GROUP') {
+  const child = someNode.children[0];
+}
+```
+
+**Best practice:** Read `figma-nodes.json` (produced by batch-verify) to know the exact tree structure before writing any fix code. Use `figma.getNodeById('{exactId}')` with real IDs instead of indexing into `.children`.

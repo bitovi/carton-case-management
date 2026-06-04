@@ -10,11 +10,11 @@ Analyze a single React component to identify ALL visual states that Figma needs 
 
 - **Component name**: PascalCase name (e.g., `Button`)
 - **Source file path**: Path to the component source (e.g., `src/components/ui/button.tsx`)
-- **analysis.md**: Contents of `.temp/react-to-figma/components/{Name}/analysis.md`
-- **props.md** (optional): Contents of `.temp/react-to-figma/components/{Name}/props.md` — if not present, this prompt generates it in step 1b
-- **Output directory**: `.temp/react-to-figma/components/{Name}/`
-- **pages.md** (optional): Contents of `.temp/react-to-figma/component-hierarchy/pages.md` — shows which routes render this component and with what resolved props
-- **app-variants/** (optional): `.temp/react-to-figma/components/{Name}/app-variants/` — live app DOM captures (dom.json, fiber-dom-map.json, screenshot.png) from Phase 1's app crawl
+- **analysis.md**: Contents of `.temp/react-to-figma-dom/components/{Name}/analysis.md`
+- **props.md** (optional): Contents of `.temp/react-to-figma-dom/components/{Name}/props.md` — if not present, this prompt generates it in step 1b
+- **Output directory**: `.temp/react-to-figma-dom/components/{Name}/`
+- **pages.json** (optional): `.temp/react-to-figma-dom/component-hierarchy/pages.json` — query with `query-pages.js --component {Name}` to find routes and resolved props
+- **app-variants/** (optional): `.temp/react-to-figma-dom/components/{Name}/app-variants/` — live app DOM captures (dom.json, fiber-dom-map.json, screenshot.png) from Phase 1's app crawl
 
 ## Procedure
 
@@ -26,13 +26,13 @@ Read the full source file. Also read any related files:
 - Tailwind `cn()` / `clsx()` conditional class expressions
 - Custom hook files imported by the component
 
-If `pages.md` is provided, find all routes where this component appears and note the distinct prop values it receives across routes. This reveals which variant axes are actually exercised in production (e.g., `status="open"` on one route, `status="closed"` on another).
+If `pages.json` exists, run `node {skillDir}/scripts/query-pages.js --pages-json {pipelineDir}/component-hierarchy/pages.json --component {componentName}` to find all routes where this component appears and note the distinct prop values it receives across routes. This reveals which variant axes are actually exercised in production (e.g., `status="open"` on one route, `status="closed"` on another).
 
 If `app-variants/` captures exist, review the screenshots and `dom.json` files to understand how the component actually renders with real data and different prop combinations in the live app.
 
 ### 1b. Generate `props.md` (if not already present)
 
-If `props.md` does not already exist at `.temp/react-to-figma/components/{Name}/props.md`, generate it now from the source code read in step 1.
+If `props.md` does not already exist at `.temp/react-to-figma-dom/components/{Name}/props.md`, generate it now from the source code read in step 1.
 
 Find the component's props type definition. This is typically:
 - An explicit `interface {Name}Props` or `type {Name}Props`
@@ -40,7 +40,7 @@ Find the component's props type definition. This is typically:
 - Extended from another type
 - For `forwardRef` components: the second type parameter
 
-Write `.temp/react-to-figma/components/{Name}/props.md`:
+Write `.temp/react-to-figma-dom/components/{Name}/props.md`:
 
 ```markdown
 # {ComponentName} Props
@@ -203,7 +203,7 @@ Mark representative variants with `[REP]` in `variants.md` so downstream prompts
 
 ### 7. Write `variants.md`
 
-Write to `.temp/react-to-figma/components/{Name}/variants.md`:
+Write to `.temp/react-to-figma-dom/components/{Name}/variants.md`:
 
 ```markdown
 # {ComponentName} Variants
@@ -273,5 +273,5 @@ Variant identification complete: {ComponentName}
 - Total dependent combinations: {count} ({pruned_count} pruned)
 - Independent axis screenshots: {count}
 - Content states: {count}
-- Output: .temp/react-to-figma/components/{Name}/variants.md
+- Output: .temp/react-to-figma-dom/components/{Name}/variants.md
 ```

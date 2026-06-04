@@ -6,7 +6,7 @@ Run a fix sweep over all components that scored FAIL or PARTIAL in Phase D verif
 
 | Variable | Source | Description |
 |----------|--------|-------------|
-| `pipelineDir` | `.temp/react-to-figma/` | Root output directory |
+| `pipelineDir` | `.temp/react-to-figma-dom/` | Root output directory |
 | `skillDir` | `.claude/skills/react-to-figma-dom/8-batch-build/` | This phase's directory |
 | `fileKey` | env/config | Figma file key |
 
@@ -20,7 +20,17 @@ node {skillDir}/aggregate-scores.js
 
 Read the output scoreboard. Identify all components with FAIL or PARTIAL verdicts.
 
-If no components need fixing:
+If `aggregate-scores.js` finds **0 `verification-results.json` files**, this means Phase D has not run or produced no results. Report as **BLOCKED**, not as complete:
+
+```
+Phase E: BLOCKED — No verification-results.json files found.
+Phase D has not run or produced no built components.
+Cannot fix what hasn't been built.
+```
+
+**STOP** and return this status to the orchestrator. Do NOT report as "COMPLETE (EMPTY)".
+
+If verification files exist but no components need fixing (all PASS):
 ```
 Phase E: No components need fixing. All PASS. Skipping.
 ```

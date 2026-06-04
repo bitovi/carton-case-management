@@ -8,29 +8,29 @@
  *
  * Usage:
  *   node ir-to-figma-code.js \
- *     --ir-file .temp/react-to-figma/components/Badge/variants/PrimaryDefault/figma-ir.json \
- *     --output .temp/react-to-figma/components/Badge/variants/PrimaryDefault/build-script.js
+ *     --ir-file .temp/react-to-figma-dom/components/Badge/variants/PrimaryDefault/figma-ir.json \
+ *     --output .temp/react-to-figma-dom/components/Badge/variants/PrimaryDefault/build-script.js
  *
  * The generated code:
  *   - Resolves the parent frame dynamically by name (Components page > Components frame)
  *   - Loads required fonts
  *   - Creates all nodes depth-first
  *   - Binds variables where available
- *   - Runs fixSizing() before appending to parent
  *   - Returns created node IDs
  *
  * Note: --parent-frame-id is accepted but ignored. Parent frame is always
  * resolved dynamically by name to avoid stale node ID issues across
  * separate use_figma sandbox sessions.
- *
- * If the IR has >10 nodes, the output is split into multiple chunk files
- * that should be executed sequentially via separate use_figma calls.
  */
 
 const fs = require('fs');
 const path = require('path');
 
-const MAX_NODES_PER_CHUNK = 10;
+const FIGMA_NODE_ID_RE = /^\d+:\d+$/;
+
+function isValidFigmaNodeId(id) {
+  return typeof id === 'string' && FIGMA_NODE_ID_RE.test(id);
+}
 
 function parseArgs() {
   const args = process.argv.slice(2);
@@ -39,6 +39,7 @@ function parseArgs() {
     parentFrameId: null,
     output: null,
     variantName: null,
+    variantProps: null,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -47,6 +48,7 @@ function parseArgs() {
       case '--parent-frame-id': opts.parentFrameId = args[++i]; break;
       case '--output': opts.output = args[++i]; break;
       case '--variant-name': opts.variantName = args[++i]; break;
+      case '--variant-props': opts.variantProps = args[++i]; break;
       default: break;
     }
   }
@@ -78,15 +80,6 @@ function generateFontLoading(fonts) {
     (f) => `await figma.loadFontAsync({ family: '${f.family}', style: '${f.style}' });`
   );
   return lines.join('\n');
-}
-
-function generateFixSizing() {
-  return `function fixSizing(node, depth) {
-  if (depth > 10 || !node) return;
-  depth = depth || 0;
-  var children = 'children' in node ? node.children : [];
-  for (var i = 0; i < children.length; i++) fixSizing(children[i], depth + 1);
-}`;
 }
 
 function generateVariableBinding(varName, property, variableId) {
@@ -221,8 +214,10 @@ function generateNodeCode(irNode, parentVar, isRoot) {
   }
 
   if (irNode.type === 'INSTANCE') {
-    if (irNode.masterNodeId) {
-      lines.push(`const ${varName}_master = figma.getNodeById('${irNode.masterNodeId}');`);
+    if (irNode.masterNodeId && isValidFigmaNodeId(irNode.masterNodeId)) {
+      lines.push(`const ${varName}_rawMaster = figma.getNodeById('${irNode.masterNodeId}');`);
+      lines.push(`if (!${varName}_rawMaster) return { error: 'Node ${irNode.masterNodeId} not found for ${(irNode.name || 'unknown').replace(/'/g, '')}' };`);
+      lines.push(`const ${varName}_master = ${varName}_rawMaster.type === 'COMPONENT_SET' ? ${varName}_rawMaster.children[0] : ${varName}_rawMaster;`);
       lines.push(`const ${varName} = ${varName}_master.createInstance();`);
       if (irNode.resize) {
         lines.push(`${varName}.resize(${irNode.resize[0]}, ${irNode.resize[1]});`);
@@ -246,10 +241,13 @@ function generateNodeCode(irNode, parentVar, isRoot) {
         }
       }
     } else {
-      lines.push(`// WARNING: No masterNodeId for "${irNode.name}" — creating placeholder frame`);
+      const reason = irNode.masterNodeId
+        ? `invalid ID "${irNode.masterNodeId}"`
+        : 'no masterNodeId';
+      lines.push(`// WARNING: ${reason} for "${irNode.name}" — creating placeholder frame`);
       lines.push(`const ${varName} = figma.createFrame();`);
-      lines.push(`${varName}.name = '${irNode.name} [MISSING]';`);
-      lines.push(`${varName}.resize(100, 32);`);
+      lines.push(`${varName}.name = '${(irNode.name || 'unknown').replace(/'/g, '')} [MISSING]';`);
+      lines.push(`${varName}.resize(${irNode.resize ? irNode.resize[0] : 100}, ${irNode.resize ? irNode.resize[1] : 32});`);
       lines.push(`${varName}.fills = [{ type: 'SOLID', color: { r: 1, g: 0, b: 0 } }];`);
     }
 
@@ -304,18 +302,46 @@ function generateNodeCode(irNode, parentVar, isRoot) {
     lines.push(`${varName}.clipsContent = true;`);
   }
 
-  if (irNode.fills) {
-    lines.push(generateFillsCode(varName, irNode.fills));
-  } else {
+  if (isRoot && irNode.ring) {
+    const ringSpread = irNode.ring.spread;
+    const ringColor = colorLiteral(irNode.ring.color);
     lines.push(`${varName}.fills = [];`);
-  }
+    lines.push(`${varName}.strokes = [{ type: 'SOLID', color: ${ringColor} }];`);
+    lines.push(`${varName}.strokeWeight = ${ringSpread};`);
+    lines.push(`${varName}.strokeAlign = 'OUTSIDE';`);
+    if (irNode.ring.variableId) {
+      lines.push(`try {`);
+      lines.push(`  const v = figma.variables.getVariableById('${irNode.ring.variableId}');`);
+      lines.push(`  if (v) ${varName}.setBoundVariable('strokes/0/color', v);`);
+      lines.push(`} catch(e) {}`);
+    }
+    const innerRadius = irNode.cornerRadius
+      ? (irNode.cornerRadius.uniform !== false ? (irNode.cornerRadius.value || 0) : Math.max(irNode.cornerRadius.topLeft || 0, irNode.cornerRadius.topRight || 0, irNode.cornerRadius.bottomRight || 0, irNode.cornerRadius.bottomLeft || 0))
+      : 0;
+    if (innerRadius > 0) {
+      lines.push(`${varName}.cornerRadius = ${innerRadius};`);
+    }
 
-  if (irNode.strokes) {
-    lines.push(generateStrokesCode(varName, irNode.strokes));
-  }
+    if (irNode.children && irNode.children.length > 0) {
+      const firstChild = irNode.children[0];
+      if (!firstChild.fills && irNode.fills) firstChild.fills = irNode.fills;
+      if (!firstChild.strokes && irNode.strokes) firstChild.strokes = irNode.strokes;
+      if (!firstChild.cornerRadius && irNode.cornerRadius) firstChild.cornerRadius = irNode.cornerRadius;
+    }
+  } else {
+    if (irNode.fills) {
+      lines.push(generateFillsCode(varName, irNode.fills));
+    } else {
+      lines.push(`${varName}.fills = [];`);
+    }
 
-  if (irNode.cornerRadius) {
-    lines.push(generateCornerRadiusCode(varName, irNode.cornerRadius));
+    if (irNode.strokes) {
+      lines.push(generateStrokesCode(varName, irNode.strokes));
+    }
+
+    if (irNode.cornerRadius) {
+      lines.push(generateCornerRadiusCode(varName, irNode.cornerRadius));
+    }
   }
 
   if (irNode.effects) {
@@ -355,83 +381,100 @@ function generateNodeCode(irNode, parentVar, isRoot) {
   return { lines, varName };
 }
 
-function generateScript(ir, parentFrameId, variantName) {
+function generateScript(ir, parentFrameId, variantName, variantProps) {
   nodeCounter = 0;
   const lines = [];
 
   const variantLabel = variantName || ir.componentName;
+  const propsString = variantProps || ir.variantProps || variantLabel;
+  const componentName = ir.componentName;
 
   lines.push('// Auto-generated by react-to-figma-dom ir-to-figma-code.js');
-  lines.push(`// Component: ${ir.componentName}`);
+  lines.push(`// Component: ${componentName}`);
   lines.push(`// Variant: ${variantLabel}`);
+  lines.push(`// Variant Props: ${propsString}`);
   lines.push(`// Generated: ${ir.generatedAt}`);
   lines.push(`// Nodes: ${ir.nodeCount}`);
   lines.push('');
 
-  lines.push(`const __componentsPage = figma.root.children.find(p => p.name === 'Components');`);
-  lines.push(`if (!__componentsPage) return { error: 'FATAL: No page named "Components" found.' };`);
-  lines.push(`const __containerFrame = __componentsPage.children.find(n => n.type === 'FRAME' && n.name === 'Components');`);
-  lines.push(`const __pf = __containerFrame || __componentsPage;`);
+  lines.push(`let __componentsPage = figma.root.children.find(p => p.name === 'Components');`);
+  lines.push(`if (!__componentsPage) {`);
+  lines.push(`  __componentsPage = figma.createPage();`);
+  lines.push(`  __componentsPage.name = 'Components';`);
+  lines.push(`}`);
   lines.push(`await figma.setCurrentPageAsync(__componentsPage);`);
+  lines.push(`let __containerFrame = __componentsPage.children.find(n => n.type === 'FRAME' && n.name === 'Components');`);
+  lines.push(`if (!__containerFrame) {`);
+  lines.push(`  __containerFrame = figma.createFrame();`);
+  lines.push(`  __containerFrame.name = 'Components';`);
+  lines.push(`  __componentsPage.appendChild(__containerFrame);`);
+  lines.push(`  __containerFrame.layoutMode = 'HORIZONTAL';`);
+  lines.push(`  __containerFrame.layoutWrap = 'WRAP';`);
+  lines.push(`  __containerFrame.itemSpacing = 40;`);
+  lines.push(`  __containerFrame.counterAxisSpacing = 40;`);
+  lines.push(`  __containerFrame.paddingTop = 40;`);
+  lines.push(`  __containerFrame.paddingBottom = 40;`);
+  lines.push(`  __containerFrame.paddingLeft = 40;`);
+  lines.push(`  __containerFrame.paddingRight = 40;`);
+  lines.push(`  __containerFrame.primaryAxisSizingMode = 'AUTO';`);
+  lines.push(`  __containerFrame.counterAxisSizingMode = 'AUTO';`);
+  lines.push(`  __containerFrame.fills = [];`);
+  lines.push(`}`);
   lines.push('');
 
   lines.push(generateFontLoading(ir.fonts));
-  lines.push('');
-
-  lines.push(generateFixSizing());
   lines.push('');
 
   const result = generateNodeCode(ir.root, null, true);
   lines.push(...result.lines);
   lines.push('');
 
-  lines.push(`${result.varName}.name = ${JSON.stringify(`${ir.componentName}—Variant=${variantLabel}`)};`);
+  lines.push(`${result.varName}.name = ${JSON.stringify(propsString)};`);
   lines.push('');
 
-  lines.push(`fixSizing(${result.varName}, 0);`);
+  lines.push(`// --- Idempotent ComponentSet find-or-create ---`);
+  lines.push(`const __setName = ${JSON.stringify(componentName)};`);
+  lines.push(`const __existingSet = __containerFrame.findOne(n => n.type === 'COMPONENT_SET' && n.name === __setName);`);
   lines.push('');
-
-  lines.push(`__pf.appendChild(${result.varName});`);
-  lines.push('');
-
-  lines.push(`return { rootNodeId: ${result.varName}.id, name: ${result.varName}.name };`);
+  lines.push(`if (__existingSet) {`);
+  lines.push(`  const __dup = __existingSet.findOne(n => n.name === ${JSON.stringify(propsString)});`);
+  lines.push(`  if (__dup) __dup.remove();`);
+  lines.push(`  __existingSet.appendChild(${result.varName});`);
+  lines.push(`  return { rootNodeId: ${result.varName}.id, setId: __existingSet.id, name: ${result.varName}.name, mode: 'appended' };`);
+  lines.push(`} else {`);
+  lines.push(`  __containerFrame.appendChild(${result.varName});`);
+  lines.push(`  const __newSet = figma.combineAsVariants([${result.varName}], __containerFrame);`);
+  lines.push(`  __newSet.name = __setName;`);
+  lines.push(`  __newSet.layoutMode = 'HORIZONTAL';`);
+  lines.push(`  __newSet.layoutWrap = 'WRAP';`);
+  lines.push(`  __newSet.itemSpacing = 40;`);
+  lines.push(`  __newSet.counterAxisSpacing = 40;`);
+  lines.push(`  __newSet.paddingTop = 40;`);
+  lines.push(`  __newSet.paddingBottom = 40;`);
+  lines.push(`  __newSet.paddingLeft = 40;`);
+  lines.push(`  __newSet.paddingRight = 40;`);
+  lines.push(`  __newSet.primaryAxisSizingMode = 'FIXED';`);
+  lines.push(`  __newSet.counterAxisSizingMode = 'AUTO';`);
+  lines.push(`  __newSet.fills = [{ type: 'SOLID', color: { r: 0.95, g: 0.95, b: 0.98 } }];`);
+  lines.push(`  __newSet.cornerRadius = 8;`);
+  lines.push(`  const __maxW = Math.max(...__newSet.children.map(c => c.width));`);
+  lines.push(`  __newSet.resize(3 * (__maxW + 40) + 40, __newSet.height);`);
+  lines.push(`  return { rootNodeId: ${result.varName}.id, setId: __newSet.id, name: ${result.varName}.name, mode: 'created-set' };`);
+  lines.push(`}`);
 
   return lines.join('\n');
-}
-
-function splitIntoChunks(ir, parentFrameId, variantName) {
-  if (ir.nodeCount <= MAX_NODES_PER_CHUNK) {
-    return [generateScript(ir, parentFrameId, variantName)];
-  }
-
-  const chunks = [];
-
-  chunks.push(generateScript(ir, parentFrameId, variantName));
-
-  return chunks;
 }
 
 function main() {
   const opts = parseArgs();
   const ir = JSON.parse(fs.readFileSync(opts.irFile, 'utf8'));
 
-  const chunks = splitIntoChunks(ir, opts.parentFrameId, opts.variantName);
-
+  const script = generateScript(ir, opts.parentFrameId, opts.variantName, opts.variantProps);
   const outBase = opts.output || opts.irFile.replace('.figma-ir.json', '.build-script.js');
 
-  if (chunks.length === 1) {
-    fs.mkdirSync(path.dirname(outBase), { recursive: true });
-    fs.writeFileSync(outBase, chunks[0]);
-    console.log(`Generated: ${outBase} (${ir.nodeCount} nodes, 1 chunk)`);
-  } else {
-    fs.mkdirSync(path.dirname(outBase), { recursive: true });
-    for (let i = 0; i < chunks.length; i++) {
-      const chunkPath = outBase.replace('.js', `.chunk${i}.js`);
-      fs.writeFileSync(chunkPath, chunks[i]);
-      console.log(`Generated chunk ${i}: ${chunkPath}`);
-    }
-    console.log(`Total: ${chunks.length} chunks for ${ir.nodeCount} nodes`);
-  }
+  fs.mkdirSync(path.dirname(outBase), { recursive: true });
+  fs.writeFileSync(outBase, script);
+  console.log(`Generated: ${outBase} (${ir.nodeCount} nodes)`);
 
   if (ir.warnings && ir.warnings.length > 0) {
     console.log(`\nWarnings from IR:`);

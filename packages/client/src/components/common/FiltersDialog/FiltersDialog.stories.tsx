@@ -10,7 +10,7 @@ const meta = {
     layout: 'centered',
   },
   tags: ['autodocs'],
-} satisfies Meta<typeof FiltersDialog>;
+} as Meta<typeof FiltersDialog>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

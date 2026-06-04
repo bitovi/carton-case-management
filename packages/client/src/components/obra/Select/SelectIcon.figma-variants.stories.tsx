@@ -14,12 +14,12 @@ const meta = {
     },
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof SelectIcon>;
+} as Meta<typeof SelectIcon>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const StateDefault: Story = {
+export const IconChevronDown: Story = {
   render: () => (
     <SelectIcon className="shrink-0">
       <ChevronDown className="w-4 h-4 text-muted-foreground" />

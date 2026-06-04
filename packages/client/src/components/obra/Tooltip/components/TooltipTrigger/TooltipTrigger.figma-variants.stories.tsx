@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from './index';
-import { Button } from '../Button';
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '../../index';
+import { Button } from '../../../Button';
 import { Zap } from 'lucide-react';
 
 const meta = {
@@ -18,7 +18,7 @@ const meta = {
   parameters: {
     layout: 'centered',
   },
-} satisfies Meta<typeof TooltipTrigger>;
+} as Meta<typeof TooltipTrigger>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -89,8 +89,10 @@ export const StateActive: Story = {
 export const StateDisabled: Story = {
   render: () => (
     <Tooltip>
-      <TooltipTrigger aria-disabled="true" className="opacity-50 cursor-not-allowed">
-        Disabled trigger
+      <TooltipTrigger asChild>
+        <button disabled className="opacity-50 cursor-not-allowed">
+          Disabled trigger
+        </button>
       </TooltipTrigger>
       <TooltipContent side="top">Tooltip content</TooltipContent>
     </Tooltip>
@@ -114,8 +116,10 @@ export const AsChildWithButton: Story = {
 export const WithIcon: Story = {
   render: () => (
     <Tooltip>
-      <TooltipTrigger className="inline-flex items-center justify-center">
-        <Zap className="h-4 w-4" />
+      <TooltipTrigger asChild>
+        <button className="inline-flex items-center justify-center">
+          <Zap className="h-4 w-4" />
+        </button>
       </TooltipTrigger>
       <TooltipContent side="top">Trigger icon</TooltipContent>
     </Tooltip>
@@ -125,8 +129,10 @@ export const WithIcon: Story = {
 export const WithLongText: Story = {
   render: () => (
     <Tooltip>
-      <TooltipTrigger className="max-w-xs text-wrap">
-        This is a much longer text that might wrap across multiple lines
+      <TooltipTrigger asChild>
+        <button className="max-w-xs text-wrap">
+          This is a much longer text that might wrap across multiple lines
+        </button>
       </TooltipTrigger>
       <TooltipContent side="top">Tooltip for long text trigger</TooltipContent>
     </Tooltip>

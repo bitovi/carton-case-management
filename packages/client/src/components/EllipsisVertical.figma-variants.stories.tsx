@@ -8,7 +8,7 @@ const meta = {
     layout: 'centered',
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof EllipsisVertical>;
+} as Meta<typeof EllipsisVertical>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

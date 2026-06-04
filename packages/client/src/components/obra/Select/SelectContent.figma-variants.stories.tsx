@@ -4,9 +4,6 @@ import {
   Select,
   SelectContent,
   SelectItem,
-  SelectLabel,
-  SelectGroup,
-  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from './Select';
@@ -16,22 +13,28 @@ const meta = {
   component: SelectContent,
   parameters: {
     layout: 'centered',
-    viewport: {
-      defaultViewport: 'responsive',
-    },
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof SelectContent>;
+} as Meta<typeof SelectContent>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 interface SelectContentPreviewProps {
   spacing?: 'none' | '2px' | '8px' | '16px' | '24px';
-  children: ReactNode;
+  children?: ReactNode;
 }
 
-function SelectContentPreview({ spacing = 'none', children }: SelectContentPreviewProps) {
+function SelectContentPreview({
+  spacing = 'none',
+  children = (
+    <>
+      <SelectItem value="item-1">Item 1</SelectItem>
+      <SelectItem value="item-2">Item 2</SelectItem>
+      <SelectItem value="item-3">Item 3</SelectItem>
+    </>
+  ),
+}: SelectContentPreviewProps) {
   return (
     <div className="w-[280px] p-6">
       <Select defaultOpen defaultValue="item-2">
@@ -44,48 +47,22 @@ function SelectContentPreview({ spacing = 'none', children }: SelectContentPrevi
   );
 }
 
-const defaultOptions = (
-  <>
-    <SelectItem value="item-1">Item 1</SelectItem>
-    <SelectItem value="item-2">Item 2</SelectItem>
-    <SelectItem value="item-3">Item 3</SelectItem>
-  </>
-);
-
 export const SpacingNone: Story = {
-  render: () => <SelectContentPreview spacing="none">{defaultOptions}</SelectContentPreview>,
+  render: () => <SelectContentPreview spacing="none" />,
 };
 
-export const Spacing2Px: Story = {
-  render: () => <SelectContentPreview spacing="2px">{defaultOptions}</SelectContentPreview>,
+export const Spacing2px: Story = {
+  render: () => <SelectContentPreview spacing="2px" />,
 };
 
-export const Spacing8Px: Story = {
-  render: () => <SelectContentPreview spacing="8px">{defaultOptions}</SelectContentPreview>,
+export const Spacing8px: Story = {
+  render: () => <SelectContentPreview spacing="8px" />,
 };
 
-export const Spacing16Px: Story = {
-  render: () => <SelectContentPreview spacing="16px">{defaultOptions}</SelectContentPreview>,
+export const Spacing16px: Story = {
+  render: () => <SelectContentPreview spacing="16px" />,
 };
 
-export const Spacing24Px: Story = {
-  render: () => <SelectContentPreview spacing="24px">{defaultOptions}</SelectContentPreview>,
-};
-
-export const SpacingNoneChildrenCustomOptionList: Story = {
-  render: () => (
-    <SelectContentPreview spacing="none">
-      <SelectGroup>
-        <SelectLabel size="small">Popular</SelectLabel>
-        <SelectItem value="design-system">Design System</SelectItem>
-        <SelectItem value="typography">Typography</SelectItem>
-      </SelectGroup>
-      <SelectSeparator />
-      <SelectGroup>
-        <SelectLabel size="small">Settings</SelectLabel>
-        <SelectItem value="notifications">Notifications</SelectItem>
-        <SelectItem value="security">Security</SelectItem>
-      </SelectGroup>
-    </SelectContentPreview>
-  ),
+export const Spacing24px: Story = {
+  render: () => <SelectContentPreview spacing="24px" />,
 };

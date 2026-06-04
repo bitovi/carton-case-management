@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { RelationshipManagerList } from './RelationshipManagerList';
-import type { RelationshipManagerListItem } from './types';
+// type import removed:  RelationshipManagerListItem  from './types';
 
-const meta: Meta<typeof RelationshipManagerList> = {
+const meta = {
   component: RelationshipManagerList,
   title: 'Components/Common/RelationshipManagerDialog/RelationshipManagerList/RelationshipManagerList',
   tags: ['autodocs'],
@@ -16,7 +16,7 @@ const meta: Meta<typeof RelationshipManagerList> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof RelationshipManagerList>;
+
 
 const mockItems: RelationshipManagerListItem[] = [
   {
@@ -45,7 +45,7 @@ const mockItems: RelationshipManagerListItem[] = [
   },
 ];
 
-export const Default: Story = {
+export const Default = {
   args: {
     title: 'Add Relationships',
     items: mockItems,
@@ -54,7 +54,7 @@ export const Default: Story = {
 };
 
 
-export const AllSelected: Story = {
+export const AllSelected = {
   args: {
     title: 'Add Relationships',
     items: mockItems.map((item) => ({ ...item, selected: true })),
@@ -62,7 +62,7 @@ export const AllSelected: Story = {
   },
 };
 
-export const CustomTitle: Story = {
+export const CustomTitle = {
   args: {
     title: 'Select Related Items',
     items: mockItems,

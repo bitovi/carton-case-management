@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { MemoryRouter } from 'react-router-dom';
 import { RelationshipManagerAccordion } from './RelationshipManagerAccordion';
 
-const meta: Meta<typeof RelationshipManagerAccordion> = {
+const meta = {
   component: RelationshipManagerAccordion,
   title: 'Components/Common/RelationshipManagerAccordion',
   tags: ['autodocs'],
@@ -23,7 +23,7 @@ const meta: Meta<typeof RelationshipManagerAccordion> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof RelationshipManagerAccordion>;
+
 
 const mockItems = [
   {
@@ -34,7 +34,7 @@ const mockItems = [
   },
 ];
 
-export const Closed: Story = {
+export const Closed = {
   args: {
     accordionTitle: 'Related Cases',
     items: mockItems,
@@ -43,7 +43,7 @@ export const Closed: Story = {
   },
 };
 
-export const Open: Story = {
+export const Open = {
   args: {
     accordionTitle: 'Related Cases',
     items: mockItems,
@@ -52,7 +52,7 @@ export const Open: Story = {
   },
 };
 
-export const MultipleCases: Story = {
+export const MultipleCases = {
   args: {
     accordionTitle: 'Related Cases',
     items: [
@@ -80,7 +80,7 @@ export const MultipleCases: Story = {
   },
 };
 
-export const WithoutAddButton: Story = {
+export const WithoutAddButton = {
   args: {
     accordionTitle: 'Related Cases',
     items: mockItems,

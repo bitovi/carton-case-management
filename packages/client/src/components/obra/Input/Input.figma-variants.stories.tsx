@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import * as React from 'react';
 import { Input } from './Input';
+import { Search, X } from 'lucide-react';
 
 const meta = {
   title: 'Figma Variants/Input',
@@ -9,30 +9,136 @@ const meta = {
     layout: 'centered',
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof Input>;
+} as Meta<typeof Input>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// =========== REPRESENTATIVE SET (11 dependent combinations) ===========
-
-// Core baseline
-export const SizeRegularRoundnessDefaultErrorFalseStateDefault: Story = {
-  args: {
-    size: 'regular',
-    roundness: 'default',
-    error: false,
-    placeholder: 'Enter text...',
-  },
-};
-
-// Size variants
 export const SizeMiniRoundnessDefaultErrorFalseStateDefault: Story = {
   args: {
     size: 'mini',
     roundness: 'default',
     error: false,
-    placeholder: 'Enter text...',
+    placeholder: 'Mini input',
+  },
+};
+
+export const SizeMiniRoundnessDefaultErrorFalseStateFocus: Story = {
+  args: {
+    size: 'mini',
+    roundness: 'default',
+    error: false,
+    placeholder: 'Mini input',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('input');
+    if (el) el.focus();
+  },
+};
+
+export const SizeMiniRoundnessDefaultErrorFalseStateDisabled: Story = {
+  args: {
+    size: 'mini',
+    roundness: 'default',
+    error: false,
+    placeholder: 'Mini input',
+    disabled: true,
+  },
+};
+
+export const SizeMiniRoundnessDefaultErrorTrueStateDefault: Story = {
+  args: {
+    size: 'mini',
+    roundness: 'default',
+    error: true,
+    placeholder: 'Mini input',
+  },
+};
+
+export const SizeMiniRoundnessDefaultErrorTrueStateFocus: Story = {
+  args: {
+    size: 'mini',
+    roundness: 'default',
+    error: true,
+    placeholder: 'Mini input',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('input');
+    if (el) el.focus();
+  },
+};
+
+export const SizeMiniRoundnessDefaultErrorTrueStateDisabled: Story = {
+  args: {
+    size: 'mini',
+    roundness: 'default',
+    error: true,
+    placeholder: 'Mini input',
+    disabled: true,
+  },
+};
+
+export const SizeMiniRoundnessRoundErrorFalseStateDefault: Story = {
+  args: {
+    size: 'mini',
+    roundness: 'round',
+    error: false,
+    placeholder: 'Mini input',
+  },
+};
+
+export const SizeMiniRoundnessRoundErrorFalseStateFocus: Story = {
+  args: {
+    size: 'mini',
+    roundness: 'round',
+    error: false,
+    placeholder: 'Mini input',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('input');
+    if (el) el.focus();
+  },
+};
+
+export const SizeMiniRoundnessRoundErrorFalseStateDisabled: Story = {
+  args: {
+    size: 'mini',
+    roundness: 'round',
+    error: false,
+    placeholder: 'Mini input',
+    disabled: true,
+  },
+};
+
+export const SizeMiniRoundnessRoundErrorTrueStateDefault: Story = {
+  args: {
+    size: 'mini',
+    roundness: 'round',
+    error: true,
+    placeholder: 'Mini input',
+  },
+};
+
+export const SizeMiniRoundnessRoundErrorTrueStateFocus: Story = {
+  args: {
+    size: 'mini',
+    roundness: 'round',
+    error: true,
+    placeholder: 'Mini input',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('input');
+    if (el) el.focus();
+  },
+};
+
+export const SizeMiniRoundnessRoundErrorTrueStateDisabled: Story = {
+  args: {
+    size: 'mini',
+    roundness: 'round',
+    error: true,
+    placeholder: 'Mini input',
+    disabled: true,
   },
 };
 
@@ -41,7 +147,254 @@ export const SizeSmallRoundnessDefaultErrorFalseStateDefault: Story = {
     size: 'small',
     roundness: 'default',
     error: false,
-    placeholder: 'Enter text...',
+    placeholder: 'Small input',
+  },
+};
+
+export const SizeSmallRoundnessDefaultErrorFalseStateFocus: Story = {
+  args: {
+    size: 'small',
+    roundness: 'default',
+    error: false,
+    placeholder: 'Small input',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('input');
+    if (el) el.focus();
+  },
+};
+
+export const SizeSmallRoundnessDefaultErrorFalseStateDisabled: Story = {
+  args: {
+    size: 'small',
+    roundness: 'default',
+    error: false,
+    placeholder: 'Small input',
+    disabled: true,
+  },
+};
+
+export const SizeSmallRoundnessDefaultErrorTrueStateDefault: Story = {
+  args: {
+    size: 'small',
+    roundness: 'default',
+    error: true,
+    placeholder: 'Small input',
+  },
+};
+
+export const SizeSmallRoundnessDefaultErrorTrueStateFocus: Story = {
+  args: {
+    size: 'small',
+    roundness: 'default',
+    error: true,
+    placeholder: 'Small input',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('input');
+    if (el) el.focus();
+  },
+};
+
+export const SizeSmallRoundnessDefaultErrorTrueStateDisabled: Story = {
+  args: {
+    size: 'small',
+    roundness: 'default',
+    error: true,
+    placeholder: 'Small input',
+    disabled: true,
+  },
+};
+
+export const SizeSmallRoundnessRoundErrorFalseStateDefault: Story = {
+  args: {
+    size: 'small',
+    roundness: 'round',
+    error: false,
+    placeholder: 'Small input',
+  },
+};
+
+export const SizeSmallRoundnessRoundErrorFalseStateFocus: Story = {
+  args: {
+    size: 'small',
+    roundness: 'round',
+    error: false,
+    placeholder: 'Small input',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('input');
+    if (el) el.focus();
+  },
+};
+
+export const SizeSmallRoundnessRoundErrorFalseStateDisabled: Story = {
+  args: {
+    size: 'small',
+    roundness: 'round',
+    error: false,
+    placeholder: 'Small input',
+    disabled: true,
+  },
+};
+
+export const SizeSmallRoundnessRoundErrorTrueStateDefault: Story = {
+  args: {
+    size: 'small',
+    roundness: 'round',
+    error: true,
+    placeholder: 'Small input',
+  },
+};
+
+export const SizeSmallRoundnessRoundErrorTrueStateFocus: Story = {
+  args: {
+    size: 'small',
+    roundness: 'round',
+    error: true,
+    placeholder: 'Small input',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('input');
+    if (el) el.focus();
+  },
+};
+
+export const SizeSmallRoundnessRoundErrorTrueStateDisabled: Story = {
+  args: {
+    size: 'small',
+    roundness: 'round',
+    error: true,
+    placeholder: 'Small input',
+    disabled: true,
+  },
+};
+
+export const SizeRegularRoundnessDefaultErrorFalseStateDefault: Story = {
+  args: {
+    size: 'regular',
+    roundness: 'default',
+    error: false,
+    placeholder: 'Regular input',
+  },
+};
+
+export const SizeRegularRoundnessDefaultErrorFalseStateFocus: Story = {
+  args: {
+    size: 'regular',
+    roundness: 'default',
+    error: false,
+    placeholder: 'Regular input',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('input');
+    if (el) el.focus();
+  },
+};
+
+export const SizeRegularRoundnessDefaultErrorFalseStateDisabled: Story = {
+  args: {
+    size: 'regular',
+    roundness: 'default',
+    error: false,
+    placeholder: 'Regular input',
+    disabled: true,
+  },
+};
+
+export const SizeRegularRoundnessDefaultErrorTrueStateDefault: Story = {
+  args: {
+    size: 'regular',
+    roundness: 'default',
+    error: true,
+    placeholder: 'Regular input',
+  },
+};
+
+export const SizeRegularRoundnessDefaultErrorTrueStateFocus: Story = {
+  args: {
+    size: 'regular',
+    roundness: 'default',
+    error: true,
+    placeholder: 'Regular input',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('input');
+    if (el) el.focus();
+  },
+};
+
+export const SizeRegularRoundnessDefaultErrorTrueStateDisabled: Story = {
+  args: {
+    size: 'regular',
+    roundness: 'default',
+    error: true,
+    placeholder: 'Regular input',
+    disabled: true,
+  },
+};
+
+export const SizeRegularRoundnessRoundErrorFalseStateDefault: Story = {
+  args: {
+    size: 'regular',
+    roundness: 'round',
+    error: false,
+    placeholder: 'Regular input',
+  },
+};
+
+export const SizeRegularRoundnessRoundErrorFalseStateFocus: Story = {
+  args: {
+    size: 'regular',
+    roundness: 'round',
+    error: false,
+    placeholder: 'Regular input',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('input');
+    if (el) el.focus();
+  },
+};
+
+export const SizeRegularRoundnessRoundErrorFalseStateDisabled: Story = {
+  args: {
+    size: 'regular',
+    roundness: 'round',
+    error: false,
+    placeholder: 'Regular input',
+    disabled: true,
+  },
+};
+
+export const SizeRegularRoundnessRoundErrorTrueStateDefault: Story = {
+  args: {
+    size: 'regular',
+    roundness: 'round',
+    error: true,
+    placeholder: 'Regular input',
+  },
+};
+
+export const SizeRegularRoundnessRoundErrorTrueStateFocus: Story = {
+  args: {
+    size: 'regular',
+    roundness: 'round',
+    error: true,
+    placeholder: 'Regular input',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('input');
+    if (el) el.focus();
+  },
+};
+
+export const SizeRegularRoundnessRoundErrorTrueStateDisabled: Story = {
+  args: {
+    size: 'regular',
+    roundness: 'round',
+    error: true,
+    placeholder: 'Regular input',
+    disabled: true,
   },
 };
 
@@ -50,146 +403,156 @@ export const SizeLargeRoundnessDefaultErrorFalseStateDefault: Story = {
     size: 'large',
     roundness: 'default',
     error: false,
-    placeholder: 'Enter text...',
+    placeholder: 'Large input',
   },
 };
 
-// Roundness variant
-export const SizeRegularRoundnessRoundErrorFalseStateDefault: Story = {
+export const SizeLargeRoundnessDefaultErrorFalseStateFocus: Story = {
   args: {
-    size: 'regular',
-    roundness: 'round',
-    error: false,
-    placeholder: 'Enter text...',
-  },
-};
-
-// Error variant
-export const SizeRegularRoundnessDefaultErrorTrueStateDefault: Story = {
-  args: {
-    size: 'regular',
-    roundness: 'default',
-    error: true,
-    placeholder: 'Invalid input',
-  },
-};
-
-// State variants - Focus
-export const SizeRegularRoundnessDefaultErrorFalseStateFocus: Story = {
-  args: {
-    size: 'regular',
+    size: 'large',
     roundness: 'default',
     error: false,
-    placeholder: 'Enter text...',
+    placeholder: 'Large input',
   },
   play: async ({ canvasElement }) => {
-    const input = canvasElement.querySelector('input');
-    if (input) {
-      input.focus();
-    }
+    const el = canvasElement.querySelector('input');
+    if (el) el.focus();
   },
 };
 
-// State variants - Disabled
-export const SizeRegularRoundnessDefaultErrorFalseStateDisabled: Story = {
+export const SizeLargeRoundnessDefaultErrorFalseStateDisabled: Story = {
   args: {
-    size: 'regular',
+    size: 'large',
     roundness: 'default',
     error: false,
+    placeholder: 'Large input',
     disabled: true,
-    placeholder: 'Disabled input',
   },
 };
 
-// Cross-axis: Error + Focus
-export const SizeRegularRoundnessDefaultErrorTrueStateFocus: Story = {
+export const SizeLargeRoundnessDefaultErrorTrueStateDefault: Story = {
   args: {
-    size: 'regular',
+    size: 'large',
     roundness: 'default',
     error: true,
-    placeholder: 'Invalid input',
+    placeholder: 'Large input',
+  },
+};
+
+export const SizeLargeRoundnessDefaultErrorTrueStateFocus: Story = {
+  args: {
+    size: 'large',
+    roundness: 'default',
+    error: true,
+    placeholder: 'Large input',
   },
   play: async ({ canvasElement }) => {
-    const input = canvasElement.querySelector('input');
-    if (input) {
-      input.focus();
-    }
+    const el = canvasElement.querySelector('input');
+    if (el) el.focus();
   },
 };
 
-// Cross-axis: Roundness + Error
-export const SizeRegularRoundnessRoundErrorTrueStateDefault: Story = {
+export const SizeLargeRoundnessDefaultErrorTrueStateDisabled: Story = {
   args: {
-    size: 'regular',
-    roundness: 'round',
-    error: true,
-    placeholder: 'Invalid input',
-  },
-};
-
-// Cross-axis: Error + Disabled
-export const SizeRegularRoundnessDefaultErrorTrueStateDisabled: Story = {
-  args: {
-    size: 'regular',
+    size: 'large',
     roundness: 'default',
     error: true,
+    placeholder: 'Large input',
     disabled: true,
-    placeholder: 'Disabled with error',
   },
 };
 
-// =========== INDEPENDENT COMPONENT PROPERTIES ===========
+export const SizeLargeRoundnessRoundErrorFalseStateDefault: Story = {
+  args: {
+    size: 'large',
+    roundness: 'round',
+    error: false,
+    placeholder: 'Large input',
+  },
+};
 
-// Left decoration
+export const SizeLargeRoundnessRoundErrorFalseStateFocus: Story = {
+  args: {
+    size: 'large',
+    roundness: 'round',
+    error: false,
+    placeholder: 'Large input',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('input');
+    if (el) el.focus();
+  },
+};
+
+export const SizeLargeRoundnessRoundErrorFalseStateDisabled: Story = {
+  args: {
+    size: 'large',
+    roundness: 'round',
+    error: false,
+    placeholder: 'Large input',
+    disabled: true,
+  },
+};
+
+export const SizeLargeRoundnessRoundErrorTrueStateDefault: Story = {
+  args: {
+    size: 'large',
+    roundness: 'round',
+    error: true,
+    placeholder: 'Large input',
+  },
+};
+
+export const SizeLargeRoundnessRoundErrorTrueStateFocus: Story = {
+  args: {
+    size: 'large',
+    roundness: 'round',
+    error: true,
+    placeholder: 'Large input',
+  },
+  play: async ({ canvasElement }) => {
+    const el = canvasElement.querySelector('input');
+    if (el) el.focus();
+  },
+};
+
+export const SizeLargeRoundnessRoundErrorTrueStateDisabled: Story = {
+  args: {
+    size: 'large',
+    roundness: 'round',
+    error: true,
+    placeholder: 'Large input',
+    disabled: true,
+  },
+};
+
 export const WithLeftDecoration: Story = {
   args: {
     size: 'regular',
     roundness: 'default',
     error: false,
-    placeholder: 'With left decoration',
-    leftDecoration: (
-      <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
-    ),
+    placeholder: 'Search...',
+    leftDecoration: <Search className="h-4 w-4 text-muted-foreground" />,
   },
 };
 
-// Right decoration
 export const WithRightDecoration: Story = {
   args: {
     size: 'regular',
     roundness: 'default',
     error: false,
-    placeholder: 'With right decoration',
-    rightDecoration: (
-      <button type="button" className="text-muted-foreground hover:text-foreground">
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    ),
+    placeholder: 'Clear me',
+    rightDecoration: <X className="h-4 w-4 text-muted-foreground" />,
   },
 };
 
-// Both decorations
 export const WithBothDecorations: Story = {
   args: {
     size: 'regular',
     roundness: 'default',
     error: false,
-    placeholder: 'With both decorations',
-    leftDecoration: (
-      <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
-    ),
-    rightDecoration: (
-      <button type="button" className="text-muted-foreground hover:text-foreground">
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    ),
+    placeholder: 'Search...',
+    leftDecoration: <Search className="h-4 w-4 text-muted-foreground" />,
+    rightDecoration: <X className="h-4 w-4 text-muted-foreground" />,
   },
 };

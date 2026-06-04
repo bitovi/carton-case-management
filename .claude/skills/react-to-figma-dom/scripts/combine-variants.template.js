@@ -70,6 +70,7 @@ componentSet.paddingLeft = 20;
 componentSet.paddingRight = 20;
 componentSet.primaryAxisSizingMode = 'AUTO';
 componentSet.counterAxisSizingMode = 'AUTO';
+componentSet.clipsContent = false;
 
 return {
   result: 'combined',

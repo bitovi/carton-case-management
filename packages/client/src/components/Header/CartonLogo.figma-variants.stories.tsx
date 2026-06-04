@@ -8,13 +8,25 @@ const meta = {
     layout: 'centered',
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof CartonLogo>;
+} as Meta<typeof CartonLogo>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const SizeSmall: Story = {
+  args: {
+    size: 24,
+  },
+};
+
+export const SizeDefault: Story = {
   args: {
     size: 34,
+  },
+};
+
+export const SizeLarge: Story = {
+  args: {
+    size: 48,
   },
 };

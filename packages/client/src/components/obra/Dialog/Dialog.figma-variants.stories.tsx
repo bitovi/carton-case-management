@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ComponentProps, useState } from 'react';
 import { Dialog } from './Dialog';
 import { DialogHeader } from './DialogHeader/DialogHeader';
 import { DialogFooter } from './DialogFooter/DialogFooter';
@@ -9,136 +8,84 @@ const meta = {
   title: 'Figma Variants/Dialog',
   component: Dialog,
   parameters: {
-    layout: 'centered',
+    layout: 'fullscreen',
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof Dialog>;
+} as Meta<typeof Dialog>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const DialogWrapper = ({ children, ...props }: Omit<ComponentProps<typeof Dialog>, 'open' | 'onOpenChange'>) => {
-  const [open, setOpen] = useState(true);
+const SimpleContent = () => (
+  <div className="p-6 space-y-3">
+    <h3 className="text-lg font-semibold">Dialog Content</h3>
+    <p className="text-sm text-muted-foreground">
+      This is the main content area of the dialog.
+    </p>
+  </div>
+);
 
-  return (
-    <Dialog {...props} open={open} onOpenChange={setOpen}>
-      {children}
-    </Dialog>
-  );
-};
+const ScrollableContent = () => (
+  <div className="p-4 space-y-3">
+    {Array.from({ length: 8 }).map((_, i) => (
+      <p key={i} className="text-sm">
+        Content line {i + 1} — Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </p>
+    ))}
+  </div>
+);
+
+const HeaderContent = () => (
+  <DialogHeader
+    type="Header"
+    title="Dialog Header"
+    onClose={() => {}}
+  />
+);
+
+const FooterContent = () => (
+  <DialogFooter type="2 Buttons Right">
+    <Button variant="outline" size="sm">Cancel</Button>
+    <Button size="sm">Confirm</Button>
+  </DialogFooter>
+);
 
 export const TypeDesktop: Story = {
-  render: (args) => <DialogWrapper {...args} />,
   args: {
+    open: true,
+    onOpenChange: () => {},
     type: 'Desktop',
-    children: (
-      <div className="p-6">
-        <p className="text-sm">Dialog content</p>
-      </div>
-    ),
+    children: <SimpleContent />,
   },
 };
 
 export const TypeDesktopScrollable: Story = {
-  render: (args) => <DialogWrapper {...args} />,
   args: {
+    open: true,
+    onOpenChange: () => {},
     type: 'Desktop Scrollable',
-    children: (
-      <div className="p-6">
-        <p className="text-sm">Dialog content</p>
-      </div>
-    ),
+    header: <HeaderContent />,
+    footer: <FooterContent />,
+    children: <ScrollableContent />,
   },
 };
 
 export const TypeMobile: Story = {
-  render: (args) => <DialogWrapper {...args} />,
   args: {
+    open: true,
+    onOpenChange: () => {},
     type: 'Mobile',
-    children: (
-      <div className="p-4">
-        <p className="text-xs">Dialog content</p>
-      </div>
-    ),
+    children: <SimpleContent />,
   },
 };
 
 export const TypeMobileFullScreenScrollable: Story = {
-  render: (args) => <DialogWrapper {...args} />,
   args: {
+    open: true,
+    onOpenChange: () => {},
     type: 'Mobile Full Screen Scrollable',
-    children: (
-      <div className="p-4">
-        <p className="text-sm">Dialog content</p>
-      </div>
-    ),
-  },
-};
-
-export const TypeDesktopScrollableWithHeader: Story = {
-  render: (args) => <DialogWrapper {...args} />,
-  args: {
-    type: 'Desktop Scrollable',
-    header: <DialogHeader type="Header" title="Dialog Title" onClose={() => {}} />,
-    children: (
-      <div className="p-6">
-        <p className="text-sm">Content area</p>
-      </div>
-    ),
-  },
-};
-
-export const TypeDesktopScrollableWithFooter: Story = {
-  render: (args) => <DialogWrapper {...args} />,
-  args: {
-    type: 'Desktop Scrollable',
-    footer: (
-      <DialogFooter type="2 Buttons Right">
-        <Button variant="outline">Cancel</Button>
-        <Button>Confirm</Button>
-      </DialogFooter>
-    ),
-    children: (
-      <div className="p-6">
-        <p className="text-sm">Content area</p>
-      </div>
-    ),
-  },
-};
-
-export const TypeDesktopScrollableWithHeaderFooter: Story = {
-  render: (args) => <DialogWrapper {...args} />,
-  args: {
-    type: 'Desktop Scrollable',
-    header: <DialogHeader type="Header" title="Full Dialog" onClose={() => {}} />,
-    footer: (
-      <DialogFooter type="2 Buttons Right">
-        <Button variant="outline">Cancel</Button>
-        <Button>Confirm</Button>
-      </DialogFooter>
-    ),
-    children: (
-      <div className="p-6">
-        <p className="text-sm">Content area</p>
-      </div>
-    ),
-  },
-};
-
-export const TypeMobileFullScreenScrollableWithHeaderFooter: Story = {
-  render: (args) => <DialogWrapper {...args} />,
-  args: {
-    type: 'Mobile Full Screen Scrollable',
-    header: <DialogHeader type="Header" title="Mobile Full Screen" onClose={() => {}} />,
-    footer: (
-      <DialogFooter type="Single Full-width Button">
-        <Button className="w-full">Action</Button>
-      </DialogFooter>
-    ),
-    children: (
-      <div className="p-4">
-        <p className="text-sm">Content area</p>
-      </div>
-    ),
+    header: <HeaderContent />,
+    footer: <FooterContent />,
+    children: <ScrollableContent />,
   },
 };

@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { Info, AlertCircle } from 'lucide-react';
 import { Alert } from './Alert';
 
-const meta: Meta<typeof Alert> = {
+const meta = {
   component: Alert,
   title: 'Obra/Alert',
   tags: ['autodocs'],
@@ -15,15 +15,15 @@ const meta: Meta<typeof Alert> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Alert>;
 
-export const Default: Story = {
+
+export const Default = {
   args: {
     children: 'Line 1',
   },
 };
 
-export const NeutralWithIcon: Story = {
+export const NeutralWithIcon = {
   args: {
     children: 'Line 1',
     icon: <Info className="h-4 w-4" />,
@@ -31,7 +31,7 @@ export const NeutralWithIcon: Story = {
   },
 };
 
-export const NeutralWithIconAndDescription: Story = {
+export const NeutralWithIconAndDescription = {
   args: {
     children: 'Line 1',
     description: 'Line 2',
@@ -41,7 +41,7 @@ export const NeutralWithIconAndDescription: Story = {
   },
 };
 
-export const NeutralFlippedIcon: Story = {
+export const NeutralFlippedIcon = {
   args: {
     children: 'Line 1',
     icon: <Info className="h-4 w-4" />,
@@ -50,7 +50,7 @@ export const NeutralFlippedIcon: Story = {
   },
 };
 
-export const NeutralWithButton: Story = {
+export const NeutralWithButton = {
   args: {
     children: 'Line 1',
     icon: <Info className="h-4 w-4" />,
@@ -64,14 +64,14 @@ export const NeutralWithButton: Story = {
   },
 };
 
-export const Error: Story = {
+export const Error = {
   args: {
     type: 'Error',
     children: 'Line 1',
   },
 };
 
-export const ErrorWithIcon: Story = {
+export const ErrorWithIcon = {
   args: {
     type: 'Error',
     children: 'Line 1',
@@ -81,7 +81,7 @@ export const ErrorWithIcon: Story = {
   },
 };
 
-export const ErrorWithIconAndDescription: Story = {
+export const ErrorWithIconAndDescription = {
   args: {
     type: 'Error',
     children: 'Line 1',
@@ -93,7 +93,7 @@ export const ErrorWithIconAndDescription: Story = {
   },
 };
 
-export const ErrorFlippedIcon: Story = {
+export const ErrorFlippedIcon = {
   args: {
     type: 'Error',
     children: 'Line 1',
@@ -103,7 +103,7 @@ export const ErrorFlippedIcon: Story = {
   },
 };
 
-export const ErrorWithButton: Story = {
+export const ErrorWithButton = {
   args: {
     type: 'Error',
     children: 'Line 1',
@@ -119,7 +119,7 @@ export const ErrorWithButton: Story = {
   },
 };
 
-export const Complete: Story = {
+export const Complete = {
   args: {
     children: 'Line 1',
     description: 'Line 2',

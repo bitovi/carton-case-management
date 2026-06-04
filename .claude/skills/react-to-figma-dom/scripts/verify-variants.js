@@ -11,7 +11,7 @@
  * verify-manifest.json format:
  * {
  *   "componentName": "Badge",
- *   "componentDir": ".temp/react-to-figma/components/Badge",
+ *   "componentDir": ".temp/react-to-figma-dom/components/Badge",
  *   "variants": [
  *     {
  *       "name": "PrimaryDefault",
@@ -153,6 +153,7 @@ async function main() {
   const results = [];
   let passCount = 0;
   let minorCount = 0;
+  let needsReviewCount = 0;
   let failCount = 0;
   let errorCount = 0;
 
@@ -162,12 +163,12 @@ async function main() {
     fs.mkdirSync(variantDir, { recursive: true });
     const figmaPng = path.join(variantDir, 'figma.png');
     const diffOutDir = variantDir;
-    const reactRef = path.resolve(absComponentDir, reactScreenshot);
+    const reactRef = reactScreenshot ? path.resolve(absComponentDir, reactScreenshot) : path.join(variantDir, 'screenshot.png');
 
     process.stdout.write(`  ${name}: `);
 
-    if (!assetUrl) {
-      console.log('SKIP (no asset URL)');
+    if (!assetUrl && !fs.existsSync(figmaPng)) {
+      console.log('SKIP (no asset URL and no pre-downloaded figma.png)');
       results.push({ name, nodeId, status: 'skip', reason: 'no asset URL' });
       errorCount++;
       continue;
@@ -181,7 +182,10 @@ async function main() {
     }
 
     try {
-      await downloadFile(assetUrl, figmaPng);
+      if (assetUrl) {
+        await downloadFile(assetUrl, figmaPng);
+      }
+      // else: figma.png pre-downloaded, proceed directly to diff
     } catch (err) {
       console.log(`DOWNLOAD FAILED (${err.message})`);
       results.push({ name, nodeId, status: 'error', reason: `download failed: ${err.message}` });
@@ -197,18 +201,21 @@ async function main() {
       continue;
     }
 
-    try {
-      const pngBuf = fs.readFileSync(figmaPng);
-      const isEmpty = detectEmptyImage(pngBuf);
-      if (isEmpty) {
-        console.log(`EMPTY (Figma screenshot appears blank/uniform)`);
-        results.push({ name, nodeId, status: 'fail', matchPct: 0, reason: 'Figma screenshot is blank or uniform color' });
-        failCount++;
-        continue;
-      }
-    } catch (imgErr) {
-      // non-fatal — proceed to pixel diff
-    }
+    // Blank detection disabled — let pixel diff always run.
+    // Portal/overlay components have large uniform areas that
+    // trigger false positives in the compressed-size heuristic.
+    // try {
+    //   const pngBuf = fs.readFileSync(figmaPng);
+    //   const isEmpty = detectEmptyImage(pngBuf);
+    //   if (isEmpty) {
+    //     console.log(`EMPTY (Figma screenshot appears blank/uniform)`);
+    //     results.push({ name, nodeId, status: 'fail', matchPct: 0, reason: 'Figma screenshot is blank or uniform color' });
+    //     failCount++;
+    //     continue;
+    //   }
+    // } catch (imgErr) {
+    //   // non-fatal — proceed to pixel diff
+    // }
 
     try {
       const thresholdArg = flags.matchThreshold ? `--match-threshold ${flags.matchThreshold}` : '';
@@ -226,7 +233,13 @@ async function main() {
       if (fs.existsSync(compJsonPath)) {
         const compJson = JSON.parse(fs.readFileSync(compJsonPath, 'utf-8'));
         const verdict = compJson.verdict || 'unknown';
-        if (verdict === 'minor_diff') {
+        if (verdict === 'needs_review') {
+          const uA = compJson.uniformityA != null ? ` uniA=${compJson.uniformityA}%` : '';
+          const uB = compJson.uniformityB != null ? ` uniB=${compJson.uniformityB}%` : '';
+          console.log(`NEEDS_REVIEW (${compJson.matchPct}% match${uA}${uB})`);
+          results.push({ name, nodeId, status: 'needs_review', ...compJson });
+          needsReviewCount++;
+        } else if (verdict === 'minor_diff') {
           console.log(`MINOR_DIFF (${compJson.matchPct}% match)`);
           results.push({ name, nodeId, status: 'minor_diff', ...compJson });
           minorCount++;
@@ -245,9 +258,11 @@ async function main() {
 
   const overallVerdict = failCount > 0 || errorCount > 0
     ? 'FAIL'
-    : minorCount > 0
-      ? 'PARTIAL'
-      : 'PASS';
+    : needsReviewCount > 0
+      ? 'NEEDS_REVIEW'
+      : minorCount > 0
+        ? 'PARTIAL'
+        : 'PASS';
 
   const summary = {
     componentName,
@@ -255,6 +270,7 @@ async function main() {
     variantCount: variants.length,
     pass: passCount,
     minorDiff: minorCount,
+    needsReview: needsReviewCount,
     fail: failCount,
     error: errorCount,
     overallVerdict,
@@ -265,15 +281,16 @@ async function main() {
   fs.writeFileSync(outputPath, JSON.stringify(summary, null, 2));
 
   console.log(`\n--- Summary ---`);
-  console.log(`  Pass:       ${passCount}`);
-  console.log(`  Minor diff: ${minorCount}`);
-  console.log(`  Fail:       ${failCount}`);
-  console.log(`  Error:      ${errorCount}`);
-  console.log(`  Verdict:    ${overallVerdict}`);
+  console.log(`  Pass:         ${passCount}`);
+  console.log(`  Minor diff:   ${minorCount}`);
+  console.log(`  Needs review: ${needsReviewCount}`);
+  console.log(`  Fail:         ${failCount}`);
+  console.log(`  Error:        ${errorCount}`);
+  console.log(`  Verdict:      ${overallVerdict}`);
   console.log(`  Results:    ${outputPath}\n`);
 
   if (overallVerdict === 'FAIL') process.exit(2);
-  if (overallVerdict === 'PARTIAL') process.exit(1);
+  if (overallVerdict === 'NEEDS_REVIEW' || overallVerdict === 'PARTIAL') process.exit(1);
   process.exit(0);
 }
 

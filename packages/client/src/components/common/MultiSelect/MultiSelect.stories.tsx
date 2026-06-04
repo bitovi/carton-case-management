@@ -26,7 +26,7 @@ const meta = {
       control: 'boolean',
     },
   },
-} satisfies Meta<typeof MultiSelect>;
+} as Meta<typeof MultiSelect>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

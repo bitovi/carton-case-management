@@ -18,7 +18,7 @@ const meta = {
     },
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof SelectSeparator>;
+} as Meta<typeof SelectSeparator>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

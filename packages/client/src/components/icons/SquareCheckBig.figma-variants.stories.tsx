@@ -8,7 +8,7 @@ const meta = {
     layout: 'centered',
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof SquareCheckBig>;
+} as Meta<typeof SquareCheckBig>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

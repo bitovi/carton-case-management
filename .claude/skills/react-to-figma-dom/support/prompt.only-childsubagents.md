@@ -10,7 +10,7 @@ Orchestrate the full react-to-figma-dom pipeline using ONLY direct child subagen
 | `storybookUrl` | `http://localhost:6006` | Storybook URL (required for Phase C) |
 | `devServerUrl` | `http://localhost:5173` | Dev server URL (required for Phase G page screenshots) |
 | `figmaFileKey` | _(ask user)_ | Target Figma file key (required for Phases E-G) |
-| `pipelineDir` | `.temp/react-to-figma/` | Root output directory |
+| `pipelineDir` | `.temp/react-to-figma-dom/` | Root output directory |
 | `skillDir` | `.claude/skills/react-to-figma-dom/` | This skill's directory |
 
 ## Figma File Key
@@ -29,11 +29,37 @@ Before doing anything, check if `{pipelineDir}/checklist.md` already exists:
 ```
 if file exists "{pipelineDir}/checklist.md"
   AND it contains at least one "- [x]" line:
+    → Run checklist reconciliation (see below)
     → Skip to Stage 3 (Execute the checklist)
     → Read figmaFileKey from the checklist header ("Figma file key: ...")
 ```
 
 If not, start from Stage 1.
+
+### Checklist Reconciliation
+
+When resuming from an existing checklist, run the reconciliation script to sync disk state before executing:
+
+```bash
+node {skillDir}/scripts/reconcile-checklist.js \
+  --pipeline-dir {pipelineDir} \
+  --checklist {pipelineDir}/checklist.md
+```
+
+This scans actual output files on disk and flips `- [ ]` → `- [x]` for items whose output already exists (e.g., from a prior partial run). It is additive only — never unchecks `[x]` items. Review the summary output before proceeding.
+
+### Pre-flight Checks
+
+Before starting each Figma-writing phase (E, F, G), run the pre-flight check:
+
+```bash
+node {skillDir}/scripts/preflight-check.js \
+  --phase <E|F|G> \
+  --pipeline-dir {pipelineDir} \
+  --skill-dir {skillDir}
+```
+
+If the pre-flight check exits with code 1, **STOP** and report the errors to the user. Do not proceed with the phase until all errors are resolved.
 
 ---
 
@@ -42,9 +68,10 @@ If not, start from Stage 1.
 Use the **todo list tool** (`manage_todo_list`) throughout this prompt to give the user visibility into progress:
 
 - **Stages 1 & 2**: Create a todo list with one item per step (1.1 through 1.6, plus "Generate checklist"). Mark each in-progress before starting, completed immediately after.
-- **Stage 3**: Once the checklist is generated, replace the todo list with one item per checklist line (B.1, B.2, ..., F.1, F.2, F.3, ..., G.1, G.2, etc.). Mark each in-progress before calling the subagent, completed (or failed) immediately after.
+- **Stage 3 — sequential phases**: Create one todo item per checklist line (B.1, B.2, B.3, D.1, D.2, etc.). Mark in-progress before the subagent call, completed or failed after.
+- **Stage 3 — `[PARALLEL]` phases**: When starting a parallel section, create a new todo list with one item per batch of 4 (e.g., "C.1 batch 1/{totalBatches}", "C.1 batch 2/{totalBatches}", ...). Compute `totalBatches = ceil(itemCount / 4)`. Mark each batch in-progress before launching its 4 subagents, completed or failed after all 4 return. When the section finishes, replace the todo list with the next section's items.
 
-Update the todo list **before and after every subagent call** — never batch updates.
+Update the todo list **before and after every subagent call or batch**.
 
 ---
 
@@ -137,101 +164,24 @@ Arguments:
 When complete, respond with ONLY: PASS or FAIL: <one-line reason>
 ```
 
-### Step 1.6: Generate pages manifest
-
-Only run if `{pipelineDir}/component-hierarchy/pages.json` exists.
-
-```
-Read and execute the prompt at {skillDir}/1-find-hierarchy/6-prompt.generate-pages-manifest.md
-
-Arguments:
-  pagesJsonPath = {pipelineDir}/component-hierarchy/pages.json
-  componentAnalysesDir = {pipelineDir}/components/
-  output = {pipelineDir}/component-hierarchy/pages.md
-
-When complete, respond with ONLY: PASS or FAIL: <one-line reason>
-```
-
 ---
 
 ## Stage 2: Generate the Checklist
 
-Read these files to determine components and pages:
+Delegate checklist generation to a subagent:
 
-1. `{pipelineDir}/component-hierarchy/build-order.md` — parse components in topological order (Level 0 first = leaves)
-2. `{pipelineDir}/component-hierarchy/pages.md` or `pages.json` — parse routes
-
-Build a flat ordered list of every component name (leaves first) and every route.
-
-Write `{pipelineDir}/checklist.md` with this exact format:
-
-```markdown
-# Pipeline Checklist
-Generated: {ISO timestamp}
-Skill dir: {skillDir}
-Pipeline dir: {pipelineDir}
-Source root: {sourceRoot}
-Storybook URL: {storybookUrl}
-Dev server URL: {devServerUrl}
-Figma file key: {figmaFileKey}
-
-Components (build-order): {comma-separated list, leaves first}
-Pages: {comma-separated route list}
-
-## Phase B: Tokens, Assets, Patterns
-- [ ] B.1 | 2-extract-design-tokens/prompt.md |
-- [ ] B.2 | 3-extract-assets/prompt.md |
-- [ ] B.3 | 4-discover-story-patterns/prompt.md |
-
-## Phase C.1: Identify Variants [PARALLEL]
-{For each component in build-order, emit 1 line:}
-- [ ] C.1.{n} | 6-capture-dom-from-stories/1-prompt.identify-variants-for-a-component.md | componentName={Name}
-
-## Phase C.2: Generate Stories [PARALLEL]
-{For each component in build-order, emit 1 line:}
-- [ ] C.2.{n} | 6-capture-dom-from-stories/2-prompt.generate-stories-for-a-component.md | componentName={Name}
-
-## Phase C.3: Capture DOM [PARALLEL]
-{For each component in build-order, emit 1 line:}
-- [ ] C.3.{n} | 6-capture-dom-from-stories/3-prompt.capture-dom-for-a-component.md | componentName={Name}
-
-## Phase D: Build Scripts (per component, build-order)
-{For each component in build-order, emit 2 lines:}
-- [ ] D.{n}   | 7-generate-build-scripts/1-prompt.diff-and-classify-for-a-component.md | componentName={Name}
-- [ ] D.{n+1} | 7-generate-build-scripts/2-prompt.preprocess-for-a-component.md | componentName={Name}
-{After all components, emit 1 line:}
-- [ ] D.{n+2} | 7-generate-build-scripts/3-prompt.prioritize-page-variants.md |
-
-## Phase E: Figma Setup
-- [ ] E.1 | 5-setup-figma-file/prompt.md | figmaFileKey={figmaFileKey}
-
-## Phase F: Build, Verify & Fix Components (build-order, leaves first)
-{For each component in build-order, emit 3 lines:}
-- [ ] F.{n}   | 8-batch-build/prompts/build-a-component.md  | componentName={Name}, figmaFileKey={figmaFileKey}
-- [ ] F.{n+1} | 8-batch-build/prompts/verify-a-component.md | componentName={Name}, figmaFileKey={figmaFileKey}
-- [ ] F.{n+2} | 8-batch-build/prompts/fix-a-component.md    | componentName={Name}, figmaFileKey={figmaFileKey}
-
-## Phase G: Compose & Verify Pages
-{For each route, emit 2 lines:}
-- [ ] G.{n}   | 8-batch-build/prompts/build-a-page-frame.md  | route={route}, figmaFileKey={figmaFileKey}
-- [ ] G.{n+1} | 8-batch-build/prompts/verify-a-page-frame.md | route={route}, figmaFileKey={figmaFileKey}
-
-## ★ HUMAN CHECKPOINT — Review pages in Figma before continuing
 ```
+Read and execute the prompt at {skillDir}/support/prompt.generate-checklist.md
 
-Report to the user:
-```
-Checklist generated: {pipelineDir}/checklist.md
-  {B_count} token/asset/pattern steps
-  {C_count} DOM capture steps ({component_count} components × 3 waves)
-    C.1: {component_count} identify-variant items [PARALLEL]
-    C.2: {component_count} generate-stories items [PARALLEL]
-    C.3: {component_count} capture-dom items [PARALLEL]
-  {D_count} build script steps ({component_count} components × 2 + 1)
-  {E_count} Figma setup step
-  {F_count} build/verify/fix steps ({component_count} components × 3)
-  {G_count} page compose steps ({page_count} pages × 2)
-  Total: {total} checklist items
+Arguments:
+  pipelineDir = {pipelineDir}
+  skillDir = {skillDir}
+  sourceRoot = {sourceRoot}
+  storybookUrl = {storybookUrl}
+  devServerUrl = {devServerUrl}
+  figmaFileKey = {figmaFileKey}
+
+When complete, respond with ONLY: PASS or FAIL: <one-line reason>
 ```
 
 ---
@@ -248,6 +198,16 @@ Read `{pipelineDir}/checklist.md`. Parse the header to extract context variables
    - If the line is a single `- [ ]` item → go to step 6 (sequential single)
 3. If no unchecked lines remain → report summary and stop
 4. If the line contains `★ HUMAN CHECKPOINT` → stop and ask the user to review the Figma file
+4b. **Phase boundary pre-flight**: When entering a new phase section (E, F, or G), run the pre-flight check BEFORE executing any items in that phase:
+    ```bash
+    node {skillDir}/scripts/preflight-check.js --phase <E|F|G> --pipeline-dir {pipelineDir} --skill-dir {skillDir}
+    ```
+    If exit code is 1, STOP and report the errors. Do not proceed until the user resolves them.
+4c. **Phase boundary post-flight**: When ALL items in a phase section (D, E, or F) are complete, run the post-flight check BEFORE moving to the next phase:
+    ```bash
+    node {skillDir}/scripts/postflight-check.js --phase <D|E|F> --pipeline-dir {pipelineDir} --skill-dir {skillDir}
+    ```
+    If exit code is 1, STOP and report the errors. The phase produced incomplete or invalid outputs that must be fixed before continuing.
 
 #### Step 5: Parallel batch execution
 
@@ -255,19 +215,22 @@ When a section header contains `[PARALLEL]`:
 
 1. Collect ALL `- [ ]` lines in that section
 2. If none remain (all are `[x]` or `[!]`) → skip to the next section
-3. Launch ALL collected items as **parallel subagents simultaneously** — one `runSubagent` call per item, all in the same tool-call block
-4. As results return, update each line in `checklist.md`:
-   - `PASS` → change `- [ ]` to `- [x]`, log `✓`
-   - `FAIL` → change `- [ ]` to `- [!]`, log `✗`
-5. After ALL subagents in the batch complete, report the batch summary:
+3. Split the collected items into **batches of 4**. For each batch:
+   a. Launch all items in the batch as parallel subagents — one `runSubagent` call per item, all in the same tool-call block
+   b. When the batch completes, update each line in `checklist.md`:
+      - `PASS` → change `- [ ]` to `- [x]`
+      - `FAIL` → change `- [ ]` to `- [!]`
+   c. Update the batch's todo item to completed (or failed)
+   d. Proceed to the next batch
+4. After ALL batches in the section complete, report the section summary:
    ```
-   Parallel batch {section_id} complete: {pass_count} passed, {fail_count} failed
+   Section {section_id} complete: {pass_count} passed, {fail_count} failed ({batch_count} batches)
    ```
-6. If any failed, ask the user: "Batch had {fail_count} failures. Continue to next phase, retry failed items, or stop?"
+5. If any failed, ask the user: "Section had {fail_count} failures. Continue to next phase, retry failed items, or stop?"
    - **Continue**: proceed to next section
    - **Retry**: reset `- [!]` back to `- [ ]` for failed items, re-run step 5 for this section
    - **Stop**: halt execution
-7. Proceed to the next section (go to step 1)
+6. Proceed to the next section (go to step 1)
 
 **Storybook settle pause**: After completing a `[PARALLEL]` section for story generation (Phase C.2), wait 5 seconds for Storybook's hot-reload to process all new story files before starting Phase C.3.
 
@@ -330,8 +293,9 @@ Failed steps:
 ## Rules
 
 1. **Never read a prompt file yourself.** Always tell the subagent which file to read. This keeps orchestrator context small.
-2. **Parallel `[PARALLEL]` phases, sequential otherwise.** When a section header contains `[PARALLEL]`, launch ALL items in that section as simultaneous subagent calls. All other phases execute one subagent at a time.
+2. **Parallel `[PARALLEL]` phases, sequential otherwise.** When a section header contains `[PARALLEL]`, launch items in batches of 4 as described in Step 5. All other phases execute one subagent at a time.
 3. **Always update checklist.md after each step (or batch).** This is the checkpoint mechanism. If the conversation ends, re-running this prompt will resume from where it left off.
 4. **The fix prompt is self-gating.** `fix-a-component` checks `verification-results.json` and returns PASS immediately if all variants already pass. No wasted work.
 5. **Build-order is critical for Phases D–G.** Components are listed leaves-first so parent components can reference child Figma node IDs. Phases C.1/C.2/C.3 are safe to parallelize because they have no cross-component dependencies within the same step.
 6. **Storybook settle pause.** After Phase C.2 (Generate Stories) completes, wait 5 seconds before starting Phase C.3 (Capture DOM) to let Storybook finish hot-reloading all new story files.
+7. **Never ask about batch size or parallelism strategy.** Always use the batch size of 4 defined in Step 5. Do not offer alternatives like "focus on leaf components first" or "process a subset." Execute every item in the section without asking.

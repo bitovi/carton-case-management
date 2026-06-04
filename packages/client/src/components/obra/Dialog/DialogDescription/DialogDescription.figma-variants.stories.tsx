@@ -13,7 +13,7 @@ const meta = {
       },
     },
   },
-} satisfies Meta<typeof DialogDescription>;
+} as Meta<typeof DialogDescription>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

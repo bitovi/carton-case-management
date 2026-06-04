@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { HoverCard } from './HoverCard';
 
-const meta: Meta<typeof HoverCard> = {
+const meta = {
   component: HoverCard,
   title: 'Obra/HoverCard',
   tags: ['autodocs'],
@@ -14,9 +14,9 @@ const meta: Meta<typeof HoverCard> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof HoverCard>;
 
-export const Default: Story = {
+
+export const Default = {
   args: {
     trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>,
     children: <div className="text-sm">This is a hover card with default settings</div>,
@@ -24,7 +24,7 @@ export const Default: Story = {
   name: 'Default',
 };
 
-export const RichContent: Story = {
+export const RichContent = {
   args: {
     trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">User info</button>,
     children: (
@@ -38,7 +38,7 @@ export const RichContent: Story = {
   name: 'Rich Content',
 };
 
-export const SideTop: Story = {
+export const SideTop = {
   args: {
     trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Top</button>,
     side: 'top',
@@ -47,7 +47,7 @@ export const SideTop: Story = {
   name: 'Position: Top',
 };
 
-export const SideRight: Story = {
+export const SideRight = {
   args: {
     trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Right</button>,
     side: 'right',
@@ -56,7 +56,7 @@ export const SideRight: Story = {
   name: 'Position: Right',
 };
 
-export const SideBottom: Story = {
+export const SideBottom = {
   args: {
     trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Bottom</button>,
     side: 'bottom',
@@ -65,7 +65,7 @@ export const SideBottom: Story = {
   name: 'Position: Bottom',
 };
 
-export const SideLeft: Story = {
+export const SideLeft = {
   args: {
     trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Left</button>,
     side: 'left',
@@ -74,7 +74,7 @@ export const SideLeft: Story = {
   name: 'Position: Left',
 };
 
-export const AlignStart: Story = {
+export const AlignStart = {
   args: {
     trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Start</button>,
     align: 'start',
@@ -83,7 +83,7 @@ export const AlignStart: Story = {
   name: 'Align: Start',
 };
 
-export const AlignCenter: Story = {
+export const AlignCenter = {
   args: {
     trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Center</button>,
     align: 'center',
@@ -92,7 +92,7 @@ export const AlignCenter: Story = {
   name: 'Align: Center',
 };
 
-export const AlignEnd: Story = {
+export const AlignEnd = {
   args: {
     trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">End</button>,
     align: 'end',
@@ -101,7 +101,7 @@ export const AlignEnd: Story = {
   name: 'Align: End',
 };
 
-export const QuickOpen: Story = {
+export const QuickOpen = {
   args: {
     trigger: <button className="px-4 py-2 bg-green-500 text-white rounded">Quick open</button>,
     openDelay: 200,
@@ -111,7 +111,7 @@ export const QuickOpen: Story = {
   name: 'Quick Open',
 };
 
-export const SlowOpen: Story = {
+export const SlowOpen = {
   args: {
     trigger: <button className="px-4 py-2 bg-orange-500 text-white rounded">Slow open</button>,
     openDelay: 1000,
@@ -121,7 +121,7 @@ export const SlowOpen: Story = {
   name: 'Slow Open',
 };
 
-export const CustomStyling: Story = {
+export const CustomStyling = {
   args: {
     trigger: <button className="px-4 py-2 bg-purple-500 text-white rounded">Custom</button>,
     className: 'bg-purple-50 border-purple-200',
@@ -134,7 +134,7 @@ export const CustomStyling: Story = {
   name: 'Custom Styling',
 };
 
-export const LinkTrigger: Story = {
+export const LinkTrigger = {
   args: {
     trigger: (
       <a href="#" className="text-blue-600 underline hover:text-blue-800">
@@ -150,7 +150,7 @@ export const LinkTrigger: Story = {
   name: 'Link Trigger',
 };
 
-export const WithImage: Story = {
+export const WithImage = {
   args: {
     trigger: <button className="px-4 py-2 bg-blue-500 text-white rounded">Profile</button>,
     children: (

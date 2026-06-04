@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { http, HttpResponse } from 'msw';
 import { CaseEssentialDetails } from './CaseEssentialDetails';
-import type { CaseEssentialDetailsProps } from './types';
+// type import removed:  CaseEssentialDetailsProps  from './types';
 import { createTrpcWrapper } from '@/test/utils';
 
-const mockCaseData: CaseEssentialDetailsProps['caseData'] = {
+const mockCaseData = {
   customer: { id: '1', firstName: 'Acme', lastName: 'Corp' },
   customerId: '1',
   priority: 'MEDIUM',
@@ -79,7 +79,7 @@ const mockUsers = [
   },
 ];
 
-const meta: Meta<typeof CaseEssentialDetails> = {
+const meta = {
   title: 'Components/CaseDetails/CaseEssentialDetails',
   component: CaseEssentialDetails,
   decorators: [
@@ -122,16 +122,16 @@ const meta: Meta<typeof CaseEssentialDetails> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+
+export const Default = {
   args: {
     caseId: 'case-1',
     caseData: mockCaseData,
   },
 };
 
-export const Unassigned: Story = {
+export const Unassigned = {
   args: {
     caseId: 'case-2',
     caseData: {
@@ -142,7 +142,7 @@ export const Unassigned: Story = {
   },
 };
 
-export const RecentlyCreated: Story = {
+export const RecentlyCreated = {
   args: {
     caseId: 'case-3',
     caseData: {

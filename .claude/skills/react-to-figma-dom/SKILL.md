@@ -21,7 +21,7 @@ End-to-end pipeline that converts a React application's components into Figma. U
 | `storybookUrl` | `http://localhost:6006` | Storybook URL (must be running for Phase 6) |
 | `devServerUrl` | `http://localhost:5173` | Dev server URL (for page screenshots in Phase F) |
 | `figmaFileKey` | from `.env` or config | Target Figma file key |
-| `pipelineDir` | `.temp/react-to-figma/` | Root output directory |
+| `pipelineDir` | `.temp/react-to-figma-dom/` | Root output directory |
 | `skillDir` | `.claude/skills/react-to-figma-dom/` | This skill's directory |
 
 ## Pipeline Overview
@@ -123,7 +123,7 @@ Launch each phase as a subagent in sequence:
 │   ├── 3-prompt.merge-file-and-app-discoveries.md
 │   ├── 4-prompt.extract-props-and-children-for-a-component.md
 │   ├── 5-prompt.generate-build-order.md
-│   └── 6-prompt.generate-pages-manifest.md
+│   └── (pages.json queried on demand via scripts/query-pages.js)
 │
 ├── 2-extract-design-tokens/
 │   ├── prompt.md
@@ -149,7 +149,7 @@ Launch each phase as a subagent in sequence:
 ├── 7-generate-build-scripts/
 │   ├── prompt.md                                          orchestrator
 │   ├── 1-prompt.diff-and-classify-for-a-component.md      calls script + resolves NEEDS_REVIEW
-│   ├── 2-prompt.preprocess-for-a-component.md             calls script → IR + build-script.js
+│   ├── 2-prompt.generate-build-scripts-for-all-components.md  batch: IR + build-script.js for all components
 │   ├── 3-prompt.prioritize-page-variants.md               cross-ref pages.json (whole-set)
 │   └── scripts/
 │       └── classify-variants.js
@@ -219,7 +219,7 @@ Launch each phase as a subagent in sequence:
 ## Output Directory
 
 ```
-.temp/react-to-figma/
+.temp/react-to-figma-dom/
 ├── state.json                          # Phase completion tracking
 ├── component-hierarchy/
 │   ├── build-order.md

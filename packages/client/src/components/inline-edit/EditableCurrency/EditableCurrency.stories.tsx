@@ -75,7 +75,7 @@ const meta = {
       description: 'Called when editing state changes',
     },
   },
-} satisfies Meta<typeof EditableCurrency>;
+} as Meta<typeof EditableCurrency>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

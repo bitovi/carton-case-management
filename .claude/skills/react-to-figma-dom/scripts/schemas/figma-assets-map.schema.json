@@ -1,0 +1,11 @@
+{
+  "name": "figma-assets-map",
+  "description": "Asset name → Figma component node ID lookup. May be empty if no SVG assets exist.",
+  "type": "object",
+  "allowEmpty": true,
+  "valueShape": {
+    "required": {
+      "componentId": { "type": "string", "pattern": "^\\d+:\\d+$" }
+    }
+  }
+}

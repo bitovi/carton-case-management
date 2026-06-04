@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { RelationshipManagerDialog } from './RelationshipManagerDialog';
 
-const meta: Meta<typeof RelationshipManagerDialog> = {
+const meta = {
   component: RelationshipManagerDialog,
   title: 'Components/Common/RelationshipManagerDialog',
   tags: ['autodocs'],
@@ -15,7 +15,7 @@ const meta: Meta<typeof RelationshipManagerDialog> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof RelationshipManagerDialog>;
+
 
 const mockItems = [
   {
@@ -40,7 +40,7 @@ const mockItems = [
   },
 ];
 
-export const Default: Story = {
+export const Default = {
   args: {
     open: true,
     onOpenChange: () => {},
@@ -52,7 +52,7 @@ export const Default: Story = {
 };
 
 
-export const NoSelection: Story = {
+export const NoSelection = {
   args: {
     open: true,
     onOpenChange: () => {},

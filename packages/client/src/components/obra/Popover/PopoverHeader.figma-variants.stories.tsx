@@ -1,11 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { PopoverHeader } from './PopoverHeader';
 
 // # 6 Get Component Context and Implement in Figma
 // ## 6.1 Get Component Context
 // ### 6.1.2 Generate Variant Stories
 
-const meta: Meta<typeof PopoverHeader> = {
+const meta = {
   component: PopoverHeader,
   title: 'Figma Variants/PopoverHeader',
   parameters: {
@@ -23,13 +23,13 @@ const meta: Meta<typeof PopoverHeader> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof PopoverHeader>;
+
 
 // ============================================================================
 // VARIANT: WithDescription
 // ============================================================================
 
-export const WithDescription: Story = {
+export const WithDescription = {
   args: {
     title: 'Popover Title',
     description: 'This is an optional description that provides additional context.',
@@ -47,7 +47,7 @@ export const WithDescription: Story = {
 // VARIANT: WithoutDescription
 // ============================================================================
 
-export const WithoutDescription: Story = {
+export const WithoutDescription = {
   args: {
     title: 'Popover Title',
   },

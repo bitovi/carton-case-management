@@ -1,13 +1,13 @@
-import type { Meta, StoryObj } from "@storybook/react";
+// type import removed:  Meta, StoryObj  from "@storybook/react";
 
-const meta: Meta = {
+const meta = {
   title: "Figma Variants/Baseline",
 };
 
 export default meta;
 
-type Story = StoryObj;
 
-export const Blank: Story = {
+
+export const Blank = {
   render: () => <div data-rtf-baseline />,
 };

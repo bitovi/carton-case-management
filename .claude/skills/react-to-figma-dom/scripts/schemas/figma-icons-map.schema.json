@@ -1,0 +1,11 @@
+{
+  "name": "figma-icons-map",
+  "description": "Icon name → Figma component node ID lookup",
+  "type": "non-empty-object",
+  "valueShape": {
+    "required": {
+      "figmaName": { "type": "string" },
+      "componentId": { "type": "string", "pattern": "^\\d+:\\d+$" }
+    }
+  }
+}

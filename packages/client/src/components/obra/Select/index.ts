@@ -7,6 +7,7 @@ export {
   SelectGroup,
   SelectSeparator,
   SelectOverflowIndicator,
+  SelectItemIndicator,
   SelectValue,
   SelectViewport,
 } from './Select';

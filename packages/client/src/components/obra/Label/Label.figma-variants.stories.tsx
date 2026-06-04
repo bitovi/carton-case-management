@@ -1,43 +1,54 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Label } from './Label';
 
-const meta: Meta<typeof Label> = {
-  component: Label,
+const meta = {
   title: 'Figma Variants/Label',
-  tags: ['autodocs'],
+  component: Label,
   parameters: {
-    design: {
-      type: 'figma',
-      url: 'https://www.figma.com/design/MQUbIrlfuM8qnr9XZ7jc82/Obra-shadcn-ui--Carton-?node-id=103-9453&m=dev',
-    },
+    layout: 'centered',
+    chromatic: { disableSnapshot: true },
   },
-};
+} as Meta<typeof Label>;
 
 export default meta;
-type Story = StoryObj<typeof Label>;
+type Story = StoryObj<typeof meta>;
 
-/**
- * Layout: inline (default)
- * - Displays as inline-flex
- * - Allows inline text flow wrapping
- * - Respects surrounding text content
- */
-export const LayoutInline: Story = {
+export const LayoutInlineStateDefault: Story = {
   args: {
-    layout: 'inline',
     children: 'Label',
+    layout: 'inline',
   },
 };
 
-/**
- * Layout: block
- * - Displays as block element
- * - Full width behavior
- * - Starts new line, typical for form labels
- */
-export const LayoutBlock: Story = {
+export const LayoutInlineStateDisabled: Story = {
   args: {
-    layout: 'block',
     children: 'Label',
+    layout: 'inline',
   },
+  render: (args) => (
+    <div>
+      <input className="peer" disabled hidden />
+      <Label {...args} />
+    </div>
+  ),
+};
+
+export const LayoutBlockStateDefault: Story = {
+  args: {
+    children: 'Label',
+    layout: 'block',
+  },
+};
+
+export const LayoutBlockStateDisabled: Story = {
+  args: {
+    children: 'Label',
+    layout: 'block',
+  },
+  render: (args) => (
+    <div>
+      <input className="peer" disabled hidden />
+      <Label {...args} />
+    </div>
+  ),
 };

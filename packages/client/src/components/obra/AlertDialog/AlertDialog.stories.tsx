@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { fn } from '@storybook/test';
 import { AlertDialog } from './AlertDialog';
 import { Button } from '@/components/obra/Button';
 
-const meta: Meta<typeof AlertDialog> = {
+const meta = {
   component: AlertDialog,
   title: 'Obra/AlertDialog',
   tags: ['autodocs'],
@@ -31,9 +31,9 @@ const meta: Meta<typeof AlertDialog> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof AlertDialog>;
 
-export const Mobile: Story = {
+
+export const Mobile = {
   args: {
     type: 'mobile',
     title: 'Delete this?',
@@ -44,7 +44,7 @@ export const Mobile: Story = {
   },
 };
 
-export const Desktop: Story = {
+export const Desktop = {
   args: {
     type: 'desktop',
     title: 'Delete this?',
@@ -55,7 +55,7 @@ export const Desktop: Story = {
   },
 };
 
-export const WithTrigger: Story = {
+export const WithTrigger = {
   args: {
     type: 'desktop',
     title: 'Confirm action',

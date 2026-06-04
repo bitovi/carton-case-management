@@ -5,7 +5,7 @@ Scan existing Storybook stories in the codebase to discover conventions for deco
 ## Inputs
 
 - **Source root**: The project source root path (passed by parent)
-- **Output directory**: `.temp/react-to-figma/`
+- **Output directory**: `.temp/react-to-figma-dom/`
 
 ## Procedure
 
@@ -87,7 +87,7 @@ Verify the Storybook base URL (typically `http://localhost:6006`) and the iframe
 
 ### 5. Write output
 
-#### `.temp/react-to-figma/story-patterns.md`
+#### `.temp/react-to-figma-dom/story-patterns.md`
 
 ```markdown
 # Story Patterns
@@ -190,5 +190,5 @@ Story pattern discovery complete.
 - Per-story decorator patterns: {count}
 - Mocking approach: {primary approach}
 - Provider wrappers: {count unique}
-- Output: .temp/react-to-figma/story-patterns.md
+- Output: .temp/react-to-figma-dom/story-patterns.md
 ```

@@ -8,7 +8,7 @@ const meta = {
     layout: 'centered',
   },
   tags: ['autodocs'],
-} satisfies Meta<typeof FiltersTrigger>;
+} as Meta<typeof FiltersTrigger>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

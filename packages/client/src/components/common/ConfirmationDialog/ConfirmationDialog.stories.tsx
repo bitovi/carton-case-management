@@ -26,7 +26,7 @@ const meta = {
     onOpenChange: fn(),
     onConfirm: fn(),
   },
-} satisfies Meta<typeof ConfirmationDialog>;
+} as Meta<typeof ConfirmationDialog>;
 
 export default meta;
 type Story = StoryObj<typeof ConfirmationDialog>;

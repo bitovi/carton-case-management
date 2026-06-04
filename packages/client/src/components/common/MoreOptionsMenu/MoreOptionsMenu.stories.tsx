@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { Edit2, Trash2, Share2, UserCircle } from 'lucide-react';
 import { MoreOptionsMenu, MenuItem } from './MoreOptionsMenu';
 import { Button } from '@/components/obra/Button';
 
-const meta: Meta<typeof MoreOptionsMenu> = {
+const meta = {
   title: 'Components/Common/MoreOptionsMenu',
   component: MoreOptionsMenu,
   parameters: {
@@ -16,10 +16,10 @@ const meta: Meta<typeof MoreOptionsMenu> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof MoreOptionsMenu>;
 
 
-export const Default: Story = {
+
+export const Default = {
   args: {
     children: (
       <>
@@ -32,7 +32,7 @@ export const Default: Story = {
 };
 
 
-export const Active: Story = {
+export const Active = {
   args: {
     ...Default.args,
     open: true,
@@ -40,7 +40,7 @@ export const Active: Story = {
 };
 
 
-export const WithAvatarTrigger: Story = {
+export const WithAvatarTrigger = {
   args: {
     trigger: (
       <Button variant="ghost" size="small" roundness="round">
@@ -58,7 +58,7 @@ export const WithAvatarTrigger: Story = {
 };
 
 
-export const WithButtonTrigger: Story = {
+export const WithButtonTrigger = {
   args: {
     trigger: (
       <Button variant="outline" size="small">
@@ -76,7 +76,7 @@ export const WithButtonTrigger: Story = {
 };
 
 
-export const Positioning: Story = {
+export const Positioning = {
   render: () => (
     <div className="flex gap-8 p-8">
       <div>
@@ -115,7 +115,7 @@ export const Positioning: Story = {
 };
 
 
-export const CustomColors: Story = {
+export const CustomColors = {
   args: {
     children: (
       <>
@@ -133,7 +133,7 @@ export const CustomColors: Story = {
   },
 };
 
-export const ItemStates: Story = {
+export const ItemStates = {
   args: {
     children: (
       <>
@@ -147,7 +147,7 @@ export const ItemStates: Story = {
 };
 
 
-export const Interactive: Story = {
+export const Interactive = {
   render: () => (
     <MoreOptionsMenu>
       <MenuItem 

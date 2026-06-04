@@ -7,7 +7,7 @@ Uses `resolve-colors.js` to pre-compute all CSS variable values to hex/sRGB (eli
 ## Inputs
 
 - **Source root**: The project source root path (passed by parent), e.g. `packages/client/src`
-- **Output directory**: `.temp/react-to-figma/`
+- **Output directory**: `.temp/react-to-figma-dom/`
 
 ## Procedure
 
@@ -59,9 +59,9 @@ Design token extraction complete.
 - Shadows: {count}
 - Typography: {font sizes + font weights}
 - Figma map entries: {count from css-figma-map.json}
-- Output: .temp/react-to-figma/design-tokens.json
-- Output: .temp/react-to-figma/css-figma-map.json
-- Output: .temp/react-to-figma/design-tokens.md
+- Output: .temp/react-to-figma-dom/design-tokens.json
+- Output: .temp/react-to-figma-dom/css-figma-map.json
+- Output: .temp/react-to-figma-dom/design-tokens.md
 ```
 
 ## Figma Variable Collections

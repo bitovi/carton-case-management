@@ -16,10 +16,10 @@ ERROR: use_figma unavailable — {error details}
 
 ## Before You Start
 
-Read these reference files in `2-implement-in-figma/reference/`:
-1. `figma-use-rules.md` — Critical rules for every `use_figma` call
-2. `figma-gotchas.md` — Silent bugs to avoid
-3. `figma-variable-binding.md` — How to bind design tokens
+Read these reference files using `read_file`:
+1. `.claude/skills/react-to-figma-dom/legacy/6-get-component-context-and-implement-in-figma/2-implement-in-figma/reference/figma-use-rules.md` — Critical rules for every `use_figma` call
+2. `.claude/skills/react-to-figma-dom/legacy/6-get-component-context-and-implement-in-figma/2-implement-in-figma/reference/figma-gotchas.md` — Silent bugs to avoid
+3. `.claude/skills/react-to-figma-dom/legacy/6-get-component-context-and-implement-in-figma/2-implement-in-figma/reference/figma-variable-binding.md` — How to bind design tokens
 
 ## DO NOT
 
@@ -36,28 +36,51 @@ Read these reference files in `2-implement-in-figma/reference/`:
 | `failingVariants` | Array of variant names that failed verification |
 
 For each failing variant, you receive these files:
-- `{componentDir}/variants/{VariantName}/composite.png` — Side-by-side [React \| Diff \| Figma] image. VIEW this image to identify differences.
+- `{componentDir}/variants/{VariantName}/screenshot.png` — React reference screenshot (ground truth). VIEW this image.
+- `{componentDir}/variants/{VariantName}/figma.png` — Figma screenshot of the built variant. VIEW this image.
+- `{componentDir}/variants/{VariantName}/diff.png` — Pixel diff highlighting differences in red. VIEW this image.
+- `{componentDir}/variants/{VariantName}/composite.png` — Side-by-side [React | Diff | Figma] (lower resolution, use individual images above for diagnosis)
 - `{componentDir}/variants/{VariantName}/comparison.json` — Match percentage and stats
 - `{componentDir}/variants/{VariantName}/build-script.js` — The code that built this variant
 - `{componentDir}/variants/{VariantName}/dom.json` — Ground truth DOM data
+- `{componentDir}/variants/{VariantName}/figma-nodes.json` — **Actual Figma node tree** with IDs, types, and layout properties
 
 ## Output
 
 - Updated Figma nodes via `use_figma` calls
-- Updated `{componentDir}/figma-result.md` if node IDs changed
+- Updated `{componentDir}/figma-result.json` if node IDs changed
 
 ## Procedure
+
+### 0. Read the Figma node tree
+
+For each variant in `failingVariants`, **READ** `{componentDir}/variants/{VariantName}/figma-nodes.json` BEFORE writing any `use_figma` code.
+
+This file contains the actual Figma node tree with exact IDs and types. Use it to:
+- Reference nodes by their real `id` (e.g., `figma.getNodeById('750:22')`)
+- Know which nodes are containers vs. leaf nodes
+- Navigate to the correct child by type/name instead of guessing indices
+
+**Critical type rules:**
+- **TEXT** nodes: NO `.children`, `.layoutMode`, `.itemSpacing`, or any layout/sizing properties
+- **VECTOR** nodes: NO `.children`
+- Only **FRAME**, **COMPONENT**, **INSTANCE**, **GROUP**, **COMPONENT_SET** have `.children`
+- Always null-check before indexing: `if (node.children && node.children[N]) { ... }`
+- Use `figma.getNodeById('{exactId}')` with IDs from this file — do NOT guess IDs or index blindly into `.children`
 
 ### 1. Diagnose issues from diff images
 
 For each variant in `failingVariants`:
 
-1. **VIEW** `{componentDir}/variants/{VariantName}/composite.png` — the composite shows React reference (left), pixel diff with red regions (center), and Figma result (right)
+1. **VIEW all 3 images separately** — viewing them as individual images gives much better diagnostic accuracy than the composite alone:
+   - `{componentDir}/variants/{VariantName}/screenshot.png` — React reference (ground truth)
+   - `{componentDir}/variants/{VariantName}/figma.png` — Figma screenshot (what was built)
+   - `{componentDir}/variants/{VariantName}/diff.png` — Pixel diff (red = differences)
 2. **Read** `{componentDir}/variants/{VariantName}/comparison.json` — get match percentage and stats
 3. For each red region in the diff, identify:
    - Which visual element? (background, border, text, icon, spacing, shadow)
-   - What does React show? (left panel)
-   - What does Figma show instead? (right panel)
+   - What does React show? (screenshot.png)
+   - What does Figma show instead? (figma.png)
    - Which Figma node is responsible?
 
 ### 2. Determine if issues are in IR/codegen or Figma execution
@@ -121,9 +144,9 @@ variant.appendChild(inst);
 
 **c) Group fixes** — apply all fixes to the same variant in one `use_figma` call when possible.
 
-### 4. Update figma-result.json and figma-result.md
+### 4. Update figma-result.json
 
-If any node IDs changed (e.g., child recreated), update both `{componentDir}/figma-result.json` and `{componentDir}/figma-result.md`.
+If any node IDs changed (e.g., child recreated), update `{componentDir}/figma-result.json` with the new node IDs.
 
 ## Error Handling
 

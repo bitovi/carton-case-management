@@ -1,11 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { ComponentProps, useState } from 'react';
 import { Dialog } from './Dialog';
 import { DialogHeader } from './DialogHeader/DialogHeader';
 import { DialogFooter } from './DialogFooter/DialogFooter';
 import { Button } from '@/components/obra/Button';
 
-const meta: Meta<typeof Dialog> = {
+const meta = {
   component: Dialog,
   title: 'Obra/Dialog',
   tags: ['autodocs'],
@@ -18,7 +18,7 @@ const meta: Meta<typeof Dialog> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Dialog>;
+
 
 const DialogWrapper = ({ children, ...props }: Omit<ComponentProps<typeof Dialog>, 'open' | 'onOpenChange'>) => {
   const [open, setOpen] = useState(false);
@@ -33,7 +33,7 @@ const DialogWrapper = ({ children, ...props }: Omit<ComponentProps<typeof Dialog
   );
 };
 
-export const Desktop: Story = {
+export const Desktop = {
   render: (args) => <DialogWrapper {...args} />,
   args: {
     type: 'Desktop',
@@ -48,7 +48,7 @@ export const Desktop: Story = {
   },
 };
 
-export const DesktopScrollable: Story = {
+export const DesktopScrollable = {
   render: (args) => <DialogWrapper {...args} />,
   args: {
     type: 'Desktop Scrollable',
@@ -85,7 +85,7 @@ export const DesktopScrollable: Story = {
   },
 };
 
-export const Mobile: Story = {
+export const Mobile = {
   render: (args) => <DialogWrapper {...args} />,
   args: {
     type: 'Mobile',
@@ -100,7 +100,7 @@ export const Mobile: Story = {
   },
 };
 
-export const MobileFullScreenScrollable: Story = {
+export const MobileFullScreenScrollable = {
   render: (args) => <DialogWrapper {...args} />,
   args: {
     type: 'Mobile Full Screen Scrollable',
@@ -132,7 +132,7 @@ export const MobileFullScreenScrollable: Story = {
   },
 };
 
-export const WithCustomContent: Story = {
+export const WithCustomContent = {
   render: (args) => <DialogWrapper {...args} />,
   args: {
     type: 'Desktop',

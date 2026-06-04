@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { http, HttpResponse } from 'msw';
 import { TrpcProvider } from '@/lib/trpc';
@@ -40,7 +40,7 @@ const mockCases = [
   },
 ];
 
-const meta: Meta<typeof CaseList> = {
+const meta = {
   title: 'Components/CaseList',
   component: CaseList,
   parameters: {
@@ -74,9 +74,9 @@ const meta: Meta<typeof CaseList> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+
+export const Default = {
   decorators: [
     (Story) => (
       <MemoryRouter>
@@ -86,7 +86,7 @@ export const Default: Story = {
   ],
 };
 
-export const Loading: Story = {
+export const Loading = {
   decorators: [
     (Story) => (
       <MemoryRouter>
@@ -118,7 +118,7 @@ export const Loading: Story = {
   },
 };
 
-export const Empty: Story = {
+export const Empty = {
   decorators: [
     (Story) => (
       <MemoryRouter>
@@ -148,7 +148,7 @@ export const Empty: Story = {
   },
 };
 
-export const WithActiveCase: Story = {
+export const WithActiveCase = {
   decorators: [
     (Story) => (
       <MemoryRouter initialEntries={['/cases/2']}>

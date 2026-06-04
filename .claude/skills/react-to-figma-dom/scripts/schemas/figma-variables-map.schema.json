@@ -1,0 +1,11 @@
+{
+  "name": "figma-variables-map",
+  "description": "CSS variable/class name → Figma variable ID lookup",
+  "type": "non-empty-object",
+  "valueShape": {
+    "required": {
+      "figmaPath": { "type": "string" },
+      "variableId": { "type": "string", "pattern": "^VariableID:\\d+:\\d+$" }
+    }
+  }
+}

@@ -8,68 +8,91 @@ const meta = {
     layout: 'centered',
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof FiltersTrigger>;
+} as Meta<typeof FiltersTrigger>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const SelectedFalseStateDefault: Story = {
+export const SelectedFalseActiveFiltersNoneStateDefault: Story = {
   args: {
-    selected: false,
     activeCount: 0,
+    selected: false,
   },
 };
 
-export const SelectedFalseStateHover: Story = {
+export const SelectedFalseActiveFiltersNoneStateHover: Story = {
   args: {
-    selected: false,
     activeCount: 0,
+    selected: false,
   },
   play: async ({ canvasElement }) => {
     const button = canvasElement.querySelector('button');
     if (button) {
       button.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      button.classList.add('hover');
     }
   },
 };
 
-export const SelectedTrueStateDefault: Story = {
+export const SelectedFalseActiveFiltersHasFiltersStateDefault: Story = {
   args: {
-    selected: true,
-    activeCount: 0,
-  },
-};
-
-export const SelectedTrueStateHover: Story = {
-  args: {
-    selected: true,
-    activeCount: 0,
-  },
-  play: async ({ canvasElement }) => {
-    const button = canvasElement.querySelector('button');
-    if (button) {
-      button.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
-    }
-  },
-};
-
-export const ActiveCountOne: Story = {
-  args: {
-    selected: false,
     activeCount: 1,
+    selected: false,
   },
 };
 
-export const ActiveCountThree: Story = {
+export const SelectedFalseActiveFiltersHasFiltersStateHover: Story = {
   args: {
+    activeCount: 1,
     selected: false,
+  },
+  play: async ({ canvasElement }) => {
+    const button = canvasElement.querySelector('button');
+    if (button) {
+      button.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      button.classList.add('hover');
+    }
+  },
+};
+
+export const SelectedTrueActiveFiltersNoneStateDefault: Story = {
+  args: {
+    activeCount: 0,
+    selected: true,
+  },
+};
+
+export const SelectedTrueActiveFiltersNoneStateHover: Story = {
+  args: {
+    activeCount: 0,
+    selected: true,
+  },
+  play: async ({ canvasElement }) => {
+    const button = canvasElement.querySelector('button');
+    if (button) {
+      button.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      button.classList.add('hover');
+    }
+  },
+};
+
+export const SelectedTrueActiveFiltersHasFiltersStateDefault: Story = {
+  args: {
     activeCount: 3,
+    selected: true,
   },
 };
 
-export const ActiveCountLarge: Story = {
+export const SelectedTrueActiveFiltersHasFiltersStateHover: Story = {
   args: {
-    selected: false,
-    activeCount: 99,
+    activeCount: 3,
+    selected: true,
+  },
+  play: async ({ canvasElement }) => {
+    const button = canvasElement.querySelector('button');
+    if (button) {
+      button.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      button.classList.add('hover');
+    }
   },
 };

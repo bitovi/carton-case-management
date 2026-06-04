@@ -1,11 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { MemoryRouter } from 'react-router-dom';
 import { http, HttpResponse } from 'msw';
 import { TrpcProvider } from '@/lib/trpc';
 import { CaseInformation } from './CaseInformation';
-import type { CaseInformationProps } from './types';
+// type import removed:  CaseInformationProps  from './types';
 
-const mockCaseData: CaseInformationProps['caseData'] = {
+const mockCaseData = {
   id: 'case-123',
   title: 'Customer Login Issue',
   status: 'IN_PROGRESS' as const,
@@ -14,7 +14,7 @@ const mockCaseData: CaseInformationProps['caseData'] = {
   createdAt: new Date('2024-01-15T10:00:00Z').toISOString(),
 };
 
-const meta: Meta<typeof CaseInformation> = {
+const meta = {
   title: 'Components/CaseDetails/CaseInformation',
   component: CaseInformation,
   parameters: {
@@ -46,16 +46,16 @@ const meta: Meta<typeof CaseInformation> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+
+export const Default = {
   args: {
     caseId: '1',
     caseData: mockCaseData,
   },
 };
 
-export const TodoStatus: Story = {
+export const TodoStatus = {
   args: {
     caseId: '1',
     caseData: {
@@ -65,7 +65,7 @@ export const TodoStatus: Story = {
   },
 };
 
-export const CompletedStatus: Story = {
+export const CompletedStatus = {
   args: {
     caseId: '1',
     caseData: {
@@ -77,7 +77,7 @@ export const CompletedStatus: Story = {
   },
 };
 
-export const LongDescription: Story = {
+export const LongDescription = {
   args: {
     caseId: '1',
     caseData: {

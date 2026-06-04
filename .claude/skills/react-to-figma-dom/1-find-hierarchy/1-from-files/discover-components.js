@@ -13,7 +13,7 @@
  * Usage:
  *   node discover-components.js \
  *     --source-root packages/client/src \
- *     --output-dir .temp/react-to-figma/component-hierarchy/from-files \
+ *     --output-dir .temp/react-to-figma-dom/component-hierarchy/from-files \
  *     [--ui-pattern "/ui/"] \
  *     [--exclude "*.test.*,*.spec.*,*.stories.*,*.d.ts"]
  *

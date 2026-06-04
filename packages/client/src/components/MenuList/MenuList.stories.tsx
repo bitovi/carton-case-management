@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { BrowserRouter } from 'react-router-dom';
 import { Home, Settings, Users } from 'lucide-react';
 import { MenuList } from './MenuList';
 
-const meta: Meta<typeof MenuList> = {
+const meta = {
   component: MenuList,
   tags: ['autodocs'],
   decorators: [
@@ -16,7 +16,7 @@ const meta: Meta<typeof MenuList> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof MenuList>;
+
 
 const mockItems = [
   { id: 'home', label: 'Home', path: '/', icon: <Home size={20} /> },
@@ -24,7 +24,7 @@ const mockItems = [
   { id: 'users', label: 'Users', path: '/users', icon: <Users size={20} /> },
 ];
 
-export const Desktop: Story = {
+export const Desktop = {
   args: {
     items: mockItems,
   },
@@ -35,7 +35,7 @@ export const Desktop: Story = {
   },
 };
 
-export const Mobile: Story = {
+export const Mobile = {
   args: {
     items: mockItems,
   },
@@ -46,13 +46,13 @@ export const Mobile: Story = {
   },
 };
 
-export const SingleItem: Story = {
+export const SingleItem = {
   args: {
     items: [{ id: 'home', label: 'Home', path: '/', icon: <Home size={20} /> }],
   },
 };
 
-export const WithActiveItem: Story = {
+export const WithActiveItem = {
   args: {
     items: mockItems.map((item, idx) => ({
       ...item,

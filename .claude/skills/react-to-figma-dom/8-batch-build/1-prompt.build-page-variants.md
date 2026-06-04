@@ -6,7 +6,7 @@ Build only the variants that appear in page views, processing components in buil
 
 | Variable | Source | Description |
 |----------|--------|-------------|
-| `pipelineDir` | `.temp/react-to-figma/` | Root output directory |
+| `pipelineDir` | `.temp/react-to-figma-dom/` | Root output directory |
 | `skillDir` | `.claude/skills/react-to-figma-dom/8-batch-build/` | This phase's directory |
 | `fileKey` | env/config | Figma file key |
 | `parentFrameId` | Phase 5 output | Figma container frame ID |
@@ -17,6 +17,17 @@ Required files:
 - `{pipelineDir}/built-components.json` — starts empty, grows as components are built
 
 ## Procedure
+
+### 0. Pre-flight: Validate Phase 5 outputs
+
+Before building anything, validate that Phase 5 map files contain real Figma IDs:
+
+```bash
+node .claude/skills/react-to-figma-dom/scripts/validate-phase5-outputs.js \
+  --pipeline-dir {pipelineDir}
+```
+
+If the script exits with code 1 (invalid), **STOP**. Report: "Phase 5 outputs contain invalid Figma IDs (e.g., placeholder strings instead of real node IDs). Re-run Phase 5 before attempting Phase D." Do NOT proceed to step 1.
 
 ### 1. Load manifest and build order
 

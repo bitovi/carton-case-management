@@ -13,10 +13,10 @@
  *
  * Usage:
  *   node classify-variants.js \
- *     --variants-md .temp/react-to-figma/components/Badge/variants.md \
- *     --variant-diffs .temp/react-to-figma/components/Badge/variant-diffs.md \
- *     --capture-manifest .temp/react-to-figma/components/Badge/variants/capture-manifest.json \
- *     --output .temp/react-to-figma/components/Badge/figma-variants.json
+ *     --variants-md .temp/react-to-figma-dom/components/Badge/variants.md \
+ *     --variant-diffs .temp/react-to-figma-dom/components/Badge/variant-diffs.md \
+ *     --capture-manifest .temp/react-to-figma-dom/components/Badge/variants/capture-manifest.json \
+ *     --output .temp/react-to-figma-dom/components/Badge/figma-variants.json
  */
 
 const fs = require("fs");
@@ -54,12 +54,31 @@ const failedVariants = new Set(
 
 function parseAxes(md) {
   const axes = [];
+  // Updated regex to capture multi-word axis names with optional spaces
   const axisRegex =
-    /\|\s*(\w+)\s*\|\s*([^|]+)\s*\|\s*([^|]*)\s*\|\s*([^|]*)\s*\|/g;
+    /\|\s*([^|]+?)\s*\|\s*([^|]+)\s*\|\s*([^|]*)\s*\|\s*([^|]*)\s*\|/g;
   let match;
   let headerSkipped = false;
+  let inVariantSection = false;
+  let sectionEnded = false;
 
   for (const line of md.split("\n")) {
+    // Check if we're entering the variant axes section
+    if (line.includes("Variant Axes")) {
+      inVariantSection = true;
+      headerSkipped = false;
+      continue;
+    }
+    
+    // Check if the section has ended (next ## header)
+    if (inVariantSection && line.match(/^##\s+/) && !line.includes("Variant Axes")) {
+      sectionEnded = true;
+      break;
+    }
+    
+    if (!inVariantSection) continue;
+    if (sectionEnded) break;
+
     if (line.includes("---")) {
       headerSkipped = true;
       continue;
@@ -74,10 +93,11 @@ function parseAxes(md) {
         .split(",")
         .map((v) => v.trim())
         .filter(Boolean);
-      const defaultVal = match[3].trim() || values[0];
-      const reactSource = match[4].trim();
+      const defaultVal = values[0]; // Default is the first value
+      const reactSource = match[3].trim(); // Source column
+      // match[4] is Independence/notes column - not used here
 
-      if (axis && values.length > 0) {
+      if (axis && values.length > 0 && axis !== "Axis") {
         axes.push({ axis, values, default: defaultVal, reactSource });
       }
     }
@@ -85,6 +105,60 @@ function parseAxes(md) {
   }
 
   return axes;
+}
+
+function parseComponentProperties(md) {
+  const properties = [];
+  // Parse Component Properties section with Figma Type indicators
+  const propRegex = /\|\s*([^|]+?)\s*\|\s*(BOOLEAN|TEXT|INSTANCE)\s*\|\s*([^|]*)\s*\|\s*([^|]*)\s*\|\s*([^|]*)\s*\|/g;
+  let match;
+  let headerSkipped = false;
+  let inPropertiesSection = false;
+  let sectionEnded = false;
+
+  for (const line of md.split("\n")) {
+    // Check if we're entering the component properties section
+    if (line.includes("Component Properties")) {
+      inPropertiesSection = true;
+      headerSkipped = false;
+      continue;
+    }
+    
+    // Check if the section has ended (next ## header)
+    if (inPropertiesSection && line.match(/^##\s+/) && !line.includes("Component Properties")) {
+      sectionEnded = true;
+      break;
+    }
+    
+    if (!inPropertiesSection) continue;
+    if (sectionEnded) break;
+
+    if (line.includes("---")) {
+      headerSkipped = true;
+      continue;
+    }
+    if (!headerSkipped) continue;
+
+    match = propRegex.exec(line);
+    if (match) {
+      const property = match[1].trim();
+      const figmaType = match[2].trim();
+      const defaultVal = match[3].trim();
+      const controlledNode = match[4].trim();
+
+      if (property && figmaType && property !== "Property") {
+        properties.push({
+          property,
+          figmaType,
+          default: defaultVal || false,
+          controlledNode,
+        });
+      }
+    }
+    propRegex.lastIndex = 0;
+  }
+
+  return properties;
 }
 
 function parseVariantFolders(md) {
@@ -114,15 +188,31 @@ function parseVisualGroups(diffsMd) {
 
 function parsePairVerdicts(diffsMd) {
   const pairs = [];
-  const pairRegex = /(\S+)\s+vs\s+(\S+)\s*[:\-–]\s*(\w+)/gi;
-  let match;
-  while ((match = pairRegex.exec(diffsMd))) {
-    pairs.push({
-      a: match[1].trim(),
-      b: match[2].trim(),
-      verdict: match[3].trim().toUpperCase(),
-    });
+  const lines = diffsMd.split('\n');
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    // Match "### Variant A vs Variant B" format
+    const pairMatch = line.match(/###\s+(.+?)\s+vs\s+(.+?)$/);
+    if (pairMatch) {
+      const a = pairMatch[1].trim();
+      const b = pairMatch[2].trim();
+      
+      // Look for the verdict in the next line
+      if (i + 1 < lines.length) {
+        const verdictLine = lines[i + 1];
+        const verdictMatch = verdictLine.match(/\*?\*?Verdict\*?\*?\s*[:\-–]\s*(\w+)/i);
+        if (verdictMatch) {
+          pairs.push({
+            a: a,
+            b: b,
+            verdict: verdictMatch[1].trim().toUpperCase(),
+          });
+        }
+      }
+    }
   }
+  
   return pairs;
 }
 
@@ -184,13 +274,22 @@ function classifyAxis(axis, pairs, allVariantNames) {
 }
 
 const axes = parseAxes(variantsMd);
+const componentPropertiesFromMd = parseComponentProperties(variantsMd);
 const visualGroups = parseVisualGroups(variantDiffs);
 const pairs = parsePairVerdicts(variantDiffs);
 const variantFolders = parseVariantFolders(variantsMd);
 
-const allVariantNames = Object.keys(variantFolders).filter(
-  (name) => !failedVariants.has(name)
-);
+// Get variant names from capture-manifest instead of from variant folder regex
+const allVariantNames = (captureManifest.captured || [])
+  .filter((item) => item.status === "ok" && !failedVariants.has(item.variant))
+  .map((item) => item.variant);
+
+// If capture-manifest is empty, fall back to variantFolders
+if (allVariantNames.length === 0) {
+  allVariantNames.push(
+    ...Object.keys(variantFolders).filter((name) => !failedVariants.has(name))
+  );
+}
 
 const componentName =
   path.basename(path.dirname(outputPath)) ||
@@ -236,6 +335,16 @@ for (const axis of axes) {
       reactSource: axis.reactSource,
     });
   }
+}
+
+// Add component properties that are defined in the "Component Properties" section
+for (const prop of componentPropertiesFromMd) {
+  componentProperties.push({
+    property: prop.property,
+    figmaType: prop.figmaType,
+    default: prop.default === "true" || prop.default === "false" ? prop.default === "true" : false,
+    controlledNode: prop.controlledNode,
+  });
 }
 
 const variantFolderMap = {};

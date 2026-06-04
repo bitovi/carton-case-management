@@ -7,8 +7,8 @@ Analyze one React component to extract its props interface and all child compone
 - **Component name**: PascalCase name (e.g., `Sidebar`)
 - **File path**: Path to the component source file (e.g., `src/components/Sidebar/Sidebar.tsx`)
 - **Source type**: `project`, `ui-library`, or `npm`
-- **Output directory**: `.temp/react-to-figma/components/{ComponentName}/`
-- **Barrel map**: Contents of `.temp/react-to-figma/component-hierarchy/barrel-map.md` (for resolving import aliases)
+- **Output directory**: `.temp/react-to-figma-dom/components/{ComponentName}/`
+- **Barrel map**: Contents of `.temp/react-to-figma-dom/component-hierarchy/barrel-map.md` (for resolving import aliases)
 
 ## Procedure
 
@@ -35,7 +35,7 @@ For each prop, record:
 | **default** | Default value if destructured with `= defaultVal` |
 | **slot** | `yes` if type is `ReactNode`, `ReactElement`, `ComponentType`, or a function returning JSX |
 
-Write to `.temp/react-to-figma/components/{ComponentName}/props.md`:
+Write to `.temp/react-to-figma-dom/components/{ComponentName}/props.md`:
 
 ```markdown
 # {ComponentName} Props
@@ -103,7 +103,7 @@ For each child component found, determine:
 
 ### 4. Write `analysis.md`
 
-Write to `.temp/react-to-figma/components/{ComponentName}/analysis.md`:
+Write to `.temp/react-to-figma-dom/components/{ComponentName}/analysis.md`:
 
 ```markdown
 # {ComponentName} Analysis
@@ -149,5 +149,5 @@ Analyzed: {ComponentName}
 - Props: {count} props ({count} required, {count} slots)
 - Children: {count} rendered ({count} conditional, {count} lists)
 - Leaf: {true|false}
-- Output: .temp/react-to-figma/components/{ComponentName}/
+- Output: .temp/react-to-figma-dom/components/{ComponentName}/
 ```

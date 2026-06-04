@@ -16,7 +16,7 @@ const meta = {
     layout: 'centered',
     chromatic: { disableSnapshot: true },
   },
-} satisfies Meta<typeof Link>;
+} as Meta<typeof Link>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

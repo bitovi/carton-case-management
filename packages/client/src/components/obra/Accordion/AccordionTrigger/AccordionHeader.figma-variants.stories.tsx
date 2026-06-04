@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
 import { AccordionTrigger } from './AccordionTrigger';
 
-const meta: Meta<typeof AccordionTrigger> = {
+const meta = {
   title: 'Figma Variants/AccordionHeader',
   component: AccordionTrigger,
   parameters: {
@@ -26,23 +26,23 @@ const meta: Meta<typeof AccordionTrigger> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
-export const OpenClosedInteractionDefault: Story = {
+
+export const OpenClosedInteractionDefault = {
   args: {
     children: 'Section Title',
     defaultValue: undefined,
   },
 };
 
-export const OpenOpenInteractionDefault: Story = {
+export const OpenOpenInteractionDefault = {
   args: {
     children: 'Section Title',
     defaultValue: 'item-1',
   },
 };
 
-export const OpenClosedInteractionFocus: Story = {
+export const OpenClosedInteractionFocus = {
   args: {
     children: 'Section Title',
     defaultValue: undefined,
@@ -55,7 +55,7 @@ export const OpenClosedInteractionFocus: Story = {
   },
 };
 
-export const OpenOpenInteractionFocus: Story = {
+export const OpenOpenInteractionFocus = {
   args: {
     children: 'Section Title',
     defaultValue: 'item-1',

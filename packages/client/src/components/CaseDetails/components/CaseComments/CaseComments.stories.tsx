@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { MemoryRouter } from 'react-router-dom';
 import { http, HttpResponse } from 'msw';
 import { TrpcProvider } from '@/lib/trpc';
@@ -41,7 +41,7 @@ const mockCaseData = {
   ],
 };
 
-const meta: Meta<typeof CaseComments> = {
+const meta = {
   title: 'Components/CaseDetails/CaseComments',
   component: CaseComments,
   parameters: {
@@ -79,15 +79,15 @@ const meta: Meta<typeof CaseComments> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+
+export const Default = {
   args: {
     caseData: mockCaseData,
   },
 };
 
-export const NoComments: Story = {
+export const NoComments = {
   args: {
     caseData: {
       ...mockCaseData,
@@ -96,7 +96,7 @@ export const NoComments: Story = {
   },
 };
 
-export const ManyComments: Story = {
+export const ManyComments = {
   args: {
     caseData: {
       ...mockCaseData,

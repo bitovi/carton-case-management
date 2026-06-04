@@ -1,11 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { useState } from 'react';
 import { fn } from '@storybook/test';
 import { EditableTextarea } from './EditableTextarea';
 import { z } from 'zod';
 import { Label } from '@/components/obra/Label/Label';
 
-const meta: Meta<typeof EditableTextarea> = {
+const meta = {
   title: 'Components/inline-edit/EditableTextarea',
   component: EditableTextarea,
   parameters: {
@@ -58,14 +58,14 @@ const meta: Meta<typeof EditableTextarea> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof EditableTextarea>;
+
 
 /**
  * Default textarea field with basic value.
  * Click to enter edit mode, showing Save/Cancel text buttons.
  * Wrapped in a bordered container to demonstrate container-filling behavior.
  */
-export const Default: Story = {
+export const Default = {
   render: (args) => (
     <div className="w-96 p-4 border border-dashed border-gray-300 rounded-lg">
       <EditableTextarea {...args} />
@@ -85,7 +85,7 @@ export const Default: Story = {
  * Interactive example with stateful value.
  * Demonstrates full editing lifecycle with state persistence.
  */
-export const Interactive: Story = {
+export const Interactive = {
   args: {
     label: 'Description',
     value: '',
@@ -118,7 +118,7 @@ export const Interactive: Story = {
 /**
  * Empty value with placeholder text.
  */
-export const WithPlaceholder: Story = {
+export const WithPlaceholder = {
   args: {
     label: 'Notes',
     value: '',
@@ -132,7 +132,7 @@ export const WithPlaceholder: Story = {
 /**
  * Multi-line content showing line breaks preserved.
  */
-export const MultiLineContent: Story = {
+export const MultiLineContent = {
   args: {
     label: 'Case Summary',
     value: `Client reported issue on January 15th.
@@ -152,7 +152,7 @@ Follow-up scheduled for February 1st.`,
 /**
  * With Zod validation for minimum length.
  */
-export const WithValidation: Story = {
+export const WithValidation = {
   args: {
     label: 'Description',
     value: '',
@@ -185,7 +185,7 @@ export const WithValidation: Story = {
 /**
  * Custom validation function example.
  */
-export const CustomValidation: Story = {
+export const CustomValidation = {
   args: {
     label: 'Summary',
     value: '',
@@ -223,7 +223,7 @@ export const CustomValidation: Story = {
 /**
  * With max length constraint.
  */
-export const WithMaxLength: Story = {
+export const WithMaxLength = {
   args: {
     label: 'Brief Description',
     value: 'This is a brief description.',
@@ -238,7 +238,7 @@ export const WithMaxLength: Story = {
 /**
  * Custom minimum height for larger content areas.
  */
-export const CustomMinHeight: Story = {
+export const CustomMinHeight = {
   args: {
     label: 'Detailed Notes',
     value: 'Add detailed notes here...',
@@ -252,7 +252,7 @@ export const CustomMinHeight: Story = {
 /**
  * Read-only mode - no interaction possible.
  */
-export const ReadOnly: Story = {
+export const ReadOnly = {
   args: {
     label: 'Case Notes',
     value: 'This description is read-only and cannot be edited.',
@@ -266,7 +266,7 @@ export const ReadOnly: Story = {
 /**
  * With custom display value rendering.
  */
-export const CustomDisplayValue: Story = {
+export const CustomDisplayValue = {
   args: {
     label: 'Status Notes',
     value: 'Issue resolved, case closed.',
@@ -285,7 +285,7 @@ export const CustomDisplayValue: Story = {
 /**
  * Simulating a slow save operation.
  */
-export const SlowSave: Story = {
+export const SlowSave = {
   args: {
     label: 'Notes',
     value: 'Edit this to see the saving indicator...',
@@ -299,7 +299,7 @@ export const SlowSave: Story = {
 /**
  * Simulating a save error.
  */
-export const SaveError: Story = {
+export const SaveError = {
   args: {
     label: 'Notes',
     value: '',
@@ -341,7 +341,7 @@ export const SaveError: Story = {
 /**
  * Controlled editing mode - externally manage edit state.
  */
-export const ControlledMode: Story = {
+export const ControlledMode = {
   args: {
     label: 'Description',
     value: '',
@@ -390,7 +390,7 @@ export const ControlledMode: Story = {
 /**
  * Multiple textareas in a form layout.
  */
-export const FormExample: Story = {
+export const FormExample = {
   args: {
     label: 'Description',
     value: '',

@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { useState } from 'react';
 import { fn } from '@storybook/test';
 import { EditableDate } from './EditableDate';
 import { Label } from '@/components/obra/Label/Label';
 
-const meta: Meta<typeof EditableDate> = {
+const meta = {
   title: 'Components/inline-edit/EditableDate',
   component: EditableDate,
   parameters: {
@@ -53,14 +53,14 @@ const meta: Meta<typeof EditableDate> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof EditableDate>;
+
 
 /**
  * Default date field with basic value.
  * Click to open the calendar picker, then select a date to auto-save.
  * Wrapped in a bordered container to demonstrate container-filling behavior.
  */
-export const Default: Story = {
+export const Default = {
   render: (args) => (
     <div className="w-96 p-4 border border-dashed border-gray-300 rounded-lg">
       <EditableDate {...args} />
@@ -80,7 +80,7 @@ export const Default: Story = {
  * Interactive example with stateful value.
  * Demonstrates auto-save behavior when a date is selected.
  */
-export const Interactive: Story = {
+export const Interactive = {
   args: {
     label: 'Due Date',
     value: '',
@@ -110,7 +110,7 @@ export const Interactive: Story = {
 /**
  * Empty value with placeholder text.
  */
-export const WithPlaceholder: Story = {
+export const WithPlaceholder = {
   args: {
     label: 'Birth Date',
     value: null,
@@ -124,7 +124,7 @@ export const WithPlaceholder: Story = {
 /**
  * Custom date format display.
  */
-export const CustomFormat: Story = {
+export const CustomFormat = {
   args: {
     label: 'Event Date',
     value: '2025-12-25',
@@ -138,7 +138,7 @@ export const CustomFormat: Story = {
 /**
  * Long format display with day name.
  */
-export const LongFormat: Story = {
+export const LongFormat = {
   args: {
     label: 'Meeting Date',
     value: '2025-06-15',
@@ -152,7 +152,7 @@ export const LongFormat: Story = {
 /**
  * With custom display value rendering.
  */
-export const CustomDisplayValue: Story = {
+export const CustomDisplayValue = {
   args: {
     label: 'Deadline',
     value: '2025-01-31',
@@ -171,7 +171,7 @@ export const CustomDisplayValue: Story = {
 /**
  * Read-only mode - no interaction possible.
  */
-export const ReadOnly: Story = {
+export const ReadOnly = {
   args: {
     label: 'Created Date',
     value: '2024-06-15',
@@ -185,7 +185,7 @@ export const ReadOnly: Story = {
 /**
  * Simulating a slow save operation.
  */
-export const SlowSave: Story = {
+export const SlowSave = {
   args: {
     label: 'Due Date',
     value: '2025-01-20',
@@ -199,7 +199,7 @@ export const SlowSave: Story = {
 /**
  * Simulating a save error.
  */
-export const SaveError: Story = {
+export const SaveError = {
   args: {
     label: 'Due Date',
     value: '',
@@ -241,7 +241,7 @@ export const SaveError: Story = {
 /**
  * With validation - prevents selecting dates in the past.
  */
-export const WithValidation: Story = {
+export const WithValidation = {
   args: {
     label: 'Due Date',
     value: '',
@@ -282,7 +282,7 @@ export const WithValidation: Story = {
 /**
  * Controlled editing mode - externally manage edit state.
  */
-export const ControlledMode: Story = {
+export const ControlledMode = {
   args: {
     label: 'Due Date',
     value: '',
@@ -331,7 +331,7 @@ export const ControlledMode: Story = {
 /**
  * Multiple date fields in a form layout.
  */
-export const FormExample: Story = {
+export const FormExample = {
   args: {
     label: 'Due Date',
     value: '',

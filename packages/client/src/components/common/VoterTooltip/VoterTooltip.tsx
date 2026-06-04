@@ -6,12 +6,13 @@ export function VoterTooltip({
   type = 'up',
   children,
   trigger,
-  className
+  className,
+  __storyDefaultOpen,
 }: VoterTooltipProps) {
   const textColorClass = type === 'up' ? 'text-teal-500' : 'text-red-500';
   
   return (
-    <HoverCard trigger={trigger}>
+    <HoverCard trigger={trigger} __storyDefaultOpen={__storyDefaultOpen}>
       <div 
         className={cn(
           'w-full flex gap-0 items-start justify-start',

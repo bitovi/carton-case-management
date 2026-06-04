@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { ReactionStatistics } from './ReactionStatistics';
 
-const meta: Meta<typeof ReactionStatistics> = {
+const meta = {
   component: ReactionStatistics,
   title: 'Components/Common/ReactionStatistics',
   tags: ['autodocs'],
@@ -14,9 +14,9 @@ const meta: Meta<typeof ReactionStatistics> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof ReactionStatistics>;
 
-export const None: Story = {
+
+export const None = {
   args: {
     userVote: 'none',
     upvotes: 0,
@@ -25,7 +25,7 @@ export const None: Story = {
   name: 'UserVote: None',
 };
 
-export const Up: Story = {
+export const Up = {
   args: {
     userVote: 'up',
     upvotes: 1,
@@ -34,7 +34,7 @@ export const Up: Story = {
   name: 'UserVote: Up',
 };
 
-export const Down: Story = {
+export const Down = {
   args: {
     userVote: 'down',
     upvotes: 0,
@@ -43,12 +43,12 @@ export const Down: Story = {
   name: 'UserVote: Down',
 };
 
-export const Default: Story = {
+export const Default = {
   args: {},
   name: 'Default (None)',
 };
 
-export const HighCounts: Story = {
+export const HighCounts = {
   args: {
     userVote: 'up',
     upvotes: 42,
@@ -57,7 +57,7 @@ export const HighCounts: Story = {
   name: 'High Upvote Count',
 };
 
-export const Interactive: Story = {
+export const Interactive = {
   args: {
     userVote: 'none',
     upvotes: 5,
@@ -68,7 +68,7 @@ export const Interactive: Story = {
   name: 'Interactive',
 };
 
-export const WithVoters: Story = {
+export const WithVoters = {
   args: {
     userVote: 'up',
     upvotes: 3,
@@ -79,7 +79,7 @@ export const WithVoters: Story = {
   name: 'With Voter Tooltips',
 };
 
-export const WithManyVoters: Story = {
+export const WithManyVoters = {
   args: {
     userVote: 'up',
     upvotes: 7,

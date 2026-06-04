@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { Checkbox } from './Checkbox';
 
-const meta: Meta<typeof Checkbox> = {
+const meta = {
   component: Checkbox,
   title: 'Obra/Checkbox',
   tags: ['autodocs'],
@@ -20,62 +20,62 @@ const meta: Meta<typeof Checkbox> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Checkbox>;
 
-export const Default: Story = {
+
+export const Default = {
   args: {
     checked: false,
   },
 };
 
-export const Checked: Story = {
+export const Checked = {
   args: {
     checked: true,
   },
 };
 
-export const Indeterminate: Story = {
+export const Indeterminate = {
   args: {
     checked: 'indeterminate',
   },
 };
 
-export const UncheckedWithError: Story = {
+export const UncheckedWithError = {
   args: {
     checked: false,
     error: true,
   },
 };
 
-export const CheckedWithError: Story = {
+export const CheckedWithError = {
   args: {
     checked: true,
     error: true,
   },
 };
 
-export const UncheckedDisabled: Story = {
+export const UncheckedDisabled = {
   args: {
     checked: false,
     disabled: true,
   },
 };
 
-export const CheckedDisabled: Story = {
+export const CheckedDisabled = {
   args: {
     checked: true,
     disabled: true,
   },
 };
 
-export const IndeterminateDisabled: Story = {
+export const IndeterminateDisabled = {
   args: {
     checked: 'indeterminate',
     disabled: true,
   },
 };
 
-export const AllVariants: Story = {
+export const AllVariants = {
   render: () => (
     <div className="flex flex-col gap-6">
       <div>

@@ -4,9 +4,9 @@ Read all per-component analysis files, build a dependency graph, perform a topol
 
 ## Inputs
 
-- **Children graph** (preferred): `.temp/react-to-figma/component-hierarchy/children-graph.json` — fast-path input from `extract-children.js`
-- **Component analyses** (fallback): All `analysis.md` files in `.temp/react-to-figma/components/*/` — used when children-graph.json is not available
-- **Barrel map**: `.temp/react-to-figma/component-hierarchy/barrel-map.md`
+- **Children graph** (preferred): `.temp/react-to-figma-dom/component-hierarchy/children-graph.json` — fast-path input from `extract-children.js`
+- **Component analyses** (fallback): All `analysis.md` files in `.temp/react-to-figma-dom/components/*/` — used when children-graph.json is not available
+- **Barrel map**: `.temp/react-to-figma-dom/component-hierarchy/barrel-map.md`
 
 ## Procedure
 
@@ -22,7 +22,7 @@ Read the JSON file. For each component in `components`, extract:
 
 **Otherwise, fall back to analysis.md files**:
 
-Read every `analysis.md` file from `.temp/react-to-figma/components/*/analysis.md`.
+Read every `analysis.md` file from `.temp/react-to-figma-dom/components/*/analysis.md`.
 
 For each component, extract:
 - Component name
@@ -71,7 +71,7 @@ Within each level, sort alphabetically for stability.
 
 ### 6. Write `build-order.md`
 
-Write to `.temp/react-to-figma/component-hierarchy/build-order.md`:
+Write to `.temp/react-to-figma-dom/component-hierarchy/build-order.md`:
 
 ```markdown
 # Component Build Order
@@ -126,7 +126,7 @@ Dependencies listed after `←`.
 
 ### 7. Write `hierarchy.md`
 
-Write the Mermaid diagram to `.temp/react-to-figma/component-hierarchy/hierarchy.md`:
+Write the Mermaid diagram to `.temp/react-to-figma-dom/component-hierarchy/hierarchy.md`:
 
 ```markdown
 # Component Hierarchy
@@ -185,6 +185,6 @@ Build order complete.
 - Orphan components: {count}
 - Unresolved references: {count}
 - Outputs:
-  - .temp/react-to-figma/component-hierarchy/build-order.md
-  - .temp/react-to-figma/component-hierarchy/hierarchy.md
+  - .temp/react-to-figma-dom/component-hierarchy/build-order.md
+  - .temp/react-to-figma-dom/component-hierarchy/hierarchy.md
 ```

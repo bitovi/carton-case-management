@@ -46,7 +46,7 @@ const meta = {
   args: {
     onSave: fn(),
   },
-} satisfies Meta<typeof EditableTitle>;
+} as Meta<typeof EditableTitle>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

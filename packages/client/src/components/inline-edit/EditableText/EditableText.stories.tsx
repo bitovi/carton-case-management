@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import { useState } from 'react';
 import { EditableText } from './EditableText';
 import { z } from 'zod';
 
-const meta: Meta<typeof EditableText> = {
+const meta = {
   title: 'Components/inline-edit/EditableText',
   component: EditableText,
   parameters: {
@@ -52,13 +52,13 @@ const meta: Meta<typeof EditableText> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof EditableText>;
+
 
 /**
  * Default text field with basic value.
  * Wrapped in a bordered container to demonstrate container-filling behavior.
  */
-export const Default: Story = {
+export const Default = {
   render: (args) => (
     <div className="w-96 p-4 border border-dashed border-gray-300 rounded-lg">
       <EditableText {...args} />
@@ -77,7 +77,7 @@ export const Default: Story = {
 /**
  * Interactive example with stateful value
  */
-export const Interactive: Story = {
+export const Interactive = {
   render: function InteractiveStory() {
     const [value, setValue] = useState('Insurance Claim Dispute');
 
@@ -102,7 +102,7 @@ export const Interactive: Story = {
 /**
  * Empty value with placeholder
  */
-export const WithPlaceholder: Story = {
+export const WithPlaceholder = {
   args: {
     label: 'Description',
     value: '',
@@ -116,7 +116,7 @@ export const WithPlaceholder: Story = {
 /**
  * Email input type with validation
  */
-export const EmailField: Story = {
+export const EmailField = {
   render: function EmailStory() {
     const [value, setValue] = useState('john@example.com');
 
@@ -141,7 +141,7 @@ export const EmailField: Story = {
 /**
  * URL input type
  */
-export const UrlField: Story = {
+export const UrlField = {
   args: {
     label: 'Website',
     value: 'https://example.com',
@@ -156,7 +156,7 @@ export const UrlField: Story = {
 /**
  * Phone input type
  */
-export const PhoneField: Story = {
+export const PhoneField = {
   args: {
     label: 'Phone',
     value: '+1 (555) 123-4567',
@@ -171,7 +171,7 @@ export const PhoneField: Story = {
 /**
  * With max length constraint
  */
-export const WithMaxLength: Story = {
+export const WithMaxLength = {
   args: {
     label: 'Short Name',
     value: 'John',
@@ -186,7 +186,7 @@ export const WithMaxLength: Story = {
 /**
  * Custom display value rendering
  */
-export const CustomDisplayValue: Story = {
+export const CustomDisplayValue = {
   args: {
     label: 'Status',
     value: 'active',
@@ -205,7 +205,7 @@ export const CustomDisplayValue: Story = {
 /**
  * Read-only mode - no interaction possible
  */
-export const ReadOnly: Story = {
+export const ReadOnly = {
   args: {
     label: 'Created By',
     value: 'System Administrator',
@@ -217,7 +217,7 @@ export const ReadOnly: Story = {
 /**
  * With Zod validation
  */
-export const WithZodValidation: Story = {
+export const WithZodValidation = {
   render: function ValidationStory() {
     const [value, setValue] = useState('ab');
 
@@ -247,7 +247,7 @@ export const WithZodValidation: Story = {
 /**
  * With custom validation function
  */
-export const WithCustomValidation: Story = {
+export const WithCustomValidation = {
   render: function CustomValidationStory() {
     const [value, setValue] = useState('hello world');
 
@@ -275,7 +275,7 @@ export const WithCustomValidation: Story = {
 /**
  * Simulating save error
  */
-export const SaveError: Story = {
+export const SaveError = {
   args: {
     label: 'Field with Error',
     value: 'Original Value',
@@ -289,7 +289,7 @@ export const SaveError: Story = {
 /**
  * Controlled editing state
  */
-export const ControlledEditing: Story = {
+export const ControlledEditing = {
   render: function ControlledStory() {
     const [value, setValue] = useState('Controlled Value');
     const [isEditing, setIsEditing] = useState(false);
@@ -331,7 +331,7 @@ export const ControlledEditing: Story = {
 /**
  * Long save delay to demonstrate loading state
  */
-export const LongSave: Story = {
+export const LongSave = {
   args: {
     label: 'Slow Save Field',
     value: 'Click to edit and save',
@@ -345,7 +345,7 @@ export const LongSave: Story = {
 /**
  * Multiple text fields example
  */
-export const MultipleFields: Story = {
+export const MultipleFields = {
   render: function MultipleFieldsStory() {
     const [data, setData] = useState({
       firstName: 'John',

@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
+// type import removed:  Meta, StoryObj  from '@storybook/react';
 import * as React from 'react';
 import { Input } from './Input';
 import { Search, X, Mail } from 'lucide-react';
 
-const meta: Meta<typeof Input> = {
+const meta = {
   component: Input,
   title: 'Obra/Input',
   tags: ['autodocs'],
@@ -32,15 +32,15 @@ const meta: Meta<typeof Input> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Input>;
 
-export const Default: Story = {
+
+export const Default = {
   args: {
     placeholder: 'Enter text...',
   },
 };
 
-export const WithIcons: Story = {
+export const WithIcons = {
   render: () => (
     <div className="flex flex-col gap-4">
       <Input 
@@ -68,7 +68,7 @@ export const WithIcons: Story = {
   ),
 };
 
-export const Error: Story = {
+export const Error = {
   args: {
     error: true,
     value: 'invalid@',
@@ -76,14 +76,14 @@ export const Error: Story = {
   },
 };
 
-export const Disabled: Story = {
+export const Disabled = {
   args: {
     disabled: true,
     value: 'Read-only value',
   },
 };
 
-export const AllStates: Story = {
+export const AllStates = {
   render: () => (
     <div className="flex flex-col gap-4">
       <Input placeholder="Empty/Placeholder" />

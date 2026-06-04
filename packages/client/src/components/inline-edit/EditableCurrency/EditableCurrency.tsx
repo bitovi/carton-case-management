@@ -15,7 +15,7 @@ import { Input } from '@/components/obra/Input';
 import { BaseEditable } from '../BaseEditable';
 import { EditControls } from '../EditControls';
 import type { ZodSchema } from 'zod';
-import type { RenderEditModeProps } from '../types';
+import type { EditableState, RenderEditModeProps } from '../types';
 
 export interface EditableCurrencyProps {
   /** Label text displayed above the value */
@@ -48,6 +48,10 @@ export interface EditableCurrencyProps {
   decimalPlaces?: number;
   /** Currency symbol (defaults to $) */
   currencySymbol?: string;
+  /** @internal Story-only override — do not use in production */
+  __storyState?: EditableState;
+  /** @internal Story-only override — do not use in production */
+  __storyError?: string | null;
 }
 
 /**
@@ -199,6 +203,8 @@ export function EditableCurrency({
   validate,
   decimalPlaces = 2,
   currencySymbol = '$',
+  __storyState,
+  __storyError,
 }: EditableCurrencyProps) {
   // Combined validation: user-provided + min/max constraints
   const combinedValidate = useCallback(
@@ -259,6 +265,8 @@ export function EditableCurrency({
       onSave={onSave}
       validate={combinedValidate}
       formatValue={formatValue}
+      __storyState={__storyState}
+      __storyError={__storyError}
       renderEditMode={(props) => (
         <EditModeRenderer
           {...props}

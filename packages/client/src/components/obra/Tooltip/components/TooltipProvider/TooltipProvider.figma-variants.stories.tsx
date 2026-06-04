@@ -14,7 +14,7 @@ const meta = {
     chromatic: { disableSnapshot: true },
   },
   tags: ['autodocs'],
-} satisfies Meta<typeof TooltipProvider>;
+} as Meta<typeof TooltipProvider>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

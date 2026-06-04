@@ -12,9 +12,10 @@ export function HoverCard({
   openDelay = 700,
   closeDelay = 300,
   className,
+  __storyDefaultOpen,
 }: HoverCardProps) {
   return (
-    <HoverCardPrimitive.Root openDelay={openDelay} closeDelay={closeDelay}>
+    <HoverCardPrimitive.Root openDelay={openDelay} closeDelay={closeDelay} defaultOpen={__storyDefaultOpen}>
       <HoverCardPrimitive.Trigger asChild>{trigger}</HoverCardPrimitive.Trigger>
       <HoverCardPrimitive.Portal>
         <HoverCardPrimitive.Content
