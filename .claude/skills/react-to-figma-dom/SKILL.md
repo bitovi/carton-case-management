@@ -28,13 +28,13 @@ End-to-end pipeline that converts a React application's components into Figma. U
 
 ```
 Phase A: Discovery (folders 1-4)
-  1-find-hierarchy        → build-order.md, pages.json
+  1-find-hierarchy        → build-order.json, pages.json
   2-extract-design-tokens → design-tokens.json
   3-extract-assets        → icons, static assets
   4-discover-story-patterns → story-patterns.md
 
 Phase B: Capture & Preprocess (folders 6-7) — Storybook required for 6 only
-  6-capture-dom-from-stories → per-component: variants.md, stories, dom.json, screenshots
+  6-capture-dom-from-stories → per-component: code-variants.json, stories, dom.json, screenshots
   7-generate-build-scripts   → per-component: figma-variants.json, figma-ir.json, build-script.js
                                whole-set: page-priority-manifest.json
 
@@ -64,7 +64,7 @@ Phase D→I: Build & Fix (folder 8) — 6 passes
 Launch each phase as a subagent in sequence:
 
 1. **Find Hierarchy**: `{skillDir}/1-find-hierarchy/prompt.md`
-   - Output: `{pipelineDir}/component-hierarchy/build-order.md`, `pages.json`
+   - Output: `{pipelineDir}/component-hierarchy/build-order.json`, `pages.json`
    - Per-component: `{pipelineDir}/components/{Name}/analysis.md`, `props.md`
 
 2. **Extract Design Tokens**: `{skillDir}/2-extract-design-tokens/prompt.md`

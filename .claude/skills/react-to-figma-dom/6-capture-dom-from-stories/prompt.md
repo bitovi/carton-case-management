@@ -1,12 +1,12 @@
 # Capture DOM from Stories — Parallel Wave Orchestrator
 
-Run sub-steps 1→2→3 for ALL components from `build-order.md` using three parallel waves. After this phase completes, every component has `variants.md`, a stories file, and per-variant `dom.json` + `screenshot.png`. Storybook is no longer needed after this phase.
+Run sub-steps 1→2→3 for ALL components from `build-order.json` using three parallel waves. After this phase completes, every component has `code-variants.json`, a stories file, and per-variant `dom.json` + `screenshot.png`. Storybook is no longer needed after this phase.
 
 ## Your Role
 
 You are a **pure orchestrator**. You do NOT read sub-prompt files or gather context yourself. Your only job is:
 
-1. Read `build-order.md` to get the component list
+1. Read `build-order.json` to get the component list
 2. Launch 3 waves of parallel subagents across ALL components
 3. Check that each wave's output files exist before starting the next wave
 4. Track progress and report completion
@@ -29,13 +29,13 @@ Do NOT read sub-prompt files, component source files, screenshots, or JSON maps 
 | `storybookUrl` | `http://localhost:6006` | Storybook base URL (must be running) |
 
 Auto-discovered:
-- `buildOrder` — from `{pipelineDir}/component-hierarchy/build-order.md`
+- `buildOrder` — from `{pipelineDir}/component-hierarchy/build-order.json`
 - Per-component: `componentDir` = `{pipelineDir}/components/{componentName}/`
 
 ## Prerequisites
 
 These must exist before this phase runs:
-- `{pipelineDir}/component-hierarchy/build-order.md` (from Phase 1)
+- `{pipelineDir}/component-hierarchy/build-order.json` (from Phase 1)
 - `{pipelineDir}/story-patterns.md` (from Phase 4)
 - Per-component: `{componentDir}/analysis.md` (from Phase 1)
 - Storybook running and accessible at `{storybookUrl}`
@@ -50,11 +50,11 @@ Optional (from Phase 1 `from-app` strategy):
 
 ### 0. Read build order
 
-Read `{pipelineDir}/component-hierarchy/build-order.md`. Extract the component list — each row has `| ComponentName | sourcePath |`. Build a list of `{ name, sourcePath }` objects in build order.
+Read `{pipelineDir}/component-hierarchy/build-order.json`. Extract the component list from the `levels` array. Build a list of `{ name, sourcePath }` objects in build order (level 0 first).
 
 ### 1. Wave 1 — Identify Variants (all components in parallel)
 
-For each component, check if `{componentDir}/variants.md` already exists. Collect all components that still need variant identification.
+For each component, check if `{componentDir}/code-variants.json` already exists. Collect all components that still need variant identification.
 
 Launch **parallel subagents** — one per component that needs it:
 
@@ -62,13 +62,13 @@ Tell each subagent: "Read your prompt at `{skillDir}/1-prompt.identify-variants-
 
 - **Prompt**: `{skillDir}/1-prompt.identify-variants-for-a-component.md`
 - **Context**: component name, source path, `{componentDir}`, `{pipelineDir}`
-- **Output**: `{componentDir}/variants.md`
+- **Output**: `{componentDir}/code-variants.json`
 
-Wait for ALL subagents to complete. Verify each produced `variants.md`. Log:
+Wait for ALL subagents to complete. Verify each produced `code-variants.json`. Log:
 ```
 Wave 1 complete: Identify Variants
   Passed: {pass_count}/{total}
-  Skipped (already had variants.md): {skip_count}
+  Skipped (already had code-variants.json): {skip_count}
   Failed: {fail_list or "none"}
 ```
 
@@ -76,7 +76,7 @@ If any failed, report failures but continue with the components that passed.
 
 ### 2. Wave 2 — Generate Stories (all components in parallel)
 
-For each component that has `variants.md` (from Wave 1 or pre-existing), check if a stories file already exists. Collect all components that still need story generation.
+For each component that has `code-variants.json` (from Wave 1 or pre-existing), check if a stories file already exists. Collect all components that still need story generation.
 
 Launch **parallel subagents** — one per component that needs it:
 

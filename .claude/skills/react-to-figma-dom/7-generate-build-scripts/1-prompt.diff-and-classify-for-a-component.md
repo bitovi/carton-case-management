@@ -12,13 +12,18 @@ Compare captured DOM trees across all variants of a single component to determin
 | `skillDir` | `.claude/skills/react-to-figma-dom/7-generate-build-scripts/` | This phase's directory |
 
 Required files in `{componentDir}`:
-- `variants.md` — from Phase 6 sub-step 1
+- `code-variants.json` — from Phase 6 sub-step 1 (preferred, JSON schema)
+- `variants.md` — from Phase 6 sub-step 1 (legacy fallback)
 - `variants/` — directory with per-variant folders containing `dom.json`, `screenshot.png`
 - `variants/capture-manifest.json` — capture results
 
 ## Procedure
 
-### 1. Run diff-variants.js
+### 1. Run diff-variants.js (skip if code-variants.json exists)
+
+If `{componentDir}/code-variants.json` exists, skip this step entirely — the JSON path does not need diffs.
+
+Otherwise, run the diff script:
 
 ```bash
 node .claude/skills/react-to-figma-dom/scripts/diff-variants.js \
@@ -31,6 +36,16 @@ This produces `{componentDir}/variant-diffs.md` with:
 - Pair details for non-identical pairs
 
 ### 2. Run classify-variants.js
+
+If `{componentDir}/code-variants.json` exists (preferred path — deterministic JSON→JSON transform):
+
+```bash
+node {skillDir}/scripts/classify-variants.js \
+  --code-variants {componentDir}/code-variants.json \
+  --output {componentDir}/figma-variants.json
+```
+
+Otherwise fall back to legacy mode (requires diff step above):
 
 ```bash
 node {skillDir}/scripts/classify-variants.js \

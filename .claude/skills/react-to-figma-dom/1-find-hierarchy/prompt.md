@@ -72,7 +72,7 @@ runSubagent({
   ```bash
   echo '{"schemaVersion":"react-to-figma-components@1","discoveryMethod":"app-crawl","componentCount":0,"components":[]}' > .temp/react-to-figma-dom/component-hierarchy/from-app/components.json
   ```
-  Then run the merge script. This produces the final `components-todo.md`.
+  Then run the merge script. This produces the final `components-todo.json`.
 - Copy `from-files/barrel-map.md` → `.temp/react-to-figma-dom/component-hierarchy/barrel-map.md`
 
 Then skip to Phase 2.
@@ -114,7 +114,7 @@ runSubagent({
   mkdir -p .temp/react-to-figma-dom/component-hierarchy/from-files
   echo '{"schemaVersion":"react-to-figma-components@1","discoveryMethod":"static-analysis","componentCount":0,"components":[]}' > .temp/react-to-figma-dom/component-hierarchy/from-files/components.json
   ```
-- Run the merge script to produce `components-todo.md`.
+- Run the merge script to produce `components-todo.json`.
 - Copy `from-app/barrel-map.md` → `.temp/react-to-figma-dom/component-hierarchy/barrel-map.md`
 
 Then skip to Phase 2.
@@ -143,7 +143,7 @@ runSubagent({
 })
 ```
 
-After reconciliation, verify that `.temp/react-to-figma-dom/component-hierarchy/components-todo.md` exists and contains at least one component.
+After reconciliation, verify that `.temp/react-to-figma-dom/component-hierarchy/components-todo.json` exists and contains at least one component.
 
 ### Phase 2: Extract Children Graph (fast static analysis)
 
@@ -151,7 +151,7 @@ Run the `extract-children.js` script to build the parent-child dependency graph.
 
 ```bash
 node .claude/skills/react-to-figma-dom/1-find-hierarchy/extract-children.js \
-  --components-todo .temp/react-to-figma-dom/component-hierarchy/components-todo.md \
+  --components-todo .temp/react-to-figma-dom/component-hierarchy/components-todo.json \
   --output-dir .temp/react-to-figma \
   --source-root {sourceRoot}
 ```
@@ -188,7 +188,7 @@ runSubagent({
 
 After Phase 3 completes, read and verify the outputs:
 
-1. **`.temp/react-to-figma-dom/component-hierarchy/build-order.md`** — Confirm it exists and has at least Level 0
+1. **`.temp/react-to-figma-dom/component-hierarchy/build-order.json`** — Confirm it exists and has at least Level 0
 2. **`.temp/react-to-figma-dom/component-hierarchy/hierarchy.md`** — Confirm the Mermaid diagram is present
 
 ### Phase 5: Final Report
@@ -211,10 +211,10 @@ Warnings:
 - Unresolved references: {count or "none"}
 
 Output files:
-- .temp/react-to-figma-dom/component-hierarchy/components-todo.md (discovery checklist)
+- .temp/react-to-figma-dom/component-hierarchy/components-todo.json (discovery checklist)
 - .temp/react-to-figma-dom/component-hierarchy/barrel-map.md (re-export map)
 - .temp/react-to-figma-dom/component-hierarchy/children-graph.json (parent-child dependency graph)
-- .temp/react-to-figma-dom/component-hierarchy/build-order.md (build order — leaves first)
+- .temp/react-to-figma-dom/component-hierarchy/build-order.json (build order — leaves first)
 - .temp/react-to-figma-dom/component-hierarchy/hierarchy.md (Mermaid diagram)
 - .temp/react-to-figma-dom/components/{Name}/analysis.md (per-component children — from extract-children.js)
 - .temp/react-to-figma-dom/components/{Name}/app-variants/ (live app variant captures — from-app only)

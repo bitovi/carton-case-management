@@ -66,7 +66,7 @@ function analyzeComponent(name, componentsDir) {
   const artifacts = {
     analysis_md: fileExists(path.join(dir, 'analysis.md')),
     props_md: fileExists(path.join(dir, 'props.md')),
-    variants_md: fileExists(path.join(dir, 'variants.md')),
+    variants_md: fileExists(path.join(dir, 'code-variants.json')),
     capture_manifest: fileExists(path.join(variantsDir, 'capture-manifest.json')),
     variant_diffs_md: fileExists(path.join(dir, 'variant-diffs.md')),
     figma_variants_json: fileExists(path.join(dir, 'figma-variants.json')),
@@ -107,21 +107,14 @@ function analyzeComponent(name, componentsDir) {
 }
 
 function loadBuildOrder(pipelineDir) {
-  const buildOrderPath = path.join(pipelineDir, 'build-order.md');
+  const buildOrderPath = path.join(pipelineDir, 'build-order.json');
   if (!fs.existsSync(buildOrderPath)) return {};
 
+  const data = JSON.parse(fs.readFileSync(buildOrderPath, 'utf8'));
   const levels = {};
-  const content = fs.readFileSync(buildOrderPath, 'utf8');
-  let currentLevel = null;
-  for (const line of content.split('\n')) {
-    const levelMatch = line.match(/^## Level (\d+)/);
-    if (levelMatch) {
-      currentLevel = parseInt(levelMatch[1], 10);
-      continue;
-    }
-    const compMatch = line.match(/^- \[[ x]\] (\w+)/);
-    if (compMatch && currentLevel !== null) {
-      levels[compMatch[1]] = currentLevel;
+  for (const level of data.levels || []) {
+    for (const comp of level.components || []) {
+      levels[comp.name] = level.level;
     }
   }
   return levels;
@@ -159,7 +152,7 @@ function formatTable(results, pipelineSummary) {
   }
 
   lines.push('');
-  lines.push('Legend: A=analysis.md P=props.md V=variants.md C=figma-variants.json S=preprocess-status.json B=figma-result.json');
+  lines.push('Legend: A=analysis.md P=props.md V=code-variants.json C=figma-variants.json S=preprocess-status.json B=figma-result.json');
 
   const statusCounts = {};
   for (const r of results) {

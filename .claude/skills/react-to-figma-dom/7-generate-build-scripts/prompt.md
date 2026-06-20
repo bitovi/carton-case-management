@@ -79,22 +79,33 @@ Verify `figma-variants.json` was created.
   Build scripts: {count}
 ```
 
-### 2. Generate build scripts (batch — all components at once)
+### 2. Generate build scripts and clone batches (batch — all components at once)
 
-After ALL components have been diff-classified, run the batch build-script generator:
+After ALL components have been diff-classified, run the unified build-script + clone-batch generator for each component:
 
 ```bash
-node {skillDir}/../scripts/generate-variant-build-scripts.js \
-  --all \
-  --pipeline-dir {pipelineDir} \
-  --skill-dir {skillDir}/..
+for componentDir in {pipelineDir}/components/*/; do
+  componentName=$(basename "$componentDir")
+  if [[ -f "$componentDir/figma-variants.json" ]]; then
+    node .claude/skills/react-to-figma-dom/scripts/generate-build-and-clone-scripts.js \
+      --component-dir "$componentDir" \
+      --figma-variants "$componentDir/figma-variants.json" \
+      --pipeline-dir {pipelineDir}
+  fi
+done
 ```
 
 Add `--force` to regenerate existing IR and build scripts.
 
-This script processes every component in `{pipelineDir}/components/`, generates Figma IR and build scripts for each variant, and writes `preprocess-status.json` per component.
+This script:
+1. Generates Figma IR for every variant (via `dom-to-figma-ir.js`)
+2. Computes structural fingerprints and groups variants by structure
+3. Selects a base variant per group and generates its `build-script.js` (via `ir-to-figma-code.js`)
+4. Computes property deltas for all dependent variants relative to the base
+5. Packs deltas into `clone-batch-{group}-{batch}.js` files (< 50KB each)
+6. Writes `build-manifest.json` describing the execution order
 
-Verify that every component in build-order has a `preprocess-status.json`.
+Verify that every component has a `build-manifest.json`.
 
 ### 3. Prioritize page variants (whole-set)
 

@@ -94,9 +94,20 @@ Read `{outputDirectory}/components-classified.md`. Every component tagged with a
 ⚠️ **Use file-writing tools (create_file / write) to produce these files directly.**
 Do NOT generate scripts to write them. You have all the information from Step 2 — just write the markdown.
 
-### `components-todo.md` — the kept list
+### `components-todo.json` — the kept list
 
-Write to `{outputDirectory}/components-todo.md` using the same format as the raw file but containing only components with KEEP tags (`app-component`, `ui-wrapper`, `visual-widget`). Update the `Total:` count in the header. Keep the same section grouping (Project Components, UI Library Components, npm Components).
+Write to `{outputDirectory}/components-todo.json` containing only components with KEEP tags (`app-component`, `ui-wrapper`, `visual-widget`):
+
+```json
+{
+  "total": 42,
+  "components": [
+    { "name": "Badge", "path": "src/components/ui/badge.tsx", "sourceType": "ui-library", "tag": "ui-wrapper" },
+    { "name": "Button", "path": "src/components/ui/button.tsx", "sourceType": "ui-library", "tag": "ui-wrapper" },
+    { "name": "CaseDetails", "path": "src/components/CaseDetails/CaseDetails.tsx", "sourceType": "project", "tag": "app-component" }
+  ]
+}
+```
 
 ### `components-filtered-out.md` — the audit trail
 
@@ -130,7 +141,7 @@ Copy `barrel-map.md` from the from-files directory to the output directory (the 
 ## Verify
 
 Confirm:
-1. `components-todo.md` exists and has fewer components than `components-todo-raw.md`
+1. `components-todo.json` exists and has fewer components than `components-todo-raw.md`
 2. `components-filtered-out.md` exists and accounts for the difference
 3. No project or ui-library components were filtered out
 4. The sum of kept + filtered equals the raw total

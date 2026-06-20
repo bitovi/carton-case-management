@@ -4,7 +4,7 @@
  * extract-children.js
  *
  * Fast static extraction of parent-child component relationships.
- * Reads components-todo.md, scans each source file for PascalCase JSX elements,
+ * Reads components-todo.json, scans each source file for PascalCase JSX elements,
  * and outputs children-graph.json + minimal analysis.md per component.
  *
  * This replaces the slow per-component subagent calls (step 1.4) for the purpose
@@ -12,7 +12,7 @@
  *
  * Usage:
  *   node extract-children.js \
- *     --components-todo .temp/react-to-figma-dom/component-hierarchy/components-todo.md \
+ *     --components-todo .temp/react-to-figma-dom/component-hierarchy/components-todo.json \
  *     --output-dir .temp/react-to-figma \
  *     [--source-root packages/client/src]
  *
@@ -55,7 +55,7 @@ function printUsage() {
 Usage: node extract-children.js --components-todo <file> --output-dir <dir> [--source-root <dir>]
 
 Required:
-  --components-todo <file>  Path to components-todo.md
+  --components-todo <file>  Path to components-todo.json
   --output-dir <dir>        Pipeline output directory (e.g., .temp/react-to-figma)
 
 Optional:
@@ -65,18 +65,12 @@ Optional:
 }
 
 function parseComponentsTodo(filePath) {
-  const content = fs.readFileSync(filePath, 'utf8');
-  const components = [];
-  const lineRe = /^- \[[ x]\] (.+?) \| (.+?) \| (.+?) \| .+? \| .+$/gm;
-  let match;
-  while ((match = lineRe.exec(content)) !== null) {
-    components.push({
-      name: match[1].trim(),
-      path: match[2].trim(),
-      sourceType: match[3].trim(),
-    });
-  }
-  return components;
+  const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  return data.components.map(c => ({
+    name: c.name,
+    path: c.path,
+    sourceType: c.sourceType,
+  }));
 }
 
 function removeComments(source) {
@@ -264,7 +258,7 @@ function main() {
   const components = parseComponentsTodo(opts.componentsTodo);
 
   if (components.length === 0) {
-    console.error('Error: No components found in components-todo.md');
+    console.error('Error: No components found in components-todo.json');
     process.exit(1);
   }
 

@@ -4,24 +4,24 @@ Run the `extract-children.js` script to build a fast parent-child dependency gra
 
 ## Inputs
 
-- **componentsTodo**: Path to `components-todo.md` (from step 1.3)
+- **componentsTodo**: Path to `components-todo.json` (from step 1.3)
 - **outputDirectory**: Pipeline output directory (e.g., `.temp/react-to-figma`)
-- **sourceRoot**: Source root (e.g., `packages/client/src`) — used for context only; paths in components-todo.md are relative to project root
+- **sourceRoot**: Source root (e.g., `packages/client/src`) — used for context only; paths in components-todo.json are relative to project root
 
 ## Procedure
 
 ### 1. Verify prerequisites
 
 Confirm these files exist:
-- `{outputDirectory}/component-hierarchy/components-todo.md`
+- `{outputDirectory}/component-hierarchy/components-todo.json`
 
-If missing, return `FAIL: components-todo.md not found`.
+If missing, return `FAIL: components-todo.json not found`.
 
 ### 2. Run the extraction script
 
 ```bash
 node {skillDir}/1-find-hierarchy/extract-children.js \
-  --components-todo {outputDirectory}/component-hierarchy/components-todo.md \
+  --components-todo {outputDirectory}/component-hierarchy/components-todo.json \
   --output-dir {outputDirectory} \
   --source-root {sourceRoot}
 ```

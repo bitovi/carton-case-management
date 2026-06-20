@@ -197,81 +197,103 @@ Example: `size: sm|md|lg` × `variant: primary|secondary|outline` × `state: def
 
 Plus independent axis screenshots (e.g., `WithLeftIcon`, `WithRightIcon`, `WithBothIcons`) at the baseline dependent values.
 
-Mark representative variants with `[REP]` in `variants.md` so downstream prompts know which to prioritize for screenshots.
+Include representative variants in the `"representative"` array of `code-variants.json` so downstream prompts know which to prioritize for screenshots.
 
 **Budget cap**: If representative set still exceeds 30, prioritize prop-driven variants over interaction states.
 
-### 7. Write `variants.md`
+### 7. Write `code-variants.json`
 
-Write to `.temp/react-to-figma-dom/components/{Name}/variants.md`:
+Write to `.temp/react-to-figma-dom/components/{Name}/code-variants.json`:
 
-```markdown
-# {ComponentName} Variants
-
-## Variant Axes (Dependent)
-| Axis | Values | Source | Independence |
-|------|--------|--------|-------------|
-| Variant | primary, secondary, outline, ghost, destructive | prop: variant (CVA) | dependent |
-| Size | sm, md, lg | prop: size (CVA) | dependent |
-| State | default, hover, focus, active, disabled | CSS pseudo + prop | dependent |
-| Roundness | default, round | prop: roundness | dependent |
-
-## Component Properties (Independent)
-| Property | Figma Type | Default | Controlled Node | Independence Evidence |
-|----------|-----------|---------|----------------|----------------------|
-| Show left icon | BOOLEAN | false | leftIcon slot | No conditional classes combining variant/size with icon; icon inherits color via currentColor |
-| Left icon | INSTANCE_SWAP | placeholder | leftIcon slot | Icon component unchanged across variants |
-| Show right icon | BOOLEAN | false | rightIcon slot | Same as left icon |
-| Right icon | INSTANCE_SWAP | placeholder | rightIcon slot | Same as left icon |
-
-## Slots
-| Slot | Type | Required | Default | Classification |
-|------|------|----------|---------|---------------|
-| children | text | no | — | n/a (use placeholder text) |
-| leftIcon | ReactNode | no | — | independent → BOOLEAN + INSTANCE_SWAP |
-| rightIcon | ReactNode | no | — | independent → BOOLEAN + INSTANCE_SWAP |
-
-## Variant Combinations ({count} total, dependent axes only)
-
-### Core variants (dependent axis cross-product)
-- [ ] variant=primary, size=md, state=default
-- [ ] variant=primary, size=md, state=hover
-- [ ] variant=primary, size=md, state=focus
-- [ ] variant=primary, size=md, state=active
-- [ ] variant=primary, size=md, state=disabled
-- [ ] variant=secondary, size=md, state=default
-...
-
-### Size variants (one state per size, to show size differences)
-- [ ] variant=primary, size=sm, state=default
-- [ ] variant=primary, size=md, state=default
-- [ ] variant=primary, size=lg, state=default
-
-### Independent axis screenshots (at default dependent values)
-- [ ] variant=primary, size=md, state=default, leftIcon=true
-- [ ] variant=primary, size=md, state=default, rightIcon=true
-- [ ] variant=primary, size=md, state=default, leftIcon=true, rightIcon=true
-
-### Content state variants (if applicable)
-- [ ] state=loading
-- [ ] state=error
-- [ ] state=empty
-
-## Pruned Combinations
-{List combinations excluded and why}
-- disabled+hover: disabled overrides hover styles
-- disabled+focus: disabled overrides focus styles
+```json
+{
+  "componentName": "{ComponentName}",
+  "sourceFile": "{relative path to component source}",
+  "axes": [
+    {
+      "name": "Variant",
+      "values": ["primary", "secondary", "outline", "ghost", "destructive"],
+      "source": "prop: variant (CVA)",
+      "default": "primary",
+      "independent": false
+    },
+    {
+      "name": "Size",
+      "values": ["sm", "md", "lg"],
+      "source": "prop: size (CVA)",
+      "default": "md",
+      "independent": false
+    },
+    {
+      "name": "State",
+      "values": ["default", "hover", "focus", "active", "disabled"],
+      "source": "CSS pseudo + prop",
+      "default": "default",
+      "independent": false
+    }
+  ],
+  "slots": [
+    {
+      "name": "leftIcon",
+      "type": "ReactNode",
+      "required": false,
+      "independent": true,
+      "independenceEvidence": "No conditional classes combining variant/size with icon; icon inherits color via currentColor",
+      "figmaType": "BOOLEAN",
+      "referenceCapture": "With Left Icon",
+      "controlledNode": "leftIcon slot wrapper span"
+    },
+    {
+      "name": "rightIcon",
+      "type": "ReactNode",
+      "required": false,
+      "independent": true,
+      "independenceEvidence": "Same as left icon",
+      "figmaType": "BOOLEAN",
+      "referenceCapture": "With Right Icon",
+      "controlledNode": "rightIcon slot wrapper span"
+    }
+  ],
+  "combinations": {
+    "dependent": [
+      "Variant Primary Size Md State Default",
+      "Variant Primary Size Md State Hover",
+      "Variant Primary Size Md State Focus",
+      "..."
+    ],
+    "independent": [
+      "With Left Icon",
+      "With Right Icon",
+      "With Both Icons"
+    ]
+  },
+  "pruned": [
+    { "combo": "State Disabled + State Hover", "reason": "disabled overrides hover styles" },
+    { "combo": "State Disabled + State Focus", "reason": "disabled overrides focus styles" }
+  ],
+  "representative": ["Variant Primary Size Md State Default", "..."]
+}
 ```
+
+**Schema rules**:
+- `axes[].independent`: `false` = dependent axis (multiplied in variant grid), `true` = independent (becomes Component Property)
+- `axes[].name`: PascalCase axis name, used in variant folder names as `{Name} {Value}`
+- `axes[].default`: The default value for this axis
+- `slots[].figmaType`: One of `"BOOLEAN"` (show/hide), `"INSTANCE_SWAP"` (swap content), `"TEXT"` (editable text)
+- `slots[].referenceCapture`: Folder name under `variants/` that demonstrates this slot in its "on" state
+- `slots[].controlledNode`: Description of the DOM node that appears/disappears when this slot is toggled
+- `combinations.dependent`: Full list of variant folder names to capture (dependent axes cross-product minus pruned)
+- `combinations.independent`: List of folder names for reference captures (one per slot non-default value)
+
+**Folder naming convention**: Folder names use the pattern `{Axis} {Value} {Axis} {Value} ...` with spaces. For independent captures, use descriptive names like `With Left Icon`.
 
 ### 8. Return summary
 
 ```
 Variant identification complete: {ComponentName}
 - Dependent variant axes: {count}
-- Component properties: {count}
-- Slots: {count}
+- Component properties (independent slots): {count}
 - Total dependent combinations: {count} ({pruned_count} pruned)
 - Independent axis screenshots: {count}
-- Content states: {count}
-- Output: .temp/react-to-figma-dom/components/{Name}/variants.md
+- Output: .temp/react-to-figma-dom/components/{Name}/code-variants.json
 ```

@@ -14,7 +14,7 @@
  *     [--source-root packages/client/src]
  *
  * Outputs (written to --output-dir):
- *   - components-todo.md   Unified checklist with origin tracking (for LLM consumption)
+ *   - components-todo-raw.md   Unified checklist with origin tracking (for LLM classification step)
  *   - barrel-map.md        Copied from from-files (if it exists)
  */
 

@@ -31,12 +31,12 @@ console.log(`Found ${withVariants.length} components with variant captures\n`);
 
 for (const comp of withVariants) {
   const compDir = path.join(PIPELINE_DIR, 'components', comp);
-  const varFile = path.join(compDir, 'variants.md');
+  const codeVariantsFile = path.join(compDir, 'code-variants.json');
   const varDir = path.join(compDir, 'variants');
   
-  if (!fs.existsSync(varFile)) {
+  if (!fs.existsSync(codeVariantsFile)) {
     skipped++;
-    console.log(`⏭️  ${comp}: no variants.md`);
+    console.log(`⏭️  ${comp}: no code-variants.json`);
     continue;
   }
 
@@ -46,7 +46,7 @@ for (const comp of withVariants) {
     const manifest = path.join(varDir, 'capture-manifest.json');
     if (!fs.existsSync(manifest)) throw new Error('no manifest');
     
-    execSync(`node ${SKILL_DIR}/7-generate-build-scripts/scripts/classify-variants.js --variants-md "${varFile}" --variant-diffs "${path.join(compDir, 'variant-diffs.md')}" --capture-manifest "${manifest}" --output "${path.join(compDir, 'figma-variants.json')}"`, {stdio:'pipe'});
+    execSync(`node ${SKILL_DIR}/7-generate-build-scripts/scripts/classify-variants.js --code-variants "${codeVariantsFile}" --output "${path.join(compDir, 'figma-variants.json')}"`, {stdio:'pipe'});
 
     if (fs.existsSync(path.join(compDir, 'figma-variants.json'))) {
       passed++;

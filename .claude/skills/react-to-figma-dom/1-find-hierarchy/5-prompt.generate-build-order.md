@@ -4,31 +4,18 @@ Read all per-component analysis files, build a dependency graph, perform a topol
 
 ## Inputs
 
-- **Children graph** (preferred): `.temp/react-to-figma-dom/component-hierarchy/children-graph.json` — fast-path input from `extract-children.js`
-- **Component analyses** (fallback): All `analysis.md` files in `.temp/react-to-figma-dom/components/*/` — used when children-graph.json is not available
+- **Children graph**: `.temp/react-to-figma-dom/component-hierarchy/children-graph.json` — produced by `extract-children.js`
 - **Barrel map**: `.temp/react-to-figma-dom/component-hierarchy/barrel-map.md`
 
 ## Procedure
 
 ### 1. Read component dependencies
 
-**If `children-graph.json` exists** (preferred fast path):
-
-Read the JSON file. For each component in `components`, extract:
+Read `children-graph.json`. For each component in `components`, extract:
 - Component name (object key)
 - Source type (`sourceType` field)
 - Leaf flag (`leaf` field)
 - List of children (`children` array)
-
-**Otherwise, fall back to analysis.md files**:
-
-Read every `analysis.md` file from `.temp/react-to-figma-dom/components/*/analysis.md`.
-
-For each component, extract:
-- Component name
-- Source type (project, ui-library, npm)
-- Leaf flag
-- List of children (from the "Rendered Children" table — just the Child column)
 
 ### 2. Resolve aliases
 
@@ -69,59 +56,41 @@ Group components by **level**:
 
 Within each level, sort alphabetically for stability.
 
-### 6. Write `build-order.md`
+### 6. Write `build-order.json`
 
-Write to `.temp/react-to-figma-dom/component-hierarchy/build-order.md`:
+Write to `.temp/react-to-figma-dom/component-hierarchy/build-order.json`:
 
-```markdown
-# Component Build Order
-
-Build components from the bottom up. All dependencies at lower levels must be built before starting a level.
-
-**Total components**: {count}
-**Total levels**: {count}
-**Leaf components**: {count}
-
-## Level 0 — Leaves (build first)
-
-These components render no other project/UI components. Build these first.
-
-- [ ] Badge | src/components/ui/badge.tsx | ui-library
-- [ ] ChevronDown | lucide-react | npm
-- [ ] Input | src/components/ui/input.tsx | ui-library
-- [ ] Label | src/components/ui/label.tsx | ui-library
-
-## Level 1
-
-Dependencies listed after `←`.
-
-- [ ] Button | src/components/ui/button.tsx | ui-library ← Badge
-- [ ] FormField | src/components/common/FormField.tsx | project ← Input, Label
-- [ ] NavItem | src/components/Sidebar/NavItem.tsx | project ← ChevronDown
-
-## Level 2
-
-- [ ] Sidebar | src/components/Sidebar/Sidebar.tsx | project ← Button, NavItem
-- [ ] Header | src/components/Header/Header.tsx | project ← Button
-
-## Level 3
-
-- [ ] Layout | src/components/Layout/Layout.tsx | project ← Sidebar, Header
-
-## Level 4
-
-- [ ] App | src/App.tsx | project ← Layout
-
-## Warnings
-
-### Circular Dependencies
-{List any cycles found, or "None detected."}
-
-### Orphan Components
-{List any orphans, or "None detected."}
-
-### Unresolved References
-{List any unresolved child references, or "None detected."}
+```json
+{
+  "totalComponents": 42,
+  "totalLevels": 5,
+  "leafComponents": 12,
+  "levels": [
+    {
+      "level": 0,
+      "description": "Leaves (build first)",
+      "components": [
+        { "name": "Badge", "path": "src/components/ui/badge.tsx", "sourceType": "ui-library" },
+        { "name": "ChevronDown", "path": "lucide-react", "sourceType": "npm" },
+        { "name": "Input", "path": "src/components/ui/input.tsx", "sourceType": "ui-library" },
+        { "name": "Label", "path": "src/components/ui/label.tsx", "sourceType": "ui-library" }
+      ]
+    },
+    {
+      "level": 1,
+      "components": [
+        { "name": "Button", "path": "src/components/ui/button.tsx", "sourceType": "ui-library", "dependencies": ["Badge"] },
+        { "name": "FormField", "path": "src/components/common/FormField.tsx", "sourceType": "project", "dependencies": ["Input", "Label"] },
+        { "name": "NavItem", "path": "src/components/Sidebar/NavItem.tsx", "sourceType": "project", "dependencies": ["ChevronDown"] }
+      ]
+    }
+  ],
+  "warnings": {
+    "circularDependencies": [],
+    "orphanComponents": [],
+    "unresolvedReferences": []
+  }
+}
 ```
 
 ### 7. Write `hierarchy.md`
@@ -185,6 +154,6 @@ Build order complete.
 - Orphan components: {count}
 - Unresolved references: {count}
 - Outputs:
-  - .temp/react-to-figma-dom/component-hierarchy/build-order.md
+  - .temp/react-to-figma-dom/component-hierarchy/build-order.json
   - .temp/react-to-figma-dom/component-hierarchy/hierarchy.md
 ```

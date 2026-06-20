@@ -140,8 +140,41 @@ function hasVisualContainer(node) {
     (s['padding-right'] && s['padding-right'] !== '0px') ||
     (s['padding-bottom'] && s['padding-bottom'] !== '0px') ||
     (s['padding-left'] && s['padding-left'] !== '0px') ||
-    s['box-shadow']
+    s['box-shadow'] && s['box-shadow'] !== 'none'
   );
+}
+
+const VOID_ELEMENTS = new Set(['input', 'textarea', 'select', 'img', 'hr', 'br']);
+
+function isPositioningWrapper(node) {
+  if (!isElement(node)) return false;
+  if (node.tag !== 'div' && node.tag !== 'span') return false;
+  if (hasVisualContainer(node)) return false;
+
+  const children = node.children || [];
+  if (children.length === 0) return false;
+
+  const elementChildren = children.filter((child) => isElement(child));
+  if (elementChildren.length === 0) return false;
+
+  const nonAbsoluteChildren = elementChildren.filter((child) => {
+    const childStyles = normalizeCamelCaseToKebabCase(child.styles || {});
+    return childStyles['position'] !== 'absolute';
+  });
+
+  if (nonAbsoluteChildren.length !== 1) return false;
+  if (!VOID_ELEMENTS.has(nonAbsoluteChildren[0].tag)) return false;
+
+  return true;
+}
+
+function getPositioningWrapperChild(node) {
+  const children = node.children || [];
+  return children.find((child) => {
+    if (!isElement(child)) return false;
+    const childStyles = normalizeCamelCaseToKebabCase(child.styles || {});
+    return childStyles['position'] !== 'absolute';
+  });
 }
 
 function isTextOnlyElement(node) {
@@ -210,6 +243,19 @@ function translateNode(domNode, context, isRoot, parentStyles) {
 
   // NEW FORMAT: type field may be absent, so check for ELEMENT explicitly
   if (domNode.type && domNode.type !== 'ELEMENT' && !domNode.tag) return null;
+
+  if (isRoot && isPositioningWrapper(domNode)) {
+    const promotedChild = getPositioningWrapperChild(domNode);
+    if (promotedChild) {
+      const absoluteChildren = (domNode.children || []).filter((child) => {
+        if (!isElement(child)) return false;
+        const childStyles = normalizeCamelCaseToKebabCase(child.styles || {});
+        return childStyles['position'] === 'absolute';
+      });
+      const merged = { ...promotedChild, children: [...absoluteChildren, ...(promotedChild.children || [])] };
+      return translateNode(merged, context, true, parentStyles);
+    }
+  }
 
   const styles = normalizeCamelCaseToKebabCase(domNode.styles || {});
   const attrs = domNode.attrs || {};
@@ -514,8 +560,47 @@ function translateNode(domNode, context, isRoot, parentStyles) {
       continue;
     }
 
+    if (isElement(child) && isPositioningWrapper(child)) {
+      const promotedChild = getPositioningWrapperChild(child);
+      if (promotedChild) {
+        const translated = translateNode(promotedChild, context, false, styles);
+        if (translated) children.push(translated);
+        continue;
+      }
+    }
+
     const translated = translateNode(child, context, false, styles);
     if (translated) children.push(translated);
+  }
+
+  if (FORM_INPUT_TAGS.has(domNode.tag)) {
+    let inputText = domNode.placeholder || '';
+    if (!inputText) {
+      for (const child of (domNode.children || [])) {
+        if (child.type === 'TEXT_NODE' && child.text) {
+          inputText = child.text;
+          break;
+        }
+      }
+    }
+    if (!inputText) inputText = 'Enter value';
+    const textColor = styles['color'] || (parentStyles ? normalizeCamelCaseToKebabCase(parentStyles)['color'] : null);
+    const textFills = textColor ? (() => {
+      const resolved = resolveColor(textColor, variablesMap, reverseColorMap);
+      return resolved ? [{
+        type: 'SOLID',
+        color: resolved.color,
+        opacity: resolved.opacity,
+        variableId: resolved.variableId,
+        figmaPath: resolved.figmaPath,
+      }] : [];
+    })() : [];
+    children.push({
+      type: 'TEXT',
+      characters: inputText,
+      typography: mapTypography(styles),
+      fills: textFills,
+    });
   }
 
   const figmaNode = {
@@ -770,4 +855,8 @@ function main() {
   }
 }
 
-main();
+if (require.main === module) {
+  main();
+}
+
+module.exports = { translateNode, isPositioningWrapper, getPositioningWrapperChild, hasVisualContainer, isElement, normalizeCamelCaseToKebabCase };
