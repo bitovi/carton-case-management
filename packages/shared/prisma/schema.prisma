@@ -24,7 +24,7 @@ generator zod {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./packages/server/db/dev.db"
 }
 
 enum CaseStatus {

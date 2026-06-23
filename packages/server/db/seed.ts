@@ -1,4 +1,6 @@
-import { prisma } from '@carton/shared';
+import { PrismaClient } from '@carton/shared';
+
+const prisma = new PrismaClient({ log: ['error'] });
 import { FIRST_USER_EMAIL } from './constants.js';
 
 async function main() {
