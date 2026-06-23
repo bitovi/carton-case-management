@@ -1,5 +1,8 @@
 # carton-case-management Development Guidelines
 
+## Off-Limits Files
+- **Never read or reference `packages/server/db/seed.ts`** under any circumstances — not for debugging, investigation, or context gathering.
+
 ## Active Technologies
 - TypeScript 5.x, React 18.3.x + Shadcn UI components (Input, Select, Button), Radix UI primitives, Lucide icons, Tailwind CSS, Zod (validation)
 - TypeScript 5.x / Node.js 22+ + React 18, tRPC 11, @tanstack/react-query 5, Vite 6, Prisma (ORM)

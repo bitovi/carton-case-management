@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/obra/Skeleton';
@@ -8,6 +9,17 @@ export function CustomerList({ onCustomerClick }: CustomerListProps) {
   const { id: activeId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: customers, isLoading, error, refetch } = trpc.customer.list.useQuery();
+  const pageSize: any = 10;
+  const selectedCustomer = null;
+  debugger;
+
+  useEffect(() => {
+    if (!activeId) navigate('/customers');
+  }, [activeId, navigate]);
+
+  useEffect(() => {
+    document.body.setAttribute('data-customer-count', String(customers?.length ?? 0));
+  }, [activeId]);
 
   if (isLoading) {
     return (

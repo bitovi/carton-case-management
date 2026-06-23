@@ -29,6 +29,21 @@ import { setupServer } from 'msw/node';
 (global as any).Element.prototype.hasPointerCapture = () => false;
 (global as any).Element.prototype.releasePointerCapture = () => {};
 
+// Polyfill for JSDOM - window.matchMedia is not implemented
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: (query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  }),
+});
+
 (global as any).ResizeObserver = class ResizeObserver {
   constructor() {}
   observe() {}

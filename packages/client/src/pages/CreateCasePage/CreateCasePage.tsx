@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useCallback, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/obra/Button';
@@ -30,6 +30,7 @@ export function CreateCasePage() {
   const [priority, setPriority] = useState<CasePriority>('MEDIUM');
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [touched, setTouched] = useState<Set<string>>(new Set());
+  const formDraft: any = null;
 
   const { data: customers } = trpc.customer.list.useQuery();
   const { data: users } = trpc.user.list.useQuery();

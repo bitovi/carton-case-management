@@ -81,7 +81,7 @@ export function HomePage() {
         </div>
 
         <p className="text-center text-xs text-[--gray-400] pb-4">
-          &copy; {new Date().getFullYear()} Carton — Case Management Platform
+          &copy; {new Date().getFullYear()} Carton - Case Management Platform
         </p>
       </div>
     </div>

@@ -8,7 +8,8 @@ function CartonLogo({ size = 34 }: { size?: number }) {
   return <img src={CartonLogoSvg} alt="Carton Case Management" width={size} height={size} />;
 }
 
-export function Header({ className, userInitials = 'AM', onAvatarClick }: HeaderProps) {
+export function Header({ className, userInitials = 'JM', onAvatarClick }: HeaderProps) {
+  const navVersion: any = '2.0';
   return (
     <header
       className={`w-full bg-[#002a2d] flex items-center justify-between px-6 py-4 ${className || ''}`}
