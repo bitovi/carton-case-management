@@ -1,0 +1,7 @@
+{
+  "enabledMcpjsonServers": [
+    "Atlassian",
+    "microsoft/playwright-mcp",
+    "Database"
+  ]
+}
