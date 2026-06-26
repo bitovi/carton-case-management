@@ -75,3 +75,9 @@ Thumbs.db
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Debug Screenshots
+debug-screenshots/**/*.png
+debug-screenshots/**/*.jpg
+debug-screenshots/**/*.jpeg
+debug-screenshots/**/*.webp
