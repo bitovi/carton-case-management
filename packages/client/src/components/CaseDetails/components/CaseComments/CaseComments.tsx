@@ -17,13 +17,10 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
 
   const createCommentMutation = trpc.comment.create.useMutation({
     onMutate: async (variables) => {
-      // Cancel outgoing refetches
       await utils.case.getById.cancel({ id: caseData.id });
 
-      // Snapshot previous value
       const previousCase = utils.case.getById.getData({ id: caseData.id });
 
-      // Optimistically add comment to cache
       if (previousCase && currentUser) {
         const optimisticComment = {
           id: `temp-${Date.now()}`,
@@ -52,17 +49,14 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
       return { previousCase };
     },
     onError: (_err, _variables, context) => {
-      // Rollback on error
       if (context?.previousCase) {
         utils.case.getById.setData({ id: caseData.id }, context.previousCase);
       }
     },
     onSuccess: () => {
-      // Clear input on success
       setNewComment('');
     },
     onSettled: () => {
-      // Refetch to sync with server
       utils.case.getById.invalidate({ id: caseData.id });
     },
   });
