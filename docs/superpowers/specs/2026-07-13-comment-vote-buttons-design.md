@@ -46,13 +46,15 @@ No new common/generic components are needed. The only new code is a domain wrapp
 
 **Current behavior:** `ReactionStatistics.tsx` passes `showCount={userVote === 'up'}` to the upvote `VoteButton` and `showCount={userVote === 'down'}` to the downvote button — so a nonzero count on the side you *didn't* vote is hidden, and if you haven't voted at all, neither count shows.
 
-**Required behavior (per issue AC1 and the screenshots, which show both counts appearing regardless of which way the viewer voted):** show a count whenever it is greater than zero, independent of the viewer's own vote.
+**Required behavior:** both counts are always visible, including "0" when a side has no votes — regardless of which way the viewer voted.
 
-**Fix:** change to `showCount={upvotes > 0}` and `showCount={downvotes > 0}`. When a side has zero votes, `showCount` is `false` and `VoteButton` renders a bare icon with no numeral at all (not a "0") — matching the screenshot, where the zero-vote side shows just the icon. Update the three existing test assertions in `ReactionStatistics.test.tsx` that encode the old behavior, and correct the "Layout Variations" section of `ReactionStatistics/README.md`.
+> **Note — intentional deviation from Figma:** the screenshots show a bare icon with no numeral when a count is zero. Product direction (confirmed 2026-07-13) is to show "0" explicitly instead, so this implementation will look slightly different from the screenshots on that specific point.
+
+**Fix:** remove the `showCount={...}` overrides entirely so `VoteButton`'s own default (`showCount = true`) applies unconditionally to both buttons — counts, including "0", always render. Update the existing test assertions in `ReactionStatistics.test.tsx` that encode the old hide-unless-voted behavior, and correct the "Layout Variations" section of `ReactionStatistics/README.md`.
 
 ## Testing & Storybook
 
-- `CommentItem.test.tsx` (new): zero-vote initial state renders bare icons with no numeral on either side; upvote click increments/selects; clicking the same button again clears the vote; switching from up to down clears up and sets down; voter tooltip appears only for the side with an active vote and shows the current user's name.
+- `CommentItem.test.tsx` (new): zero-vote initial state renders "0" on both sides; upvote click increments/selects; clicking the same button again clears the vote back to "0"; switching from up to down clears up and sets down; voter tooltip appears only for the side with an active vote (never on a "0" count) and shows the current user's name.
 - `CommentItem.stories.tsx` (new): default (no votes), upvoted, downvoted.
 - `CaseComments.stories.tsx` (modified): update for the new per-comment rows. While doing so, also fix the mock user shape (`{ name: '...' }` → `{ firstName, lastName }`) — it is currently stale relative to what the real component reads (`comment.author.firstName`/`lastName`), and must be correct for voter names to render properly in these stories.
 - `ReactionStatistics.test.tsx` (modified): update the 3 assertions tied to the count-visibility fix.
