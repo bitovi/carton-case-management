@@ -18,7 +18,6 @@ export function ReactionStatistics({
       <VoteButton
         type="up"
         active={userVote === 'up'}
-        showCount={userVote === 'up'}
         count={upvotes}
         voters={upvoters}
         isPending={isPending}
@@ -27,7 +26,6 @@ export function ReactionStatistics({
       <VoteButton
         type="down"
         active={userVote === 'down'}
-        showCount={userVote === 'down'}
         count={downvotes}
         voters={downvoters}
         isPending={isPending}

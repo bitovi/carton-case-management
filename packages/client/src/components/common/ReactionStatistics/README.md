@@ -18,17 +18,17 @@ https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-
 
 | Figma Variant | Figma Value | React Prop | React Value | Notes |
 |---------------|-------------|------------|-------------|-------|
-| UserVote | None | `userVote` | `'none'` | Both buttons inactive, no counts |
-| UserVote | Up | `userVote` | `'up'` | Thumbs up active (teal), shows upvote count |
-| UserVote | Down | `userVote` | `'down'` | Thumbs down active (red), shows downvote count |
+| UserVote | None | `userVote` | `'none'` | Both buttons inactive; both counts always shown |
+| UserVote | Up | `userVote` | `'up'` | Thumbs up active (teal); both counts always shown |
+| UserVote | Down | `userVote` | `'down'` | Thumbs down active (red); both counts always shown |
 
 ### Property Mappings
 
 | Figma Property | Type | React Prop | Notes |
 |----------------|------|------------|-------|
 | UserVote | Variant | `userVote?: 'none' \| 'up' \| 'down'` | Default 'none' - controls active button |
-| - | - | `upvotes?: number` | Upvote count (shown when userVote='up') |
-| - | - | `downvotes?: number` | Downvote count (shown when userVote='down') |
+| - | - | `upvotes?: number` | Upvote count (always shown, including 0) |
+| - | - | `downvotes?: number` | Downvote count (always shown, including 0) |
 | - | - | `onUpvote?: () => void` | Upvote click handler |
 | - | - | `onDownvote?: () => void` | Downvote click handler |
 
@@ -42,6 +42,6 @@ https://www.figma.com/design/7QW0kJ07DcM36mgQUJ5Dtj/Carton-Case-Management?node-
 
 ### Layout Variations
 
-- **userVote='none'**: Two inactive buttons, no counts
-- **userVote='up'**: Active up button + count, inactive down button
-- **userVote='down'**: Inactive up button, active down button + count
+- **userVote='none'**: Two inactive buttons, both counts always shown (including "0")
+- **userVote='up'**: Active up button + count, inactive down button + count
+- **userVote='down'**: Inactive up button + count, active down button + count
