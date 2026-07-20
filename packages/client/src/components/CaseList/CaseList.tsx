@@ -10,7 +10,7 @@ const STATUS_STYLES: Record<CaseStatus, string> = {
   TO_DO: 'bg-gray-100 text-gray-600',
   IN_PROGRESS: 'bg-blue-100 text-blue-700',
   COMPLETED: 'bg-green-100 text-green-700',
-  CLOSED: 'bg-slate-200 text-slate-500',
+  CLOSED: 'bg-red-100 text-red-700',
 };
 
 function getStatusLabel(status: CaseStatus): string {
