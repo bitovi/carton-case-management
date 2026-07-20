@@ -6,13 +6,6 @@
 			"args": [
 				"@playwright/mcp@latest"
 			]
-		},
-		"Database": {
-			"command": "sh",
-			"args": [
-				"-c",
-				"npx -y @bytebase/dbhub --transport stdio --dsn sqlite://$(git rev-parse --show-toplevel)/packages/shared/prisma/packages/server/db/dev.db"
-			]
 		}
 	},
 	"inputs": []
