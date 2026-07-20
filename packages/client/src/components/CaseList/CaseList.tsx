@@ -2,8 +2,20 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/obra/Skeleton';
 import { Button } from '@/components/obra/Button';
-import { formatCaseNumber } from '@carton/shared/client';
+import { formatCaseNumber, CASE_STATUS_OPTIONS } from '@carton/shared/client';
+import type { CaseStatus } from '@carton/shared/client';
 import type { CaseListProps, CaseListItem } from './types';
+
+const STATUS_STYLES: Record<CaseStatus, string> = {
+  TO_DO: 'bg-gray-100 text-gray-600',
+  IN_PROGRESS: 'bg-blue-100 text-blue-700',
+  COMPLETED: 'bg-green-100 text-green-700',
+  CLOSED: 'bg-slate-200 text-slate-500',
+};
+
+function getStatusLabel(status: CaseStatus): string {
+  return CASE_STATUS_OPTIONS.find((o) => o.value === status)?.label ?? status;
+}
 
 export function CaseList({ onCaseClick }: CaseListProps) {
   const { id: activeId } = useParams<{ id: string }>();
@@ -98,6 +110,13 @@ export function CaseList({ onCaseClick }: CaseListProps) {
                 <p className="font-normal text-[#192627] w-full truncate">
                   {formatCaseNumber(caseItem.id, caseItem.createdAt)}
                 </p>
+                <span
+                  data-testid="case-status-badge"
+                  data-status={caseItem.status}
+                  className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[caseItem.status as CaseStatus]}`}
+                >
+                  {getStatusLabel(caseItem.status as CaseStatus)}
+                </span>
               </div>
             </Link>
           );
