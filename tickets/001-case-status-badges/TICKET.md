@@ -24,7 +24,7 @@ The screenshots below show the expected result. Use these as your visual target 
 - Every case row in the sidebar displays a small pill/badge showing the current status
 - Badge colors match the table above
 - Badge text matches the human-readable label (e.g. `In Progress`, not `IN_PROGRESS`)
-- When the status is changed on the case detail page, the sidebar badge updates without a full page reload
+- When the status is changed on the case detail page, the sidebar badge updates **immediately** — no page reload or navigation required (optimistic UI update)
 
 ## Technical Notes
 
