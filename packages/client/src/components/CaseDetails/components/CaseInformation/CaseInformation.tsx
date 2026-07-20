@@ -23,33 +23,36 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
   const utils = trpc.useUtils();
   const updateCase = trpc.case.update.useMutation({
     onMutate: async (variables) => {
-      // Cancel any outgoing refetches
       await utils.case.getById.cancel({ id: caseId });
+      await utils.case.list.cancel();
 
-      // Snapshot the previous value
       const previousCase = utils.case.getById.getData({ id: caseId });
+      const previousList = utils.case.list.getData();
 
-      // Optimistically update the cache
       if (previousCase) {
-        utils.case.getById.setData(
-          { id: caseId },
-          {
-            ...previousCase,
-            ...variables,
-          }
+        utils.case.getById.setData({ id: caseId }, { ...previousCase, ...variables });
+      }
+
+      if (previousList) {
+        utils.case.list.setData(
+          undefined,
+          previousList.map((c) => (c.id === caseId ? { ...c, ...variables } : c))
         );
       }
 
-      return { previousCase };
+      return { previousCase, previousList };
     },
     onSuccess: (data) => {
       utils.case.getById.setData({ id: caseId }, data);
+      utils.case.list.invalidate();
     },
     onError: (error, _variables, context) => {
       console.error('Failed to update case:', error);
-      // Roll back to previous value on error
       if (context?.previousCase) {
         utils.case.getById.setData({ id: caseId }, context.previousCase);
+      }
+      if (context?.previousList) {
+        utils.case.list.setData(undefined, context.previousList);
       }
     },
   });
