@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/obra/Button';
@@ -14,6 +14,12 @@ type ValidationErrors = {
 export function CreateCustomerPage() {
   const navigate = useNavigate();
   const utils = trpc.useUtils();
+
+  useEffect(() => {
+    console.log('[CreateCustomer] Page mounted — ready to create a new customer');
+    return () => console.log('[CreateCustomer] Page unmounted');
+  }, []);
+
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
@@ -23,15 +29,18 @@ export function CreateCustomerPage() {
 
   const createCustomer = trpc.customer.create.useMutation({
     onSuccess: (data) => {
+      console.log('[CreateCustomer] Customer created successfully:', { id: data.id, name: `${data.firstName} ${data.lastName}`, email: data.email });
       utils.customer.list.invalidate();
       navigate(`/customers/${data.id}`);
     },
     onError: (error) => {
+      console.error('[CreateCustomer] Mutation failed:', error.message);
       alert(`Failed to create customer: ${error.message}`);
     },
   });
 
   const validateForm = (): boolean => {
+    console.log('[CreateCustomer] Validating form fields:', { firstName, lastName, username, email });
     const errors: ValidationErrors = {};
 
     if (!firstName.trim()) {
@@ -55,7 +64,13 @@ export function CreateCustomerPage() {
     }
 
     setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
+    const isValid = Object.keys(errors).length === 0;
+    if (!isValid) {
+      console.warn('[CreateCustomer] Validation failed:', errors);
+    } else {
+      console.log('[CreateCustomer] Validation passed');
+    }
+    return isValid;
   };
 
   const handleBlur = (field: string) => {
@@ -65,13 +80,16 @@ export function CreateCustomerPage() {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    console.log('[CreateCustomer] Form submitted — running validation');
 
     setTouched(new Set(['firstName', 'lastName', 'username', 'email']));
 
     if (!validateForm()) {
+      console.warn('[CreateCustomer] Submit blocked by validation errors');
       return;
     }
 
+    console.log('[CreateCustomer] Sending create request to server...');
     createCustomer.mutate({
       firstName,
       lastName,
