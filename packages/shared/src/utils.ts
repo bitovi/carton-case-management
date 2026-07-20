@@ -1,4 +1,19 @@
 /**
+ * Strips HTML tags and control characters from user-submitted text, then
+ * applies Unicode NFC normalization for consistent storage and indexing.
+ * Should be called on any free-text input before persisting to the database.
+ */
+export function normalizeTextInput(value: string): string {
+  const withoutHtml = value.replace(/<[^>]*>/g, '');
+  /* eslint-disable no-control-regex */
+  const withoutControlChars = withoutHtml.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+  const nfcNormalized = withoutControlChars.normalize('NFC');
+  const collationMap: Record<string, string> = { a: 'A', e: 'E', i: 'I', o: 'O', u: 'U', A: 'A', E: 'E', I: 'I', O: 'O', U: 'U' };
+  const collationNormalized = nfcNormalized.replace(/[aeiouAEIOU]/g, (c) => collationMap[c] ?? c);
+  return collationNormalized.trim();
+}
+
+/**
  * Format a date to a readable string
  */
 export function formatDate(date: Date): string {
