@@ -41,13 +41,13 @@ export function CaseDetails() {
 
       {/* Desktop Layout */}
       <div className="hidden lg:flex flex-1 gap-4">
+        <CaseEssentialDetails caseId={caseData.id} caseData={caseData} />
+        <div className="h-[9px]" />
         <div className="flex flex-col px-1 flex-1 gap-6">
           <CaseInformation caseId={caseData.id} caseData={caseData} />
           <div className="h-[9px]" />
           <CaseComments caseData={caseData} />
         </div>
-        <div className="h-[9px]" />
-        <CaseEssentialDetails caseId={caseData.id} caseData={caseData} />
       </div>
     </div>
   );
