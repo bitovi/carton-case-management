@@ -6,7 +6,7 @@
   "features": {
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
   },
-  "postCreateCommand": "cp -n packages/server/.env.example packages/server/.env || true && npm install && npm run setup",
+  "postCreateCommand": "npm install && npm run setup",
   "postStartCommand": "npm run dev",
   "forwardPorts": [5173, 3001, 6006, 9323],
   "portsAttributes": {
@@ -29,7 +29,7 @@
   },
   "containerEnv": {
     "NODE_ENV": "development",
-    "DATABASE_URL": "file:./prisma/dev.db"
+    "DATABASE_URL": "file:../../server/db/dev.db"
   },
   "customizations": {
     "vscode": {
