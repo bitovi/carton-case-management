@@ -257,12 +257,12 @@ test.describe('Case Details', () => {
 
   test.describe('Delete Case', () => {
     test('should show more options menu button', async ({ page }) => {
-      const moreOptionsBtn = page.locator('button').filter({ has: page.locator('svg') }).last();
+      const moreOptionsBtn = page.getByRole('button', { name: 'Case options' });
       await expect(moreOptionsBtn).toBeVisible();
     });
 
     test('should show Delete Case option in more options menu', async ({ page }) => {
-      const moreOptionsBtn = page.getByRole('button').filter({ has: page.locator('[data-lucide="more-vertical"], svg') }).first();
+      const moreOptionsBtn = page.getByRole('button', { name: 'Case options' });
       if (await moreOptionsBtn.isVisible()) {
         await moreOptionsBtn.click();
         await expect(page.getByText('Delete Case')).toBeVisible({ timeout: 3000 });
@@ -273,14 +273,14 @@ test.describe('Case Details', () => {
       const caseList = page.locator('.flex.flex-col.gap-2 a');
       await expect(caseList.first()).toBeVisible({ timeout: 10000 });
 
-      const moreOptionsBtn = page.getByRole('button').filter({ has: page.locator('svg') }).filter({ hasNot: page.locator('[aria-label]') }).last();
+      const moreOptionsBtn = page.getByRole('button', { name: 'Case options' });
 
       if (await moreOptionsBtn.isVisible()) {
         await moreOptionsBtn.click();
         const deleteOption = page.getByText('Delete Case');
         if (await deleteOption.isVisible()) {
           await deleteOption.click();
-          const dialog = page.getByRole('dialog');
+          const dialog = page.getByRole('alertdialog');
           await expect(dialog).toBeVisible({ timeout: 3000 });
           await expect(page.getByText(/are you sure|confirm delete|this action cannot/i)).toBeVisible();
         }

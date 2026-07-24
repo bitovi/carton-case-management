@@ -158,7 +158,12 @@ export function CaseInformation({ caseId, caseData }: CaseInformationProps) {
             </Select>
             <MoreOptionsMenu
               trigger={
-                <Button variant="ghost" size="mini" className="h-8 w-8">
+                <Button
+                  variant="ghost"
+                  size="mini"
+                  className="h-8 w-8"
+                  aria-label="Case options"
+                >
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               }
