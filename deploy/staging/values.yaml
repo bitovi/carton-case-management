@@ -1,0 +1,24 @@
+# carton-case-management — STAGING.
+#
+# A complete interface file, not an overlay: its production counterpart is
+# deploy/production/values.yaml. `env: staging` is what makes this staging,
+# and the platform derives the rest — namespace becomes
+# carton-case-management-staging, AWS resource names gain a -staging
+# segment, the Ingress joins the staging ALB, pods run at a negative
+# scheduling priority, and no shared tier renders (no ECR repo, no push
+# role, no CI secret push-back) — staging runs the exact image production
+# built.
+env: staging
+name: carton-case-management
+repo: bitovi/carton-case-management
+workloads:
+  main:
+    kind: server
+    port: 3001
+    health: /health
+    domain: carton-case-management-staging.bitovi-tools.com
+    # Written by CI on merge to main / promotion. Empty until the first
+    # staging build.
+    image: {}
+infra:
+  hostedZone: bitovi-tools-com

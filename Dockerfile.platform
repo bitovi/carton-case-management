@@ -1,0 +1,53 @@
+# Production image for the bitovi-platform-services deployment.
+#
+# New file — does not modify Dockerfile, Dockerfile.aws, or Dockerfile.original,
+# which stay exactly as they are for local/devcontainer training use and the
+# legacy ECS pipeline. Based on the shape of Dockerfile.original (already
+# correct in spirit: multi-stage, NODE_ENV=production, Express serves the
+# built client + a real /health route) with three fixes: runs as a non-root
+# user, copies node_modules wholesale from the builder instead of a
+# workspace-scoped --omit=dev reinstall (the `prisma` CLI is a devDependency
+# of @carton/shared — omitting dev deps would leave `npx prisma db push` with
+# nothing local to run and force a network fetch on every container start),
+# and drops the unused dev/storybook/playwright ports from EXPOSE.
+
+FROM node:24-alpine AS builder
+WORKDIR /app
+
+COPY package*.json ./
+COPY packages/shared/package*.json ./packages/shared/
+COPY packages/server/package*.json ./packages/server/
+COPY packages/client/package*.json ./packages/client/
+
+RUN npm ci
+
+COPY . .
+
+RUN npx prisma generate --schema=packages/shared/prisma/schema.prisma && npm run build
+
+FROM node:24-alpine
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3001
+ENV HOST=0.0.0.0
+ENV DATABASE_URL=file:/app/packages/server/db/prod.db
+
+COPY --from=builder --chown=node:node /app/node_modules ./node_modules
+COPY --from=builder --chown=node:node /app/package.json ./package.json
+COPY --from=builder --chown=node:node /app/packages/server/package.json ./packages/server/package.json
+COPY --from=builder --chown=node:node /app/packages/server/src ./packages/server/src
+COPY --from=builder --chown=node:node /app/packages/server/db ./packages/server/db
+COPY --from=builder --chown=node:node /app/packages/shared/package.json ./packages/shared/package.json
+COPY --from=builder --chown=node:node /app/packages/shared/src ./packages/shared/src
+COPY --from=builder --chown=node:node /app/packages/shared/prisma ./packages/shared/prisma
+COPY --from=builder --chown=node:node /app/packages/client/dist ./packages/client/dist
+
+USER node
+
+EXPOSE 3001
+
+# Fresh SQLite file pushed + reseeded on every container start — the
+# intended behavior for this training demo (confirmed with the app owner),
+# not a workaround.
+CMD sh -c "npx prisma db push --schema=packages/shared/prisma/schema.prisma --skip-generate && cd packages/server && npx tsx db/seed.ts && npm run start:prod"

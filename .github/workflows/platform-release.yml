@@ -1,0 +1,92 @@
+# Platform CI — new file, separate from ci.yml/deploy.yaml/deploy-prod.yaml/
+# deploy-staging.yaml, which keep serving the legacy ECS pipeline untouched
+# on their own triggers.
+#
+# Two-job staging/production model (bitovi-platform-services
+# docs/operations/staging-rollout.md, Phase 2.5), since this app onboards
+# with both a staging and a production Application from day one:
+#   - Every merge to main: build a SHA-tagged image, point the staging
+#     Application at it (deploy/staging/values.yaml).
+#   - Every vX.Y.Z tag: promote the exact digest staging already validated
+#     to production (deploy/production/values.yaml) — no rebuild.
+#
+# The ECR repository, OIDC push role, and CI secrets (ECR_PUSH_ROLE_ARN,
+# ECR_REPOSITORY) are created by the platform via the production
+# Application and pushed into this repo's Actions secrets automatically —
+# nothing to configure by hand. Staging reuses production's ECR repo; it
+# has no shared tier of its own.
+
+name: Platform release
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  # Every merge to main.
+  staging:
+    if: github.ref_type == 'branch'
+    needs: [test]
+    uses: bitovi/platform-ci/.github/workflows/container-build.yml@0.0.1
+    permissions:
+      id-token: write
+      contents: write
+      actions: write
+    with:
+      values-file: deploy/staging/values.yaml
+      image-tag-path: .workloads.main.image.tag
+      writeback-app-id: ${{ vars.CI_WRITEBACK_APP_ID }}
+      environment-label: staging
+    secrets: inherit
+
+  # Every vX.Y.Z tag: promote the digest staging already validated.
+  production:
+    if: github.ref_type == 'tag'
+    needs: [test]
+    uses: bitovi/platform-ci/.github/workflows/container-promote.yml@0.0.1
+    permissions:
+      id-token: write
+      contents: write
+      actions: write
+    with:
+      values-file: deploy/production/values.yaml
+      source-values-file: deploy/staging/values.yaml
+      image-tag-path: .workloads.main.image.tag
+      writeback-app-id: ${{ vars.CI_WRITEBACK_APP_ID }}
+    secrets: inherit
+
+  notify:
+    name: Slack Notification
+    needs: [test, staging, production]
+    if: always()
+    uses: ./.github/workflows/platform-slack-notification.yml
+    with:
+      status: ${{ !contains(needs.*.result, 'failure') && 'success' || 'failure' }}
+      service_name: "carton-case-management"
+      environment: ${{ github.ref_type == 'tag' && 'production' || 'staging' }}
+      title: ${{ !contains(needs.*.result, 'failure') && 'platform deploy succeeded' || 'platform deploy failed' }}
+      detail: "Ref: ${{ github.ref_name }}"
+    secrets:
+      # A repo-level SLACK_WEBHOOK_URL wins; otherwise the org-level default
+      # applies, so this notifies with no per-repo setup needed.
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL || secrets.BITOVI_PLATFORM_SLACK_WEBHOOK_URL }}
