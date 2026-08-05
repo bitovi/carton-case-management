@@ -17,6 +17,7 @@ export function FiltersDialog({
       open={open}
       onOpenChange={onOpenChange}
       type="Desktop Scrollable"
+      title={title}
       header={
         <DialogHeader
           type="Close Only"

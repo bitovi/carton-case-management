@@ -1,0 +1,8 @@
+{
+  "name": "cascade-workflow",
+  "description": "Jira story writing and Figma design-question workflows (the Cascade flow). Turns epics and Figma frames into scoped stories, shell stories, and behaviour questions.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Bitovi"
+  }
+}

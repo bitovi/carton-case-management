@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { act, render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { EditableTitle } from './EditableTitle';
 
@@ -78,7 +78,9 @@ describe('EditableTitle', () => {
       render(<EditableTitle {...defaultProps} />);
 
       const title = screen.getByRole('heading', { level: 1 });
-      title.focus();
+      act(() => {
+        title.focus();
+      });
       await user.keyboard('{Enter}');
 
       expect(screen.getByRole('textbox')).toBeInTheDocument();
@@ -89,7 +91,9 @@ describe('EditableTitle', () => {
       render(<EditableTitle {...defaultProps} />);
 
       const title = screen.getByRole('heading', { level: 1 });
-      title.focus();
+      act(() => {
+        title.focus();
+      });
       await user.keyboard(' ');
 
       expect(screen.getByRole('textbox')).toBeInTheDocument();

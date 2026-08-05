@@ -17,7 +17,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # Single source of truth for the Node version - matches the node:24 images used by
+          # Dockerfile, Dockerfile.test and .devcontainer/Dockerfile.
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Install dependencies
@@ -32,6 +34,12 @@ jobs:
       - name: Run typecheck
         run: npm run typecheck
 
+      # The .github/instructions/*.instructions.md files are generated from the package
+      # CLAUDE.md files. This fails if someone edited a CLAUDE.md without running
+      # `npm run sync:agent-docs`, which would leave Copilot reading stale guidance.
+      - name: Check generated agent docs are in sync
+        run: npm run sync:agent-docs:check
+
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
@@ -42,7 +50,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # Single source of truth for the Node version - matches the node:24 images used by
+          # Dockerfile, Dockerfile.test and .devcontainer/Dockerfile.
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Install dependencies
@@ -58,7 +68,11 @@ jobs:
     name: E2E Tests
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: file:./dev.db
+      # Prisma resolves a relative file: path against the schema directory
+      # (packages/shared/prisma/), not the repo root - so this is packages/server/db/dev.db.
+      # Must match .env.example and the compose files, or CI tests a different database layout
+      # than everyone else.
+      DATABASE_URL: file:../../server/db/dev.db
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -66,7 +80,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # Single source of truth for the Node version - matches the node:24 images used by
+          # Dockerfile, Dockerfile.test and .devcontainer/Dockerfile.
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Install dependencies
@@ -81,8 +97,10 @@ jobs:
       - name: Setup database
         run: npm run db:setup
 
+      # test:e2e:ci, not test:e2e: the step above already installed the browser, and on a bare
+      # runner `--with-deps` there is the right call. test:e2e would just re-check it.
       - name: Run E2E tests
-        run: npm run test:e2e
+        run: npm run test:e2e:ci
 
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4

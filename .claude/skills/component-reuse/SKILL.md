@@ -1,6 +1,6 @@
 ---
 name: component-reuse
-description: Ensure existing UI components are reused before creating new ones. Use when implementing any UI from Figma designs, tickets, or mockups. Requires a component audit to search the codebase before creating new components. If a component doesn't exist, delegates to figma-implement-component skill.
+description: Ensure existing UI components are reused before creating new ones. Use when implementing any UI from Figma designs, tickets, or mockups. Requires a component audit to search the codebase before creating new components. If a component doesn't exist, delegates to create-react-modlet.
 ---
 
 # Skill: Component Reuse
@@ -39,7 +39,7 @@ Complete the audit process and output the audit table before creating any new co
 5. Search exact names first (remove spaces)
 6. Search variations only if exact search fails
 7. Output audit table
-8. Reuse existing or delegate to figma-implement-component
+8. Reuse existing or delegate to create-react-modlet
 ```
 
 ## Step 0: Create Component Audit Todo List
@@ -210,7 +210,7 @@ For components marked WRAP:
 - The wrapper encapsulates domain logic (hooks, state, data fetching)
 - The wrapper passes domain data to the generic component
 - Example: `FeatureGenericComponent` wraps `GenericComponent` + `useFeatureData()`
-- See "Domain Wrapper Components" in copilot-instructions.md for full pattern
+- See "Domain Wrapper Components" in the root CLAUDE.md for full pattern
 
 For components marked CREATE:
 - Answer these questions first:
@@ -218,7 +218,9 @@ For components marked CREATE:
   2. Why can't they be used or extended?
   3. What specific functionality is missing?
 - If you cannot answer all three, reuse an existing component
-- Otherwise, invoke the `figma-implement-component` skill
+- Otherwise, build the new component with the `create-react-modlet` skill. When the optional
+  `figma-workflow` plugin is loaded and the source is a Figma design, use
+  `/figma-workflow:figma-implement-component` instead
 
 ### Warning Signs to Stop
 
@@ -242,7 +244,7 @@ Check existing components first. These almost certainly already exist.
 
 This skill acts as a gate before implementation:
 ```
-User Request → component-reuse (audit) → figma-implement-component (if CREATE) → Implementation
+User Request → component-reuse (audit) → create-react-modlet (if CREATE) → Implementation
 ```
 
 ## Examples
@@ -337,7 +339,7 @@ Figma shows "Custom Component" → No CodeConnect
 Search "CustomComponent" → NOT FOUND
 Search "Custom", "Component" → NOT FOUND
 
-Action: Create via figma-implement-component skill
+Action: Create via create-react-modlet skill
 
 ## Common Mistakes
 

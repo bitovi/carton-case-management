@@ -4,10 +4,10 @@
   "type": "module",
   "main": "./src/index.ts",
   "scripts": {
-    "dev": "tsx watch src",
+    "dev": "tsx watch --env-file-if-exists=../../.env src",
     "build": "tsc --build",
-    "start": "tsx src/index.ts",
-    "start:prod": "tsx src/index.ts",
+    "start": "tsx --env-file-if-exists=../../.env src/index.ts",
+    "start:prod": "tsx --env-file-if-exists=../../.env src/index.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",

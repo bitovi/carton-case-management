@@ -5,7 +5,7 @@ import { CaseDetails } from './CaseDetails';
 import { createMemoryRouterWrapper } from '../../test/utils';
 import { Routes, Route } from 'react-router-dom';
 import { ReactElement } from 'react';
-import { server } from '@/../vitest.setup';
+import { server } from '@/test/server';
 
 const mockCaseData = {
   id: '1',

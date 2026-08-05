@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Header Navigation', () => {
   test('clicking logo navigates to home page', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
@@ -12,8 +12,8 @@ test.describe('Header Navigation', () => {
     const logoLink = page.locator('a[aria-label="Navigate to home"]');
     await logoLink.click();
 
-    await page.waitForURL(/\/cases\/.+/, { timeout: 5000 });
-    expect(page.url()).toMatch(/\/cases\/.+/);
+    await page.waitForURL(/\/$/, { timeout: 5000 });
+    await expect(page.getByRole('heading', { level: 1 })).toContainText(/welcome/i);
   });
 
   test('header appears on all pages', async ({ page }) => {
@@ -59,10 +59,8 @@ test.describe('Header Navigation', () => {
 });
 
 test.describe('MenuList Navigation', () => {
-  test('clicking menu item navigates to home page', async ({ page }) => {
+  test('clicking menu item navigates to the cases page', async ({ page }) => {
     await page.goto('/');
-
-    await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
     const menu = page.locator('nav[aria-label="Main menu"]');
 
@@ -79,7 +77,7 @@ test.describe('MenuList Navigation', () => {
 
   test('menu adapts to mobile viewport', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('/');
+    await page.goto('/cases/');
 
     const caseList = page.locator('.flex-1.lg\\:hidden .flex.flex-col.gap-2 a');
     await expect(caseList.first()).toBeVisible({ timeout: 10000 });
@@ -92,7 +90,7 @@ test.describe('MenuList Navigation', () => {
   });
 
   test('keyboard navigation through menu items', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/cases/');
 
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 

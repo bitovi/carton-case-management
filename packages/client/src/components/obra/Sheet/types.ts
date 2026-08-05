@@ -20,6 +20,22 @@ export interface SheetProps {
   scrollable?: boolean;
 
   /**
+   * The sheet's accessible name, announced by screen readers when it opens.
+   *
+   * Rendered visually hidden, so pass the same wording as the visible heading. A Sheet is a Radix
+   * dialog underneath, and Radix requires every dialog to have a name. The default is only a
+   * fallback; always pass something specific.
+   *
+   * @default 'Sheet'
+   */
+  title?: string;
+
+  /**
+   * Optional accessible description, announced after the title. Also visually hidden.
+   */
+  description?: string;
+
+  /**
    * Header slot content
    * Typically a DialogHeader component
    * @figma Instance: DialogHeader

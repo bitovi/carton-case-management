@@ -1,3 +1,7 @@
+# Snapshot exported by the AWS CloudFormation IaC generator. NOT used by any deployment:
+# .github/workflows/deploy.yaml runs Terraform against infra/*.tf, so infra/ecs.tf is the source
+# of truth for the task definition. This file does not follow changes made there - it is kept only
+# as a record of the console-created stack, and is safe to delete.
 ---
 Metadata:
   AWSToolsMetrics:
@@ -496,7 +500,7 @@ Resources:
         Command: []
         DnsSearchDomains: []
         Environment:
-        - Value: "file:./db/dev.db"
+        - Value: "file:../../server/db/dev.db"
           Name: "DATABASE_URL"
         - Value: "development"
           Name: "NODE_ENV"

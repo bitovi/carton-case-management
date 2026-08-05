@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { act, render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { EditableDate } from './EditableDate';
 
@@ -330,7 +330,9 @@ describe('EditableDate', () => {
       render(<EditableDate {...defaultProps} />);
 
       const content = screen.getByRole('button', { name: /edit due date/i });
-      content.focus();
+      act(() => {
+        content.focus();
+      });
       await user.keyboard('{Enter}');
 
       await waitFor(() => {
@@ -343,7 +345,9 @@ describe('EditableDate', () => {
       render(<EditableDate {...defaultProps} />);
 
       const content = screen.getByRole('button', { name: /edit due date/i });
-      content.focus();
+      act(() => {
+        content.focus();
+      });
       await user.keyboard(' ');
 
       await waitFor(() => {

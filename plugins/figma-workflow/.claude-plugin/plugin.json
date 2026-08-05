@@ -1,0 +1,8 @@
+{
+  "name": "figma-workflow",
+  "description": "Figma-to-React workflows: analyse a design, implement it as a component, audit a component against its design, and generate Code Connect mappings.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Bitovi"
+  }
+}

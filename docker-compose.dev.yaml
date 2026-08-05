@@ -1,3 +1,8 @@
+# Devcontainer / Codespaces backing service. Starts idle (`sleep infinity`) so VS Code can
+# attach and run commands inside the container; see .devcontainer/devcontainer.json.
+# Not meant to be started directly - use "Reopen in Container", or `npm run docker:up`.
+#
+# Extra ports vs docker-compose.local.yaml: 6006 (Storybook), 9323 (Playwright report).
 services:
   app:
     build:
@@ -14,7 +19,8 @@ services:
     command: sleep infinity
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=file:./packages/server/db/dev.db
+      # Relative to the Prisma schema dir (packages/shared/prisma/) -> packages/server/db/dev.db
+      - DATABASE_URL=file:../../server/db/dev.db
     ports:
       - '5173:5173'
       - '3001:3001'

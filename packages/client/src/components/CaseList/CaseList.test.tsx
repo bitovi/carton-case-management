@@ -1,17 +1,11 @@
-import { describe, it, expect, beforeAll, afterEach, afterAll, vi } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { screen, waitFor, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 import { CaseList } from './CaseList';
 import { createMemoryRouterWrapper } from '../../test/utils';
+import { server } from '../../test/server';
 import { Routes, Route } from 'react-router-dom';
-
-const server = setupServer();
-
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
 
 const mockCases = [
   {

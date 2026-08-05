@@ -12,14 +12,9 @@ export function CasePage() {
   const { data: cases } = trpc.case.list.useQuery();
 
   useEffect(() => {
-    // On desktop, if we're on / or /cases/ without an ID and we have cases, redirect to first case
+    // On desktop, if we're on /cases/ without an ID and we have cases, redirect to first case
     // On mobile, we want to show the list first, so don't auto-redirect
-    if (
-      !id &&
-      cases &&
-      cases.length > 0 &&
-      (location.pathname === '/' || location.pathname === '/cases/')
-    ) {
+    if (!id && cases && cases.length > 0 && location.pathname === '/cases/') {
       // Only auto-redirect on desktop (lg breakpoint is 1024px)
       if (window.innerWidth >= 1024) {
         navigate(`/cases/${cases[0].id}`, { replace: true });

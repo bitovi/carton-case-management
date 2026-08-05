@@ -33,7 +33,7 @@ describe('Popover', () => {
     
     render(
       <Popover open={true} onOpenChange={onOpenChange}>
-        <PopoverTrigger>
+        <PopoverTrigger asChild>
           <button>Open popover</button>
         </PopoverTrigger>
         <PopoverContent>
@@ -48,7 +48,7 @@ describe('Popover', () => {
   it('applies custom className to content', () => {
     render(
       <Popover open={true}>
-        <PopoverTrigger>
+        <PopoverTrigger asChild>
           <button>Open popover</button>
         </PopoverTrigger>
         <PopoverContent className="custom-popover">

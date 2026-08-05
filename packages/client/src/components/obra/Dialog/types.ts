@@ -19,6 +19,26 @@ export interface DialogProps {
   type?: 'Desktop' | 'Desktop Scrollable' | 'Mobile' | 'Mobile Full Screen Scrollable';
   
   /**
+   * The dialog's accessible name, announced by screen readers when it opens.
+   *
+   * Rendered visually hidden, so pass the same wording as the visible heading. Radix requires
+   * every dialog to have one - without it screen reader users hear an unnamed dialog, and Radix
+   * logs "`DialogContent` requires a `DialogTitle`". The default is only a fallback; always pass
+   * something specific.
+   *
+   * @default 'Dialog'
+   */
+  title?: string;
+
+  /**
+   * Optional accessible description, announced after the title. Also visually hidden.
+   *
+   * Leave it unset when the dialog needs no extra explanation - the component then opts out of
+   * Radix's description warning rather than inventing text.
+   */
+  description?: string;
+
+  /**
    * Dialog content
    */
   children: ReactNode;

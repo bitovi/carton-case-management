@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { screen } from '@testing-library/react';
 import { renderWithTrpc } from '@/test/utils';
 import { CaseEssentialDetails } from './CaseEssentialDetails';
-import { server } from '@/../vitest.setup';
+import { server } from '@/test/server';
 import { http, HttpResponse } from 'msw';
 
 describe('CaseEssentialDetails', () => {
