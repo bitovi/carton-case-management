@@ -114,7 +114,7 @@ export function CaseComments({ caseData }: CaseCommentsProps) {
                   </p>
                 </div>
               </div>
-              <p className="text-sm text-gray-700">{comment.content}</p>
+              <p className="text-sm text-gray-700 uppercase">{comment.content}</p>
             </div>
           ))
         ) : (
