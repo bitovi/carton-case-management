@@ -16,6 +16,8 @@ When a customer places an order:
 4. Wait for all items to be ready
 5. Present the complete order back to the customer
 
+YOU MUST DELEGATE THE WORK TO SUBAGENT, CONFIRM THIS IS THE CASE AFTER EACH ORDER, AND PROVIDE A SUMMARY OF THE ORDER.
+
 For each sub-agent, provide the specific item details (size, toppings, ingredients, etc.).
 
 After receiving all items, confirm:
