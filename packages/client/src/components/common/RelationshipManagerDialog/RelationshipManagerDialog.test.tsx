@@ -29,7 +29,9 @@ describe('RelationshipManagerDialog', () => {
         onAdd={vi.fn()}
       />
     );
-    expect(screen.getByText('Add Related Cases')).toBeInTheDocument();
+    expect(
+      screen.getByRole('dialog', { name: 'Add Related Cases' })
+    ).toBeInTheDocument();
   });
 
   it('does not render when closed', () => {

@@ -3,10 +3,12 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { cn } from '@/lib/utils';
 import type { SheetProps } from './types';
 
-export function Sheet({ 
+export function Sheet({
   open,
   onOpenChange,
   scrollable = true,
+  title = 'Sheet',
+  description,
   header,
   children,
   footer,
@@ -32,11 +34,19 @@ export function Sheet({
         />
         
         <DialogPrimitive.Content
+          {...(description ? {} : { 'aria-describedby': undefined })}
           className={cn(
             'fixed right-0 top-0 z-50 h-full w-full border-l bg-background shadow-lg duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-md',
             className
           )}
         >
+          <DialogPrimitive.Title className="sr-only">{title}</DialogPrimitive.Title>
+          {description && (
+            <DialogPrimitive.Description className="sr-only">
+              {description}
+            </DialogPrimitive.Description>
+          )}
+
           <div className="flex h-full flex-col">
             {header && (
               <div className="p-6 pb-4">

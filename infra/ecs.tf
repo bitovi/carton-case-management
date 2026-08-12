@@ -40,8 +40,13 @@ resource "aws_ecs_task_definition" "main" {
 
       environment = [
         {
+          # Must match the Dockerfile's DATABASE_URL. Prisma resolves relative `file:` paths
+          # against the schema directory (packages/shared/prisma/), so this points at
+          # packages/server/db/dev.db - where `npm run setup` bakes the seeded database during
+          # the image build. The task has no mountPoints, so that baked database is what serves
+          # traffic; a mismatched path here resolves to a file that does not exist in the image.
           name  = "DATABASE_URL"
-          value = "file:./db/dev.db"
+          value = "file:../../server/db/dev.db"
         }
         #        {
         #  name  = "NODE_ENV"

@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Case Details', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
-    await page.goto('/');
+    await page.goto('/cases/');
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 10000 });
     await page.waitForLoadState('networkidle');
@@ -309,7 +309,7 @@ test.describe('Case Details - Error States', () => {
       }
     );
 
-    await page.goto('/');
+    await page.goto('/cases/');
     await page.waitForURL(/\/cases\/.+/, { timeout: 10000 });
 
     await expect(page.getByText('Loading case details...'))

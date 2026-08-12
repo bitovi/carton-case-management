@@ -1,3 +1,9 @@
+# One-shot local run: builds, installs, seeds the DB, and starts client + server.
+# Use when you just want the app running in Docker without attaching an editor.
+#
+#   docker compose -f docker-compose.local.yaml up --build -d
+#
+# Client: http://localhost:5173   Server: http://localhost:3001
 services:
   app:
     build:
@@ -14,7 +20,8 @@ services:
     command: sh -c "npm install && npm run setup && npm run dev"
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=file:./prisma/dev.db
+      # Relative to the Prisma schema dir (packages/shared/prisma/) -> packages/server/db/dev.db
+      - DATABASE_URL=file:../../server/db/dev.db
     ports:
       - '5173:5173'
       - '3001:3001'

@@ -21,7 +21,7 @@ packages/server/
 │   └── middleware/        # Express middleware
 │       └── autoLogin.ts
 ├── db/
-│   ├── dev.db             # SQLite database file
+│   ├── dev.db             # SQLite database file (gitignored, created by db:push)
 │   ├── seed.ts            # Database seeding script
 │   └── constants.ts       # Seed data constants
 ├── package.json

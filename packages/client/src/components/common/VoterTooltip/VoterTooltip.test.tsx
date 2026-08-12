@@ -43,10 +43,11 @@ describe('VoterTooltip', () => {
       );
       
       await user.hover(screen.getByText('Hover me'));
-      
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      expect(screen.getByText('Alex Morgan')).toBeInTheDocument();
+
+      // findBy* polls inside act(), so Radix's openDelay timer (default 700ms) and the
+      // popper mount it triggers are covered. A bare sleep here lets those updates land
+      // outside act() and floods the run with warnings.
+      expect(await screen.findByText('Alex Morgan', undefined, { timeout: 2000 })).toBeInTheDocument();
     });
   });
 

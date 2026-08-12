@@ -30,15 +30,29 @@ COPY package*.json ./
 COPY packages/shared/package*.json ./packages/shared/
 COPY packages/server/package*.json ./packages/server/
 COPY packages/client/package*.json ./packages/client/
+# The root postinstall hook runs these two, so they have to exist before `npm ci`.
+COPY .env.example ./
+COPY scripts/ ./scripts/
 
 # Install all dependencies (including dev)
 RUN npm ci
 
-# Install Playwright browsers
-RUN cd packages/client && npx playwright install chromium
+# Install Playwright's headless Chromium. `--only-shell` skips the full headed browser (~324MB
+# extracted), which this image never uses: playwright.config.ts declares one headless chromium
+# project. The OS libraries Chromium needs are installed by apt above, so `--with-deps` is not
+# wanted here - it would re-run `apt-get update` on every build.
+# The tests service runs `test:e2e:ci`, which skips the install step because of this layer.
+RUN npx playwright install --only-shell chromium
 
 # Copy source code
 COPY . .
+
+# Generate Prisma Client and the Zod schemas before building. Neither is committed, and `npm ci`
+# does not run @prisma/client's postinstall, so without this step tRPC type inference degrades and
+# the client build fails with implicit-any errors.
+# Relative to the Prisma schema dir (packages/shared/prisma/) -> packages/server/db/dev.db
+ENV DATABASE_URL=file:../../server/db/dev.db
+RUN npm run db:generate
 
 # Build all packages
 RUN npm run build

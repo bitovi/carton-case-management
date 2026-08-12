@@ -2,6 +2,13 @@
 applyTo: packages/shared/**
 ---
 
+<!--
+  GENERATED FILE - DO NOT EDIT.
+
+  Edit the source CLAUDE.md instead, then run:  npm run sync:agent-docs
+  Source of truth for this file: packages/shared/CLAUDE.md
+-->
+
 # @carton/shared Package Instructions
 
 This package contains shared code used by both server and client packages.

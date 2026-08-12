@@ -11,7 +11,9 @@ export default defineConfig({
     dedupe: ['react', 'react-dom']
   },
   server: {
-    allowedHosts: ['carton.bitovi.tools', 'carton-staging.bitovi.tools'],
+    // 'app' is the service name in docker-compose.test.yaml, which the tests container reaches as
+    // http://app:5173. Without it Vite answers "Blocked request. This host is not allowed."
+    allowedHosts: ['carton.bitovi.tools', 'carton-staging.bitovi.tools', 'app'],
     host: '0.0.0.0',
     port: 5173,
     open: false,

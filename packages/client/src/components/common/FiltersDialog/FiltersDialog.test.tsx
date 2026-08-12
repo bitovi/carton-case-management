@@ -40,7 +40,7 @@ describe('FiltersDialog', () => {
 
   it('renders when open', () => {
     render(<FiltersDialog {...defaultProps} />);
-    expect(screen.getByText('Filters')).toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: 'Filters' })).toBeInTheDocument();
   });
 
   it('does not render when closed', () => {
@@ -50,7 +50,9 @@ describe('FiltersDialog', () => {
 
   it('renders custom title', () => {
     render(<FiltersDialog {...defaultProps} title="Custom Filters" />);
-    expect(screen.getByText('Custom Filters')).toBeInTheDocument();
+    expect(
+      screen.getByRole('dialog', { name: 'Custom Filters' })
+    ).toBeInTheDocument();
   });
 
   it('renders Clear and Apply buttons', () => {

@@ -76,9 +76,11 @@ variable "common_tags" {
 }
 
 variable "database_url" {
+  # NOTE: currently unused - ecs.tf sets DATABASE_URL directly on the task definition.
+  # Kept in sync with that value so it cannot mislead anyone who starts using it.
   description = "Database URL for the application"
   type        = string
-  default     = "file:./db/dev.db"
+  default     = "file:../../server/db/dev.db"
   sensitive   = true
 }
 

@@ -2,6 +2,13 @@
 applyTo: packages/server/**
 ---
 
+<!--
+  GENERATED FILE - DO NOT EDIT.
+
+  Edit the source CLAUDE.md instead, then run:  npm run sync:agent-docs
+  Source of truth for this file: packages/server/CLAUDE.md
+-->
+
 # @carton/server Package Instructions
 
 This package contains the Express/tRPC backend server.
@@ -25,7 +32,7 @@ packages/server/
 │   └── middleware/        # Express middleware
 │       └── autoLogin.ts
 ├── db/
-│   ├── dev.db             # SQLite database file
+│   ├── dev.db             # SQLite database file (gitignored, created by db:push)
 │   ├── seed.ts            # Database seeding script
 │   └── constants.ts       # Seed data constants
 ├── package.json

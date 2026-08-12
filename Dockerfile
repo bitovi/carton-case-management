@@ -1,7 +1,8 @@
 FROM node:24-bookworm
 
 ENV NODE_ENV=development
-ENV DATABASE_URL=file:./db/dev.db
+# Relative to the Prisma schema dir (packages/shared/prisma/) -> packages/server/db/dev.db
+ENV DATABASE_URL=file:../../server/db/dev.db
 
 # Install system dependencies and Playwright dependencies
 RUN apt-get update && apt-get install -y \
@@ -86,13 +87,26 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /workspaces/carton-case-management
 
 COPY *.json ./
+COPY .env.example ./
+COPY scripts/ ./scripts/
 COPY packages/ ./packages/
-#COPY packages/shared/* ./packages/shared/
-#COPY packages/shared/prisma/* ./packages/shared/prisma/
-#COPY packages/client/* ./packages/client/
 
 RUN npm run setup
 
+# Build the client into packages/client/dist. packages/server/src/index.ts serves that directory
+# when NODE_ENV=production, which is what docker-compose.yaml sets - without this step it publishes
+# only port 3001 and every request to `/` 404s because the directory does not exist.
+# NODE_ENV stays `development` in this image on purpose: `npm run setup` above needs the dev
+# dependencies (vite, tsc) that npm would skip under `production`, and the ECS task definition
+# relies on Vite serving port 5173 (see the CMD note below).
+RUN npm run build
+
 EXPOSE 5173 3001
 
+# Runs both processes: Vite on 5173 and the API on 3001.
+# Do not narrow this to the server alone - infra/ecs.tf:94 points the ALB target group at
+# container port 5173 and infra/alb.tf:36 health-checks it, so the deployed app is served by Vite,
+# which proxies /trpc to localhost:3001 (see packages/client/vite.config.ts). Serving everything
+# from Express instead would be the better production setup, but it needs the target group and
+# health check moved to 3001 in the same change.
 CMD sh -c "npm run dev"

@@ -1,3 +1,9 @@
+# Production-style image (root Dockerfile). The SQLite file is persisted in the `app-data`
+# volume, so its mount path must stay in sync with the Dockerfile WORKDIR.
+#
+#   docker compose up --build -d
+#
+# Only the server port is published; the client is served as static files.
 services:
   app:
     build:
@@ -7,10 +13,12 @@ services:
       - '3001:3001'
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=file:./db/dev.db
+      # Relative to the Prisma schema dir (packages/shared/prisma/) -> packages/server/db/dev.db
+      - DATABASE_URL=file:../../server/db/dev.db
       - MOCK_USER_EMAIL=${MOCK_USER_EMAIL:-alex.morgan@carton.com}
     volumes:
-      - app-data:/app/packages/server/db
+      # Must match the image WORKDIR (see Dockerfile) so the SQLite file is actually persisted
+      - app-data:/workspaces/carton-case-management/packages/server/db
 
 volumes:
   app-data:

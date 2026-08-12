@@ -44,8 +44,41 @@ This application follows a monorepo structure using npm workspaces:
 
 ### Prerequisites
 
-- Node.js 22+ (or use the devcontainer)
+- Node.js 24 - the version in `.nvmrc`, matching the Docker images (or use the devcontainer)
 - npm 10+
+
+### Ways to run this project
+
+All of these are supported and produce the same result. Pick one — you do not need to combine them.
+
+| Mode | Command | Notes |
+|------|---------|-------|
+| Host (npm) | `npm run setup && npm run dev` | Creates `.env` automatically |
+| Docker (one-shot) | `docker compose -f docker-compose.local.yaml up --build -d` | Client 5173, server 3001 |
+| Devcontainer / Codespaces | "Reopen in Container" | Backed by `docker-compose.dev.yaml` |
+| Tests in Docker | `docker compose -f docker-compose.test.yaml up --build` | Uses a separate `test.db` |
+| Production image | `docker compose up --build -d` | Serves the built UI + API on 3001 |
+
+Each `docker-compose*.yaml` file has a header comment explaining its purpose.
+
+> **Note on the production image.** The root `Dockerfile` runs `npm run build`, so
+> `packages/client/dist` exists and the server serves the UI and the API together on port 3001 -
+> `NODE_ENV=production`, which `docker-compose.yaml` sets, is what switches static file serving on.
+>
+> The AWS deployment uses the same image but serves the app differently: `infra/ecs.tf` points the
+> ALB target group at container port **5173** and `infra/alb.tf` health-checks it, so there the Vite
+> dev server serves the UI and proxies `/trpc` to Express on 3001. That is why the image's `CMD`
+> still starts both processes. Moving the target group and health check to 3001 would let the
+> deployment serve the built assets from Express too - a worthwhile follow-up, but it has to be one
+> coordinated change.
+>
+> **Caveat on `down -v`.** All four compose files share one project name (the directory name), so
+> `docker compose -f <any-file> down -v` removes the named volumes belonging to *all* of them,
+> including `app-data` and the `node_modules` volumes. Use plain `down` unless you mean it.
+
+Mixing modes is fine — running the servers in Docker while running `npm test` or `npm run lint`
+on the host works, because every mode resolves the database to the same
+`packages/server/db/dev.db`.
 
 ### Development with Devcontainer (Recommended)
 
@@ -68,19 +101,16 @@ If not using devcontainer:
    npm install
    ```
 
-2. **Setup environment**
-
-   ```bash
-   cp .env.example .env
-   ```
-
-3. **Setup database**
+2. **Setup database**
 
    ```bash
    npm run setup
    ```
 
-4. **Start development servers**
+   This creates `.env` from `.env.example` if you don't already have one, installs dependencies,
+   then pushes and seeds the database. No manual `cp .env.example .env` step is needed.
+
+3. **Start development servers**
 
    ```bash
    npm run dev
@@ -89,7 +119,7 @@ If not using devcontainer:
    Or run them separately:
 
    ```bash
-   npm run dev:client  # Client on port 3000
+   npm run dev:client  # Client on port 5173
    npm run dev:server  # Server on port 3001
    ```
 
@@ -99,7 +129,7 @@ This application uses a simplified authentication system for development purpose
 
 **Default User**: Alex Morgan (alex.morgan@carton.com)
 
-**Testing as Different Users**: To test the application as a different user, set the `MOCK_USER_EMAIL` environment variable in `packages/server/.env`:
+**Testing as Different Users**: To test the application as a different user, set the `MOCK_USER_EMAIL` environment variable in the `.env` file at the project root:
 
 ```env
 MOCK_USER_EMAIL=jordan.doe@carton.com
@@ -213,6 +243,29 @@ carton-case-management/
 
 The application uses SQLite for simplicity. The database file is located at `packages/server/db/dev.db`. The Prisma schema is in `packages/shared/prisma/schema.prisma`.
 
+### DATABASE_URL is relative to the schema, not the project root
+
+Prisma resolves relative `file:` paths against the directory containing the schema
+(`packages/shared/prisma/`) — not the project root and not the current working directory.
+So the correct value is:
+
+```bash
+DATABASE_URL="file:../../server/db/dev.db"   # -> packages/server/db/dev.db
+```
+
+Use this **same value in every environment** (host, devcontainer, Docker, CI). Because the
+path is relative to the schema file, it stays correct no matter what the absolute root is,
+so `/workspaces/carton-case-management` and `/app` both resolve identically.
+
+Getting this wrong does not raise an error — SQLite just creates the file wherever the path
+lands. For example `file:./packages/server/db/dev.db` silently produces
+`packages/shared/prisma/packages/server/db/dev.db`. If you see an unexpected `dev.db`
+nested under `packages/shared/prisma/`, a `DATABASE_URL` is misconfigured.
+
+When running in a container that persists data with a volume, mount it at
+`<WORKDIR>/packages/server/db`, and make sure `<WORKDIR>` matches the `WORKDIR` of the
+Dockerfile you are building.
+
 ### Prisma Commands
 
 ```bash
@@ -245,10 +298,31 @@ npm run test:watch          # Run tests in watch mode
 
 ### E2E Tests (Playwright)
 
+Run these from the project root - they are root scripts, not client ones.
+
 ```bash
-cd packages/client
 npm run test:e2e            # Run E2E tests
-npm run test:e2e:watch      # Run E2E tests in watch mode
+npm run test:e2e:watch      # Open the Playwright UI for interactive debugging
+npm run test:e2e:ci         # Skip the browser check (browsers already installed)
+```
+
+The first two run `playwright install chromium` first, so a fresh clone downloads the browser
+(~511MB extracted) once and then skips it on every later run. `test:e2e:ci` omits that step; it
+exists for `docker-compose.test.yaml`, whose image already has the browser baked into a layer.
+
+Browsers live in a **per-user, per-Playwright-version** cache (`~/.cache/ms-playwright`, or
+`~/Library/Caches/ms-playwright` on macOS) shared by every project on the machine, and old
+revisions are never pruned. `npx playwright install --list` shows what is there and which
+Playwright versions reference it; `npx playwright uninstall --all` clears it.
+
+Chromium also needs a set of OS libraries. Every environment in this repo installs them already
+(`Dockerfile.test`, `.devcontainer/Dockerfile`), and macOS and Windows need nothing, so the scripts
+deliberately do **not** pass `--with-deps` - it re-runs `apt-get update` on every single invocation.
+If you run the E2E tests directly on a bare Linux host and Chromium fails to launch with a missing
+library, install them once by hand:
+
+```bash
+npx playwright install --with-deps chromium
 ```
 
 ## Storybook
@@ -490,12 +564,11 @@ test('displays cases from API', async () => {
 });
 ```
 
-For more examples, see:
+For working examples in this repo, see:
 
-- [Query Patterns](specs/001-trpc-react-query/contracts/query-example.tsx)
-- [Mutation Patterns](specs/001-trpc-react-query/contracts/mutation-example.tsx)
-- [Test Patterns](specs/001-trpc-react-query/contracts/test-example.test.tsx)
-- [Quickstart Guide](specs/001-trpc-react-query/quickstart.md)
+- [CaseList.tsx](packages/client/src/components/CaseList/CaseList.tsx) - query usage in a component
+- [CaseList.test.tsx](packages/client/src/components/CaseList/CaseList.test.tsx) - testing a component that queries
+- [packages/client/CLAUDE.md](packages/client/CLAUDE.md) - tRPC client conventions for this package
 
 ### Health
 

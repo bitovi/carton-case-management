@@ -1,3 +1,7 @@
+# Full test run in Docker: starts the app, then runs unit + E2E tests against it.
+# Uses its own database (test.db) so it never touches your dev data.
+#
+#   docker compose -f docker-compose.test.yaml up --build
 services:
   app:
     build:
@@ -8,9 +12,10 @@ services:
       - '5173:5173' # Client for E2E tests
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=file:./packages/server/db/test.db
-    # Setup database and start both client and server in dev mode
-    command: sh -c "npm run db:push && npm run dev"
+      - DATABASE_URL=file:../../server/db/test.db
+    # Push the schema AND seed it - the app cannot auto-login without seeded users, which fails
+    # every E2E test. Then start both client and server.
+    command: sh -c "npm run db:setup && npm run dev"
 
   tests:
     build:
@@ -18,19 +23,21 @@ services:
       dockerfile: Dockerfile.test
     environment:
       - NODE_ENV=test
-      - DATABASE_URL=file:./packages/server/db/test.db
+      - DATABASE_URL=file:../../server/db/test.db
       - BASE_URL=http://app:5173
     depends_on:
       app:
         condition: service_started
-    # Wait for app, then run all tests sequentially
+    # Wait for app, then run all tests sequentially.
+    # test:e2e:ci rather than test:e2e: Dockerfile.test already baked the browser into an image
+    # layer, so re-running `playwright install` here would only cost time and network.
     command: >
       sh -c "
       sleep 5 &&
       echo '=== Running Unit Tests ===' &&
       npm run test &&
       echo '=== Running E2E Tests ===' &&
-      npm run test:e2e
+      npm run test:e2e:ci
       "
 
 volumes:

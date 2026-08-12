@@ -2,11 +2,15 @@ import * as RadixDialog from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { DialogProps } from './types';
+import { DialogTitle } from './DialogTitle';
+import { DialogDescription } from './DialogDescription';
 
 export function Dialog({
   open,
   onOpenChange,
   type = 'Desktop',
+  title = 'Dialog',
+  description,
   children,
   header,
   footer,
@@ -27,6 +31,7 @@ export function Dialog({
       <RadixDialog.Portal>
         <RadixDialog.Overlay className="fixed inset-0 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <RadixDialog.Content
+          {...(description ? {} : { 'aria-describedby': undefined })}
           className={cn(
             'fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] bg-background flex flex-col shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]',
             {
@@ -38,6 +43,9 @@ export function Dialog({
             className
           )}
         >
+          <DialogTitle className="sr-only">{title}</DialogTitle>
+          {description && <DialogDescription>{description}</DialogDescription>}
+
           {isScrollable && header && (
             <div className="flex flex-col h-[52px] items-end p-4 relative shrink-0 w-full">
               {header}

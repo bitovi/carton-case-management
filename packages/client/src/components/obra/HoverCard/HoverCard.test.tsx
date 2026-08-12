@@ -37,10 +37,10 @@ describe('HoverCard', () => {
       // Hover over trigger
       await user.hover(screen.getByText('Hover me'));
 
-      // Wait for openDelay (default 700ms)
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      expect(screen.getByText('Hidden content')).toBeInTheDocument();
+      // findBy* polls inside act(), so Radix's openDelay timer (default 700ms) and the
+      // popper mount it triggers are covered. A bare sleep here lets those updates land
+      // outside act() and floods the run with warnings.
+      expect(await screen.findByText('Hidden content', undefined, { timeout: 2000 })).toBeInTheDocument();
     });
   });
 

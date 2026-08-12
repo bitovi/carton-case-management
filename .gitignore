@@ -70,3 +70,5 @@ Thumbs.db
 .temp/
 .tmp/
 .vite/
+
+.claude/settings.local.json

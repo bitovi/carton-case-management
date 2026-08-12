@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { beforeAll, afterEach, afterAll } from 'vitest';
-import { setupServer } from 'msw/node';
+import { server } from './src/test/server';
 
 // Polyfill for JSDOM - Radix UI requires these methods
 (global as any).Element.prototype.scrollIntoView = () => {};
@@ -13,8 +13,6 @@ import { setupServer } from 'msw/node';
   unobserve() {}
   disconnect() {}
 };
-
-export const server = setupServer();
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
 
