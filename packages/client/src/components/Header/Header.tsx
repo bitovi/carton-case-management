@@ -11,7 +11,7 @@ function CartonLogo({ size = 34 }: { size?: number }) {
 export function Header({ className, userInitials = 'AM', onAvatarClick }: HeaderProps) {
   return (
     <header
-      className={`w-full bg-[#1F51FF] flex items-center justify-between px-6 py-4 ${className || ''}`}
+      className={`w-full bg-[hsl(var(--header-bg))] flex items-center justify-between px-6 py-4 ${className || ''}`}
       aria-label="Main navigation"
     >
       <Link
