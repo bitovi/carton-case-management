@@ -1,0 +1,28 @@
+# carton-case-management — PRODUCTION.
+#
+# The platform app interface: one file describing the whole app (spec:
+# bitovi-platform-services/charts/interface.yaml). Its staging counterpart is
+# deploy/staging/values.yaml — two complete files rather than a base plus an
+# overlay, so each environment reads exactly one file and there are no merge
+# semantics to reason about.
+#
+# Absence of `env:` at the top level is what marks this as production: it
+# owns the shared tier (the ECR repository, the CI push role, the ESO
+# secret push-back) that staging reuses rather than duplicating.
+#
+# This app has no database dependency and no secrets — it's a training/demo
+# app whose SQLite data is intentionally ephemeral, reseeded with demo data
+# on every container start (confirmed with the app owner, not a gap).
+name: carton-case-management
+repo: bitovi/carton-case-management
+workloads:
+  main:
+    kind: server
+    port: 3001
+    health: /health
+    domain: carton-case-management.bitovi-tools.com
+    # Empty: the platform builds and hosts the image, CI fills the tag in on
+    # release. The app doesn't run until the first vX.Y.Z tag is pushed.
+    image: {}
+infra:
+  hostedZone: bitovi-tools-com
