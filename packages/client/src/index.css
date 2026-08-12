@@ -191,7 +191,7 @@
     --radius-full: 9999px;
 
     /* Header and menu colors (app-specific) */
-    --header-bg: 180 38% 16%; /* Dark teal #1a3a3a */
+    --header-bg: 24 100% 50%; /* Bright orange #ff6600 */
     --menu-bg: 240 20% 96%; /* Light gray sidebar */
     --menu-item-bg: 185 45% 80%; /* Light blue/teal #B8DFE6 */
     --menu-item-hover: 185 45% 70%; /* Darker on hover */
