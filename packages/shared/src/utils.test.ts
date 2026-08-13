@@ -44,7 +44,7 @@ describe('formatCaseNumber', () => {
     const date = new Date('2025-12-31T10:30:00Z');
     const result = formatCaseNumber(id, date);
 
-    expect(result).toBe('#CAS-251231-OPQRSTUV');
+    expect(result).toBe('#CAS-20251231-OPQRSTUV');
   });
 
   it('formats case number with string date', () => {
@@ -52,7 +52,7 @@ describe('formatCaseNumber', () => {
     const date = new Date(2026, 0, 15); // Use local date
     const result = formatCaseNumber(id, date.toISOString());
 
-    expect(result).toBe('#CAS-260115-12345678');
+    expect(result).toBe('#CAS-20260115-12345678');
   });
 
   it('uses last 8 characters of id', () => {
@@ -60,7 +60,7 @@ describe('formatCaseNumber', () => {
     const date = new Date('2025-06-01T12:00:00Z');
     const result = formatCaseNumber(id, date);
 
-    expect(result).toBe('#CAS-250601-90ABCDEF');
+    expect(result).toBe('#CAS-20250601-90ABCDEF');
   });
 
   it('converts id suffix to uppercase', () => {
@@ -68,7 +68,7 @@ describe('formatCaseNumber', () => {
     const date = new Date('2025-03-20T12:00:00Z');
     const result = formatCaseNumber(id, date);
 
-    expect(result).toBe('#CAS-250320-ABCDEFGH');
+    expect(result).toBe('#CAS-20250320-ABCDEFGH');
   });
 
   it('pads single digit month and day with zeros', () => {
@@ -76,7 +76,7 @@ describe('formatCaseNumber', () => {
     const date = new Date('2025-01-05T12:00:00Z');
     const result = formatCaseNumber(id, date);
 
-    expect(result).toBe('#CAS-250105-ABC12345');
+    expect(result).toBe('#CAS-20250105-ABC12345');
   });
 
   it('handles year rollover correctly', () => {
@@ -84,7 +84,7 @@ describe('formatCaseNumber', () => {
     const date = new Date('2030-12-31T23:59:59Z');
     const result = formatCaseNumber(id, date);
 
-    expect(result).toBe('#CAS-301231-12345678');
+    expect(result).toBe('#CAS-20301231-12345678');
   });
 
   it('handles short IDs by taking available characters', () => {
@@ -92,7 +92,7 @@ describe('formatCaseNumber', () => {
     const date = new Date('2025-07-15T12:00:00Z');
     const result = formatCaseNumber(id, date);
 
-    expect(result).toBe('#CAS-250715-SHORT');
+    expect(result).toBe('#CAS-20250715-SHORT');
   });
 
   it('handles exactly 8 character IDs', () => {
@@ -100,7 +100,7 @@ describe('formatCaseNumber', () => {
     const date = new Date('2025-10-10T12:00:00Z');
     const result = formatCaseNumber(id, date);
 
-    expect(result).toBe('#CAS-251010-12345678');
+    expect(result).toBe('#CAS-20251010-12345678');
   });
 
   it('formats with double digit months', () => {
@@ -108,7 +108,7 @@ describe('formatCaseNumber', () => {
     const date = new Date('2025-11-25T12:00:00Z');
     const result = formatCaseNumber(id, date);
 
-    expect(result).toBe('#CAS-251125-ABCDEFGH');
+    expect(result).toBe('#CAS-20251125-ABCDEFGH');
   });
 
   it('handles ISO date strings', () => {
@@ -116,7 +116,7 @@ describe('formatCaseNumber', () => {
     const dateString = '2026-02-14T14:30:00.000Z';
     const result = formatCaseNumber(id, dateString);
 
-    expect(result).toBe('#CAS-260214-A1B2C3D4');
+    expect(result).toBe('#CAS-20260214-A1B2C3D4');
   });
 
   it('maintains mixed case conversion to uppercase', () => {
@@ -124,6 +124,6 @@ describe('formatCaseNumber', () => {
     const date = new Date('2025-05-05T12:00:00Z');
     const result = formatCaseNumber(id, date);
 
-    expect(result).toBe('#CAS-250505-ABCDEFGH');
+    expect(result).toBe('#CAS-20250505-ABCDEFGH');
   });
 });
