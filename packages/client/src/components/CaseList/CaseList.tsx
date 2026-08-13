@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/obra/Skeleton';
@@ -12,6 +12,24 @@ export function CaseList({ onCaseClick }: CaseListProps) {
   const navigate = useNavigate();
   const { data: cases, isLoading, error, refetch } = trpc.case.list.useQuery();
   const [searchTerm, setSearchTerm] = useState('');
+  const filteredCases = useMemo(() => {
+    if (!cases) {
+      return [];
+    }
+
+    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+    if (normalizedSearchTerm === '') {
+      return cases;
+    }
+
+    return cases.filter((caseItem: CaseListItem) => {
+      const caseNumber = formatCaseNumber(caseItem.id, caseItem.createdAt).toLowerCase();
+      return (
+        caseItem.title.toLowerCase().includes(normalizedSearchTerm) ||
+        caseNumber.includes(normalizedSearchTerm)
+      );
+    });
+  }, [cases, searchTerm]);
 
   if (isLoading) {
     return (
@@ -74,18 +92,6 @@ export function CaseList({ onCaseClick }: CaseListProps) {
       </div>
     );
   }
-
-  const normalizedSearchTerm = searchTerm.trim().toLowerCase();
-  const filteredCases =
-    normalizedSearchTerm === ''
-      ? cases
-      : cases.filter((caseItem: CaseListItem) => {
-          const caseNumber = formatCaseNumber(caseItem.id, caseItem.createdAt).toLowerCase();
-          return (
-            caseItem.title.toLowerCase().includes(normalizedSearchTerm) ||
-            caseNumber.includes(normalizedSearchTerm)
-          );
-        });
 
   return (
     <div className="flex flex-col w-full lg:w-[200px]">
