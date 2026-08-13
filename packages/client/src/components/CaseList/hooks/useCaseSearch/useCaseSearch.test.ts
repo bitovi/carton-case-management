@@ -64,6 +64,6 @@ describe('useCaseSearch', () => {
 
   it('handles undefined cases', () => {
     const { result } = renderHook(() => useCaseSearch(undefined));
-    expect(result.current.filteredCases).toBeUndefined();
+    expect(result.current.filteredCases).toEqual([]);
   });
 });

@@ -6,7 +6,7 @@ export function useCaseSearch(cases: CaseListItem[] | undefined) {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredCases = useMemo(() => {
-    if (!cases) return cases;
+    if (!cases) return [];
 
     const query = searchTerm.trim().toLowerCase();
     if (!query) return cases;

@@ -95,13 +95,13 @@ export function CaseList({ onCaseClick }: CaseListProps) {
         className="mb-2"
         aria-label="Search cases"
       />
-      {filteredCases && filteredCases.length === 0 ? (
+      {filteredCases.length === 0 ? (
         <div className="text-center text-gray-500 py-2">
           <p className="text-sm">No matching cases found</p>
         </div>
       ) : (
         <div className="flex flex-col gap-2">
-          {filteredCases?.map((caseItem: CaseListItem) => {
+          {filteredCases.map((caseItem: CaseListItem) => {
             const isActive = caseItem.id === activeId;
             return (
               <Link
