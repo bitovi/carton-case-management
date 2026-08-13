@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { screen, waitFor, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
+import { formatCaseNumber } from '@carton/shared/client';
 import { CaseList } from './CaseList';
 import { createMemoryRouterWrapper } from '../../test/utils';
 import { server } from '../../test/server';
@@ -271,7 +272,8 @@ describe('CaseList', () => {
     });
 
     const searchInput = screen.getByPlaceholderText('Search cases...');
-    await user.type(searchInput, '240115');
+    const firstCaseNumber = formatCaseNumber(mockCases[0].id, mockCases[0].createdAt);
+    await user.type(searchInput, firstCaseNumber);
 
     expect(screen.getByText('First Case')).toBeInTheDocument();
     expect(screen.queryByText('Second Case')).not.toBeInTheDocument();

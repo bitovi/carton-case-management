@@ -95,7 +95,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
         placeholder="Search cases..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="mb-2"
+        className="mb-2 mt-2"
         size="small"
       />
       <div className="flex flex-col gap-2">
