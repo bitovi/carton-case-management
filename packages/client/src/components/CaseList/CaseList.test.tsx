@@ -230,4 +230,75 @@ describe('CaseList', () => {
     const titleElement = screen.getByText('Very Long Case Title That Should Be Truncated');
     expect(titleElement).toHaveClass('truncate');
   });
+
+  it('filters cases by title as user types', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+    });
+
+    const searchInput = screen.getByPlaceholderText('Search cases...');
+    await user.type(searchInput, 'First');
+
+    expect(screen.getByText('First Case')).toBeInTheDocument();
+    expect(screen.queryByText('Second Case')).not.toBeInTheDocument();
+  });
+
+  it('filters cases by case number as user types', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+    });
+
+    const searchInput = screen.getByPlaceholderText('Search cases...');
+    await user.type(searchInput, '240115');
+
+    expect(screen.getByText('First Case')).toBeInTheDocument();
+    expect(screen.queryByText('Second Case')).not.toBeInTheDocument();
+  });
+
+  it('restores full list when search input is cleared', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+    });
+
+    const searchInput = screen.getByPlaceholderText('Search cases...');
+    await user.type(searchInput, 'First');
+    expect(screen.queryByText('Second Case')).not.toBeInTheDocument();
+
+    await user.clear(searchInput);
+    expect(screen.getByText('First Case')).toBeInTheDocument();
+    expect(screen.getByText('Second Case')).toBeInTheDocument();
+  });
 });
