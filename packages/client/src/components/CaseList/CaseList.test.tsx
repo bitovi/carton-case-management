@@ -280,6 +280,12 @@ describe('CaseList', () => {
     expect(screen.getByText('No matching cases found')).toBeInTheDocument();
     expect(screen.queryByText('First Case')).not.toBeInTheDocument();
     expect(screen.queryByText('Second Case')).not.toBeInTheDocument();
+
+    await user.clear(searchInput);
+
+    expect(screen.queryByText('No matching cases found')).not.toBeInTheDocument();
+    expect(screen.getByText('First Case')).toBeInTheDocument();
+    expect(screen.getByText('Second Case')).toBeInTheDocument();
   });
 
   it('filters case-insensitively for title and case number', async () => {

@@ -12,6 +12,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const { data: cases, isLoading, error, refetch } = trpc.case.list.useQuery();
+  const hasSearchTerm = searchTerm.trim().length > 0;
   const filteredCases = useMemo(() => {
     if (!cases) {
       return [];
@@ -107,7 +108,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
         aria-label="Search cases"
         className="mb-2"
       />
-      {filteredCases.length === 0 ? (
+      {hasSearchTerm && filteredCases.length === 0 ? (
         <div className="text-center text-gray-500">
           <p className="text-sm">No matching cases found</p>
         </div>
