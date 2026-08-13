@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { userEvent, within } from '@storybook/test';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { http, HttpResponse } from 'msw';
 import { TrpcProvider } from '@/lib/trpc';
@@ -145,6 +146,21 @@ export const Empty: Story = {
         }),
       ],
     },
+  },
+};
+
+export const Searching: Story = {
+  decorators: [
+    (Story) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const searchInput = await canvas.findByRole('searchbox', { name: /search cases/i });
+    await userEvent.type(searchInput, 'payment');
   },
 };
 
