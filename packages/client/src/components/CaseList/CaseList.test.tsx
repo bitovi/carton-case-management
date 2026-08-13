@@ -281,4 +281,32 @@ describe('CaseList', () => {
     expect(screen.queryByText('First Case')).not.toBeInTheDocument();
     expect(screen.queryByText('Second Case')).not.toBeInTheDocument();
   });
+
+  it('filters case-insensitively for title and case number', async () => {
+    const user = userEvent.setup();
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+    });
+
+    const searchInput = screen.getByRole('textbox', { name: 'Search cases' });
+    await user.type(searchInput, 'second case');
+
+    expect(screen.queryByText('First Case')).not.toBeInTheDocument();
+    expect(screen.getByText('Second Case')).toBeInTheDocument();
+
+    await user.clear(searchInput);
+    await user.type(searchInput, '#cas-240117-2');
+
+    expect(screen.queryByText('First Case')).not.toBeInTheDocument();
+    expect(screen.getByText('Second Case')).toBeInTheDocument();
+  });
 });
