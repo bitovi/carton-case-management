@@ -18,7 +18,7 @@ export function formatCaseNumber(id: string, createdAt: Date | string): string {
   const date = typeof createdAt === 'string' ? new Date(createdAt) : createdAt;
 
   // Get YY, MM, DD
-  const year = date.getFullYear().toString().slice(-2);
+  const year = date.getFullYear().toString().slice(-4);
   const month = (date.getMonth() + 1).toString().padStart(2, '0');
   const day = date.getDate().toString().padStart(2, '0');
 
