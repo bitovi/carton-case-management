@@ -1,14 +1,18 @@
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Search } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/obra/Skeleton';
 import { Button } from '@/components/obra/Button';
+import { Input } from '@/components/obra/Input';
 import { formatCaseNumber } from '@carton/shared/client';
+import { useCaseSearch } from './useCaseSearch';
 import type { CaseListProps, CaseListItem } from './types';
 
 export function CaseList({ onCaseClick }: CaseListProps) {
   const { id: activeId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: cases, isLoading, error, refetch } = trpc.case.list.useQuery();
+  const { searchQuery, setSearchQuery, filteredCases } = useCaseSearch(cases);
 
   if (isLoading) {
     return (
@@ -81,8 +85,19 @@ export function CaseList({ onCaseClick }: CaseListProps) {
       >
         Create Case
       </Button>
+      <Input
+        value={searchQuery}
+        onChange={(event) => setSearchQuery(event.target.value)}
+        placeholder="Search cases..."
+        leftDecoration={<Search className="h-4 w-4 text-muted-foreground" />}
+        size="small"
+        className="mb-2"
+      />
+      {filteredCases?.length === 0 && (
+        <p className="text-sm text-gray-500 text-center py-2">No cases match your search</p>
+      )}
       <div className="flex flex-col gap-2">
-        {cases?.map((caseItem: CaseListItem) => {
+        {filteredCases?.map((caseItem: CaseListItem) => {
           const isActive = caseItem.id === activeId;
           return (
             <Link
