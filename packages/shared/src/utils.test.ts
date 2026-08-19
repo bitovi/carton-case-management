@@ -126,4 +126,12 @@ describe('formatCaseNumber', () => {
 
     expect(result).toBe('#CAS-250505-ABCDEFGH');
   });
+
+  it('formats id suffix with non-letter characters unchanged', () => {
+    const id = 'case-abc-12xy34z!';
+    const date = new Date('2025-08-09T12:00:00Z');
+    const result = formatCaseNumber(id, date);
+
+    expect(result).toBe('#CAS-250809-12XY34Z!');
+  });
 });
