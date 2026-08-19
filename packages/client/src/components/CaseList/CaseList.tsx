@@ -94,7 +94,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
         className="mb-2"
       />
       <div className="flex flex-col gap-2">
-        {filtered.length === 0 ? (
+        {filtered.length === 0 && query.trim() !== '' ? (
           <p className="text-sm text-gray-500 text-center px-4 py-2">No cases match your search</p>
         ) : (
           filtered.map((caseItem: CaseListItem) => {

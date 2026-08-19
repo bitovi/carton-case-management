@@ -5,16 +5,22 @@ import type { CaseListItem } from './types';
 export function useCaseSearch(cases: CaseListItem[] | undefined) {
   const [query, setQuery] = useState('');
 
+  const casesWithNumber = useMemo(
+    () =>
+      (cases ?? []).map((c) => ({
+        item: c,
+        caseNumber: formatCaseNumber(c.id, c.createdAt).toLowerCase(),
+      })),
+    [cases]
+  );
+
   const filtered = useMemo(() => {
-    if (!cases) return [];
-    if (!query.trim()) return cases;
+    if (!query.trim()) return cases ?? [];
     const lower = query.toLowerCase();
-    return cases.filter(
-      (c) =>
-        c.title.toLowerCase().includes(lower) ||
-        formatCaseNumber(c.id, c.createdAt).toLowerCase().includes(lower)
-    );
-  }, [cases, query]);
+    return casesWithNumber
+      .filter((c) => c.item.title.toLowerCase().includes(lower) || c.caseNumber.includes(lower))
+      .map((c) => c.item);
+  }, [casesWithNumber, query, cases]);
 
   return { query, setQuery, filtered };
 }
