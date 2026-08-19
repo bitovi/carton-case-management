@@ -69,6 +69,75 @@ describe('CaseList', () => {
     expect(screen.getByText('#CAS-240115-1')).toBeInTheDocument();
     expect(screen.getByText('Second Case')).toBeInTheDocument();
     expect(screen.getByText('#CAS-240117-2')).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /search cases/i })).toBeInTheDocument();
+  });
+
+  it('filters cases by title as the user types', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByRole('textbox', { name: /search cases/i }), 'second');
+
+    expect(screen.queryByText('First Case')).not.toBeInTheDocument();
+    expect(screen.getByText('Second Case')).toBeInTheDocument();
+    expect(screen.getByText('#CAS-240117-2')).toBeInTheDocument();
+  });
+
+  it('filters cases by case number as the user types', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByRole('textbox', { name: /search cases/i }), '240117');
+
+    expect(screen.queryByText('First Case')).not.toBeInTheDocument();
+    expect(screen.getByText('Second Case')).toBeInTheDocument();
+  });
+
+  it('shows a no matches state when the search returns no cases', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByRole('textbox', { name: /search cases/i }), 'missing');
+
+    expect(screen.getByText('No matching cases found')).toBeInTheDocument();
+    expect(screen.queryByText('First Case')).not.toBeInTheDocument();
+    expect(screen.queryByText('Second Case')).not.toBeInTheDocument();
   });
 
   it('renders error state when API call fails', async () => {
@@ -133,6 +202,55 @@ describe('CaseList', () => {
 
     const activeLink = screen.getByText('First Case').closest('a');
     expect(activeLink).toHaveClass('bg-[#e8feff]');
+  });
+
+  it('keeps the active case visible when it does not match the search', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/cases/1']);
+    render(
+      <Routes>
+        <Route path="/cases/:id" element={<CaseList />} />
+      </Routes>,
+      { wrapper: Wrapper }
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByRole('textbox', { name: /search cases/i }), 'missing');
+
+    expect(screen.getByText('First Case')).toBeInTheDocument();
+    expect(screen.queryByText('No matching cases found')).not.toBeInTheDocument();
+  });
+
+  it('uses a unique search input id for each instance', async () => {
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(
+      <>
+        <CaseList />
+        <CaseList />
+      </>,
+      { wrapper: Wrapper }
+    );
+
+    const searchInputs = await screen.findAllByRole('textbox', { name: /search cases/i });
+
+    expect(searchInputs).toHaveLength(2);
+    expect(new Set(searchInputs.map((input) => input.getAttribute('id'))).size).toBe(2);
   });
 
   it('renders cases as links with correct paths', async () => {
