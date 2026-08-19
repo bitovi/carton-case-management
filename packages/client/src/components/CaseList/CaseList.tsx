@@ -89,6 +89,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         placeholder="Search cases..."
+        aria-label="Search cases"
         leftDecoration={<Search className="h-4 w-4 text-muted-foreground" />}
         className="w-full mb-2"
       />
