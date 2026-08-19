@@ -5,17 +5,25 @@ import type { CaseListItem } from '../../types';
 export function useCaseFilters(cases: CaseListItem[] | undefined) {
   const [searchQuery, setSearchQuery] = useState('');
 
+  const casesWithNumbers = useMemo(
+    () =>
+      (cases ?? []).map((caseItem) => ({
+        ...caseItem,
+        caseNumber: formatCaseNumber(caseItem.id, caseItem.createdAt),
+      })),
+    [cases]
+  );
+
   const filteredCases = useMemo(() => {
-    if (!cases) return [];
-
     const query = searchQuery.trim().toLowerCase();
-    if (!query) return cases;
+    if (!query) return casesWithNumbers;
 
-    return cases.filter((caseItem) => {
-      const caseNumber = formatCaseNumber(caseItem.id, caseItem.createdAt).toLowerCase();
-      return caseItem.title.toLowerCase().includes(query) || caseNumber.includes(query);
-    });
-  }, [cases, searchQuery]);
+    return casesWithNumbers.filter(
+      (caseItem) =>
+        caseItem.title.toLowerCase().includes(query) ||
+        caseItem.caseNumber.toLowerCase().includes(query)
+    );
+  }, [casesWithNumbers, searchQuery]);
 
   return { searchQuery, setSearchQuery, filteredCases };
 }

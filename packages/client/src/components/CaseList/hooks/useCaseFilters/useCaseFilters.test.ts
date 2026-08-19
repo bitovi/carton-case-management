@@ -32,6 +32,11 @@ describe('useCaseFilters', () => {
     expect(result.current.filteredCases).toHaveLength(2);
   });
 
+  it('attaches a formatted caseNumber to each case', () => {
+    const { result } = renderHook(() => useCaseFilters(mockCases));
+    expect(result.current.filteredCases[0].caseNumber).toBe('#CAS-240115-ABCD1234');
+  });
+
   it('returns an empty array when cases is undefined', () => {
     const { result } = renderHook(() => useCaseFilters(undefined));
     expect(result.current.filteredCases).toEqual([]);

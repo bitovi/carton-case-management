@@ -4,9 +4,8 @@ import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/obra/Skeleton';
 import { Button } from '@/components/obra/Button';
 import { Input } from '@/components/obra/Input';
-import { formatCaseNumber } from '@carton/shared/client';
 import { useCaseFilters } from './hooks/useCaseFilters';
-import type { CaseListProps, CaseListItem } from './types';
+import type { CaseListProps } from './types';
 
 export function CaseList({ onCaseClick }: CaseListProps) {
   const { id: activeId } = useParams<{ id: string }>();
@@ -100,7 +99,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
         </div>
       ) : (
         <div className="flex flex-col gap-2">
-          {filteredCases.map((caseItem: CaseListItem) => {
+          {filteredCases.map((caseItem) => {
             const isActive = caseItem.id === activeId;
             return (
               <Link
@@ -113,9 +112,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
               >
                 <div className="flex flex-col items-start text-sm leading-[21px] w-full lg:w-[167px]">
                   <p className="font-semibold text-[#00848b] w-full truncate">{caseItem.title}</p>
-                  <p className="font-normal text-[#192627] w-full truncate">
-                    {formatCaseNumber(caseItem.id, caseItem.createdAt)}
-                  </p>
+                  <p className="font-normal text-[#192627] w-full truncate">{caseItem.caseNumber}</p>
                 </div>
               </Link>
             );
