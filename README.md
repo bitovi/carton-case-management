@@ -5,6 +5,7 @@ commands:
 - npm install -> npm run setup -> npm run dev
 
 <!-- TODO: udpdate this readme, project has some changes since initial copilot spinup -->
+<!-- throwaway test change - safe to revert -->
 
 # Carton Case Management
 
