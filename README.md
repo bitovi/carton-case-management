@@ -4,7 +4,7 @@ commands:
 - cmd+shift+p -> Dev Containers: Reopen in Container
 - npm install -> npm run setup -> npm run dev
 
-<!-- TODO: udpdate this readme, project has some changes since initial copilot spinup -->
+<!-- TODO: update this readme, project has some changes since initial copilot spinup -->
 
 # Carton Case Management
 
