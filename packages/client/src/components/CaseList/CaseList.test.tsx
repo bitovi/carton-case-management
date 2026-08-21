@@ -230,4 +230,58 @@ describe('CaseList', () => {
     const titleElement = screen.getByText('Very Long Case Title That Should Be Truncated');
     expect(titleElement).toHaveClass('truncate');
   });
+
+  it('filters cases by title as the user types', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+      expect(screen.getByText('Second Case')).toBeInTheDocument();
+    });
+
+    const searchInput = screen.getByRole('searchbox', { name: /search cases/i });
+    await user.type(searchInput, 'second');
+
+    expect(screen.queryByText('First Case')).not.toBeInTheDocument();
+    expect(screen.getByText('Second Case')).toBeInTheDocument();
+  });
+
+  it('filters cases by case number as the user types', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('#CAS-240115-1')).toBeInTheDocument();
+      expect(screen.getByText('#CAS-240117-2')).toBeInTheDocument();
+    });
+
+    const searchInput = screen.getByRole('searchbox', { name: /search cases/i });
+    await user.type(searchInput, '240115');
+
+    expect(screen.getByText('#CAS-240115-1')).toBeInTheDocument();
+    expect(screen.queryByText('#CAS-240117-2')).not.toBeInTheDocument();
+    expect(screen.queryByText('No matching cases')).not.toBeInTheDocument();
+
+    await user.clear(searchInput);
+    await user.type(searchInput, 'not-a-match');
+
+    expect(screen.getByText('No matching cases')).toBeInTheDocument();
+  });
 });
