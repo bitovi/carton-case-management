@@ -6,6 +6,7 @@ import { CaseList } from './CaseList';
 import { createMemoryRouterWrapper } from '../../test/utils';
 import { server } from '../../test/server';
 import { Routes, Route } from 'react-router-dom';
+import { formatCaseNumber } from '@carton/shared/client';
 
 const mockCases = [
   {
@@ -229,5 +230,78 @@ describe('CaseList', () => {
 
     const titleElement = screen.getByText('Very Long Case Title That Should Be Truncated');
     expect(titleElement).toHaveClass('truncate');
+  });
+
+  it('filters cases by title as the user types', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+    });
+
+    const searchInput = screen.getByPlaceholderText('Search cases...');
+    await user.type(searchInput, 'second');
+
+    expect(screen.queryByText('First Case')).not.toBeInTheDocument();
+    expect(screen.getByText('Second Case')).toBeInTheDocument();
+  });
+
+  it('filters cases by case number as the user types', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+    });
+
+    const firstCaseNumber = formatCaseNumber(mockCases[0].id, mockCases[0].createdAt);
+    const searchInput = screen.getByPlaceholderText('Search cases...');
+    await user.type(searchInput, firstCaseNumber);
+
+    expect(screen.getByText('First Case')).toBeInTheDocument();
+    expect(screen.queryByText('Second Case')).not.toBeInTheDocument();
+  });
+
+  it('shows a no-results message when the search does not match any case', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+    });
+
+    const searchInput = screen.getByPlaceholderText('Search cases...');
+    await user.type(searchInput, 'nonexistent case');
+
+    await waitFor(() => {
+      expect(screen.getByText('No matching cases found')).toBeInTheDocument();
+    });
+    expect(screen.queryByText('First Case')).not.toBeInTheDocument();
+    expect(screen.queryByText('Second Case')).not.toBeInTheDocument();
   });
 });
