@@ -230,4 +230,71 @@ describe('CaseList', () => {
     const titleElement = screen.getByText('Very Long Case Title That Should Be Truncated');
     expect(titleElement).toHaveClass('truncate');
   });
+
+  it('filters cases by title as the user types', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByRole('textbox', { name: /search cases/i }), 'second');
+
+    expect(screen.queryByText('First Case')).not.toBeInTheDocument();
+    expect(screen.getByText('Second Case')).toBeInTheDocument();
+  });
+
+  it('filters cases by case number as the user types', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByRole('textbox', { name: /search cases/i }), '240117');
+
+    expect(screen.queryByText('First Case')).not.toBeInTheDocument();
+    expect(screen.getByText('Second Case')).toBeInTheDocument();
+  });
+
+  it('shows an empty search state when no cases match the filter', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByRole('textbox', { name: /search cases/i }), 'missing');
+
+    expect(screen.queryByText('First Case')).not.toBeInTheDocument();
+    expect(screen.queryByText('Second Case')).not.toBeInTheDocument();
+    expect(screen.getByText('No matching cases found')).toBeInTheDocument();
+  });
 });
