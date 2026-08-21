@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Search } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/obra/Skeleton';
 import { Button } from '@/components/obra/Button';
+import { Input } from '@/components/obra/Input';
 import { formatCaseNumber } from '@carton/shared/client';
 import type { CaseListProps, CaseListItem } from './types';
 
@@ -9,6 +12,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
   const { id: activeId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: cases, isLoading, error, refetch } = trpc.case.list.useQuery();
+  const [search, setSearch] = useState('');
 
   if (isLoading) {
     return (
@@ -81,8 +85,24 @@ export function CaseList({ onCaseClick }: CaseListProps) {
       >
         Create Case
       </Button>
+      <Input
+        placeholder="Search cases..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        leftDecoration={<Search size={14} className="text-gray-400" />}
+        className="mb-2"
+        size="small"
+      />
       <div className="flex flex-col gap-2">
-        {cases?.map((caseItem: CaseListItem) => {
+        {cases
+          ?.filter((caseItem: CaseListItem) => {
+            const query = search.toLowerCase();
+            return (
+              caseItem.title.toLowerCase().includes(query) ||
+              formatCaseNumber(caseItem.id, caseItem.createdAt).toLowerCase().includes(query)
+            );
+          })
+          .map((caseItem: CaseListItem) => {
           const isActive = caseItem.id === activeId;
           return (
             <Link
