@@ -1,7 +1,10 @@
+import { useMemo, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/obra/Skeleton';
 import { Button } from '@/components/obra/Button';
+import { Input } from '@/components/obra/Input';
+import { Search } from 'lucide-react';
 import { formatCaseNumber } from '@carton/shared/client';
 import type { CaseListProps, CaseListItem } from './types';
 
@@ -9,6 +12,22 @@ export function CaseList({ onCaseClick }: CaseListProps) {
   const { id: activeId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: cases, isLoading, error, refetch } = trpc.case.list.useQuery();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredCases = useMemo(() => {
+    if (!cases) {
+      return [];
+    }
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    if (!normalizedQuery) {
+      return cases;
+    }
+    return cases.filter((caseItem) => {
+      const caseTitle = caseItem.title.toLowerCase();
+      const caseNumber = formatCaseNumber(caseItem.id, caseItem.createdAt).toLowerCase();
+      return caseTitle.includes(normalizedQuery) || caseNumber.includes(normalizedQuery);
+    });
+  }, [cases, searchQuery]);
 
   if (isLoading) {
     return (
@@ -81,8 +100,16 @@ export function CaseList({ onCaseClick }: CaseListProps) {
       >
         Create Case
       </Button>
+      <Input
+        value={searchQuery}
+        onChange={(event) => setSearchQuery(event.target.value)}
+        placeholder="Search cases"
+        leftDecoration={<Search className="h-4 w-4 text-muted-foreground" />}
+        className="mb-2"
+        aria-label="Search cases"
+      />
       <div className="flex flex-col gap-2">
-        {cases?.map((caseItem: CaseListItem) => {
+        {filteredCases.map((caseItem: CaseListItem) => {
           const isActive = caseItem.id === activeId;
           return (
             <Link
@@ -103,6 +130,9 @@ export function CaseList({ onCaseClick }: CaseListProps) {
           );
         })}
       </div>
+      {filteredCases.length === 0 && (
+        <p className="text-sm text-gray-500 text-center py-2">No matching cases found</p>
+      )}
     </div>
   );
 }
