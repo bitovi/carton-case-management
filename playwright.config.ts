@@ -17,6 +17,7 @@ export default defineConfig({
   use: {
     baseURL,
     trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
     // Containers often have no LANG set, which makes Chromium report an invalid
     // navigator.language ("en-US@posix"). Pinning the locale keeps runs deterministic
     // and matches what a real browser reports.
