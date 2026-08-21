@@ -16,7 +16,7 @@ describe('CaseInformation', () => {
     renderWithTrpc(<CaseInformation caseId="1" caseData={mockCaseData} />);
 
     expect(screen.getAllByText('Test Case').length).toBeGreaterThan(0);
-    // Case number is formatted as #CAS-YYMMDD-{last 8 chars of id}
-    expect(screen.getAllByText('#CAS-240115-1').length).toBeGreaterThan(0);
+    // Case number is formatted as #CAS-YYYYMMDD-{last 8 chars of id}
+    expect(screen.getAllByText('#CAS-20240115-1').length).toBeGreaterThan(0);
   });
 });

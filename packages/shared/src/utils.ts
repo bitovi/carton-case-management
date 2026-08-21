@@ -11,13 +11,13 @@ export function formatDate(date: Date): string {
 
 /**
  * Generates a case number from case ID and creation date
- * Format: #CAS-YYMMDD-{last 8 digits of id}
- * Example: #CAS-251231-a1b2c3d4
+ * Format: #CAS-YYYYMMDD-{last 8 digits of id}
+ * Example: #CAS-20251231-a1b2c3d4
  */
 export function formatCaseNumber(id: string, createdAt: Date | string): string {
   const date = typeof createdAt === 'string' ? new Date(createdAt) : createdAt;
 
-  // Get YY, MM, DD
+  // Get YYYY, MM, DD
   const year = date.getFullYear().toString().slice(-4);
   const month = (date.getMonth() + 1).toString().padStart(2, '0');
   const day = date.getDate().toString().padStart(2, '0');
