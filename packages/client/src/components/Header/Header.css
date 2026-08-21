@@ -1,0 +1,3 @@
+.header-gradient {
+  background: linear-gradient(to right, var(--teal-950), var(--orange-600));
+}

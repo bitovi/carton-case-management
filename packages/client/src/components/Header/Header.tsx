@@ -3,6 +3,7 @@ import { MoreOptionsMenu, MenuItem } from '@/components/common/MoreOptionsMenu';
 import { Button } from '@/components/obra/Button';
 import CartonLogoSvg from '@/assets/carton-logo.svg';
 import type { HeaderProps } from './types';
+import './Header.css';
 
 function CartonLogo({ size = 34 }: { size?: number }) {
   return <img src={CartonLogoSvg} alt="Carton Case Management" width={size} height={size} />;
@@ -11,7 +12,7 @@ function CartonLogo({ size = 34 }: { size?: number }) {
 export function Header({ className, userInitials = 'AM', onAvatarClick }: HeaderProps) {
   return (
     <header
-      className={`w-full bg-[#002a2d] flex items-center justify-between px-6 py-4 ${className || ''}`}
+      className={`w-full header-gradient flex items-center justify-between px-6 py-4 ${className || ''}`}
       aria-label="Main navigation"
     >
       <Link
