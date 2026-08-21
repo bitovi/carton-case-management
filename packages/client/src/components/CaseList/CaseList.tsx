@@ -1,7 +1,9 @@
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useMemo, useState } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/obra/Skeleton';
 import { Button } from '@/components/obra/Button';
+import { Input } from '@/components/obra/Input';
 import { formatCaseNumber } from '@carton/shared/client';
 import type { CaseListProps, CaseListItem } from './types';
 
@@ -9,6 +11,26 @@ export function CaseList({ onCaseClick }: CaseListProps) {
   const { id: activeId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: cases, isLoading, error, refetch } = trpc.case.list.useQuery();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
+  const filteredCases = useMemo(() => {
+    if (!cases) {
+      return [];
+    }
+
+    if (!normalizedSearchQuery) {
+      return cases;
+    }
+
+    return cases.filter((caseItem: CaseListItem) => {
+      const caseNumber = formatCaseNumber(caseItem.id, caseItem.createdAt).toLowerCase();
+      return (
+        caseItem.title.toLowerCase().includes(normalizedSearchQuery) ||
+        caseNumber.includes(normalizedSearchQuery)
+      );
+    });
+  }, [cases, normalizedSearchQuery]);
 
   if (isLoading) {
     return (
@@ -81,27 +103,38 @@ export function CaseList({ onCaseClick }: CaseListProps) {
       >
         Create Case
       </Button>
+      <Input
+        value={searchQuery}
+        onChange={(event) => setSearchQuery(event.target.value)}
+        placeholder="Search cases"
+        size="small"
+        className="mb-2"
+      />
       <div className="flex flex-col gap-2">
-        {cases?.map((caseItem: CaseListItem) => {
-          const isActive = caseItem.id === activeId;
-          return (
-            <Link
-              key={caseItem.id}
-              to={`/cases/${caseItem.id}`}
-              onClick={onCaseClick}
-              className={`flex items-center justify-between px-4 py-2 rounded-lg transition-colors ${
-                isActive ? 'bg-[#e8feff]' : 'hover:bg-gray-100'
-              }`}
-            >
-              <div className="flex flex-col items-start text-sm leading-[21px] w-full lg:w-[167px]">
-                <p className="font-semibold text-[#00848b] w-full truncate">{caseItem.title}</p>
-                <p className="font-normal text-[#192627] w-full truncate">
-                  {formatCaseNumber(caseItem.id, caseItem.createdAt)}
-                </p>
-              </div>
-            </Link>
-          );
-        })}
+        {filteredCases.length === 0 ? (
+          <p className="px-4 py-2 text-sm text-gray-500">No matching cases</p>
+        ) : (
+          filteredCases.map((caseItem: CaseListItem) => {
+            const isActive = caseItem.id === activeId;
+            return (
+              <Link
+                key={caseItem.id}
+                to={`/cases/${caseItem.id}`}
+                onClick={onCaseClick}
+                className={`flex items-center justify-between px-4 py-2 rounded-lg transition-colors ${
+                  isActive ? 'bg-[#e8feff]' : 'hover:bg-gray-100'
+                }`}
+              >
+                <div className="flex flex-col items-start text-sm leading-[21px] w-full lg:w-[167px]">
+                  <p className="font-semibold text-[#00848b] w-full truncate">{caseItem.title}</p>
+                  <p className="font-normal text-[#192627] w-full truncate">
+                    {formatCaseNumber(caseItem.id, caseItem.createdAt)}
+                  </p>
+                </div>
+              </Link>
+            );
+          })
+        )}
       </div>
     </div>
   );
