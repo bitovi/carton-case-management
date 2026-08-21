@@ -1,14 +1,25 @@
+import { useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Search } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/obra/Skeleton';
 import { Button } from '@/components/obra/Button';
+import { Input } from '@/components/obra/Input';
 import { formatCaseNumber } from '@carton/shared/client';
 import type { CaseListProps, CaseListItem } from './types';
 
 export function CaseList({ onCaseClick }: CaseListProps) {
   const { id: activeId } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
   const { data: cases, isLoading, error, refetch } = trpc.case.list.useQuery();
+
+  const filteredCases = cases?.filter((caseItem: CaseListItem) => {
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return true;
+    const caseNumber = formatCaseNumber(caseItem.id, caseItem.createdAt).toLowerCase();
+    return caseItem.title.toLowerCase().includes(term) || caseNumber.includes(term);
+  });
 
   if (isLoading) {
     return (
@@ -81,8 +92,22 @@ export function CaseList({ onCaseClick }: CaseListProps) {
       >
         Create Case
       </Button>
+      <Input
+        value={searchTerm}
+        onChange={(event) => setSearchTerm(event.target.value)}
+        placeholder="Search cases..."
+        aria-label="Search cases"
+        size="small"
+        className="mb-2"
+        leftDecoration={<Search size={16} className="text-gray-400" />}
+      />
+      {filteredCases && filteredCases.length === 0 ? (
+        <div className="text-center text-gray-500 p-4">
+          <p className="text-sm">No cases match your search</p>
+        </div>
+      ) : (
       <div className="flex flex-col gap-2">
-        {cases?.map((caseItem: CaseListItem) => {
+        {filteredCases?.map((caseItem: CaseListItem) => {
           const isActive = caseItem.id === activeId;
           return (
             <Link
@@ -103,6 +128,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
           );
         })}
       </div>
+      )}
     </div>
   );
 }
