@@ -64,11 +64,11 @@ describe('CaseList', () => {
       expect(screen.getByText('First Case')).toBeInTheDocument();
     });
 
-    // Format: #CAS-YYMMDD-{last8chars}
+    // Format: #CAS-YYYYMMDD-{last8chars}
     // Using noon UTC times ensures consistent dates across all timezones
-    expect(screen.getByText('#CAS-240115-1')).toBeInTheDocument();
+    expect(screen.getByText('#CAS-20240115-1')).toBeInTheDocument();
     expect(screen.getByText('Second Case')).toBeInTheDocument();
-    expect(screen.getByText('#CAS-240117-2')).toBeInTheDocument();
+    expect(screen.getByText('#CAS-20240117-2')).toBeInTheDocument();
   });
 
   it('renders error state when API call fails', async () => {
