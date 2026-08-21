@@ -132,7 +132,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
             </Link>
           );
         })}
-        {filteredCases.length === 0 && (
+        {filteredCases.length === 0 && search.trim() !== '' && (
           <div className="rounded-lg px-4 py-3 text-sm text-gray-500">No matching cases found</div>
         )}
       </div>
