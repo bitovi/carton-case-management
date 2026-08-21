@@ -1,7 +1,9 @@
+import { useMemo, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/obra/Skeleton';
 import { Button } from '@/components/obra/Button';
+import { Input } from '@/components/obra/Input';
 import { formatCaseNumber } from '@carton/shared/client';
 import type { CaseListProps, CaseListItem } from './types';
 
@@ -9,6 +11,26 @@ export function CaseList({ onCaseClick }: CaseListProps) {
   const { id: activeId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: cases, isLoading, error, refetch } = trpc.case.list.useQuery();
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredCases = useMemo(() => {
+    if (!cases) {
+      return [];
+    }
+
+    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+    if (!normalizedSearchTerm) {
+      return cases;
+    }
+
+    return cases.filter((caseItem) => {
+      const caseNumber = formatCaseNumber(caseItem.id, caseItem.createdAt).toLowerCase();
+      return (
+        caseItem.title.toLowerCase().includes(normalizedSearchTerm) ||
+        caseNumber.includes(normalizedSearchTerm)
+      );
+    });
+  }, [cases, searchTerm]);
 
   if (isLoading) {
     return (
@@ -81,8 +103,16 @@ export function CaseList({ onCaseClick }: CaseListProps) {
       >
         Create Case
       </Button>
+      <Input
+        type="search"
+        value={searchTerm}
+        onChange={(event) => setSearchTerm(event.target.value)}
+        placeholder="Search cases"
+        aria-label="Search cases"
+        className="mb-2"
+      />
       <div className="flex flex-col gap-2">
-        {cases?.map((caseItem: CaseListItem) => {
+        {filteredCases.map((caseItem: CaseListItem) => {
           const isActive = caseItem.id === activeId;
           return (
             <Link
@@ -102,6 +132,11 @@ export function CaseList({ onCaseClick }: CaseListProps) {
             </Link>
           );
         })}
+        {filteredCases.length === 0 && (
+          <div className="text-center text-gray-500 px-4 py-2">
+            <p className="text-sm">No matching cases</p>
+          </div>
+        )}
       </div>
     </div>
   );
