@@ -230,4 +230,69 @@ describe('CaseList', () => {
     const titleElement = screen.getByText('Very Long Case Title That Should Be Truncated');
     expect(titleElement).toHaveClass('truncate');
   });
+
+  it('filters cases by title as the user types', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByPlaceholderText('Search cases'), 'second');
+
+    expect(screen.queryByText('First Case')).not.toBeInTheDocument();
+    expect(screen.getByText('Second Case')).toBeInTheDocument();
+  });
+
+  it('filters cases by case number as the user types', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByPlaceholderText('Search cases'), '240117');
+
+    expect(screen.queryByText('First Case')).not.toBeInTheDocument();
+    expect(screen.getByText('Second Case')).toBeInTheDocument();
+  });
+
+  it('shows a message when the search has no matches', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/trpc/case.list*', () => {
+        return HttpResponse.json({ result: { data: mockCases } });
+      })
+    );
+
+    const Wrapper = createMemoryRouterWrapper(['/']);
+    render(<CaseList />, { wrapper: Wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('First Case')).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByPlaceholderText('Search cases'), 'no such case');
+
+    expect(screen.getByText('No cases match your search')).toBeInTheDocument();
+  });
 });
