@@ -266,7 +266,7 @@ describe('CaseList', () => {
 
     expect(screen.queryByText('First Case')).not.toBeInTheDocument();
     expect(screen.queryByText('Second Case')).not.toBeInTheDocument();
-    expect(screen.getByText('No cases found')).toBeInTheDocument();
+    expect(screen.getByText('No matching cases')).toBeInTheDocument();
   });
 
   it('truncates long case titles and numbers', async () => {

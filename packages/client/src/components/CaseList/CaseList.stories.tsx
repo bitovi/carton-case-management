@@ -159,3 +159,33 @@ export const WithActiveCase: Story = {
     ),
   ],
 };
+
+export const WithSearchQuery: Story = {
+  decorators: [
+    (Story) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+  parameters: {
+    msw: {
+      handlers: [
+        http.get('/trpc/case.list', () => {
+          return HttpResponse.json({
+            result: {
+              data: mockCases.filter((c) => c.title.toLowerCase().includes('payment')),
+            },
+          });
+        }),
+        http.post('/trpc/case.list', () => {
+          return HttpResponse.json({
+            result: {
+              data: mockCases.filter((c) => c.title.toLowerCase().includes('payment')),
+            },
+          });
+        }),
+      ],
+    },
+  },
+};

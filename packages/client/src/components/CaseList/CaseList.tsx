@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/obra/Skeleton';
@@ -13,6 +13,16 @@ export function CaseList({ onCaseClick }: CaseListProps) {
   const { data: cases, isLoading, error, refetch } = trpc.case.list.useQuery();
   const [searchQuery, setSearchQuery] = useState('');
 
+  const filteredCases = useMemo(() => {
+    if (!cases) return [];
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return cases;
+    return cases.filter((caseItem: CaseListItem) => {
+      const caseNumber = formatCaseNumber(caseItem.id, caseItem.createdAt).toLowerCase();
+      return caseItem.title.toLowerCase().includes(q) || caseNumber.includes(q);
+    });
+  }, [cases, searchQuery]);
+
   if (isLoading) {
     return (
       <div className="flex flex-col w-full lg:w-[200px]">
@@ -23,6 +33,15 @@ export function CaseList({ onCaseClick }: CaseListProps) {
         >
           Create Case
         </Button>
+        <Input
+          placeholder="Search cases..."
+          value=""
+          onChange={() => undefined}
+          size="small"
+          className="mb-2"
+          aria-label="Search cases"
+          disabled
+        />
         <div className="flex flex-col gap-2">
           {[...Array(5)].map((_, index) => (
             <div key={index} className="flex items-center justify-between px-4 py-2 rounded-lg">
@@ -75,13 +94,6 @@ export function CaseList({ onCaseClick }: CaseListProps) {
     );
   }
 
-  const query = searchQuery.trim().toLowerCase();
-  const filteredCases = cases?.filter((caseItem: CaseListItem) => {
-    if (!query) return true;
-    const caseNumber = formatCaseNumber(caseItem.id, caseItem.createdAt).toLowerCase();
-    return caseItem.title.toLowerCase().includes(query) || caseNumber.includes(query);
-  });
-
   return (
     <div className="flex flex-col w-full lg:w-[200px]">
       <Button
@@ -100,10 +112,10 @@ export function CaseList({ onCaseClick }: CaseListProps) {
         aria-label="Search cases"
       />
       <div className="flex flex-col gap-2">
-        {filteredCases?.length === 0 && (
-          <p className="text-sm text-gray-500 text-center px-4 py-2">No cases found</p>
+        {filteredCases.length === 0 && (
+          <p className="text-sm text-gray-500 text-center px-4 py-2">No matching cases</p>
         )}
-        {filteredCases?.map((caseItem: CaseListItem) => {
+        {filteredCases.map((caseItem: CaseListItem) => {
           const isActive = caseItem.id === activeId;
           return (
             <Link
