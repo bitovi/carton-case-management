@@ -1,7 +1,9 @@
+import { useMemo, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/obra/Skeleton';
 import { Button } from '@/components/obra/Button';
+import { Input } from '@/components/obra/Input';
 import { formatCaseNumber } from '@carton/shared/client';
 import type { CaseListProps, CaseListItem } from './types';
 
@@ -9,6 +11,19 @@ export function CaseList({ onCaseClick }: CaseListProps) {
   const { id: activeId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: cases, isLoading, error, refetch } = trpc.case.list.useQuery();
+  const [searchQuery, setSearchQuery] = useState('');
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
+  const filteredCases = useMemo(
+    () =>
+      cases?.filter((caseItem) => {
+        const formattedCaseNumber = formatCaseNumber(caseItem.id, caseItem.createdAt).toLowerCase();
+        return (
+          caseItem.title.toLowerCase().includes(normalizedSearchQuery) ||
+          formattedCaseNumber.includes(normalizedSearchQuery)
+        );
+      }) ?? [],
+    [cases, normalizedSearchQuery]
+  );
 
   if (isLoading) {
     return (
@@ -81,8 +96,20 @@ export function CaseList({ onCaseClick }: CaseListProps) {
       >
         Create Case
       </Button>
-      <div className="flex flex-col gap-2">
-        {cases?.map((caseItem: CaseListItem) => {
+      <Input
+        value={searchQuery}
+        onChange={(event) => setSearchQuery(event.target.value)}
+        placeholder="Search cases"
+        aria-label="Search cases"
+        className="mb-2"
+      />
+      {filteredCases.length === 0 ? (
+        <div className="text-center text-gray-500 p-2">
+          <p className="text-sm">No matching cases found</p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {filteredCases.map((caseItem: CaseListItem) => {
           const isActive = caseItem.id === activeId;
           return (
             <Link
@@ -101,8 +128,9 @@ export function CaseList({ onCaseClick }: CaseListProps) {
               </div>
             </Link>
           );
-        })}
-      </div>
+          })}
+        </div>
+      )}
     </div>
   );
 }
