@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { http, HttpResponse } from 'msw';
+import { userEvent, within } from '@storybook/test';
 import { TrpcProvider } from '@/lib/trpc';
 import { CaseList } from './CaseList';
 
@@ -158,4 +159,19 @@ export const WithActiveCase: Story = {
       </MemoryRouter>
     ),
   ],
+};
+
+export const FilteredBySearch: Story = {
+  decorators: [
+    (Story) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const searchInput = await canvas.findByPlaceholderText('Search cases...');
+    await userEvent.type(searchInput, 'Payment');
+  },
 };
