@@ -148,6 +148,16 @@ export const Empty: Story = {
   },
 };
 
+export const WithSearch: Story = {
+  decorators: [
+    (Story) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+};
+
 export const WithActiveCase: Story = {
   decorators: [
     (Story) => (
