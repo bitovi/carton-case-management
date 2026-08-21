@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { expect, userEvent, within } from '@storybook/test';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { http, HttpResponse } from 'msw';
 import { TrpcProvider } from '@/lib/trpc';
@@ -158,4 +159,23 @@ export const WithActiveCase: Story = {
       </MemoryRouter>
     ),
   ],
+};
+
+export const FilteredBySearch: Story = {
+  decorators: [
+    (Story) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const searchInput = canvas.getByRole('textbox', { name: /search cases/i });
+
+    await userEvent.type(searchInput, 'payment');
+
+    await expect(canvas.getByText('Payment Processing Error')).toBeInTheDocument();
+    await expect(canvas.queryByText('Customer Login Issue')).not.toBeInTheDocument();
+  },
 };
