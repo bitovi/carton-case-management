@@ -12,13 +12,13 @@ export function CaseList({ onCaseClick }: CaseListProps) {
   const navigate = useNavigate();
   const { data: cases, isLoading, error, refetch } = trpc.case.list.useQuery();
   const [searchTerm, setSearchTerm] = useState('');
+  const normalizedSearchTerm = searchTerm.trim().toLowerCase();
 
   const filteredCases = useMemo(() => {
     if (!cases) {
       return [];
     }
 
-    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
     if (!normalizedSearchTerm) {
       return cases;
     }
@@ -30,7 +30,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
         caseNumber.includes(normalizedSearchTerm)
       );
     });
-  }, [cases, searchTerm]);
+  }, [cases, normalizedSearchTerm]);
 
   if (isLoading) {
     return (
@@ -132,7 +132,7 @@ export function CaseList({ onCaseClick }: CaseListProps) {
             </Link>
           );
         })}
-        {filteredCases.length === 0 && (
+        {normalizedSearchTerm && filteredCases.length === 0 && (
           <div className="text-center text-gray-500 px-4 py-2">
             <p className="text-sm">No matching cases</p>
           </div>
