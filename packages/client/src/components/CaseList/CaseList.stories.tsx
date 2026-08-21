@@ -159,3 +159,19 @@ export const WithActiveCase: Story = {
     ),
   ],
 };
+
+export const SearchFiltering: Story = {
+  decorators: [
+    (Story) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+  play: async ({ canvasElement }) => {
+    const { userEvent, within } = await import('@storybook/test');
+    const canvas = within(canvasElement);
+    const searchInput = await canvas.findByPlaceholderText('Search cases...');
+    await userEvent.type(searchInput, 'Payment');
+  },
+};
