@@ -44,7 +44,10 @@ test.describe('Case Details', () => {
 
       await heading.click();
 
-      const titleInput = page.locator('input:visible').first();
+      const titleInput = page
+        .getByRole('textbox', { name: /edit title/i })
+        .or(page.locator('input[placeholder="Enter title..."]'))
+        .first();
       await titleInput.fill('Updated Title E2E');
       await titleInput.press('Enter');
 
@@ -57,7 +60,10 @@ test.describe('Case Details', () => {
 
       await heading.click();
 
-      const titleInput = page.locator('input:visible').first();
+      const titleInput = page
+        .getByRole('textbox', { name: /edit title/i })
+        .or(page.locator('input[placeholder="Enter title..."]'))
+        .first();
       await titleInput.fill('This should be discarded');
       await titleInput.press('Escape');
 
