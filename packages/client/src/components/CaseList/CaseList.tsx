@@ -1,14 +1,28 @@
+import { useState, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Search } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { Skeleton } from '@/components/obra/Skeleton';
 import { Button } from '@/components/obra/Button';
+import { Input } from '@/components/obra/Input';
 import { formatCaseNumber } from '@carton/shared/client';
 import type { CaseListProps, CaseListItem } from './types';
 
 export function CaseList({ onCaseClick }: CaseListProps) {
   const { id: activeId } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [search, setSearch] = useState('');
   const { data: cases, isLoading, error, refetch } = trpc.case.list.useQuery();
+
+  const filteredCases = useMemo(() => {
+    const query = search.toLowerCase();
+    if (!query || !cases) return cases ?? [];
+    return cases.filter(
+      (c) =>
+        c.title.toLowerCase().includes(query) ||
+        formatCaseNumber(c.id, c.createdAt).toLowerCase().includes(query)
+    );
+  }, [cases, search]);
 
   if (isLoading) {
     return (
@@ -81,8 +95,16 @@ export function CaseList({ onCaseClick }: CaseListProps) {
       >
         Create Case
       </Button>
+      <Input
+        placeholder="Search cases..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        leftDecoration={<Search size={14} className="text-gray-400" />}
+        className="mb-2"
+        size="small"
+      />
       <div className="flex flex-col gap-2">
-        {cases?.map((caseItem: CaseListItem) => {
+        {filteredCases.map((caseItem: CaseListItem) => {
           const isActive = caseItem.id === activeId;
           return (
             <Link
