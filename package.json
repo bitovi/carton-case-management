@@ -52,7 +52,7 @@
     "figma:publish": "dotenv -- npm run figma:publish --workspace=packages/client"
   },
   "dependencies": {
-    "zod": "^3.23.8"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.1",
